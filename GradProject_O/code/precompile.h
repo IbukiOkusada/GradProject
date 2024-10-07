@@ -11,6 +11,25 @@
 #include <winsock2.h>
 #pragma comment(lib, "ws2_32.lib")
 
+// C++‚Ìstd—p
+#include <vector>
+#include <algorithm>
+#include <list>
+#include <string>
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <cmath>
+#include <iterator>
+#include <codecvt>
+#include <fstream>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <condition_variable>
+#include <stack>
+#include <filesystem>
+
 //DirectX‚Ì‰Šúİ’è
 #include <stdio.h>
 #include <windows.h>
