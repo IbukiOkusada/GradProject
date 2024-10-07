@@ -36,64 +36,26 @@
 #include "fade.h"
 #include "input_keyboard.h"
 #include "input_gamepad.h"
+#include "camera_manager.h"
 
 //===============================================
 // マクロ定義
 //===============================================
-#define MOVE	(3.5f)		// 移動量
-#define GRAVITY	(-0.6f)		//プレイヤー重力
-#define ROT_MULTI	(0.1f)	// 向き補正倍率
-#define WIDTH	(20.0f)		// 幅
-#define HEIGHT	(80.0f)		// 高さ
-#define INER	(0.3f)		// 慣性
-#define JUMP	(16.0f)
 
 namespace {
-	const int HEADPARTS_IDX = (1);	// 頭のパーツインデックス
-	const float DAMAGE_INTERVAL = (10.0f);	// ダメージインターバル
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
 	const float DEATH_INTERVAL = (120.0f);	// 死亡インターバル
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
-	const float SLIDING_INER = (0.015f);	// スライディング慣性
-	const float SLIDING_MINMOVE = (1.0f);	// スライディング可能最低移動量
-	const float SLIDING_STARTMOVE = (6.0f);	// スライディング開始可能移動量
-	const float SLIDING_SPEED = (0.5f);
-	const float WALLKICK_MOVE = (45.0f);	// 壁キック移動量
-	const float WALLKICK_INER = (0.1f);		// 壁キック中慣性
-	const float WALLKICK_SPEED = (1.0f);	// 壁キック中移動速度
-	const float WALLSLIDE_GRAVITY = (-1.5f);	// 壁ずり中落下速度
-	const float WALLDUSH_GRAVITY = (-0.75f);
-	const float SLIDEJUMP_INER = (0.02f);		// スライディング慣性
-	const float SLIDEJUMP_GRAVITY = (-0.25f);	// スライディングジャンプ重力
-	const float SLIDEJUMP = (7.0f);				// スライディングジャンプジャンプ力
-	const float SLIDEJUMP_SPEED = (1.75f);		// スライディングジャンプ移動量
-	const float WALLSLIDE_MOVE = (0.05f);		// 壁ずりいどうりょう
-	const float WALLDUSH_MOVE = (5.0f);			// 壁走り移動量
 	const float CAMROT_INER = (0.2f);			// カメラ慣性
-	const float SLIDINNG_ROTZ = (D3DX_PI * 0.51f);	// スライディングカメラ角度
-	const float SLIDING_LENGTH = (200.0f);			//スライディングカメラ距離
-	const float KICKUP_SPEED = (1.5f);			// 蹴りあがり移動速度
-	const float KICKUP_JUMP = (18.0f);			// 蹴りあがりジャンプ力
-	const float KICKUP_QUICKJUMP = (13.0f);		// ライダーキックからのジャンプ力
-	const float AXEKICK_ROTZ = (D3DX_PI * 0.21f);	// かかと落としカメラ
-	const float RIDERKICK_ROTZ = (D3DX_PI * 0.31f);	// ライダーキックカメラ向き
-	const float AXEKICK_CAMERALENGTH = (400.0f);	// かかと落としカメラ距離
-	const float SLOW_KICKCHARGE = (15.0f);			// スローまでのチャージ時間
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
-	const float RIDERKICK_SPEED = (24.0f);	// ライダーキック速度
-	const float RIDERKICK_HIGHSPEED = (60.0f);	// ライダーキック最速
-	const float RIDERKICK_CAMERALENGTH = (600.0f);	// ライダーキックカメラ距離
-	const float WALLKICK_GRAVITY = (-0.4f);
-	const float WALLKICK_JUMP = (11.0f);
-	const float AXEKICK_GRAVITY = (-2.5f);
-	const float AXEKICK_MOVE = (0.75f);
 	const int LIFE = (10);
-	const float KICK_STEPMOVE = (45.0f);
-	const float ATK_INTERVAL = (5.0f);
-	const float CEILING_ROTZ = (D3DX_PI * 0.65f);
-	const float CEILING_MOVE = (MOVE * 0.5f);
-	const float CEILING_CAMLENGTH = (300.0f);
-	const D3DXVECTOR3 LIFEUI_POS = { SCREEN_WIDTH * 0.175f, SCREEN_HEIGHT * 0.9f, 0.0f };
+	const float MOVE = (3.5f);		// 移動量
+	const float GRAVITY = (-0.6f);		//プレイヤー重力
+	const float ROT_MULTI = (0.1f);	// 向き補正倍率
+	const float WIDTH = (20.0f);	// 幅
+	const float HEIGHT = (80.0f);	// 高さ
+	const float INER = (0.3f);		// 慣性
+	const float JUMP = (16.0f);
 }
 
 // 前方宣言
@@ -209,9 +171,14 @@ void CPlayer::Update(void)
 
 	if (m_pObj != nullptr)
 	{
+		D3DXVECTOR3 rot = GetRotation();
+		rot.y += D3DX_PI * 0.5f;
 		m_pObj->SetPosition(GetPosition());
-		m_pObj->SetRotation(GetRotation());
+		m_pObj->SetRotation(rot);
 	}
+
+	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+	pCamera->Pursue(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2000.0f);
 }
 
 //===============================================
@@ -278,6 +245,9 @@ void CPlayer::Move(void)
 	if (nullptr == pInputKey){
 		return;
 	}
+
+	m_Info.move.x = 10.0f;
+	m_Info.pos += m_Info.move;
 }
 
 //===============================================

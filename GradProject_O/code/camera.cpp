@@ -596,7 +596,7 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 		float fRotDiff;
 		float fRotDest;
 
-		fRotDest = 1.4f;	//–Ú“I‚ÌŒü‚«‚ðŽæ“¾
+		fRotDest = 0.0001f;	//–Ú“I‚ÌŒü‚«‚ðŽæ“¾
 
 		fRotDiff = fRotDest - m_rot.z;
 
