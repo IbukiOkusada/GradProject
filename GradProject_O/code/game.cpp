@@ -143,8 +143,8 @@ HRESULT CGame::Init(void)
 
     CMeshField::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 100.0f, 100.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 
-    CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
-
+    CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
+    pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
     return S_OK;
