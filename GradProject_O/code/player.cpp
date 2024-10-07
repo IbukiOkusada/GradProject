@@ -50,6 +50,7 @@ namespace {
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
 	const int LIFE = (10);
 	const float MOVE = (3.5f);		// 移動量
+	const float TURN = (0.1f);		// 旋回量
 	const float GRAVITY = (-0.6f);		//プレイヤー重力
 	const float ROT_MULTI = (0.1f);	// 向き補正倍率
 	const float WIDTH = (20.0f);	// 幅
@@ -240,21 +241,26 @@ void CPlayer::Move(void)
 {
 	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad *pInputPad = CInputPad::GetInstance();
+
 	if (pInputKey->GetPress(DIK_W))
 	{
-
+		m_Info.move.z += MOVE * sinf(m_Info.rot.y);
+		m_Info.move.x += MOVE * cosf(m_Info.rot.y);
 	}
 	else
 	{
-		pInputPad->GetRightTriggerPress(0);
+		float fSpeed = (float)pInputPad->GetRightTriggerPress(0) / 255;
+		m_Info.move.z += MOVE * sinf(m_Info.rot.y) * fSpeed;
+		m_Info.move.x += MOVE * cosf(m_Info.rot.y) * fSpeed;
 	}
 	// 入力装置確認
 	if (nullptr == pInputKey){
 		return;
 	}
 
-	m_Info.move.x = 10.0f;
+
 	m_Info.pos += m_Info.move;
+	m_Info.move *= INER;//移動量の減衰
 }
 
 //===============================================
@@ -264,7 +270,18 @@ void CPlayer::Rotate(void)
 {
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad* pInputPad = CInputPad::GetInstance();
-
+	if (pInputKey->GetPress(DIK_D))
+	{
+		m_fRotDiff += TURN;
+	}
+	else if (pInputKey->GetPress(DIK_A))
+	{
+		m_fRotDiff -= TURN;
+	}
+	else
+	{
+		m_fRotDiff += TURN *pInputPad->GetLStick(0, 0.1f).x;
+	}
 	// 入力装置確認
 	if (nullptr == pInputKey) {
 		return;

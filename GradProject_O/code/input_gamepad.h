@@ -76,6 +76,8 @@ public:	// 誰でもアクセス可能
 	BYTE GetRightTriggerPress(int nPlayer);
 	BYTE GetLeftTriggerPress(int nPlayer);
 	float GetStickAdd(int nPlayer, int nKey, float DeadZone, Stick PlusStick);
+	D3DXVECTOR3 GetLStick(int nPlayer, float DeadZone);
+	D3DXVECTOR3 GetRStick(int nPlayer, float DeadZone);
 	static CInputPad* Create(HINSTANCE hInstance, HWND hWnd);
 	static CInputPad* GetInstance() { return m_pInstance; }
 

@@ -211,7 +211,50 @@ float CInputPad::GetStickAdd(int nPlayer, int nKey, float DeadZone, Stick PlusSt
 
 	return fAnswer;
 }
+//==========================================================
+// 左スティックの値取得
+//==========================================================
+D3DXVECTOR3 CInputPad::GetLStick(int nPlayer, float DeadZone)
+{
+	D3DXVECTOR3 Stick = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
+	Stick.x = (float)m_State[nPlayer].Gamepad.sThumbLX / SHRT_MAX;
+	if (fabsf(Stick.x) < DeadZone)
+	{
+		Stick.x = 0.0f;
+	}
+
+	Stick.y = (float)m_State[nPlayer].Gamepad.sThumbLY / SHRT_MAX;
+	if (fabsf(Stick.y) < DeadZone)
+	{
+		Stick.y = 0.0f;
+	}
+	Stick.y *= -1;
+
+	return Stick;
+}
+//==========================================================
+// 右スティックの値取得
+//==========================================================
+D3DXVECTOR3 CInputPad::GetRStick(int nPlayer, float DeadZone)
+{
+	D3DXVECTOR3 Stick = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	Stick.x = (float)m_State[nPlayer].Gamepad.sThumbRX / SHRT_MAX;
+	if (fabsf(Stick.x) < DeadZone)
+	{
+		Stick.x = 0.0f;
+	}
+
+	Stick.y = (float)m_State[nPlayer].Gamepad.sThumbRY / SHRT_MAX;
+	if (fabsf(Stick.y) < DeadZone)
+	{
+		Stick.y = 0.0f;
+	}
+	Stick.y *= -1;
+
+	return Stick;
+}
 //==========================================================
 // 右トリガー取得
 //==========================================================
