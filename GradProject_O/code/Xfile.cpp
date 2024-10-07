@@ -59,7 +59,7 @@ int CXFile::Regist(const char *pFileName)
 	{
 		if (m_apModelFileData[nCnt] == NULL)
 		{// 使われていない場合
-			m_apModelFileData[nCnt] = new FileInfo;	// メモリの確保
+			m_apModelFileData[nCnt] = DEBUG_NEW FileInfo;	// メモリの確保
 
 			if (m_apModelFileData[nCnt] != NULL)
 			{// メモリを確保できた場合
@@ -129,7 +129,7 @@ HRESULT CXFile::FileLoad(int nIdx)
 		if (m_apModelFileData[nIdx]->filedata.pIdexTexture == NULL)
 		{// テクスチャが使用されていない場合
 			// マテリアル数分確保
-			m_apModelFileData[nIdx]->filedata.pIdexTexture = new int[(int)m_apModelFileData[nIdx]->filedata.dwNumMat];
+			m_apModelFileData[nIdx]->filedata.pIdexTexture = DEBUG_NEW int[(int)m_apModelFileData[nIdx]->filedata.dwNumMat];
 		}
 	}
 

@@ -59,7 +59,7 @@ void CPlayerManager::Update(void)
 CPlayerManager* CPlayerManager::GetInstance(void)
 {
 	if (m_pInstance == nullptr) {	// Žg‚í‚ê‚Ä‚¢‚È‚¢
-		m_pInstance = new CPlayerManager;
+		m_pInstance = DEBUG_NEW CPlayerManager;
 	}
 
 	return m_pInstance;

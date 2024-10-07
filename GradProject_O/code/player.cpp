@@ -107,10 +107,8 @@ CPlayer::~CPlayer()
 HRESULT CPlayer::Init(void)
 {
 	// çòÇÃê∂ê¨
-
 	m_Info.state = STATE_APPEAR;
 	m_type = TYPE_NONE;
-	
 
 	return S_OK;
 }

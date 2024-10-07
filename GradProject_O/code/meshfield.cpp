@@ -248,7 +248,7 @@ CMeshField *CMeshField::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// メモリの確保
-	pMeshField = new CMeshField;
+	pMeshField = DEBUG_NEW CMeshField;
 
 	if (pMeshField != NULL)
 	{// 確保できた場合
