@@ -124,7 +124,7 @@ HRESULT CGame::Init(void)
 
     case STATE_ONLINE:
     {// ƒIƒ“ƒ‰ƒCƒ“’ÊM‚Ìê‡
-        m_pClient = new CClient;
+        m_pClient = DEBUG_NEW CClient;
         AddressLoad(&m_aAddress[0]);
 
         if (m_pClient->Init(&m_aAddress[0], DEF_PORT))

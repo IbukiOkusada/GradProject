@@ -14,7 +14,8 @@ CTaskManager *CTaskManager::m_pInstance = NULL;
 //==========================================================
 CTaskManager::CTaskManager()
 {
-
+	m_pTop = nullptr;
+	m_pCur = nullptr;
 }
 
 //==========================================================
@@ -186,7 +187,7 @@ CTaskManager* CTaskManager::GetInstance()
 {
 	if (m_pInstance == NULL)
 	{
-		m_pInstance = new CTaskManager;
+		m_pInstance = DEBUG_NEW CTaskManager;
 	}
 
 	return m_pInstance;

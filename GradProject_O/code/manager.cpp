@@ -24,6 +24,7 @@
 #include "task_manager.h"
 #include "object_manager.h"
 #include "camera_manager.h"
+#include "player_manager.h"
 
 //===============================================
 // Ã“Iƒƒ“ƒo•Ï”
@@ -334,6 +335,7 @@ void CManager::ManagerRelease(void)
 	CTaskManager::Release();
 	CObjectManager::Release();
 	CCameraManager::Release();
+	CPlayerManager::Release();
 }
 
 //===================================================
