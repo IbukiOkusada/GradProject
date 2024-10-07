@@ -65,7 +65,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// レンダラーの生成
 	if (m_pRenderer == NULL)
 	{// 使用していない場合
-		m_pRenderer = new CRenderer;
+		m_pRenderer = DEBUG_NEW CRenderer;
 	}
 
 	//初期化処理
@@ -86,7 +86,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// デバッグ表示の生成
 	if (m_pDebugProc == NULL)
 	{// 使用していない場合
-		m_pDebugProc = new CDebugProc;
+		m_pDebugProc = DEBUG_NEW CDebugProc;
 	}
 
 	//初期化処理
@@ -98,7 +98,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// サウンドの生成
 	if (m_pSound == NULL)
 	{// 使用していない場合
-		m_pSound = new CSound;
+		m_pSound = DEBUG_NEW CSound;
 
 		// 初期化
 		if (m_pSound != NULL)
@@ -110,7 +110,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// カメラの生成
 	if (m_pCamera == NULL)
 	{// 使用していない場合
-		m_pCamera = new CMultiCamera;
+		m_pCamera = DEBUG_NEW CMultiCamera;
 
 		// 初期化
 		if (m_pCamera != NULL)
@@ -134,7 +134,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// ライトの生成
 	if (m_pLight == NULL)
 	{// 使用していない場合
-		m_pLight = new CLight;
+		m_pLight = DEBUG_NEW CLight;
 
 		// 初期化
 		if (m_pLight != NULL)
@@ -146,7 +146,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	//テクスチャの生成
 	if (m_pTexture == NULL)
 	{// 使用していない場合
-		m_pTexture = new CTexture;
+		m_pTexture = DEBUG_NEW CTexture;
 
 		// 初期読み込み
 		if (m_pTexture != NULL)
@@ -158,18 +158,18 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	// Xファイル情報の生成
 	if (m_pModelFile == NULL)
 	{// 使用していない場合
-		m_pModelFile = new CXFile;
+		m_pModelFile = DEBUG_NEW CXFile;
 	}
 
 	// スロー情報の生成
 	if (m_pSlow == NULL)
 	{
-		m_pSlow = new CSlow;
+		m_pSlow = DEBUG_NEW CSlow;
 		m_pSlow->Init();
 	}
 
 	// モードの生成
-	SetMode(CScene::MODE_TITLE);
+	SetMode(CScene::MODE_GAME);
 
 	return S_OK;
 }
@@ -476,7 +476,7 @@ void CManager::DataReset(void)
 	//テクスチャの生成
 	if (m_pTexture == NULL)
 	{// 使用していない場合
-		m_pTexture = new CTexture;
+		m_pTexture = DEBUG_NEW CTexture;
 
 		// 初期読み込み
 		if (m_pTexture != NULL)
@@ -488,7 +488,7 @@ void CManager::DataReset(void)
 	// Xファイル情報の生成
 	if (m_pModelFile == NULL)
 	{// 使用していない場合
-		m_pModelFile = new CXFile;
+		m_pModelFile = DEBUG_NEW CXFile;
 	}
 
 	// タスクマネージャーの初期化
@@ -574,23 +574,23 @@ CScene *CScene::Create(MODE mode)
 	switch (mode)
 	{
 	case MODE_TITLE:
-		pScene = new CTitle;
+		pScene = DEBUG_NEW CTitle;
 		break;
 
 	case MODE_TUTORIAL:
-		pScene = new CTutorial;
+		pScene = DEBUG_NEW CTutorial;
 		break;
 
 	case MODE_GAME:
-		pScene = new CGame;
+		pScene = DEBUG_NEW CGame;
 		break;
 
 	case MODE_RESULT:
-		pScene = new CResult;
+		pScene = DEBUG_NEW CResult;
 		break;
 
 	case MODE_RANKING:
-		pScene = new CRanking;
+		pScene = DEBUG_NEW CRanking;
 		break;
 	}
 

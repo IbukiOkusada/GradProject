@@ -509,18 +509,18 @@ void CCamera::MouseCamera(void)
 	//	SetR();
 	//}
 
-	m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
+	//m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
 
-	if (m_rot.y > D3DX_PI)
-	{//角度がΠを超えた場合
-		m_rot.y = D3DX_PI;
-		m_rot.y *= -1.0f;
-	}
-	else if (m_rot.y < -D3DX_PI)
-	{//角度がΠを超えた場合
-		m_rot.y = -D3DX_PI;
-		m_rot.y *= -1.0f;
-	}
+	//if (m_rot.y > D3DX_PI)
+	//{//角度がΠを超えた場合
+	//	m_rot.y = D3DX_PI;
+	//	m_rot.y *= -1.0f;
+	//}
+	//else if (m_rot.y < -D3DX_PI)
+	//{//角度がΠを超えた場合
+	//	m_rot.y = -D3DX_PI;
+	//	m_rot.y *= -1.0f;
+	//}
 
 	//m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
 	//m_rot.z -= pMouse->GetCousorMove().y * 0.003f;

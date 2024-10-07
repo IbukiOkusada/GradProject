@@ -15,6 +15,7 @@
 // 前方宣言
 class CWaist;
 class CCharacter;
+class CObjectX;
 
 // マクロ定義
 #define MAX_ITEM  (1280)  // 所持できるアイテムの最大数
@@ -134,6 +135,8 @@ private:	// 自分だけがアクセス可能
 	void StateSet(void);
 	void Controller(void);
 	void Move(void);
+	void Rotate(void);
+	void Adjust(void);
 
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
@@ -144,6 +147,7 @@ private:	// 自分だけがアクセス可能
 	float m_fRotDest;			// 角度計算
 	int m_nId;					// ID
 	TYPE m_type;
+	CObjectX* m_pObj;
 };
 
 #endif

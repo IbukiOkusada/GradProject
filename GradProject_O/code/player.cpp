@@ -124,6 +124,9 @@ CPlayer::CPlayer()
 	m_type = TYPE_NONE;
 	m_nId = -1;
 	m_Info.fSlideMove = 0.0f;
+	m_pObj = nullptr;
+	m_pPrev = nullptr;
+	m_pNext = nullptr;
 
 	CPlayerManager::GetInstance()->ListIn(this);
 }
@@ -155,6 +158,7 @@ HRESULT CPlayer::Init(void)
 //===============================================
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
+	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\car000.x");
 	SetMatrix();
 
 	return S_OK;
@@ -165,6 +169,11 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 //===============================================
 void CPlayer::Uninit(void)
 {
+	if (m_pObj != nullptr)
+	{
+		m_pObj->Uninit();
+		m_pObj = nullptr;
+	}
 
 	CPlayerManager::GetInstance()->ListOut(this);
 
@@ -197,6 +206,12 @@ void CPlayer::Update(void)
 	}
 	
 	SetMatrix();
+
+	if (m_pObj != nullptr)
+	{
+		m_pObj->SetPosition(GetPosition());
+		m_pObj->SetRotation(GetRotation());
+	}
 }
 
 //===============================================
@@ -207,7 +222,7 @@ CPlayer *CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, con
 	CPlayer *pPlayer = nullptr;
 
 	// オブジェクト2Dの生成
-	pPlayer = new CPlayer();
+	pPlayer = DEBUG_NEW CPlayer;
 
 	if (nullptr != pPlayer)
 	{// 生成できた場合
@@ -238,10 +253,17 @@ CPlayer *CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, con
 //===============================================
 void CPlayer::Controller(void)
 {
-	D3DXVECTOR3 pos = GetPosition();	// 座標を取得
 	D3DXVECTOR3 rot = GetRotation();	// 向きを取得
-	float fIner = INER;
 	m_fRotMove = rot.y;	//現在の向きを取得
+
+	// 移動
+	Move();
+
+	// 回転
+	Rotate();
+
+	// 向き補正
+	Adjust();
 }
 
 //===============================================
@@ -255,6 +277,89 @@ void CPlayer::Move(void)
 	// 入力装置確認
 	if (nullptr == pInputKey){
 		return;
+	}
+}
+
+//===============================================
+// 向き
+//===============================================
+void CPlayer::Rotate(void)
+{
+	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
+	CInputPad* pInputPad = CInputPad::GetInstance();
+
+	// 入力装置確認
+	if (nullptr == pInputKey) {
+		return;
+	}
+
+	// m_fRotDiffの値変えてくれれば補正するよん
+}
+
+//===============================================
+// 調整
+//===============================================
+void CPlayer::Adjust(void)
+{
+	while (1)
+	{
+		if (m_fRotDiff > D3DX_PI || m_fRotDiff < -D3DX_PI)
+		{//-3.14～3.14の範囲外の場合
+			if (m_fRotDiff > D3DX_PI)
+			{
+				m_fRotDiff += (-D3DX_PI * 2);
+			}
+			else if (m_fRotDiff < -D3DX_PI)
+			{
+				m_fRotDiff += (D3DX_PI * 2);
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	m_fRotDest = m_fRotDiff - m_fRotMove;	//目標までの移動方向の差分
+
+	while (1)
+	{
+		if (m_fRotDest > D3DX_PI || m_fRotDest < -D3DX_PI)
+		{//-3.14～3.14の範囲外の場合
+			if (m_fRotDest > D3DX_PI)
+			{
+				m_fRotDest += (-D3DX_PI * 2);
+			}
+			else if (m_fRotDest < -D3DX_PI)
+			{
+				m_fRotDest += (D3DX_PI * 2);
+			}
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	m_Info.rot.y += m_fRotDiff * ROT_MULTI;
+
+	while (1)
+	{
+		if (m_Info.rot.y > D3DX_PI || m_Info.rot.y < -D3DX_PI)
+		{//-3.14～3.14の範囲外の場合
+			if (m_Info.rot.y > D3DX_PI)
+			{
+				m_Info.rot.y += (-D3DX_PI * 2);
+			}
+			else if (m_Info.rot.y < -D3DX_PI)
+			{
+				m_Info.rot.y += (D3DX_PI * 2);
+			}
+		}
+		else
+		{
+			break;
+		}
 	}
 }
 
