@@ -273,7 +273,14 @@ void CPlayer::Move(void)
 {
 	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad *pInputPad = CInputPad::GetInstance();
+	if (pInputKey->GetPress(DIK_W))
+	{
 
+	}
+	else
+	{
+		pInputPad->GetRightTriggerPress(0);
+	}
 	// 入力装置確認
 	if (nullptr == pInputKey){
 		return;
