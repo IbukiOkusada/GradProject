@@ -67,6 +67,12 @@
     <Filter Include="effect\3D">
       <UniqueIdentifier>{c6eb6302-80b5-45c8-a724-cd8c4dc8423f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{86e13586-acb9-4d12-b3fe-222e6463b362}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="input\keyconfig">
+      <UniqueIdentifier>{12a8d1e3-b458-4e40-a21d-2f571de8b3d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -147,9 +153,6 @@
     <ClCompile Include="code\tutorial.cpp">
       <Filter>mode\tutolial</Filter>
     </ClCompile>
-    <ClCompile Include="code\input.cpp">
-      <Filter>system</Filter>
-    </ClCompile>
     <ClCompile Include="code\main.cpp">
       <Filter>system</Filter>
     </ClCompile>
@@ -203,6 +206,18 @@
     </ClCompile>
     <ClCompile Include="code\effect.cpp">
       <Filter>effect\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="code\input.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="code\input_gamepad.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="code\input_mouse.cpp">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="code\input_keyboard.cpp">
+      <Filter>input</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -296,9 +311,6 @@
     <ClInclude Include="code\renderer.h">
       <Filter>system</Filter>
     </ClInclude>
-    <ClInclude Include="code\input.h">
-      <Filter>system</Filter>
-    </ClInclude>
     <ClInclude Include="code\sound.h">
       <Filter>system</Filter>
     </ClInclude>
@@ -343,6 +355,18 @@
     </ClInclude>
     <ClInclude Include="code\particle.h">
       <Filter>effect\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="code\input.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="code\input_gamepad.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="code\input_mouse.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="code\input_keyboard.h">
+      <Filter>input</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

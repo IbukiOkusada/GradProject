@@ -15,6 +15,8 @@
 #include "camera.h"
 #include "object_manager.h"
 #include "camera_manager.h"
+#include "input_gamepad.h"
+#include "input_keyboard.h"
 
 // 静的メンバ変数宣言
 LPD3DXFONT CDebugProc::m_pFont = NULL;	// デバッグフォントへのポインタ
@@ -95,7 +97,7 @@ void CDebugProc::Uninit(void)
 //==========================================================
 void CDebugProc::Update(void)
 {
-	CInputKeyboard *pInputKeyboard = CManager::GetInstance()->GetInputKeyboard();	// キーボードのポインタ
+	CInputKeyboard *pInputKeyboard = CInputKeyboard::GetInstance();	// キーボードのポインタ
 
 	if(pInputKeyboard->GetTrigger(DIK_F1) == true)
 	{//F1キーが押されたとき

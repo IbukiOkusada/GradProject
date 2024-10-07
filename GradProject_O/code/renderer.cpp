@@ -12,6 +12,7 @@
 #include "object_manager.h"
 #include "object.h"
 #include "camera.h"
+#include "input_keyboard.h"
 
 //===================================================
 // コンストラクタ
@@ -185,7 +186,7 @@ void CRenderer::Uninit(void)
 void CRenderer::Update(void)
 {
 #if _DEBUG	// デバッグ時
-	CInputKeyboard *pKey = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pKey = CInputKeyboard::GetInstance();
 
 	if (pKey->GetTrigger(DIK_F2) == true)
 	{

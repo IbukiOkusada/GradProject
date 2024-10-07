@@ -23,6 +23,8 @@
 #include "object2D.h"
 #include <assert.h>
 #include "ranking.h"
+#include "input_gamepad.h"
+#include "input_keyboard.h"
 
 // 無名名前空間を定義
 namespace {
@@ -233,8 +235,8 @@ void CGame::Uninit(void)
 //===============================================
 void CGame::Update(void)
 {
-	CInputPad *pInputPad = CManager::GetInstance()->GetInputPad();
-	CInputKeyboard *pInputKey = CManager::GetInstance()->GetInputKeyboard();
+	CInputPad *pInputPad = CInputPad::GetInstance();
+	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();
 
 	if (pInputKey->GetTrigger(DIK_P) == true || pInputPad->GetTrigger(CInputPad::BUTTON_START, 0))
 	{//ポーズキー(Pキー)が押された

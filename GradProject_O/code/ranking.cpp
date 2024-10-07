@@ -16,6 +16,8 @@
 #include "result.h"
 #include "time.h"
 #include "camera.h"
+#include "input_gamepad.h"
+#include "input_keyboard.h"
 
 // マクロ定義
 #define RANKING_FILE	"data\\FILE\\ranking.bin"	// ランキングファイル
@@ -90,9 +92,11 @@ void CRanking::Uninit(void)
 void CRanking::Update(void)
 {
 	m_nTimer++;
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CInputPad* pPad = CInputPad::GetInstance();
 
-	if (CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_RETURN) || m_nTimer > MOVE_TIMER
-		|| CManager::GetInstance()->GetInputPad()->GetTrigger(CInputPad::BUTTON_A, 0) || CManager::GetInstance()->GetInputPad()->GetTrigger(CInputPad::BUTTON_START, 0))
+	if (pKey->GetTrigger(DIK_RETURN) || m_nTimer > MOVE_TIMER
+		|| pPad->GetTrigger(CInputPad::BUTTON_A, 0) || pPad->GetTrigger(CInputPad::BUTTON_START, 0))
 	{
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}

@@ -11,9 +11,7 @@
 
 // 前方宣言
 class CRenderer;
-class CInputKeyboard;
-class CInputMouse;
-class CInputPad;
+class CInput;
 class CDebugProc;
 class CSound;
 class CCamera;
@@ -95,9 +93,6 @@ public:	// 誰でもアクセス可能
 
 	// 静的メンバ関数
 	CRenderer *GetRenderer(void);
-	CInputKeyboard *GetInputKeyboard(void);
-	CInputMouse *GetInputMouse(void);
-	CInputPad *GetInputPad(void);
 	CDebugProc *GetDebugProc(void);
 	CSound *GetSound(void);
 	CMultiCamera *GetCamera(void);
@@ -120,9 +115,7 @@ private:	// 自分だけがアクセス可能
 
 	// 静的メンバ変数
 	CRenderer *m_pRenderer;	// レンダラーのポインタ
-	CInputKeyboard *m_pInputKeyboard;	// キーボードのポインタ
-	CInputMouse *m_pInputMouse;	// マウスのポインタ
-	CInputPad *m_pInputPad;	// パッドのポインタ
+	CInput* m_pInput;		// 入力のポイント
 	CDebugProc *m_pDebugProc;	// デバッグ表示のポインタ
 	CMultiCamera *m_pCamera;		// カメラのポインタ
 	CLight *m_pLight;		// ライトのポインタ

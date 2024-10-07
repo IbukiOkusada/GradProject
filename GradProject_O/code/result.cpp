@@ -18,6 +18,8 @@
 #include "ranking.h"
 #include "object_manager.h"
 #include "time.h"
+#include "input_gamepad.h"
+#include "input_keyboard.h"
 
 // Ã“Iƒƒ“ƒo•Ï”
 int CResult::m_nScore = 0;
@@ -85,9 +87,11 @@ void CResult::Uninit(void)
 //===============================================
 void CResult::Update(void)
 {
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CInputPad* pPad = CInputPad::GetInstance();
 
-	if (CManager::GetInstance()->GetInputPad()->GetTrigger(CInputPad::BUTTON_A, 0) ||
-		CManager::GetInstance()->GetInputPad()->GetTrigger(CInputPad::BUTTON_START, 0))
+	if (pPad->GetTrigger(CInputPad::BUTTON_A, 0) ||
+		pPad->GetTrigger(CInputPad::BUTTON_START, 0))
 	{
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING);
 	}

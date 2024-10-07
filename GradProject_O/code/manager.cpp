@@ -36,9 +36,7 @@ CManager *CManager::m_pManager = NULL;
 CManager::CManager()
 {
 	m_pRenderer = NULL;		// レンダラーのポインタ
-	m_pInputKeyboard = NULL;	// 入力デバイス(キーボード)へのポインタ
-	m_pInputMouse = NULL;		// 入力デバイス(マウス)のポインタ
-	m_pInputPad = NULL;
+	m_pInput = nullptr;
 	m_pDebugProc = NULL;		// デバッグ表示のポインタ
 	m_pSound = NULL;			// サウンドのポインタ
 	m_pCamera = NULL;			// カメラのポインタ
@@ -79,49 +77,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		}
 	}
 
-	// 入力デバイス(キーボード)の生成
-	if (m_pInputKeyboard == NULL)
+	// 入力の生成
+	if (m_pInput == NULL)
 	{// 使用していない場合
-		m_pInputKeyboard = new CInputKeyboard;
-
-		//初期化処理
-		if (m_pInputKeyboard != NULL)
-		{// 使用している場合
-			if (FAILED(m_pInputKeyboard->Init(hInstance, hWnd)))
-			{//初期化が失敗した場合
-				return E_FAIL;
-			}
-		}
-	}
-
-	// 入力デバイス(マウス)の生成
-	if (m_pInputMouse == NULL)
-	{// 使用していない場合
-		m_pInputMouse = new CInputMouse;
-
-		//初期化処理
-		if (m_pInputMouse != NULL)
-		{// 使用している場合
-			if (FAILED(m_pInputMouse->Init(hInstance, hWnd)))
-			{//初期化が失敗した場合
-				return E_FAIL;
-			}
-		}
-	}
-
-	// 入力デバイス(パッド)の生成
-	if (m_pInputPad == NULL)
-	{// 使用していない場合
-		m_pInputPad = new CInputPad;
-
-		//初期化処理
-		if (m_pInputPad != NULL)
-		{// 使用している場合
-			if (FAILED(m_pInputPad->Init(hInstance, hWnd)))
-			{//初期化が失敗した場合
-				return E_FAIL;
-			}
-		}
+		m_pInput = CInput::Create(hInstance, hWnd);
 	}
 
 	// デバッグ表示の生成
@@ -265,34 +224,11 @@ void CManager::Uninit(void)
 		m_pSound = nullptr;
 	}
 
-	if (m_pInputKeyboard != NULL)
+	if (m_pInput != NULL)
 	{// 使用している場合
-		// 終了処理
-		m_pInputKeyboard->Uninit();
 
-		delete m_pInputKeyboard;	// メモリの開放
-
-		m_pInputKeyboard = NULL;	// 使用していない状態にする
-	}
-
-	if (m_pInputMouse != NULL)
-	{// 使用している場合
-		// 終了処理
-		m_pInputMouse->Uninit();
-
-		delete m_pInputMouse;	// メモリの開放
-
-		m_pInputMouse = NULL;	// 使用していない状態にする
-	}
-
-	if (m_pInputPad != NULL)
-	{// 使用している場合
-		// 終了処理
-		m_pInputPad->Uninit();
-
-		delete m_pInputPad;	// メモリの開放
-
-		m_pInputPad = NULL;	// 使用していない状態にする
+		m_pInput->Release();
+		m_pInput = NULL;	// 使用していない状態にする
 	}
 
 	if (m_pDebugProc != NULL)
@@ -366,22 +302,10 @@ void CManager::Update(void)
 		m_pDebugProc->Update();
 	}
 
-	// キーボードの更新処理
-	if (m_pInputKeyboard != NULL)
+	// 入力の更新処理
+	if (m_pInput != NULL)
 	{// 使用している場合
-		m_pInputKeyboard->Update();
-	}
-
-	// マウスの更新処理
-	if (m_pInputMouse != NULL)
-	{// 使用している場合
-		m_pInputMouse->Update();
-	}
-
-	// マウスの更新処理
-	if (m_pInputPad != NULL)
-	{// 使用している場合
- 		m_pInputPad->Update();
+		m_pInput->Update();
 	}
 
 	if (m_pScene != NULL)
@@ -418,30 +342,6 @@ void CManager::ManagerRelease(void)
 CRenderer *CManager::GetRenderer(void)
 {
 	return m_pRenderer;
-}
-
-//===================================================
-// 入力デバイスの取得(キーボード)
-//===================================================
-CInputKeyboard *CManager::GetInputKeyboard(void)
-{
-	return m_pInputKeyboard;
-}
-
-//===================================================
-// 入力デバイスの取得(パッド)
-//===================================================
-CInputPad *CManager::GetInputPad(void)
-{
-	return m_pInputPad;
-}
-
-//===================================================
-// 入力デバイスの取得(マウス)
-//===================================================
-CInputMouse *CManager::GetInputMouse(void)
-{
-	return m_pInputMouse;
 }
 
 //===================================================

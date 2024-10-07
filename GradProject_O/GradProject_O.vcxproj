@@ -161,6 +161,9 @@
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\input.cpp" />
+    <ClCompile Include="code\input_gamepad.cpp" />
+    <ClCompile Include="code\input_keyboard.cpp" />
+    <ClCompile Include="code\input_mouse.cpp" />
     <ClCompile Include="code\light.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
@@ -210,6 +213,9 @@
     <ClInclude Include="code\fade.h" />
     <ClInclude Include="code\game.h" />
     <ClInclude Include="code\input.h" />
+    <ClInclude Include="code\input_gamepad.h" />
+    <ClInclude Include="code\input_keyboard.h" />
+    <ClInclude Include="code\input_mouse.h" />
     <ClInclude Include="code\light.h" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />

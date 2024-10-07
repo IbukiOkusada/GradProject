@@ -18,6 +18,8 @@
 #include "result.h"
 #include "debugproc.h"
 #include "game.h"
+#include "input_gamepad.h"
+#include "input_keyboard.h"
 
 // –³–¼–¼‘O‹óŠÔ
 namespace
@@ -94,7 +96,10 @@ void CTutorial::Uninit(void)
 //===============================================
 void CTutorial::Update(void)
 {
-	if (CManager::GetInstance()->GetInputPad()->GetTrigger(CInputPad::BUTTON_START, 0) || CManager::GetInstance()->GetInputKeyboard()->GetTrigger(DIK_RETURN))
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CInputPad* pPad = CInputPad::GetInstance();
+
+	if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) || pKey->GetTrigger(DIK_RETURN))
 	{
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
 	}

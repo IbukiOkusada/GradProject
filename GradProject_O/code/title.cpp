@@ -11,6 +11,8 @@
 #include "sound.h"
 #include "camera.h"
 #include "texture.h"
+#include "input_gamepad.h"
+#include "input_keyboard.h"
 
 //===============================================
 // –³–¼–¼‘O‹óŠÔ
@@ -87,8 +89,8 @@ void CTitle::Uninit(void)
 //===============================================
 void CTitle::Update(void)
 {
-	CInputPad *pInputPad = CManager::GetInstance()->GetInputPad();
-	CInputKeyboard *pInputKey = CManager::GetInstance()->GetInputKeyboard();
+	CInputPad *pInputPad = CInputPad::GetInstance();
+	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();
 
 	if (pInputKey->GetTrigger(DIK_RETURN) || pInputPad->GetTrigger(CInputPad::BUTTON_START, 0)) {
 		m_bPush = true;

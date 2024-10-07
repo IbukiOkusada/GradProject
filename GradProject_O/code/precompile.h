@@ -38,5 +38,17 @@
 #include "dinput.h"
 #include "xaudio2.h"					//サウンド処理に必要
 
+// メモリリーク出力用マクロ
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>		// メモリリーク検出に必要
+
+// crtdbg.hのバグ対策用マクロ
+#if _DEBUG
+#define DEBUG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+
+#define DEBUG_NEW new
+#endif
+
 #endif
 

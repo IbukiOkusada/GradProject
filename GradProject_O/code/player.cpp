@@ -34,6 +34,8 @@
 #include "meshwall.h"
 #include "player_manager.h"
 #include "fade.h"
+#include "input_keyboard.h"
+#include "input_gamepad.h"
 
 //===============================================
 // マクロ定義
@@ -247,8 +249,8 @@ void CPlayer::Controller(void)
 //===============================================
 void CPlayer::Move(void)
 {
-	CInputKeyboard *pInputKey = CManager::GetInstance()->GetInputKeyboard();	// キーボードのポインタ
-	CInputPad *pInputPad = CManager::GetInstance()->GetInputPad();
+	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
+	CInputPad *pInputPad = CInputPad::GetInstance();
 
 	// 入力装置確認
 	if (nullptr == pInputKey){

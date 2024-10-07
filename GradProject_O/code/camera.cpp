@@ -5,7 +5,9 @@
 //
 //==========================================================
 #include "camera.h"
-#include "input.h"
+#include "input_keyboard.h"
+#include "input_gamepad.h"
+#include "input_mouse.h"
 #include "manager.h"
 #include "renderer.h"
 #include "texture.h"
@@ -175,7 +177,7 @@ void CCamera::SetCamera(void)
 //==========================================================
 void CCamera::MoveVR(void)
 {
-	CInputKeyboard *pKey = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pKey = CInputKeyboard::GetInstance();
 
 	//視点注視点の同時移動
 	if (pKey->GetPress(DIK_A) == true)
@@ -243,8 +245,8 @@ void CCamera::MoveVR(void)
 //==========================================================
 void CCamera::MoveV(void)
 {
-	CInputKeyboard *pKey = CManager::GetInstance()->GetInputKeyboard();
-	CInputPad *pInputPad = CManager::GetInstance()->GetInputPad();	// キーボードのポインタ
+	CInputKeyboard *pKey = CInputKeyboard::GetInstance();
+	CInputPad *pInputPad = CInputPad::GetInstance();	// キーボードのポインタ
 	float fMultiSlow = 1.0f;
 	int nId = m_nId;
 
@@ -362,7 +364,7 @@ void CCamera::MoveV(void)
 //==========================================================
 void CCamera::MoveR(void)
 {
-	CInputKeyboard *pKey = CManager::GetInstance()->GetInputKeyboard();
+	CInputKeyboard *pKey = CInputKeyboard::GetInstance();
 
 	//x軸の移動
 	if (pKey->GetPress(DIK_Q) == true && pKey->GetPress(DIK_E) != true)
@@ -435,7 +437,7 @@ void CCamera::SetR(void)
 //==========================================================
 void CCamera::MouseCamera(void)
 {
-	CInputMouse *pMouse = CManager::GetInstance()->GetInputMouse();
+	CInputMouse *pMouse = CInputMouse::GetInstance();
 
 	//if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true && pMouse->GetPress(CInputMouse::BUTTON_RBUTTON) == true)
 	//{//左右同時に押されているとき
@@ -701,7 +703,7 @@ void CCamera::Setting(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot)
 //==========================================================
 void CCamera::Edit(void)
 {
-	CInputMouse *pMouse = CManager::GetInstance()->GetInputMouse();
+	CInputMouse *pMouse = CInputMouse::GetInstance();
 	if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true && pMouse->GetPress(CInputMouse::BUTTON_RBUTTON) == true)
 	{//左右同時に押されているとき
 		m_posV.x += cosf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -cosf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
