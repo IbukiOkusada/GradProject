@@ -49,13 +49,15 @@ namespace {
 	const float CAMROT_INER = (0.2f);			// カメラ慣性
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
 	const int LIFE = (10);
-	const float MOVE = (3.5f);		// 移動量
-	const float TURN = (0.1f);		// 旋回量
+	const float MOVE = (3.0f);		// 移動量
+	const float BRAKE = (0.98f);		// ブレーキ
+
+	const float TURN = (0.02f);		// 旋回量
 	const float GRAVITY = (-0.6f);		//プレイヤー重力
-	const float ROT_MULTI = (0.1f);	// 向き補正倍率
+	const float ROT_MULTI = (1.0f);	// 向き補正倍率
 	const float WIDTH = (20.0f);	// 幅
 	const float HEIGHT = (80.0f);	// 高さ
-	const float INER = (0.3f);		// 慣性
+	const float INER = (0.98f);		// 慣性
 	const float JUMP = (16.0f);
 }
 
@@ -84,6 +86,7 @@ CPlayer::CPlayer()
 	m_fRotMove = 0.0f;
 	m_fRotDiff = 0.0f;
 	m_fRotDest = 0.0f;
+	m_fBrake = 0.0f;
 	m_type = TYPE_NONE;
 	m_nId = -1;
 	m_Info.fSlideMove = 0.0f;
@@ -239,17 +242,29 @@ void CPlayer::Move(void)
 {
 	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad *pInputPad = CInputPad::GetInstance();
-
+	m_fBrake = 0.0f;
 	if (pInputKey->GetPress(DIK_W))
 	{
-		m_Info.move.z += MOVE * sinf(m_Info.rot.y);
-		m_Info.move.x += MOVE * cosf(m_Info.rot.y);
+		m_Info.move.z += MOVE * sinf(-m_Info.rot.y);
+		m_Info.move.x += MOVE * cosf(-m_Info.rot.y);
 	}
 	else
 	{
 		float fSpeed = (float)pInputPad->GetRightTriggerPress(0) / 255;
-		m_Info.move.z += MOVE * sinf(m_Info.rot.y) * fSpeed;
-		m_Info.move.x += MOVE * cosf(m_Info.rot.y) * fSpeed;
+		m_Info.move.z += MOVE * sinf(-m_Info.rot.y) * fSpeed;
+		m_Info.move.x += MOVE * cosf(-m_Info.rot.y) * fSpeed;
+	}
+	if (pInputKey->GetPress(DIK_S))
+	{
+		m_Info.move *= BRAKE;//移動量の減衰
+		m_fBrake = 1.0f;
+	}
+	else
+	{
+		float fSpeed = (float)pInputPad->GetLeftTriggerPress(0) / 255;
+		m_fBrake = fSpeed;
+		float b = 1.0 - (1.0 - BRAKE) * fSpeed;
+		m_Info.move *= (b);//移動量の減衰
 	}
 	// 入力装置確認
 	if (nullptr == pInputKey){
@@ -270,15 +285,15 @@ void CPlayer::Rotate(void)
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	if (pInputKey->GetPress(DIK_D))
 	{
-		m_fRotDiff += TURN;
+		m_fRotDiff += TURN * (1.0f+m_fBrake);
 	}
 	else if (pInputKey->GetPress(DIK_A))
 	{
-		m_fRotDiff -= TURN;
+		m_fRotDiff -= TURN * (1.0f + m_fBrake);
 	}
 	else
 	{
-		m_fRotDiff += TURN *pInputPad->GetLStick(0, 0.1f).x;
+		m_fRotDiff += TURN *pInputPad->GetLStick(0, 0.1f).x * (1.0f + m_fBrake);
 	}
 	// 入力装置確認
 	if (nullptr == pInputKey) {
@@ -333,7 +348,7 @@ void CPlayer::Adjust(void)
 		}
 	}
 
-	m_Info.rot.y += m_fRotDiff * ROT_MULTI;
+	m_Info.rot.y += m_fRotDest * ROT_MULTI;
 
 	while (1)
 	{
