@@ -571,7 +571,7 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 	m_fLength += fDiff * CAMERA_LENGTHINER;
 
 	//目的の注視点の座標を取得
-	posRDest = D3DXVECTOR3(pos.x - sinf(rot.y) * 50.0f, pos.y + 20.0f + (40.0f * (1.0f - m_fZoom)), pos.z - cosf(rot.y) * 50.0f);
+	posRDest = D3DXVECTOR3(pos.x - sinf(rot.y) * 100.0f, pos.y + 20.0f + (40.0f * (1.0f - m_fZoom)), pos.z - cosf(rot.y) * 100.0f);
 
 	//目的の視点の座標を獲得
 	posVDest = D3DXVECTOR3(
@@ -581,15 +581,15 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 
 	//注視点の補正
 	RDiff = D3DXVECTOR3(posRDest.x - m_posR.x, posRDest.y - m_posR.y, posRDest.z - m_posR.z);
-	m_posR.x += RDiff.x * 0.15f;
-	m_posR.y += RDiff.y * 0.1f;
-	m_posR.z += RDiff.z * 0.15f;
+	m_posR.x += RDiff.x * 0.9f;
+	m_posR.y += RDiff.y * 0.9f;
+	m_posR.z += RDiff.z * 0.9f;
 
 	//視点の補正
 	VDiff = D3DXVECTOR3(posVDest.x - m_posV.x, posVDest.y - m_posV.y, posVDest.z - m_posV.z);
-	m_posV.x += VDiff.x * 0.12f;
-	m_posV.y += VDiff.y * 0.075f;
-	m_posV.z += VDiff.z * 0.12f;
+	m_posV.x += VDiff.x * 0.9f;
+	m_posV.y += VDiff.y * 0.9f;
+	m_posV.z += VDiff.z * 0.9f;
 
 	if (CManager::GetInstance()->GetSlow()->Get() == 1.0f)
 	{

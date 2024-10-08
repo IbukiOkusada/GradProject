@@ -76,7 +76,7 @@ void CParticle::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEffe
 
 	case CEffect::TYPE_SMAKE:	// ‰Œ
 
-		for (int nCnt = 0; nCnt < 20; nCnt++)
+		for (int nCnt = 0; nCnt < 2; nCnt++)
 		{
 			// À•W‚ÌÝ’è
 			pos = Defpos;
@@ -90,10 +90,10 @@ void CParticle::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEffe
 			col = D3DXCOLOR(0.7f, 0.7f, 0.7f, 1.0f);
 
 			//”¼Œa‚ÌÝ’è
-			fRadius = 100.0f;
+			fRadius = 50.0f;
 
 			//Žõ–½‚ÌÝ’è
-			fLife = 500.0f;
+			fLife = 100.0f;
 
 			CEffect::Create(Defpos + move, move, col, fRadius, fLife, type);
 		}

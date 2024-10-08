@@ -179,8 +179,22 @@ void CPlayer::Update(void)
 		m_pObj->SetRotation(rot);
 	}
 
-	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-	pCamera->Pursue(GetPosition(), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2000.0f);
+	{
+		D3DXVECTOR3 rot = GetRotation();
+		rot.y -= D3DX_PI * 0.5f;
+		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+		pCamera->Pursue(GetPosition(), rot, 3000.0f);
+	}
+
+	// エフェクト
+	{
+		D3DXVECTOR3 rot = GetRotation();
+		rot.y -= D3DX_PI * 0.5f;
+		D3DXVECTOR3 pos = GetPosition();
+		pos.x += sinf(rot.y) * 100.0f;
+		pos.z += cosf(rot.y) * 100.0f;
+		CParticle::Create(pos, CEffect::TYPE_SMAKE);
+	}
 }
 
 //===============================================
