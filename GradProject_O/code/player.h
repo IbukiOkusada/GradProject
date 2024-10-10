@@ -137,6 +137,7 @@ private:	// 自分だけがアクセス可能
 	void Move(void);
 	void Rotate(void);
 	void Adjust(void);
+	void Collision(void);
 
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
