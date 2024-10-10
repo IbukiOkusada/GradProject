@@ -142,7 +142,16 @@ HRESULT CGame::Init(void)
     }
 
     CMeshField::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
-
+    for (int i = 0; i < 10; i++)
+    {
+        CObjectX::Create(D3DXVECTOR3(1000.0f*i, 0.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bill.x");
+        CObjectX::Create(D3DXVECTOR3(1000.0f * i, 0.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bill.x");
+    }
+    for (int i = 0; i < 10; i++)
+    {
+        CObjectX::Create(D3DXVECTOR3(10000.0f, 0.0f, 2000.0f + 1000.0f * i), D3DXVECTOR3(0.0f, D3DX_PI/2, 0.0f), "data\\MODEL\\bill.x");
+        CObjectX::Create(D3DXVECTOR3(12000.0f, 0.0f,  1000.0f * i), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), "data\\MODEL\\bill.x");
+    }
     CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
