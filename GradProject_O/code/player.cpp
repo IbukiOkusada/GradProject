@@ -49,15 +49,16 @@ namespace {
 	const float CAMROT_INER = (0.2f);			// カメラ慣性
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
 	const int LIFE = (10);
-	const float MOVE = (3.0f);		// 移動量
+	const float MOVE = (1.2f);		// 移動量
 	const float BRAKE = (0.98f);		// ブレーキ
 
-	const float TURN = (0.02f);		// 旋回量
+	const float TURN = (0.025f);		// 旋回量
 	const float GRAVITY = (-0.6f);		//プレイヤー重力
 	const float ROT_MULTI = (1.0f);	// 向き補正倍率
 	const float WIDTH = (20.0f);	// 幅
 	const float HEIGHT = (80.0f);	// 高さ
 	const float INER = (0.98f);		// 慣性
+	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
 }
 
