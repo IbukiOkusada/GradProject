@@ -224,11 +224,93 @@ D3DXVECTOR3 CollideOBBToPlane(D3DXVECTOR3* posOBB, D3DXVECTOR3 vecAxial, D3DXVEC
 		return vecNorPlane * (lenProjection + fabs(lenPos));
 }
 
+//==================================================================================================
+//点と箱の当たり判定
+//==================================================================================================
+bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV)
+{
+	D3DXVECTOR3 posCorner[8] = {};
+	D3DXVECTOR3 posPlaneCenter[6] = {};
+	D3DXVECTOR3 vecIntersect = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 vecNorPlaneCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXPLANE plane = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	int nCheckCollision = 0;
+
+	//箱の各面の中心を求める
+	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
+	posPlaneCenter[1] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(-sizeV.x, 0.0f, 0.0f));
+	posPlaneCenter[2] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeV.y, 0.0f));
+	posPlaneCenter[3] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, -sizeV.y, 0.0f));
+	posPlaneCenter[4] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeV.z));
+	posPlaneCenter[5] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, -sizeV.z));
+
+	for (int nCnt = 0; nCnt < 6; nCnt++)
+	{
+		//各面の法線ベクトルを計算する
+		vecNorPlaneCenter = posV - posPlaneCenter[nCnt];
+		D3DXVec3Normalize(&vecNorPlaneCenter, &vecNorPlaneCenter);
+
+		//法線ベクトルから平面の式を計算する
+		D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
+
+		//平面の式と点から
+		if (D3DXPlaneDotCoord(&plane, posO) < 0.0f && D3DXPlaneDotCoord(&plane, &posOldO) < 0.0f)
+		{
+			continue;
+		}
+
+		// 衝突地点を計算
+		D3DXPlaneIntersectLine(&vecIntersect, &plane, posO, &posOldO);
+
+		for (int nCnt = 0; nCnt < 6; nCnt++)
+		{
+			//各面の法線ベクトルを計算する
+			vecNorPlaneCenter = posV - posPlaneCenter[nCnt];
+			D3DXVec3Normalize(&vecNorPlaneCenter, &vecNorPlaneCenter);
+
+			//法線ベクトルから平面の式を計算する
+			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
+
+			//平面の式と点から
+			if (D3DXPlaneDotCoord(&plane, &vecIntersect) < 0.0f)
+			{
+				nCheckCollision++;
+			}
+		}
+
+		// 箱の中にいるか判定
+		if (nCheckCollision != 6)
+		{
+			continue;
+		}
+
+		// 計算用変数
+		D3DXVECTOR3 vecMove, vecMoveRef;
+		float fDot;
+
+		// 移動量計算
+		vecMove = vecIntersect - *posO;
+
+		// 押し戻し距離計算
+		fDot = D3DXVec3Dot(&vecMove, &vecNorPlaneCenter);
+		vecMove = *posO - vecIntersect;
+		vecMoveRef = vecMove + (vecNorPlaneCenter * fDot * 1.0f);
+
+		// 押し戻し距離代入
+		*posO = vecIntersect + vecMoveRef;
+
+		return true;
+	}
+
+	return false;
+}
+
 //========================================
 // OBBとOBBの衝突判定処理
 //========================================
 bool CollideOBBToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 rotO, D3DXVECTOR3 sizeO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV)
 {
+	// 分離軸
 	D3DXVECTOR3 axisA1, axisNA1;
 	D3DXVECTOR3 axisA2, axisNA2;
 	D3DXVECTOR3 axisA3, axisNA3; 
@@ -236,27 +318,29 @@ bool CollideOBBToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 rotO, D3DXVECTOR3 size
 	D3DXVECTOR3 axisB2, axisNB2;
 	D3DXVECTOR3 axisB3, axisNB3;
 
+	// 1つ目のオブジェクトの分離軸計算
 	axisA1 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(sizeO.x, 0.0f, 0.0f));
 	axisA2 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(0.0f, sizeO.y, 0.0f));
 	axisA3 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(0.0f, 0.0f, sizeO.z));
-
 	D3DXVec3Normalize(&axisNA1, &axisA1);
 	D3DXVec3Normalize(&axisNA2, &axisA2);
 	D3DXVec3Normalize(&axisNA3, &axisA3);
 
+	// 2つ目のオブジェクトの分離軸計算
 	axisB1 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
 	axisB2 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(0.0f, sizeV.y, 0.0f));
 	axisB3 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(0.0f, 0.0f, sizeV.z));
-
 	D3DXVec3Normalize(&axisNB1, &axisB1);
 	D3DXVec3Normalize(&axisNB2, &axisB2);
 	D3DXVec3Normalize(&axisNB3, &axisB3);
 
+	// 2つのオブジェクト間の距離計算用ベクトル
 	D3DXVECTOR3 lengthCollider = posO - posV;
 
 	float rA, rB, length;
 	D3DXVECTOR3 Cross;
 
+	// 分離軸判定=========================================
 	// A1
 	rA = D3DXVec3Length(&axisA1);
 	rB = lengthAxis(axisNA1, axisB1, axisB2, axisB3);
@@ -499,5 +583,4 @@ D3DXVECTOR3 GetMtxPos(D3DXMATRIX mtx)
 
 	return pos;
 }
-
 }

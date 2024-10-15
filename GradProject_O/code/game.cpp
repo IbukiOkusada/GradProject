@@ -158,7 +158,22 @@ HRESULT CGame::Init(void)
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
-    
+    CRoad::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    //CRoad::Create({ 0.0f, 0.0f, 600.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 0.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 0.0f, 0.0f, 1800.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 600.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 600.0f, 0.0f, 600.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 600.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 600.0f, 0.0f, 1800.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ -600.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ -600.0f, 0.0f, 600.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    //CRoad::Create({ -600.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ -600.0f, 0.0f, 1800.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ -1200.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ -1200.0f, 0.0f, 600.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ -1200.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ -1200.0f, 0.0f, 1800.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
     CRoadManager::GetInstance()->AllConnect();
 
     return S_OK;

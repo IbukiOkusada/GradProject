@@ -29,6 +29,17 @@ public:	// 誰でもアクセス可能な定義
 		DIC_MAX
 	};
 
+	// 道種類
+	enum TYPE
+	{
+		TYPE_STOP = 0,		// 停止中
+		TYPE_NONE,			// まっすぐ道
+		TYPE_CURVE,			// カーブ
+		TYPE_T_JUNCTION,	// T字路
+		TYPE_CROSSING,		// 交差点
+		TYPE_MAX
+	};
+
 	// 基本情報構造体
 	struct SInfo
 	{
@@ -52,6 +63,7 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Update(void);
 	static CRoad* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR2& size);
+	void BindTexture();
 
 	// メンバ関数(取得)
 	CRoad* GetNext(void) { return m_pNext; }
@@ -69,6 +81,7 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void Rotation(TYPE type);
 
 	// メンバ変数
 	CRoad* m_pPrev;			// 前のオブジェクトへのポインタ
