@@ -10,6 +10,11 @@
 // 静的メンバ変数宣言
 CRoadManager* CRoadManager::m_pInstance = nullptr;	// インスタンス
 
+namespace
+{
+	const float HIT_SIZE = 1.0f;	// 連結判定誤差許容判定内
+}
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -162,4 +167,112 @@ bool CRoadManager::Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight
 	}
 
 	return bUse;
+}
+
+//==========================================================
+// 全て連結
+//==========================================================
+void CRoadManager::AllConnect(void)
+{
+	CRoad* pRoad = GetTop();
+
+	// 全て確認
+	while (pRoad != nullptr)
+	{
+		D3DXVECTOR3 pos = pRoad->GetPosition();	// 座標
+
+		CRoad* pNext = pRoad->GetNext();	// 保持
+		CRoad* pCheck = pNext;	// 確認用を次からにする
+
+		// 次以降で繋がっているかを確認する
+		while (pCheck != nullptr)
+		{
+			D3DXVECTOR3 checkpos = pCheck->GetPosition();	// 確認先の座標
+
+			CRoad* pCheckNext = pCheck->GetNext();	// 保持
+
+			// 座標確認
+			if (pos.x + HIT_SIZE >= checkpos.x && pos.x - HIT_SIZE <= checkpos.x)
+			{ // x座標一致
+				// 縦確認
+				VerticalConnectCheck(pRoad, pCheck);
+			}
+			else if (pos.z + HIT_SIZE >= checkpos.z && pos.z - HIT_SIZE <= checkpos.z)
+			{// z座標一致
+				// 横確認
+				SideConnectCheck(pRoad, pCheck);
+			}
+
+			pCheck = pCheckNext;
+		}
+
+		// 次に移動
+		pRoad = pNext;
+	}
+
+	int a = 0;
+}
+
+//==========================================================
+// 横連結確認
+//==========================================================
+void CRoadManager::SideConnectCheck(CRoad* pRoad, CRoad* pCheckRoad)
+{
+	// 座標取得
+	D3DXVECTOR3 pos = pRoad->GetPosition();	// 座標
+	D3DXVECTOR3 checkpos = pCheckRoad->GetPosition();	// 確認先の座標
+
+	// サイズ取得
+	float size = pRoad->GetSize().x;
+	float checksize = pCheckRoad->GetSize().x;
+
+	// 差分を求める
+	float allsize = size + checksize;
+	float diff = fabsf(pos.x - checkpos.x);
+
+	// 判定内の時のみ記憶させる
+	if (diff + HIT_SIZE < allsize || diff - HIT_SIZE > allsize) { return; }
+	
+	if (pos.x >= checkpos.x)
+	{// 本体の方が座標が大きい
+		pRoad->Connect(pCheckRoad, CRoad::DIC_LEFT);
+		pCheckRoad->Connect(pRoad, CRoad::DIC_RIGHT);
+	}
+	else
+	{// 小さい
+		pRoad->Connect(pCheckRoad, CRoad::DIC_RIGHT);
+		pCheckRoad->Connect(pRoad, CRoad::DIC_LEFT);
+	}
+}
+
+//==========================================================
+// 縦連結確認
+//==========================================================
+void CRoadManager::VerticalConnectCheck(CRoad* pRoad, CRoad* pCheckRoad)
+{
+	// 座標取得
+	D3DXVECTOR3 pos = pRoad->GetPosition();	// 座標
+	D3DXVECTOR3 checkpos = pCheckRoad->GetPosition();	// 確認先の座標
+
+	// サイズ取得
+	float size = pRoad->GetSize().y;
+	float checksize = pCheckRoad->GetSize().y;
+
+	// 差分を求める
+	float allsize = size + checksize;
+	float diff = fabsf(pos.z - checkpos.z);
+
+	// 判定内の時のみ記憶させる
+	if (diff + HIT_SIZE < allsize || diff - HIT_SIZE > allsize) { return; }
+
+	if (pos.z >= checkpos.z)
+	{// 本体の方が座標が大きい
+		pRoad->Connect(pCheckRoad, CRoad::DIC_DOWN);
+		pCheckRoad->Connect(pRoad, CRoad::DIC_UP);
+	}
+	else
+	{// 小さい
+		pRoad->Connect(pCheckRoad, CRoad::DIC_UP);
+		pCheckRoad->Connect(pRoad, CRoad::DIC_DOWN);
+	}
 }

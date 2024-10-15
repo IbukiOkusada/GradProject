@@ -17,7 +17,7 @@ class CObject3D;
 //==========================================================
 class CRoad : public CTask
 {
-public:
+public:	// 誰でもアクセス可能な定義
 
 	// 道連結情報
 	enum DIRECTION
@@ -28,8 +28,6 @@ public:
 		DIC_RIGHT,	// 右
 		DIC_MAX
 	};
-
-private:
 
 	// 基本情報構造体
 	struct SInfo
@@ -58,6 +56,10 @@ public:	// 誰でもアクセス可能
 	// メンバ関数(取得)
 	CRoad* GetNext(void) { return m_pNext; }
 	CRoad* GetPrev(void) { return m_pPrev; }
+	CObject3D* GetObj(void) { return m_pObj; }
+	SInfo& GetInfo(void) { return m_Info; }
+	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }
+	D3DXVECTOR2& GetSize(void) { return m_Info.size; }
 
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
@@ -73,6 +75,7 @@ private:	// 自分だけがアクセス可能
 	CRoad* m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;	// 基本情報
 	CObject3D* m_pObj;
+	int m_nIdx;
 	CRoad* m_apConnectRoad[DIRECTION::DIC_MAX];	// 連結した道
 };
 

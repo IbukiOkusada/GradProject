@@ -28,6 +28,7 @@
 #include "player.h"
 #include "meshfield.h"
 #include "road.h"
+#include "road_manager.h"
 
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
@@ -147,6 +148,12 @@ HRESULT CGame::Init(void)
     CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
+
+    CRoad::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 600.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 1200.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoad::Create({ 600.0f, 0.0f, 600.0f }, { 0.0f, 0.0f, 0.0f }, { 300.0f, 300.0f });
+    CRoadManager::GetInstance()->AllConnect();
 
     return S_OK;
 }

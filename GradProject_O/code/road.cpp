@@ -16,12 +16,14 @@ CRoad::CRoad(const SInfo& info)
 	// ’l‚ÌƒNƒŠƒA
 	m_Info = info;
 	m_pObj = nullptr;
+	m_nIdx = -1;
 
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)
 	{
 		m_apConnectRoad[i] = nullptr;
 	}
 
+	m_nIdx = CRoadManager::GetInstance()->GetNum();
 	CRoadManager::GetInstance()->ListIn(this);
 }
 
