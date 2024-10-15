@@ -73,6 +73,9 @@
     <Filter Include="input\keyconfig">
       <UniqueIdentifier>{12a8d1e3-b458-4e40-a21d-2f571de8b3d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="road">
+      <UniqueIdentifier>{bf788a71-3783-4bbf-891b-1372a05cedbe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -218,6 +221,9 @@
     </ClCompile>
     <ClCompile Include="code\input_keyboard.cpp">
       <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="code\road.cpp">
+      <Filter>road</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -367,6 +373,9 @@
     </ClInclude>
     <ClInclude Include="code\input_keyboard.h">
       <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="code\road.h">
+      <Filter>road</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
