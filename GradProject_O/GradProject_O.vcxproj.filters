@@ -222,7 +222,7 @@
     <ClCompile Include="code\input_keyboard.cpp">
       <Filter>input</Filter>
     </ClCompile>
-    <ClCompile Include="road.cpp">
+    <ClCompile Include="code\road.cpp">
       <Filter>road</Filter>
     </ClCompile>
   </ItemGroup>
@@ -374,7 +374,7 @@
     <ClInclude Include="code\input_keyboard.h">
       <Filter>input</Filter>
     </ClInclude>
-    <ClInclude Include="road.h">
+    <ClInclude Include="code\road.h">
       <Filter>road</Filter>
     </ClInclude>
   </ItemGroup>
