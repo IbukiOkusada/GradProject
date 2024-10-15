@@ -138,16 +138,26 @@ private:	// 自分だけがアクセス可能
 	void Rotate(void);
 	void Adjust(void);
 	void Collision(void);
-
+	float LateralForce(float fSlipAngle); //横の計算
+	float LongitudinalForce(float fSlipRatio); //縦の計算
+	void LateralMove(); //横の移動
+	void LongitudinalMove(); //縦の移動
+	float Engine(float fAccel);
+	float CalculateSlipRatio();
+	float CalculateSlipAngle();
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
 	CPlayer *m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;				// 自分自身の情報
+	D3DXVECTOR3 Tire_rot;
+	D3DXVECTOR3 RotSpeed;
 	float m_fRotMove;			// 現在の角度
 	float m_fRotDiff;			// 目的の角度
 	float m_fRotDest;			// 角度計算
 	float m_fSpeed;				//速度(割合)
 	float m_fBrake;
+	float m_fAccel;
+	float m_fRPM;
 	int m_nId;					// ID
 	TYPE m_type;
 	CObjectX* m_pObj;

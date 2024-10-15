@@ -161,6 +161,7 @@
     <ClCompile Include="code\camera_manager.cpp" />
     <ClCompile Include="code\character.cpp" />
     <ClCompile Include="code\collision.cpp" />
+    <ClCompile Include="code\convenience.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
     <ClCompile Include="code\effect.cpp" />
     <ClCompile Include="code\fade.cpp" />
@@ -217,6 +218,7 @@
     <ClInclude Include="code\camera_manager.h" />
     <ClInclude Include="code\character.h" />
     <ClInclude Include="code\collision.h" />
+    <ClInclude Include="code\convenience.h" />
     <ClInclude Include="code\debugproc.h" />
     <ClInclude Include="code\effect.h" />
     <ClInclude Include="code\fade.h" />

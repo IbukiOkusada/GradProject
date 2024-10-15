@@ -37,7 +37,7 @@
 #include "input_keyboard.h"
 #include "input_gamepad.h"
 #include "camera_manager.h"
-
+#include "convenience.h"
 //===============================================
 // マクロ定義
 //===============================================
@@ -65,6 +65,12 @@ namespace {
 	const float SHAPE = (1.2f); //形状係数 一般的なバイクのタイヤでは、1.2 ～ 1.5くらいに設定する
 	const float PEAK_FORCE = (1000.0f);  //最大力 重量の軽いバイクのタイヤは、一般的に 1000 ～ 1500 N の範囲に設定
 	const float CURVATURE = (0.9f); //曲率調整係数 0～1。通常は 0.9～1.0
+
+	const float MAX_RPM = (6750.0f); //最大回転数
+	const float IDOL_RPM = (1.0f); //最低回転数
+	const float ENGINE_INR = (0.1f); //エンジンの慣性
+	const float TIRERADIUS = (0.35f); // タイヤの半径（m）
+	const float WHEEL_CIRCUMFERENCE = (2.0f * D3DX_PI * TIRERADIUS); // タイヤの円周（m）
 }
 
 // 前方宣言
@@ -85,14 +91,18 @@ namespace {
 CPlayer::CPlayer()
 {
 	// 値をクリアする
-	m_Info.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Info.pos = VECTOR3_ZERO;
+	m_Info.posOld = VECTOR3_ZERO;
+	m_Info.rot = VECTOR3_ZERO;
+	m_Info.move = VECTOR3_ZERO;
+	Tire_rot = VECTOR3_ZERO;
+	RotSpeed = VECTOR3_ZERO;
 	m_fRotMove = 0.0f;
 	m_fRotDiff = 0.0f;
 	m_fRotDest = 0.0f;
 	m_fBrake = 0.0f;
+	m_fAccel = 0.0f;
+	m_fRPM = 0.0f;
 	m_type = TYPE_NONE;
 	m_nId = -1;
 	m_Info.fSlideMove = 0.0f;
@@ -128,7 +138,7 @@ HRESULT CPlayer::Init(void)
 //===============================================
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\car000.x");
+	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car000.x");
 	SetMatrix();
 
 	return S_OK;
@@ -251,8 +261,8 @@ void CPlayer::Controller(void)
 	// 回転
 	Rotate();
 
-	// 向き補正
-	Adjust();
+	//// 向き補正
+	//Adjust();
 }
 
 //===============================================
@@ -265,27 +275,18 @@ void CPlayer::Move(void)
 	m_fBrake = 0.0f;
 	if (pInputKey->GetPress(DIK_W))
 	{
-		m_Info.move.z += MOVE * sinf(-m_Info.rot.y);
-		m_Info.move.x += MOVE * cosf(-m_Info.rot.y);
+		m_fAccel = 1.0f;
+	/*	m_Info.move.z += MOVE * sinf(-m_Info.rot.y);
+		m_Info.move.x += MOVE * cosf(-m_Info.rot.y);*/
 	}
 	else
 	{
-		float fSpeed = (float)pInputPad->GetRightTriggerPress(0) / 255;
-		m_Info.move.z += MOVE * sinf(-m_Info.rot.y) * fSpeed;
-		m_Info.move.x += MOVE * cosf(-m_Info.rot.y) * fSpeed;
+		m_fAccel = (float)pInputPad->GetRightTriggerPress(0) / 255;
 	}
-	if (pInputKey->GetPress(DIK_S))
-	{
-		m_Info.move *= BRAKE;//移動量の減衰
-		m_fBrake = 1.0f;
-	}
-	else
-	{
-		float fSpeed = (float)pInputPad->GetLeftTriggerPress(0) / 255;
-		m_fBrake = fSpeed;
-		float b = 1.0 - (1.0 - BRAKE) * fSpeed;
-		m_Info.move *= (b);//移動量の減衰
-	}
+	Engine(m_fAccel);
+	LateralMove();
+	LongitudinalMove();
+
 	// 入力装置確認
 	if (nullptr == pInputKey){
 		return;
@@ -305,15 +306,15 @@ void CPlayer::Rotate(void)
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	if (pInputKey->GetPress(DIK_D))
 	{
-		m_fRotDiff += TURN * (1.0f+m_fBrake);
+		Tire_rot.y += TURN * (1.0f+m_fBrake);
 	}
 	else if (pInputKey->GetPress(DIK_A))
 	{
-		m_fRotDiff -= TURN * (1.0f + m_fBrake);
+		Tire_rot.y -= TURN * (1.0f + m_fBrake);
 	}
 	else
 	{
-		m_fRotDiff += TURN *pInputPad->GetLStick(0, 0.1f).x * (1.0f + m_fBrake);
+		Tire_rot.y += TURN *pInputPad->GetLStick(0, 0.1f).x * (1.0f + m_fBrake);
 	}
 	// 入力装置確認
 	if (nullptr == pInputKey) {
@@ -390,6 +391,21 @@ void CPlayer::Adjust(void)
 	}
 }
 //===============================================
+// エンジンのシミュレーション
+//===============================================
+float CPlayer::Engine(float fAccel)
+{
+	float targetRPM = fAccel * MAX_RPM;
+	m_fRPM = m_fRPM + (targetRPM - m_fRPM) * ENGINE_INR / 60;
+	if (fAccel == 0.0f) {
+		m_fRPM -= 1000.0f / 60;
+		if (m_fRPM < IDOL_RPM) {
+			m_fRPM = IDOL_RPM;  // アイドル回転数以下には下がらない
+		}
+	}
+	return m_fRPM;
+}
+//===============================================
 // 横力計算
 //===============================================
 float CPlayer::LateralForce(float fSlipAngle)
@@ -402,7 +418,73 @@ float CPlayer::LateralForce(float fSlipAngle)
 //===============================================
 float CPlayer::LongitudinalForce(float fSlipRatio)
 {
-	float fX = 
+	float fX = PEAK_FORCE * sinf(SHAPE * atanf(STIFFNESS * fSlipRatio - CURVATURE * (STIFFNESS * fSlipRatio - atanf(STIFFNESS * fSlipRatio))));
+	return fX;
+}
+//===============================================
+// 横力移動
+//===============================================
+void CPlayer::LateralMove()
+{
+	
+	// Pacejkaモデルで横力を計算
+	float lateralForce = LateralForce(CalculateSlipAngle());
+
+	// 車両のヨー加速度を計算 (慣性モーメントと横力を使用)
+	float yawAcceleration = lateralForce * 3 / 12;
+
+	// ヨー角速度を更新
+	RotSpeed.y += yawAcceleration / 60;
+
+	// ヨー角を更新（バイクの向きを変える）
+	m_Info.rot.y += RotSpeed.y / 60;
+}
+//===============================================
+// 縦力移動
+//===============================================
+void CPlayer::LongitudinalMove()
+{
+	// Pacejkaモデルで縦力を計算
+	float longitudinalForce = LongitudinalForce(CalculateSlipRatio());
+
+	// 車両の加速度を計算
+	float acceleration = longitudinalForce / 140.0f;
+
+	// 速度を更新
+	m_Info.move.z += acceleration /60;
+
+	// 位置を更新
+	m_Info.pos += m_Info.move;
+}
+//===============================================
+// スリップ率の計算
+//===============================================
+float CPlayer::CalculateSlipRatio()
+{
+	// タイヤの回転速度を計算
+	float wheelSpeed = (m_fRPM * WHEEL_CIRCUMFERENCE) / 60.0f; // m/s
+	float vehicleSpeed = GetDistance(VECTOR3_ZERO, GetMove());
+	// スリップ率を計算
+	float slipRatio = (wheelSpeed - vehicleSpeed) / wheelSpeed;
+
+	return slipRatio;
+}
+//===============================================
+// スリップ角の計算
+//===============================================
+float CPlayer::CalculateSlipAngle()
+{
+
+	// タイヤの進行方向速度
+	D3DXVECTOR3 Move = GetMove();
+	D3DXMATRIX RotMtx;
+	D3DXMatrixIdentity((&RotMtx));
+	D3DXMatrixRotationY(&RotMtx, Tire_rot.y);
+	D3DXVec3TransformCoord(&Move, &Move, &RotMtx);
+	
+	// スリップ角を計算
+	float slipAngle = atan2(Move.x, fabs(Move.z));  // atan2を使用して正確に角度を取得
+	return slipAngle;
 }
 //===============================================
 // 状態管理
