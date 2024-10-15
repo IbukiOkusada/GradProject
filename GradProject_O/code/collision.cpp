@@ -259,6 +259,7 @@ bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV,
 			continue;
 		}
 
+		// 衝突地点を計算
 		D3DXPlaneIntersectLine(&vecIntersect, &plane, posO, &posOldO);
 
 		for (int nCnt = 0; nCnt < 6; nCnt++)
@@ -277,21 +278,26 @@ bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV,
 			}
 		}
 
+		// 箱の中にいるか判定
 		if (nCheckCollision != 6)
 		{
 			continue;
 		}
 
+		// 計算用変数
 		D3DXVECTOR3 vecMove, vecMoveRef;
 		float fDot;
 
+		// 移動量計算
 		vecMove = vecIntersect - *posO;
 
+		// 押し戻し距離計算
 		fDot = D3DXVec3Dot(&vecMove, &vecNorPlaneCenter);
-
 		vecMove = *posO - vecIntersect;
-
 		vecMoveRef = vecMove + (vecNorPlaneCenter * fDot * 1.0f);
+
+		// 押し戻し距離代入
+		*posO = vecIntersect + vecMoveRef;
 
 		return true;
 	}
@@ -304,6 +310,7 @@ bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV,
 //========================================
 bool CollideOBBToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 rotO, D3DXVECTOR3 sizeO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV)
 {
+	// 分離軸
 	D3DXVECTOR3 axisA1, axisNA1;
 	D3DXVECTOR3 axisA2, axisNA2;
 	D3DXVECTOR3 axisA3, axisNA3; 
@@ -311,27 +318,29 @@ bool CollideOBBToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 rotO, D3DXVECTOR3 size
 	D3DXVECTOR3 axisB2, axisNB2;
 	D3DXVECTOR3 axisB3, axisNB3;
 
+	// 1つ目のオブジェクトの分離軸計算
 	axisA1 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(sizeO.x, 0.0f, 0.0f));
 	axisA2 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(0.0f, sizeO.y, 0.0f));
 	axisA3 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(0.0f, 0.0f, sizeO.z));
-
 	D3DXVec3Normalize(&axisNA1, &axisA1);
 	D3DXVec3Normalize(&axisNA2, &axisA2);
 	D3DXVec3Normalize(&axisNA3, &axisA3);
 
+	// 2つ目のオブジェクトの分離軸計算
 	axisB1 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
 	axisB2 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(0.0f, sizeV.y, 0.0f));
 	axisB3 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(0.0f, 0.0f, sizeV.z));
-
 	D3DXVec3Normalize(&axisNB1, &axisB1);
 	D3DXVec3Normalize(&axisNB2, &axisB2);
 	D3DXVec3Normalize(&axisNB3, &axisB3);
 
+	// 2つのオブジェクト間の距離計算用ベクトル
 	D3DXVECTOR3 lengthCollider = posO - posV;
 
 	float rA, rB, length;
 	D3DXVECTOR3 Cross;
 
+	// 分離軸判定=========================================
 	// A1
 	rA = D3DXVec3Length(&axisA1);
 	rB = lengthAxis(axisNA1, axisB1, axisB2, axisB3);
@@ -574,5 +583,4 @@ D3DXVECTOR3 GetMtxPos(D3DXMATRIX mtx)
 
 	return pos;
 }
-
 }
