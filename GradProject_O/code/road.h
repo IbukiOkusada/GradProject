@@ -56,15 +56,21 @@ public:	// 誰でもアクセス可能
 	static CRoad* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR2& size);
 
 	// メンバ関数(取得)
+	CRoad* GetNext(void) { return m_pNext; }
+	CRoad* GetPrev(void) { return m_pPrev; }
 
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
+	void SetNext(CRoad* pNext) { m_pNext = pNext; }
+	void SetPrev(CRoad* pPrev) { m_pPrev = pPrev; }
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 
 	// メンバ変数
+	CRoad* m_pPrev;			// 前のオブジェクトへのポインタ
+	CRoad* m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;	// 基本情報
 	CObject3D* m_pObj;
 	CRoad* m_apConnectRoad[DIRECTION::DIC_MAX];	// 連結した道

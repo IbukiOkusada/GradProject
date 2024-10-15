@@ -6,6 +6,7 @@
 //==========================================================
 #include "road.h"
 #include "object3D.h"
+#include "road_manager.h"
 
 //==========================================================
 // コンストラクタ
@@ -20,6 +21,8 @@ CRoad::CRoad(const SInfo& info)
 	{
 		m_apConnectRoad[i] = nullptr;
 	}
+
+	CRoadManager::GetInstance()->ListIn(this);
 }
 
 //==========================================================
@@ -59,6 +62,8 @@ void CRoad::Uninit(void)
 		m_pObj->Uninit();
 		m_pObj = nullptr;
 	}
+
+	CRoadManager::GetInstance()->ListOut(this);
 
 	// 開放
 	Release();
