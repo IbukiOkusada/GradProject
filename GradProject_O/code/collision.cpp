@@ -225,6 +225,186 @@ D3DXVECTOR3 CollideOBBToPlane(D3DXVECTOR3* posOBB, D3DXVECTOR3 vecAxial, D3DXVEC
 }
 
 //========================================
+// OBB‚ÆOBB‚ÌÕ“Ë”»’èˆ—
+//========================================
+bool CollideOBBToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 rotO, D3DXVECTOR3 sizeO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV)
+{
+	D3DXVECTOR3 axisA1, axisNA1;
+	D3DXVECTOR3 axisA2, axisNA2;
+	D3DXVECTOR3 axisA3, axisNA3; 
+	D3DXVECTOR3 axisB1, axisNB1;
+	D3DXVECTOR3 axisB2, axisNB2;
+	D3DXVECTOR3 axisB3, axisNB3;
+
+	axisA1 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(sizeO.x, 0.0f, 0.0f));
+	axisA2 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(0.0f, sizeO.y, 0.0f));
+	axisA3 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotO, D3DXVECTOR3(0.0f, 0.0f, sizeO.z));
+
+	D3DXVec3Normalize(&axisNA1, &axisA1);
+	D3DXVec3Normalize(&axisNA2, &axisA2);
+	D3DXVec3Normalize(&axisNA3, &axisA3);
+
+	axisB1 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
+	axisB2 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(0.0f, sizeV.y, 0.0f));
+	axisB3 = PosRelativeMtx(D3DXVECTOR3(0.0f, 0.0f, 0.0f), rotV, D3DXVECTOR3(0.0f, 0.0f, sizeV.z));
+
+	D3DXVec3Normalize(&axisNB1, &axisB1);
+	D3DXVec3Normalize(&axisNB2, &axisB2);
+	D3DXVec3Normalize(&axisNB3, &axisB3);
+
+	D3DXVECTOR3 lengthCollider = posO - posV;
+
+	float rA, rB, length;
+	D3DXVECTOR3 Cross;
+
+	// A1
+	rA = D3DXVec3Length(&axisA1);
+	rB = lengthAxis(axisNA1, axisB1, axisB2, axisB3);
+	length = fabs(D3DXVec3Dot(&lengthCollider, &axisNA1));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// A2
+	rA = D3DXVec3Length(&axisA2);
+	rB = lengthAxis(axisNA2, axisB1, axisB2, axisB3);
+	length = fabs(D3DXVec3Dot(&lengthCollider, &axisNA2));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// A3
+	rA = D3DXVec3Length(&axisA3);
+	rB = lengthAxis(axisNA2, axisB1, axisB2, axisB3);
+	length = fabs(D3DXVec3Dot(&lengthCollider, &axisNA3));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// B1
+	rA = D3DXVec3Length(&axisB1);
+	rB = lengthAxis(axisNB1, axisA1, axisA2, axisA3);
+	length = fabs(D3DXVec3Dot(&lengthCollider, &axisNB1));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// B2
+	rA = D3DXVec3Length(&axisB2);
+	rB = lengthAxis(axisNB2, axisA1, axisA2, axisA3);
+	length = fabs(D3DXVec3Dot(&lengthCollider, &axisNB2));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// B3
+	rA = D3DXVec3Length(&axisB3);
+	rB = lengthAxis(axisNB3, axisA1, axisA2, axisA3);
+	length = fabs(D3DXVec3Dot(&lengthCollider, &axisNB3));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C11
+	D3DXVec3Cross(&Cross, &axisNA1, &axisNB1);
+	rA = lengthAxis(Cross, axisA2, axisA3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB2, axisB3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C12
+	D3DXVec3Cross(&Cross, &axisNA1, &axisNB2);
+	rA = lengthAxis(Cross, axisA2, axisA3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB1, axisB3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C13
+	D3DXVec3Cross(&Cross, &axisNA1, &axisNB3);
+	rA = lengthAxis(Cross, axisA2, axisA3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB1, axisB2, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C21
+	D3DXVec3Cross(&Cross, &axisNA2, &axisNB1);
+	rA = lengthAxis(Cross, axisA1, axisA3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB2, axisB3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C22
+	D3DXVec3Cross(&Cross, &axisNA2, &axisNB2);
+	rA = lengthAxis(Cross, axisA1, axisA3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB1, axisB3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C23
+	D3DXVec3Cross(&Cross, &axisNA3, &axisNB3);
+	rA = lengthAxis(Cross, axisA1, axisA2, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB1, axisB2, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C31
+	D3DXVec3Cross(&Cross, &axisNA3, &axisNB1);
+	rA = lengthAxis(Cross, axisA1, axisA2, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB2, axisB3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C32
+	D3DXVec3Cross(&Cross, &axisNA3, &axisNB2);
+	rA = lengthAxis(Cross, axisA1, axisA2, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB1, axisB3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	// C33
+	D3DXVec3Cross(&Cross, &axisNA2, &axisNB3);
+	rA = lengthAxis(Cross, axisA1, axisA3, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	rB = lengthAxis(Cross, axisB1, axisB2, D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	length = fabs(D3DXVec3Dot(&lengthCollider, &Cross));
+	if (length > rA + rB)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//========================================
 // ü•ª‚É‘Î‚·‚é‚ÌË‰e•ÏŠ·
 //========================================
 float lengthAxis(D3DXVECTOR3 separationAxis, D3DXVECTOR3 e1, D3DXVECTOR3 e2, D3DXVECTOR3 e3)
