@@ -224,6 +224,81 @@ D3DXVECTOR3 CollideOBBToPlane(D3DXVECTOR3* posOBB, D3DXVECTOR3 vecAxial, D3DXVEC
 		return vecNorPlane * (lenProjection + fabs(lenPos));
 }
 
+//==================================================================================================
+//点と箱の当たり判定
+//==================================================================================================
+bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV)
+{
+	D3DXVECTOR3 posCorner[8] = {};
+	D3DXVECTOR3 posPlaneCenter[6] = {};
+	D3DXVECTOR3 vecIntersect = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 vecNorPlaneCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXPLANE plane = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	int nCheckCollision = 0;
+
+	//箱の各面の中心を求める
+	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
+	posPlaneCenter[1] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(-sizeV.x, 0.0f, 0.0f));
+	posPlaneCenter[2] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeV.y, 0.0f));
+	posPlaneCenter[3] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, -sizeV.y, 0.0f));
+	posPlaneCenter[4] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeV.z));
+	posPlaneCenter[5] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, -sizeV.z));
+
+	for (int nCnt = 0; nCnt < 6; nCnt++)
+	{
+		//各面の法線ベクトルを計算する
+		vecNorPlaneCenter = posV - posPlaneCenter[nCnt];
+		D3DXVec3Normalize(&vecNorPlaneCenter, &vecNorPlaneCenter);
+
+		//法線ベクトルから平面の式を計算する
+		D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
+
+		//平面の式と点から
+		if (D3DXPlaneDotCoord(&plane, posO) < 0.0f && D3DXPlaneDotCoord(&plane, &posOldO) < 0.0f)
+		{
+			continue;
+		}
+
+		D3DXPlaneIntersectLine(&vecIntersect, &plane, posO, &posOldO);
+
+		for (int nCnt = 0; nCnt < 6; nCnt++)
+		{
+			//各面の法線ベクトルを計算する
+			vecNorPlaneCenter = posV - posPlaneCenter[nCnt];
+			D3DXVec3Normalize(&vecNorPlaneCenter, &vecNorPlaneCenter);
+
+			//法線ベクトルから平面の式を計算する
+			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
+
+			//平面の式と点から
+			if (D3DXPlaneDotCoord(&plane, &vecIntersect) < 0.0f)
+			{
+				nCheckCollision++;
+			}
+		}
+
+		if (nCheckCollision != 6)
+		{
+			continue;
+		}
+
+		D3DXVECTOR3 vecMove, vecMoveRef;
+		float fDot;
+
+		vecMove = vecIntersect - *posO;
+
+		fDot = D3DXVec3Dot(&vecMove, &vecNorPlaneCenter);
+
+		vecMove = *posO - vecIntersect;
+
+		vecMoveRef = vecMove + (vecNorPlaneCenter * fDot * 1.0f);
+
+		return true;
+	}
+
+	return false;
+}
+
 //========================================
 // OBBとOBBの衝突判定処理
 //========================================
