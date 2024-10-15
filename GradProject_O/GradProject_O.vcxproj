@@ -160,6 +160,7 @@
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\camera_manager.cpp" />
     <ClCompile Include="code\character.cpp" />
+    <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
     <ClCompile Include="code\effect.cpp" />
     <ClCompile Include="code\fade.cpp" />
@@ -196,6 +197,7 @@
     <ClCompile Include="code\ranking.cpp" />
     <ClCompile Include="code\renderer.cpp" />
     <ClCompile Include="code\result.cpp" />
+    <ClCompile Include="code\road_manager.cpp" />
     <ClCompile Include="code\sample\sample_object.cpp" />
     <ClCompile Include="code\sample\sample_task.cpp" />
     <ClCompile Include="code\slow.cpp" />
@@ -214,6 +216,7 @@
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\camera_manager.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\debugproc.h" />
     <ClInclude Include="code\effect.h" />
     <ClInclude Include="code\fade.h" />
@@ -248,6 +251,7 @@
     <ClInclude Include="code\ranking.h" />
     <ClInclude Include="code\renderer.h" />
     <ClInclude Include="code\result.h" />
+    <ClInclude Include="code\road_manager.h" />
     <ClInclude Include="code\sample\sample_object.h" />
     <ClInclude Include="code\sample\sample_task.h" />
     <ClInclude Include="code\slow.h" />

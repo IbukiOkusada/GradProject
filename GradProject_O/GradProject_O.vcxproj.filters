@@ -225,6 +225,12 @@
     <ClCompile Include="code\road.cpp">
       <Filter>road</Filter>
     </ClCompile>
+    <ClCompile Include="code\collision.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="code\road_manager.cpp">
+      <Filter>road</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -375,6 +381,12 @@
       <Filter>input</Filter>
     </ClInclude>
     <ClInclude Include="code\road.h">
+      <Filter>road</Filter>
+    </ClInclude>
+    <ClInclude Include="code\collision.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="code\road_manager.h">
       <Filter>road</Filter>
     </ClInclude>
   </ItemGroup>

@@ -27,6 +27,8 @@
 #include "input_keyboard.h"
 #include "player.h"
 #include "meshfield.h"
+#include "road.h"
+#include "road_manager.h"
 
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
@@ -155,6 +157,9 @@ HRESULT CGame::Init(void)
     CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
+
+    
+    CRoadManager::GetInstance()->AllConnect();
 
     return S_OK;
 }
