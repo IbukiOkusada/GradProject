@@ -60,6 +60,11 @@ namespace {
 	const float INER = (0.98f);		// 慣性
 	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
+
+	const float STIFFNESS = (11.0f); //剛性係数 一般的な設定値の範囲: 10 ～ 15（バイクのタイヤ）、15 ～ 30（レース用タイヤ）
+	const float SHAPE = (1.2f); //形状係数 一般的なバイクのタイヤでは、1.2 ～ 1.5くらいに設定する
+	const float PEAK_FORCE = (1000.0f);  //最大力 重量の軽いバイクのタイヤは、一般的に 1000 ～ 1500 N の範囲に設定
+	const float CURVATURE = (0.9f); //曲率調整係数 0～1。通常は 0.9～1.0
 }
 
 // 前方宣言
@@ -384,7 +389,21 @@ void CPlayer::Adjust(void)
 		}
 	}
 }
-
+//===============================================
+// 横力計算
+//===============================================
+float CPlayer::LateralForce(float fSlipAngle)
+{
+	float fY = PEAK_FORCE * sinf(SHAPE * atanf(STIFFNESS * fSlipAngle - CURVATURE * (STIFFNESS * fSlipAngle - atanf(STIFFNESS * fSlipAngle))));
+	return fY;
+}
+//===============================================
+// 縦力計算
+//===============================================
+float CPlayer::LongitudinalForce(float fSlipRatio)
+{
+	float fX = 
+}
 //===============================================
 // 状態管理
 //===============================================
