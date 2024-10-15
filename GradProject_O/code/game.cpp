@@ -27,6 +27,7 @@
 #include "input_keyboard.h"
 #include "player.h"
 #include "meshfield.h"
+#include "road.h"
 
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
