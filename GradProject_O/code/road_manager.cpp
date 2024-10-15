@@ -206,6 +206,9 @@ void CRoadManager::AllConnect(void)
 			pCheck = pCheckNext;
 		}
 
+		// テクスチャ設定
+		pRoad->BindTexture();
+
 		// 次に移動
 		pRoad = pNext;
 	}
