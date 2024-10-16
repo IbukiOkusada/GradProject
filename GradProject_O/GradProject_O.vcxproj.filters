@@ -243,6 +243,12 @@
     <ClCompile Include="code\car_manager.cpp">
       <Filter>car</Filter>
     </ClCompile>
+    <ClCompile Include="code\sample\sample_manager.cpp">
+      <Filter>sample</Filter>
+    </ClCompile>
+    <ClCompile Include="code\sample\sample.cpp">
+      <Filter>sample</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -409,6 +415,12 @@
     </ClInclude>
     <ClInclude Include="code\car_manager.h">
       <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\sample\sample_manager.h">
+      <Filter>sample</Filter>
+    </ClInclude>
+    <ClInclude Include="code\sample\sample.h">
+      <Filter>sample</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

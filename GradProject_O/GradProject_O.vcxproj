@@ -201,6 +201,8 @@
     <ClCompile Include="code\renderer.cpp" />
     <ClCompile Include="code\result.cpp" />
     <ClCompile Include="code\road_manager.cpp" />
+    <ClCompile Include="code\sample\sample.cpp" />
+    <ClCompile Include="code\sample\sample_manager.cpp" />
     <ClCompile Include="code\sample\sample_object.cpp" />
     <ClCompile Include="code\sample\sample_task.cpp" />
     <ClCompile Include="code\slow.cpp" />
@@ -258,6 +260,8 @@
     <ClInclude Include="code\renderer.h" />
     <ClInclude Include="code\result.h" />
     <ClInclude Include="code\road_manager.h" />
+    <ClInclude Include="code\sample\sample.h" />
+    <ClInclude Include="code\sample\sample_manager.h" />
     <ClInclude Include="code\sample\sample_object.h" />
     <ClInclude Include="code\sample\sample_task.h" />
     <ClInclude Include="code\slow.h" />
