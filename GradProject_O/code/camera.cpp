@@ -571,7 +571,8 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 	m_fLength += fDiff * CAMERA_LENGTHINER;
 
 	//目的の注視点の座標を取得
-	posRDest = D3DXVECTOR3(pos.x - sinf(rot.y) * 100.0f, pos.y + 20.0f + (40.0f * (1.0f - m_fZoom)), pos.z - cosf(rot.y) * 100.0f);
+	posRDest = D3DXVECTOR3(pos.x - sinf(rot.y) * 200.0f, pos.y + 20.0f + (40.0f * (1.0f - m_fZoom)), pos.z - cosf(rot.y) * 200.0f);
+	m_rot.y = -D3DX_PI * 0.5f;
 
 	//目的の視点の座標を獲得
 	posVDest = D3DXVECTOR3(
