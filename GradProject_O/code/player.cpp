@@ -38,6 +38,8 @@
 #include "input_gamepad.h"
 #include "camera_manager.h"
 #include "convenience.h"
+#include <iostream>
+#include <cmath>
 //===============================================
 // マクロ定義
 //===============================================
@@ -67,8 +69,8 @@ namespace {
 	const float CURVATURE = (0.9f); //曲率調整係数 0～1。通常は 0.9～1.0
 
 	const float MAX_RPM = (6750.0f); //最大回転数
-	const float IDOL_RPM = (1.0f); //最低回転数
-	const float ENGINE_INR = (0.1f); //エンジンの慣性
+	const float IDOL_RPM = (0.0f); //最低回転数
+	const float ENGINE_INR = (0.5f); //エンジンの慣性
 	const float TIRERADIUS = (0.35f); // タイヤの半径（m）
 	const float WHEEL_CIRCUMFERENCE = (2.0f * D3DX_PI * TIRERADIUS); // タイヤの円周（m）
 }
@@ -190,7 +192,6 @@ void CPlayer::Update(void)
 	if (m_pObj != nullptr)
 	{
 		D3DXVECTOR3 rot = GetRotation();
-		rot.y += D3DX_PI * 0.5f;
 		m_pObj->SetPosition(GetPosition());
 		m_pObj->SetRotation(rot);
 	}
@@ -205,7 +206,6 @@ void CPlayer::Update(void)
 	// エフェクト
 	{
 		D3DXVECTOR3 rot = GetRotation();
-		rot.y -= D3DX_PI * 0.5f;
 		D3DXVECTOR3 pos = GetPosition();
 		pos.x += sinf(rot.y) * 100.0f;
 		pos.z += cosf(rot.y) * 100.0f;
@@ -284,7 +284,7 @@ void CPlayer::Move(void)
 		m_fAccel = (float)pInputPad->GetRightTriggerPress(0) / 255;
 	}
 	Engine(m_fAccel);
-	LateralMove();
+//	LateralMove();
 	LongitudinalMove();
 
 	// 入力装置確認
@@ -294,7 +294,7 @@ void CPlayer::Move(void)
 
 
 	m_Info.pos += m_Info.move;
-	m_Info.move *= INER;//移動量の減衰
+	//m_Info.move *= INER;//移動量の減衰
 }
 
 //===============================================
@@ -403,6 +403,7 @@ float CPlayer::Engine(float fAccel)
 			m_fRPM = IDOL_RPM;  // アイドル回転数以下には下がらない
 		}
 	}
+	CManager::GetInstance()->GetDebugProc()->Print("RPM:%f\n", m_fRPM);
 	return m_fRPM;
 }
 //===============================================
@@ -446,7 +447,7 @@ void CPlayer::LongitudinalMove()
 {
 	// Pacejkaモデルで縦力を計算
 	float longitudinalForce = LongitudinalForce(CalculateSlipRatio());
-
+	CManager::GetInstance()->GetDebugProc()->Print("longitudinalForce:%f\n", longitudinalForce);
 	// 車両の加速度を計算
 	float acceleration = longitudinalForce / 140.0f;
 
@@ -465,9 +466,12 @@ float CPlayer::CalculateSlipRatio()
 	float wheelSpeed = (m_fRPM * WHEEL_CIRCUMFERENCE) / 60.0f; // m/s
 	float vehicleSpeed = GetDistance(VECTOR3_ZERO, GetMove());
 	// スリップ率を計算
-	float slipRatio = (wheelSpeed - vehicleSpeed) / wheelSpeed;
+	
+	float slipRatio = (wheelSpeed - vehicleSpeed) / my_max(wheelSpeed, 0.1f);;
 
 	return slipRatio;
+	
+	
 }
 //===============================================
 // スリップ角の計算

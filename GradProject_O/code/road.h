@@ -66,12 +66,14 @@ public:	// 誰でもアクセス可能
 	void BindTexture();
 
 	// メンバ関数(取得)
-	CRoad* GetNext(void) { return m_pNext; }
-	CRoad* GetPrev(void) { return m_pPrev; }
-	CObject3D* GetObj(void) { return m_pObj; }
-	SInfo& GetInfo(void) { return m_Info; }
-	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }
-	D3DXVECTOR2& GetSize(void) { return m_Info.size; }
+	CRoad* GetNext(void) { return m_pNext; }	// 次
+	CRoad* GetPrev(void) { return m_pPrev; }	// 前回
+	CObject3D* GetObj(void) { return m_pObj; }	// 描画オブジェ
+	SInfo& GetInfo(void) { return m_Info; }		// 基本情報
+	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }	// 座標
+	D3DXVECTOR2& GetSize(void) { return m_Info.size; }		// 幅高さ
+	CRoad* GetConnectRoad(const DIRECTION& dic) // 連結道路
+	{ return m_apConnectRoad[dic]; }
 
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
