@@ -7,6 +7,8 @@
 #include "car.h"
 #include "road.h"
 #include "road_manager.h"
+#include "manager.h"
+#include "debugproc.h"
 
 // ƒ}ƒNƒ’è‹`
 
@@ -19,9 +21,11 @@ CCar::CCar()
 	m_Info.pos = VECTOR3_ZERO;
 	m_Info.posOld = VECTOR3_ZERO;
 	m_Info.rot = VECTOR3_ZERO;
+	m_Info.rotDest = VECTOR3_ZERO;
 	m_Info.move = VECTOR3_ZERO;
 	m_Info.pRoadStart = nullptr;
 	m_Info.pRoadTarget = nullptr;
+	m_Info.speed = 0.0f;
 }
 
 //==========================================================
@@ -54,16 +58,11 @@ void CCar::Uninit(void)
 //==========================================================
 void CCar::Update(void)
 {
+	// ˆÚ“®æ‚ÌŒˆ’è
 	MoveRoad();
 
-	D3DXVECTOR3 vecTarget = m_Info.pos - m_Info.pRoadTarget->GetPosition();
-	m_Info.rot.y = atan2f(vecTarget.x, vecTarget.z);
-
-	m_Info.move.x += 0.05f * sinf(m_Info.rot.y);
-	m_Info.move.z += 0.05f * cosf(m_Info.rot.y);
-	//m_Info.pos += m_Info.move;
-
-	m_Info.pos += (m_Info.pRoadTarget->GetPosition() - m_Info.pos) * 0.1f;
+	// ˆÚ“®ˆ—
+	Move();
 
 	if (m_pObj != nullptr)
 	{
@@ -103,6 +102,79 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 }
 
 //==========================================================
+// ˆÚ“®ˆ—
+//==========================================================
+void CCar::Move()
+{
+	// Šp“x’²®
+	Rot();
+
+	m_Info.move.x = m_Info.speed * sinf(m_Info.rot.y);
+	m_Info.move.y = 0.0f;
+	m_Info.move.z = m_Info.speed * cosf(m_Info.rot.y);
+	m_Info.pos += m_Info.move;
+}
+
+//==========================================================
+// Šp“xŒˆ’èˆ—
+//==========================================================
+void CCar::Rot()
+{
+	float fRotMove, fRotDest, fRotDiff;				//Šp“x’²®—p•Ï”
+
+	D3DXVECTOR3 vecTarget = m_Info.pRoadTarget->GetPosition() - m_Info.pos;
+
+	fRotMove = m_Info.rot.y;
+	fRotDest = atan2f(vecTarget.x, vecTarget.z);
+	fRotDiff = fRotDest - fRotMove;
+
+	if (fRotDiff > D3DX_PI)
+	{
+		fRotDiff -= D3DX_PI * 2.0f;
+	}
+	else if (fRotDiff < -D3DX_PI)
+	{
+		fRotDiff += D3DX_PI * 2.0f;
+	}
+
+	//·•ª’Ç‰Á
+	fRotMove += fRotDiff * 0.1f;
+
+	//Šp“xˆê’v”»’è
+	if (fabsf(fRotDiff) >= 0.2f)
+	{
+		m_Info.speed = 7.0f;
+	}
+	else
+	{
+		m_Info.speed = 10.0f;
+	}
+
+	if (fRotMove > D3DX_PI)
+	{
+		fRotMove -= (D3DX_PI * 2);
+	}
+	else if (fRotMove <= -D3DX_PI)
+	{
+		fRotMove += (D3DX_PI * 2);
+	}
+
+	m_Info.rot.y = fRotMove;
+
+	if (m_Info.rot.y > D3DX_PI)
+	{
+		m_Info.rot.y -= (D3DX_PI * 2);
+	}
+	else if (m_Info.rot.y <= -D3DX_PI)
+	{
+		m_Info.rot.y += (D3DX_PI * 2);
+	}
+
+	CManager::GetInstance()->GetDebugProc()->Print("ŽÔ‚Ì–Ú•WŠp“x          [ %f ]\n", m_Info.rotDest.y);
+	CManager::GetInstance()->GetDebugProc()->Print("ŽÔ‚ÌŠp“x              [ %f ]\n", m_Info.rot.y);
+}
+
+//==========================================================
 // “¹ˆÚ“®ˆ—
 //==========================================================
 void CCar::MoveRoad()
@@ -111,7 +183,8 @@ void CCar::MoveRoad()
 		SearchRoad();
 
 	float length = D3DXVec3Length(&(m_Info.pRoadTarget->GetPosition() - m_Info.pos));
-	if (length < 250.0f)
+	CManager::GetInstance()->GetDebugProc()->Print("ŽÔ‚Ì–Ú“I’n‚Ö‚Ì‹——£    [ %f ]\n", length);
+	if (length < 100.0f)
 		ReachRoad();
 }
 

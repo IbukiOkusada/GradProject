@@ -30,10 +30,12 @@ private:	// 自分だけがアクセス可能
 	{
 		D3DXVECTOR3 pos;		// 位置
 		D3DXVECTOR3 rot;		// 向き
+		D3DXVECTOR3 rotDest;	// 目標向き
 		D3DXVECTOR3 move;		// 移動量
 		D3DXVECTOR3 posOld;		// 設定位置
 		CRoad* pRoadStart;		// 移動開始地点
 		CRoad* pRoadTarget;		// 目標位置
+		float speed;
 	};
 
 public:	// 誰でもアクセス可能
@@ -65,6 +67,8 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void Move();
+	void Rot();
 	void MoveRoad();
 	void SearchRoad();
 	void ReachRoad();
