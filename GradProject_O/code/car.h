@@ -16,6 +16,7 @@
 class CWaist;
 class CCharacter;
 class CObjectX;
+class CRoad;
 
 //==========================================================
 // サンプルのクラス定義
@@ -31,6 +32,8 @@ private:	// 自分だけがアクセス可能
 		D3DXVECTOR3 rot;		// 向き
 		D3DXVECTOR3 move;		// 移動量
 		D3DXVECTOR3 posOld;		// 設定位置
+		CRoad* pRoadStart;		// 移動開始地点
+		CRoad* pRoadTarget;		// 目標位置
 	};
 
 public:	// 誰でもアクセス可能
@@ -42,7 +45,7 @@ public:	// 誰でもアクセス可能
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	static CCar*Create(void);
+	static CCar*Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move);
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }
@@ -62,6 +65,9 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void MoveRoad();
+	void SearchRoad();
+	void ReachRoad();
 
 	// メンバ変数
 	CCar* m_pPrev;			// 前のオブジェクトへのポインタ

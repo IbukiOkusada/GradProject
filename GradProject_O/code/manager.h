@@ -124,7 +124,7 @@ private:	// 自分だけがアクセス可能
 	CSound *m_pSound;		// サウンドのポインタ
 	CSlow *m_pSlow;			// スローのポインタ
 	CScene *m_pScene;		// シーンのポインタ
-	CFade *m_pFade;			// フェードのポインタ
+	CFade* m_pFade;			// フェードのポインタ
 	static CManager *m_pManager;	// マネージャーのポインタ
 };
 

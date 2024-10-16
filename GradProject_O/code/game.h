@@ -79,7 +79,7 @@ private:
 	void SetRoad();
 
 	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
-	CPlayer **m_ppPlayer;		// プレイヤーのポインタ
+	CPlayer** m_ppPlayer;		// プレイヤーのポインタ
 	CMultiCamera **m_ppCamera;	// カメラのポインタ
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
 	CTime *m_pTimer;			// タイマー

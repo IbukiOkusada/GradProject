@@ -26,6 +26,7 @@
 #include "camera_manager.h"
 #include "player_manager.h"
 #include "road_manager.h"
+#include "car_manager.h"
 
 //===============================================
 // Ã“Iƒƒ“ƒo•Ï”
@@ -337,6 +338,7 @@ void CManager::ManagerRelease(void)
 	CObjectManager::Release();
 	CCameraManager::Release();
 	CPlayerManager::Release();
+	CCarManager::Release();
 	CRoadManager::Release();
 }
 

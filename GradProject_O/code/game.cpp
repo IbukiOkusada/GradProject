@@ -29,6 +29,8 @@
 #include "meshfield.h"
 #include "road.h"
 #include "road_manager.h"
+#include "car.h"
+#include "car_manager.h"
 
 // ñ≥ñºñºëOãÛä‘ÇíËã`
 namespace {
@@ -157,6 +159,9 @@ HRESULT CGame::Init(void)
     CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
+
+    CCar* pCar = CCar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    CCarManager::GetInstance()->ListIn(pCar);
 
     // ìπê∂ê¨
     SetRoad();
