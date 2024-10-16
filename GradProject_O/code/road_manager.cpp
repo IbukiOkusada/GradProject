@@ -47,7 +47,14 @@ HRESULT CRoadManager::Init(void)
 //==========================================================
 void CRoadManager::Uninit(void)
 {
+	// 親クラスの終了処理
+	CListManager::Uninit();
 
+	// インスタンスの廃棄
+	if (m_pInstance != nullptr) {	// インスタンスを確保されている
+		delete m_pInstance;
+		m_pInstance = nullptr;
+	}
 }
 
 //==========================================================
@@ -77,8 +84,6 @@ void CRoadManager::Release(void)
 {
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		m_pInstance->Uninit();
-		delete m_pInstance;
-		m_pInstance = nullptr;
 	}
 }
 

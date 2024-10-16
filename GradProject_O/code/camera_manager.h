@@ -7,13 +7,15 @@
 #ifndef _CAMERAMANAGER_H_		// このマクロが定義されていない場合
 #define _CAMERAMANAGER_H_		// 二重インクルード防止用マクロを定義
 
+#include "list_manager.h"
+
 // 前方宣言
 class CCamera;
 
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
-class CCameraManager
+class CCameraManager : public CListManager
 {
 private:
 

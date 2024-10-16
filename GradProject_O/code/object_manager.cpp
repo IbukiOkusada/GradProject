@@ -11,7 +11,7 @@
 #include "manager.h"
 #include <assert.h>
 
-CObjectManager *CObjectManager::m_pInstance = NULL;
+CObjectManager *CObjectManager::m_pInstance = nullptr;
 
 //==========================================================
 // コンストラクタ
@@ -21,8 +21,8 @@ CObjectManager::CObjectManager()
 	// 値のクリア
 	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
 	{
-		m_apTop[nCntPri] = NULL;	// 先頭がない状態にする
-		m_apCur[nCntPri] = NULL;	// 最後尾がない状態にする
+		m_apTop[nCntPri] = nullptr;	// 先頭がない状態にする
+		m_apCur[nCntPri] = nullptr;	// 最後尾がない状態にする
 		m_aPriNumAll[nCntPri] = 0;
 	}
 
@@ -62,8 +62,18 @@ HRESULT CObjectManager::Init(void)
 //==========================================================
 void CObjectManager::Uninit(void)
 {
+	// 親クラスの終了処理
+	CListManager::Uninit();
+
 	// リストの全廃棄
 	ReleaseAll();
+
+	// インスタンスの廃棄
+	if (m_pInstance != nullptr)
+	{
+		delete m_pInstance;
+		m_pInstance = nullptr;
+	}
 }
 
 //==========================================================
@@ -100,7 +110,7 @@ void CObjectManager::ReleaseAll(void)
 	{
 		CObject *pObject = m_apTop[nCntPri];	// 先頭を取得
 
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{// 使用されていない状態まで
 
 			CObject *pObjectNext = pObject->GetNext();	// 次のオブジェクトへのポインタを取得
@@ -128,7 +138,7 @@ void CObjectManager::DrawAll(void)
 	{
 		CObject *pObject = m_apTop[nCntPri];	// 先頭を取得
 
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{// 使用されていない状態まで
 
 			CObject *pObjectNext = pObject->GetNext();	// 次のオブジェクトへのポインタを取得
@@ -153,7 +163,7 @@ void CObjectManager::DeathCheck(void)
 	{
 		CObject *pObject = m_apTop[nCntPri];	// 先頭を取得
 
-		while (pObject != NULL)
+		while (pObject != nullptr)
 		{// 使用されていない状態まで
 			CObject *pObjectNext = pObject->GetNext();	// 次のオブジェクトへのポインタを取得
 
@@ -162,44 +172,44 @@ void CObjectManager::DeathCheck(void)
 				// リストから自分自身を削除する
 				if (m_apTop[nCntPri] == pObject)
 				{// 自身が先頭
-					if (pObject->GetNext() != NULL)
+					if (pObject->GetNext() != nullptr)
 					{// 次が存在している
 						m_apTop[nCntPri] = pObject->GetNext();	// 次を先頭にする
-						m_apTop[nCntPri]->SetPrev(NULL);	// 次の前のポインタを覚えていないようにする
+						m_apTop[nCntPri]->SetPrev(nullptr);	// 次の前のポインタを覚えていないようにする
 					}
 					else
 					{// 存在していない
-						m_apTop[nCntPri] = NULL;	// 先頭がない状態にする
-						m_apCur[nCntPri] = NULL;	// 最後尾がない状態にする
+						m_apTop[nCntPri] = nullptr;	// 先頭がない状態にする
+						m_apCur[nCntPri] = nullptr;	// 最後尾がない状態にする
 					}
 				}
 				else if (m_apCur[nCntPri] == pObject)
 				{// 自身が最後尾
-					if (pObject->GetPrev() != NULL)
+					if (pObject->GetPrev() != nullptr)
 					{// 次が存在している
 						m_apCur[nCntPri] = pObject->GetPrev();		// 前を最後尾にする
-						m_apCur[nCntPri]->SetNext(NULL);			// 前の次のポインタを覚えていないようにする
+						m_apCur[nCntPri]->SetNext(nullptr);			// 前の次のポインタを覚えていないようにする
 					}
 					else
 					{// 存在していない
-						m_apTop[nCntPri] = NULL;	// 先頭がない状態にする
-						m_apCur[nCntPri] = NULL;	// 最後尾がない状態にする
+						m_apTop[nCntPri] = nullptr;	// 先頭がない状態にする
+						m_apCur[nCntPri] = nullptr;	// 最後尾がない状態にする
 					}
 				}
 				else
 				{
-					if (pObject->GetNext() != NULL)
+					if (pObject->GetNext() != nullptr)
 					{
 						pObject->GetNext()->SetPrev(pObject->GetPrev());	// 自身の次に前のポインタを覚えさせる
 					}
-					if (pObject->GetPrev() != NULL)
+					if (pObject->GetPrev() != nullptr)
 					{
 						pObject->GetPrev()->SetNext(pObject->GetNext());	// 自身の前に次のポインタを覚えさせる
 					}
 				}
 
 				delete pObject;	// メモリの開放
-				pObject = NULL;
+				pObject = nullptr;
 			}
 
 			if (pObject == nullptr)
@@ -220,7 +230,7 @@ void CObjectManager::ListIn(CObject *pObject)
 {
 	int nPri = pObject->GetPri();
 
-	if (m_apTop[nPri] != NULL)
+	if (m_apTop[nPri] != nullptr)
 	{// 先頭が存在している場合
 		m_apCur[nPri]->SetNext(pObject);	// 現在最後尾のオブジェクトのポインタにつなげる
 		pObject->SetPrev(m_apCur[nPri]);
@@ -255,10 +265,8 @@ CObjectManager* CObjectManager::GetInstance()
 //===============================================
 void CObjectManager::Release(void)
 {
-	if (m_pInstance != NULL)
+	if (m_pInstance != nullptr)
 	{
 		m_pInstance->Uninit();
-		delete m_pInstance;
-		m_pInstance = NULL;
 	}
 }

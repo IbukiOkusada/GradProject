@@ -79,6 +79,9 @@
     <Filter Include="car">
       <UniqueIdentifier>{0a8c99d7-edcf-4a8e-bd6b-e7e245bf06c3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="manager">
+      <UniqueIdentifier>{574eb47e-9fd1-433d-ac87-93bb5d5c6b07}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -248,6 +251,12 @@
     </ClCompile>
     <ClCompile Include="code\sample\sample.cpp">
       <Filter>sample</Filter>
+    </ClCompile>
+    <ClCompile Include="code\manager_registry.cpp">
+      <Filter>manager</Filter>
+    </ClCompile>
+    <ClCompile Include="code\list_manager.cpp">
+      <Filter>manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -421,6 +430,12 @@
     </ClInclude>
     <ClInclude Include="code\sample\sample.h">
       <Filter>sample</Filter>
+    </ClInclude>
+    <ClInclude Include="code\manager_registry.h">
+      <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="code\list_manager.h">
+      <Filter>manager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
