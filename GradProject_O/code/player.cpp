@@ -467,7 +467,7 @@ float CPlayer::CalculateSlipRatio()
 	float vehicleSpeed = GetDistance(VECTOR3_ZERO, GetMove());
 	// スリップ率を計算
 	
-	float slipRatio = (wheelSpeed - vehicleSpeed) / std::max(wheelSpeed, 0.1f);;
+	float slipRatio = (wheelSpeed - vehicleSpeed) / my_max(wheelSpeed, 0.1f);;
 
 	return slipRatio;
 	
