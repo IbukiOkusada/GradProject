@@ -7,13 +7,15 @@
 #ifndef _ROADMANAGER_H_		// このマクロが定義されていない場合
 #define _ROADMANAGER_H_		// 二重インクルード防止用マクロを定義
 
+#include "list_manager.h"
+
 // 前方宣言
 class CRoad;
 
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
-class CRoadManager
+class CRoadManager : public CListManager
 {
 private:
 

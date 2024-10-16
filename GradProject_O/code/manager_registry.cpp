@@ -1,19 +1,19 @@
 //==========================================================
 //
-// カメラマネージャー [camera_manager.cpp]
+// サンプルマネージャー [sample_manager.cpp]
 // Author : Ibuki Okusada
 //
 //==========================================================
-#include "camera_manager.h"
-#include "camera.h"
+#include "manager_registry.h"
+#include "list_manager.h"
 
 // 静的メンバ変数宣言
-CCameraManager *CCameraManager::m_pInstance = nullptr;	// インスタンス
+CManagerRegistry* CManagerRegistry::m_pInstance = nullptr;	// インスタンス
 
 //==========================================================
 // コンストラクタ
 //==========================================================
-CCameraManager::CCameraManager()
+CManagerRegistry::CManagerRegistry()
 {
 	// 値のクリア
 	m_pCur = nullptr;
@@ -24,7 +24,7 @@ CCameraManager::CCameraManager()
 //==========================================================
 // デストラクタ
 //==========================================================
-CCameraManager::~CCameraManager()
+CManagerRegistry::~CManagerRegistry()
 {
 
 }
@@ -32,7 +32,7 @@ CCameraManager::~CCameraManager()
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CCameraManager::Init(void)
+HRESULT CManagerRegistry::Init(void)
 {
 	return S_OK;
 }
@@ -40,22 +40,22 @@ HRESULT CCameraManager::Init(void)
 //==========================================================
 // 終了処理
 //==========================================================
-void CCameraManager::Uninit(void)
+void CManagerRegistry::Uninit(void)
 {
-	// 終了処理
-	CListManager::Uninit();
+	CListManager* pManager = m_pTop;
 
-	// インスタンスの廃棄
-	if (m_pInstance != nullptr) {	// インスタンスを確保されている
-		delete m_pInstance;
-		m_pInstance = nullptr;
+	while (pManager != nullptr)
+	{
+		CListManager* pNext = pManager->GetNext();
+		pManager->Uninit();
+		pManager = pNext;
 	}
 }
 
 //==========================================================
 // 更新処理
 //==========================================================
-void CCameraManager::Update(void)
+void CManagerRegistry::Update(void)
 {
 
 }
@@ -63,10 +63,10 @@ void CCameraManager::Update(void)
 //==========================================================
 // インスタンスを確保
 //==========================================================
-CCameraManager *CCameraManager::GetInstance(void)
+CManagerRegistry* CManagerRegistry::GetInstance(void)
 {
 	if (m_pInstance == nullptr) {	// 使われていない
-		m_pInstance = new CCameraManager;
+		m_pInstance = DEBUG_NEW CManagerRegistry;
 	}
 
 	return m_pInstance;
@@ -75,28 +75,30 @@ CCameraManager *CCameraManager::GetInstance(void)
 //==========================================================
 // インスタンスをリリース
 //==========================================================
-void CCameraManager::Release(void)
+void CManagerRegistry::Release(void)
 {
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		m_pInstance->Uninit();
+		delete m_pInstance;
+		m_pInstance = nullptr;
 	}
 }
 
 //==========================================================
 // リストに挿入
 //==========================================================
-void CCameraManager::ListIn(CCamera *pCamera)
+void CManagerRegistry::ListIn(CListManager* pListManager)
 {
 	if (m_pTop != nullptr)
 	{// 先頭が存在している場合
-		m_pCur->SetNext(pCamera);	// 現在最後尾のオブジェクトのポインタにつなげる
-		pCamera->SetPrev(m_pCur);
-		m_pCur = pCamera;	// 自分自身が最後尾になる
+		m_pCur->SetNext(pListManager);	// 現在最後尾のオブジェクトのポインタにつなげる
+		pListManager->SetPrev(m_pCur);
+		m_pCur = pListManager;	// 自分自身が最後尾になる
 	}
 	else
 	{// 存在しない場合
-		m_pTop = pCamera;	// 自分自身が先頭になる
-		m_pCur = pCamera;	// 自分自身が最後尾になる
+		m_pTop = pListManager;	// 自分自身が先頭になる
+		m_pCur = pListManager;	// 自分自身が最後尾になる
 	}
 
 	m_nNum++;
@@ -105,14 +107,14 @@ void CCameraManager::ListIn(CCamera *pCamera)
 //==========================================================
 // リストから外す
 //==========================================================
-void CCameraManager::ListOut(CCamera *pCamera)
+void CManagerRegistry::ListOut(CListManager* pListManager)
 {
 	// リストから自分自身を削除する
-	if (m_pTop == pCamera)
+	if (m_pTop == pListManager)
 	{// 自身が先頭
-		if (pCamera->GetNext() != nullptr)
+		if (pListManager->GetNext() != nullptr)
 		{// 次が存在している
-			m_pTop = pCamera->GetNext();	// 次を先頭にする
+			m_pTop = pListManager->GetNext();	// 次を先頭にする
 			m_pTop->SetPrev(nullptr);	// 次の前のポインタを覚えていないようにする
 		}
 		else
@@ -121,11 +123,11 @@ void CCameraManager::ListOut(CCamera *pCamera)
 			m_pCur = nullptr;	// 最後尾がない状態にする
 		}
 	}
-	else if (m_pCur == pCamera)
+	else if (m_pCur == pListManager)
 	{// 自身が最後尾
-		if (pCamera->GetPrev() != nullptr)
+		if (pListManager->GetPrev() != nullptr)
 		{// 次が存在している
-			m_pCur = pCamera->GetPrev();		// 前を最後尾にする
+			m_pCur = pListManager->GetPrev();		// 前を最後尾にする
 			m_pCur->SetNext(nullptr);			// 前の次のポインタを覚えていないようにする
 		}
 		else
@@ -136,13 +138,13 @@ void CCameraManager::ListOut(CCamera *pCamera)
 	}
 	else
 	{
-		if (pCamera->GetNext() != nullptr)
+		if (pListManager->GetNext() != nullptr)
 		{
-			pCamera->GetNext()->SetPrev(pCamera->GetPrev());	// 自身の次に前のポインタを覚えさせる
+			pListManager->GetNext()->SetPrev(pListManager->GetPrev());	// 自身の次に前のポインタを覚えさせる
 		}
-		if (pCamera->GetPrev() != nullptr)
+		if (pListManager->GetPrev() != nullptr)
 		{
-			pCamera->GetPrev()->SetNext(pCamera->GetNext());	// 自身の前に次のポインタを覚えさせる
+			pListManager->GetPrev()->SetNext(pListManager->GetNext());	// 自身の前に次のポインタを覚えさせる
 		}
 	}
 

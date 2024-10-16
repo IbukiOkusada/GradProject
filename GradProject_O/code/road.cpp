@@ -30,6 +30,8 @@ CRoad::CRoad(const SInfo& info)
 	m_Info = info;
 	m_pObj = nullptr;
 	m_nIdx = -1;
+	m_pNext = nullptr;
+	m_pPrev = nullptr;
 
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)
 	{
@@ -99,7 +101,7 @@ CRoad* CRoad::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXV
 {
 	// ¶¬
 	CRoad* pRoad = nullptr;
-	pRoad = new CRoad(SInfo(pos, rot, size));
+	pRoad = DEBUG_NEW CRoad(SInfo(pos, rot, size));
 
 	// ¶¬¬Œ÷
 	if (pRoad != nullptr)

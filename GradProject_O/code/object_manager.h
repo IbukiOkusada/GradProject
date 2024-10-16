@@ -7,6 +7,8 @@
 #ifndef _OBJECT_MANAGER_H_	// このマクロが定義されていない場合
 #define _OBJECT_MANAGER_H_	// 二重インクルード防止用マクロを定義
 
+#include "list_manager.h"
+
 // マクロ定義
 #define NUM_PRIORITY	(8)		// 優先順位管理数
 
@@ -16,7 +18,7 @@ class CObject;
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
-class CObjectManager
+class CObjectManager : public CListManager
 {
 private:
 	CObjectManager();	// コンストラクタ

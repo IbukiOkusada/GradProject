@@ -42,7 +42,15 @@ HRESULT CSampleManager::Init(void)
 //==========================================================
 void CSampleManager::Uninit(void)
 {
-
+	// 親クラス終了
+	CListManager::Uninit();
+	
+	// インスタンス廃棄
+	if (m_pInstance != nullptr)
+	{
+		delete m_pInstance;
+		m_pInstance = nullptr;
+	}
 }
 
 //==========================================================
@@ -72,8 +80,6 @@ void CSampleManager::Release(void)
 {
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		m_pInstance->Uninit();
-		delete m_pInstance;
-		m_pInstance = nullptr;
 	}
 }
 

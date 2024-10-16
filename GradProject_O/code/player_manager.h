@@ -7,13 +7,15 @@
 #ifndef _PLAYERMANAGER_H_		// このマクロが定義されていない場合
 #define _PLAYERMANAGER_H_		// 二重インクルード防止用マクロを定義
 
+#include "list_manager.h"
+
 // 前方宣言
 class CPlayer;
 
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
-class CPlayerManager
+class CPlayerManager : public CListManager
 {
 private:
 

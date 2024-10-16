@@ -27,6 +27,7 @@
 #include "player_manager.h"
 #include "road_manager.h"
 #include "car_manager.h"
+#include "manager_registry.h"
 
 //===============================================
 // 静的メンバ変数
@@ -286,8 +287,8 @@ void CManager::Uninit(void)
 		m_pModelFile = NULL;	// 使用していない状態にする
 	}
 
-	// 各種マネージャーの廃棄
-	ManagerRelease();
+	// 各種マネージャの破棄
+	CManagerRegistry::Release();
 }
 
 //===================================================
@@ -326,20 +327,6 @@ void CManager::Draw(void)
 	{
 		m_pScene->Draw();
 	}
-}
-
-//===================================================
-// 描画処理
-//===================================================
-void CManager::ManagerRelease(void)
-{
-	//各種マネージャの破棄
-	CTaskManager::Release();
-	CObjectManager::Release();
-	CCameraManager::Release();
-	CPlayerManager::Release();
-	CCarManager::Release();
-	CRoadManager::Release();
 }
 
 //===================================================

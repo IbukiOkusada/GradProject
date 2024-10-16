@@ -10,10 +10,12 @@
 // 前方宣言
 class CSample;
 
+#include "../list_manager.h"
+
 //==========================================================
 // サンプルマネージャーのクラス定義
 //==========================================================
-class CSampleManager
+class CSampleManager : public CListManager
 {
 private:
 

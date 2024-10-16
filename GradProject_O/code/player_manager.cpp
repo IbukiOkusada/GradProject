@@ -42,7 +42,14 @@ HRESULT CPlayerManager::Init(void)
 //==========================================================
 void CPlayerManager::Uninit(void)
 {
+	// リストマネージャー廃棄
+	CListManager::Uninit();
 
+	// インスタンス廃棄
+	if (m_pInstance != nullptr) {
+		delete m_pInstance;
+		m_pInstance = nullptr;
+	}
 }
 
 //==========================================================
@@ -72,8 +79,6 @@ void CPlayerManager::Release(void)
 {
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		m_pInstance->Uninit();
-		delete m_pInstance;
-		m_pInstance = nullptr;
 	}
 }
 

@@ -173,8 +173,10 @@
     <ClCompile Include="code\input_keyboard.cpp" />
     <ClCompile Include="code\input_mouse.cpp" />
     <ClCompile Include="code\light.cpp" />
+    <ClCompile Include="code\list_manager.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
+    <ClCompile Include="code\manager_registry.cpp" />
     <ClCompile Include="code\mesh.cpp" />
     <ClCompile Include="code\meshballoon.cpp" />
     <ClCompile Include="code\meshcylinder.cpp" />
@@ -234,8 +236,10 @@
     <ClInclude Include="code\input_keyboard.h" />
     <ClInclude Include="code\input_mouse.h" />
     <ClInclude Include="code\light.h" />
+    <ClInclude Include="code\list_manager.h" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />
+    <ClInclude Include="code\manager_registry.h" />
     <ClInclude Include="code\mesh.h" />
     <ClInclude Include="code\meshballoon.h" />
     <ClInclude Include="code\meshcylinder.h" />

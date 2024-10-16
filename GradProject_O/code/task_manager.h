@@ -7,13 +7,15 @@
 #ifndef _TASK_MANAGER_H_	// このマクロが定義されていない場合
 #define _TASK_MANAGER_H_	// 二重インクルード防止用マクロを定義
 
+#include "list_manager.h"
+
 // 前方宣言
 class CTask;
 
 //==========================================================
-// サンプルのクラス定義
+// タスクマネージャーのクラス定義
 //==========================================================
-class CTaskManager
+class CTaskManager : public CListManager
 {
 private:
 	CTaskManager();	// コンストラクタ
