@@ -74,6 +74,7 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR2& GetSize(void) { return m_Info.size; }		// 幅高さ
 	CRoad* GetConnectRoad(const DIRECTION& dic) // 連結道路
 	{ return m_apConnectRoad[dic]; }
+	TYPE GetType(void) { return m_Type; }
 
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
@@ -92,6 +93,7 @@ private:	// 自分だけがアクセス可能
 	CObject3D* m_pObj;
 	int m_nIdx;
 	CRoad* m_apConnectRoad[DIRECTION::DIC_MAX];	// 連結した道
+	TYPE m_Type;
 };
 
 #endif

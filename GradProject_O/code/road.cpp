@@ -32,6 +32,7 @@ CRoad::CRoad(const SInfo& info)
 	m_nIdx = -1;
 	m_pNext = nullptr;
 	m_pPrev = nullptr;
+	m_Type = TYPE_MAX;
 
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)
 	{
@@ -129,7 +130,6 @@ void CRoad::Connect(CRoad* pRoad, const DIRECTION dic)
 //==========================================================
 void CRoad::BindTexture()
 {
-	int idx = -1;
 	int num = 0;
 	CTexture* pTex = CManager::GetInstance()->GetTexture();
 
@@ -141,29 +141,29 @@ void CRoad::BindTexture()
 	}
 
 	// 割り当て
-	idx = num;
+	m_Type = static_cast<TYPE>(num);
 
 	// 直線かどうかを確認
 	if (num == 2 && 
 		((m_apConnectRoad[DIC_UP] != nullptr && m_apConnectRoad[DIC_DOWN] != nullptr) || 
 		(m_apConnectRoad[DIC_LEFT] != nullptr && m_apConnectRoad[DIC_RIGHT] != nullptr)))
 	{
-		idx = TYPE_NONE;
+		m_Type = TYPE_NONE;
 	}
 	else if (num == 1)
 	{
-		idx = TYPE_STOP;
+		m_Type = TYPE_STOP;
 	}
 
 
 	// 範囲外ならテクスチャを割り当てない
-	if (idx < 0) { return; }
+	if (m_Type >= TYPE_MAX) { return; }
 
 	if (m_pObj == nullptr) { return; }
-	m_pObj->BindTexture(pTex->Regist(FILENAME[idx]));
+	m_pObj->BindTexture(pTex->Regist(FILENAME[m_Type]));
 
 	// 向き設定
-	Rotation(static_cast<TYPE>(idx));
+	Rotation(m_Type);
 }
 
 //==========================================================
