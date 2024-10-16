@@ -198,12 +198,12 @@ bool IsOnSquare(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3 vtx3, D3DXVECTOR
 //========================================
 // OBBの平面に対する押し戻し判定処理
 //========================================
-D3DXVECTOR3 CollideOBBToPlane(D3DXVECTOR3* posOBB, D3DXVECTOR3 vecAxial, D3DXVECTOR3 posPlane, D3DXVECTOR3 vecNorPlane)
+D3DXVECTOR3 CollideOBBToPlane(D3DXVECTOR3* posOBB, D3DXVECTOR3 vecOBBAxial, D3DXVECTOR3 posPlane, D3DXVECTOR3 vecNorPlane)
 {
 	// 各方向軸ベクトル計算
-	D3DXVECTOR3 axis1 = D3DXVECTOR3(vecAxial.x, 0.0f, 0.0f);
-	D3DXVECTOR3 axis2 = D3DXVECTOR3(0.0f, vecAxial.y, 0.0f);
-	D3DXVECTOR3 axis3 = D3DXVECTOR3(0.0f, 0.0f, vecAxial.z);
+	D3DXVECTOR3 axis1 = D3DXVECTOR3(vecOBBAxial.x, 0.0f, 0.0f);
+	D3DXVECTOR3 axis2 = D3DXVECTOR3(0.0f, vecOBBAxial.y, 0.0f);
+	D3DXVECTOR3 axis3 = D3DXVECTOR3(0.0f, 0.0f, vecOBBAxial.z);
 
 	vecNorPlane.y = 0.0f;
 
