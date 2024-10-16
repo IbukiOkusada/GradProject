@@ -159,6 +159,8 @@
     <ClCompile Include="code\billboard.cpp" />
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\camera_manager.cpp" />
+    <ClCompile Include="code\car.cpp" />
+    <ClCompile Include="code\car_manager.cpp" />
     <ClCompile Include="code\character.cpp" />
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\convenience.cpp" />
@@ -216,6 +218,8 @@
     <ClInclude Include="code\billboard.h" />
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\camera_manager.h" />
+    <ClInclude Include="code\car.h" />
+    <ClInclude Include="code\car_manager.h" />
     <ClInclude Include="code\character.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\convenience.h" />
