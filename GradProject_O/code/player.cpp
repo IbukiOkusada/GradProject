@@ -192,7 +192,6 @@ void CPlayer::Update(void)
 	if (m_pObj != nullptr)
 	{
 		D3DXVECTOR3 rot = GetRotation();
-		rot.y += D3DX_PI * 0.5f;
 		m_pObj->SetPosition(GetPosition());
 		m_pObj->SetRotation(rot);
 	}
@@ -207,7 +206,6 @@ void CPlayer::Update(void)
 	// エフェクト
 	{
 		D3DXVECTOR3 rot = GetRotation();
-		rot.y -= D3DX_PI * 0.5f;
 		D3DXVECTOR3 pos = GetPosition();
 		pos.x += sinf(rot.y) * 100.0f;
 		pos.z += cosf(rot.y) * 100.0f;
