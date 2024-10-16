@@ -76,6 +76,9 @@
     <Filter Include="road">
       <UniqueIdentifier>{bf788a71-3783-4bbf-891b-1372a05cedbe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="car">
+      <UniqueIdentifier>{0a8c99d7-edcf-4a8e-bd6b-e7e245bf06c3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -233,6 +236,18 @@
     </ClCompile>
     <ClCompile Include="code\convenience.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\car.cpp">
+      <Filter>car</Filter>
+    </ClCompile>
+    <ClCompile Include="code\car_manager.cpp">
+      <Filter>car</Filter>
+    </ClCompile>
+    <ClCompile Include="code\sample\sample_manager.cpp">
+      <Filter>sample</Filter>
+    </ClCompile>
+    <ClCompile Include="code\sample\sample.cpp">
+      <Filter>sample</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -394,6 +409,18 @@
     </ClInclude>
     <ClInclude Include="code\convenience.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\car.h">
+      <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\car_manager.h">
+      <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\sample\sample_manager.h">
+      <Filter>sample</Filter>
+    </ClInclude>
+    <ClInclude Include="code\sample\sample.h">
+      <Filter>sample</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
