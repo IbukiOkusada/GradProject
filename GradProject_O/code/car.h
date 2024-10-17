@@ -73,6 +73,7 @@ private:	// 自分だけがアクセス可能
 	void MoveRoad();
 	void SearchRoad();
 	void ReachRoad();
+	void Collision();
 
 	// メンバ変数
 	CCar* m_pPrev;			// 前のオブジェクトへのポインタ

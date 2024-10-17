@@ -5,21 +5,24 @@
 //
 //==========================================================
 #include "car.h"
+#include "car_manager.h"
 #include "road.h"
 #include "road_manager.h"
 #include "manager.h"
 #include "debugproc.h"
+#include "collision.h"
 
 // マクロ定義
 
 // 無名名前空間を定義
 namespace
 {
-	const float SPEED_STREET = (12.0f);	// 直進時の速度
-	const float SPEED_CURVE = (5.0f);	// カーブ時の速度
-	const float SPEED_INER = (0.05f);	// 速度の慣性
-	const float ROT_MULTI = (0.09f);	// 向き補正倍率
-	const float ROT_CURVE = (0.2f);	// カーブ判定角度
+	const float SPEED_STREET = (15.0f);		// 直進時の速度
+	const float SPEED_CURVE = (10.0f);		// カーブ時の速度
+	const float SPEED_INER = (0.05f);		// 速度の慣性
+	const float ROT_MULTI = (0.06f);		// 向き補正倍率
+	const float ROT_CURVE = (0.15f);		// カーブ判定角度
+	const float LENGTH_POINT = (200.0f);	// 到達判定距離
 }
 
 //==========================================================
@@ -61,6 +64,15 @@ HRESULT CCar::Init(void)
 //==========================================================
 void CCar::Uninit(void)
 {
+	// 描画オブジェクトを廃棄
+	if (m_pObj != nullptr)
+	{
+		m_pObj->Uninit();
+		m_pObj = nullptr;
+	}
+
+	CCarManager::GetInstance()->ListOut(this);
+
 	Release();
 }
 
@@ -69,6 +81,8 @@ void CCar::Uninit(void)
 //==========================================================
 void CCar::Update(void)
 {
+	m_Info.posOld = m_Info.pos;
+
 	// 移動先の決定
 	MoveRoad();
 
@@ -196,7 +210,7 @@ void CCar::MoveRoad()
 		SearchRoad();
 
 	float length = D3DXVec3Length(&(m_Info.pRoadTarget->GetPosition() - m_Info.pos));
-	if (length < 100.0f)
+	if (length < LENGTH_POINT)
 		ReachRoad();
 }
 
@@ -264,4 +278,26 @@ void CCar::ReachRoad()
 
 	m_Info.pRoadStart = m_Info.pRoadTarget;
 	m_Info.pRoadTarget = pRoadNext;
+}
+
+//==========================================================
+// 当たり判定処理
+//==========================================================
+void CCar::Collision()
+{
+	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
+
+	while (pObjectX != nullptr)
+	{// 使用されていない状態まで
+
+		CObjectX* pObjectXNext = pObjectX->GetNext();	// 次のオブジェクトへのポインタを取得
+
+		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
+		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
+		D3DXVECTOR3 sizeMax = VECTOR3_ZERO;
+		D3DXVECTOR3 sizeMin = VECTOR3_ZERO;
+		collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX,(sizeMax + sizeMin) * 0.5f);
+
+		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
+	}
 }
