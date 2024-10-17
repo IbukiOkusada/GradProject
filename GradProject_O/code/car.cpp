@@ -301,7 +301,9 @@ void CCar::Collision()
 
 		if (bCollision)
 		{
+			CRoad* pRoadNext = m_Info.pRoadTarget;
 			m_Info.pRoadTarget = m_Info.pRoadStart;
+			m_Info.pRoadStart = pRoadNext;
 		}
 
 		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
