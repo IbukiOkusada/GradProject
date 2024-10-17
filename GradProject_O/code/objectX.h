@@ -61,6 +61,8 @@ public:	// 誰でもアクセス可能
 	int GetIdx(void) { return m_nIdxModel; }
 	void ListOut(void);
 	int GetModelType(void) { return m_nIdxModel; }
+	D3DXVECTOR3& GetVtxMax(void);
+	D3DXVECTOR3& GetVtxMin(void);
 
 private:	// 自分だけがアクセス可能
 
