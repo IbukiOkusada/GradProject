@@ -89,6 +89,9 @@ void CCar::Update(void)
 	// 移動処理
 	Move();
 
+	// 当たり判定処理
+	Collision();
+
 	if (m_pObj != nullptr)
 	{
 		m_Info.rot.y += D3DX_PI;
@@ -109,9 +112,6 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 
 	if (pCar != nullptr)
 	{
-		// 初期化処理
-		pCar->Init();
-
 		// 初期化処理
 		pCar->Init();
 
@@ -294,9 +294,15 @@ void CCar::Collision()
 
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
-		D3DXVECTOR3 sizeMax = VECTOR3_ZERO;
-		D3DXVECTOR3 sizeMin = VECTOR3_ZERO;
-		collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX,(sizeMax + sizeMin) * 0.5f);
+		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
+		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+
+		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+
+		if (bCollision)
+		{
+			m_Info.pRoadTarget = m_Info.pRoadStart;
+		}
 
 		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
 	}
