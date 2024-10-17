@@ -35,7 +35,6 @@ public:	// 誰でもアクセス可能
 	void SetNext(CSample* pNext) { m_pNext = pNext; }
 	void SetPrev(CSample* pPrev) { m_pPrev = pPrev; }
 
-
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
