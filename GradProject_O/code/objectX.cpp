@@ -840,3 +840,29 @@ bool CObjectX::CollisionCheck(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3
 
 	return bLand;
 }
+
+//==========================================================
+// 最大値取得
+//==========================================================
+D3DXVECTOR3& CObjectX::GetVtxMax(void)
+{
+	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
+	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+
+	if (pFileData == nullptr) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }
+
+	return pFileData->vtxMax;
+}
+
+//==========================================================
+// 最小値取得
+//==========================================================
+D3DXVECTOR3& CObjectX::GetVtxMin(void)
+{
+	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
+	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+
+	if (pFileData == nullptr) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }
+
+	return pFileData->vtxMin;
+}
