@@ -152,7 +152,7 @@ void CCar::Rot()
 {
 	float fRotMove, fRotDest, fRotDiff;				//Šp“x’²®—p•Ï”
 
-	D3DXVECTOR3 vecTarget = m_Info.pRoadTarget->GetPosition() - m_Info.pos;
+	D3DXVECTOR3 vecTarget = m_Info.posTarget - m_Info.pos;
 
 	fRotMove = m_Info.rot.y;
 	fRotDest = atan2f(vecTarget.x, vecTarget.z);
@@ -212,6 +212,8 @@ void CCar::MoveRoad()
 	float length = D3DXVec3Length(&(m_Info.pRoadTarget->GetPosition() - m_Info.pos));
 	if (length < LENGTH_POINT)
 		ReachRoad();
+
+	m_Info.posTarget = m_Info.pRoadTarget->GetPosition();
 }
 
 //==========================================================
@@ -260,7 +262,7 @@ void CCar::ReachRoad()
 
 		pRoadNext = m_Info.pRoadTarget->GetConnectRoad((CRoad::DIRECTION)roadPoint);
 
-		if (m_Info.pRoadTarget->GetType() == pRoadNext->TYPE_STOP)
+		if (m_Info.pRoadTarget->GetType() == CRoad::TYPE_STOP)
 		{
 			
 		}

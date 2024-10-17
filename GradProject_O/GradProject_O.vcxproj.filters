@@ -261,6 +261,9 @@
     <ClCompile Include="code\list_manager.cpp">
       <Filter>manager</Filter>
     </ClCompile>
+    <ClCompile Include="code\police.cpp">
+      <Filter>car</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -445,6 +448,9 @@
     </ClInclude>
     <ClInclude Include="code\goal.h">
       <Filter>goal</Filter>
+    </ClInclude>
+    <ClInclude Include="code\police.h">
+      <Filter>car</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

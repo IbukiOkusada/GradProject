@@ -33,8 +33,9 @@ private:	// 自分だけがアクセス可能
 		D3DXVECTOR3 rotDest;	// 目標向き
 		D3DXVECTOR3 move;		// 移動量
 		D3DXVECTOR3 posOld;		// 設定位置
+		D3DXVECTOR3 posTarget;	// 目標位置
 		CRoad* pRoadStart;		// 移動開始地点
-		CRoad* pRoadTarget;		// 目標位置
+		CRoad* pRoadTarget;		// 目標地点
 		float speed;
 		float speedDest;
 	};
@@ -42,12 +43,12 @@ private:	// 自分だけがアクセス可能
 public:	// 誰でもアクセス可能
 
 	CCar();	// コンストラクタ(オーバーロード)
-	~CCar();	// デストラクタ
+	virtual ~CCar();	// デストラクタ
 
 	// メンバ関数
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
+	virtual HRESULT Init(void);
+	virtual void Uninit(void);
+	virtual void Update(void);
 	static CCar*Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move);
 
 	// メンバ関数(取得)
@@ -65,6 +66,13 @@ public:	// 誰でもアクセス可能
 	void SetNext(CCar* pNext) { m_pNext = pNext; }
 	void SetPrev(CCar* pPrev) { m_pPrev = pPrev; }
 
+protected:	// 子クラスはアクセス可能
+
+	// メンバ関数
+
+	// メンバ変数
+	CObjectX* m_pObj;
+
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
@@ -79,7 +87,7 @@ private:	// 自分だけがアクセス可能
 	CCar* m_pPrev;			// 前のオブジェクトへのポインタ
 	CCar* m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;				// 自分自身の情報
-	CObjectX* m_pObj;
+
 };
 
 #endif
