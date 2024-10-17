@@ -168,6 +168,7 @@
     <ClCompile Include="code\effect.cpp" />
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\game.cpp" />
+    <ClCompile Include="code\goal.cpp" />
     <ClCompile Include="code\input.cpp" />
     <ClCompile Include="code\input_gamepad.cpp" />
     <ClCompile Include="code\input_keyboard.cpp" />
