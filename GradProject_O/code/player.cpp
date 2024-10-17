@@ -50,7 +50,7 @@ namespace {
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
 	const int LIFE = (10);
 	const float MOVE = (6.2f);		// 移動量
-	const float BRAKE = (0.5f);		// ブレーキ
+	const float BRAKE = (0.7f);		// ブレーキ
 
 	const float TURN = (0.006f);		// 旋回量
 	const float GRAVITY = (-0.6f);		//プレイヤー重力

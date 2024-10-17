@@ -225,6 +225,7 @@
     <ClInclude Include="code\car.h" />
     <ClInclude Include="code\car_manager.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\goal.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\convenience.h" />
     <ClInclude Include="code\debugproc.h" />
@@ -236,6 +237,7 @@
     <ClInclude Include="code\input_keyboard.h" />
     <ClInclude Include="code\input_mouse.h" />
     <ClInclude Include="code\light.h" />
+    <ClInclude Include="code\list.h" />
     <ClInclude Include="code\list_manager.h" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />
