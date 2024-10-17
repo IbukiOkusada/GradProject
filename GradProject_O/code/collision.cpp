@@ -254,7 +254,7 @@ bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV,
 		D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
 
 		//•½–Ê‚ÌŽ®‚Æ“_‚©‚ç
-		if (D3DXPlaneDotCoord(&plane, posO) < 0.0f && D3DXPlaneDotCoord(&plane, &posOldO) < 0.0f)
+		if (D3DXPlaneDotCoord(&plane, posO) < 0.0f || D3DXPlaneDotCoord(&plane, &posOldO) > 0.0f)
 		{
 			continue;
 		}
@@ -272,7 +272,7 @@ bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV,
 			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
 
 			//•½–Ê‚ÌŽ®‚Æ“_‚©‚ç
-			if (D3DXPlaneDotCoord(&plane, &vecIntersect) < 0.0f)
+			if (D3DXPlaneDotCoord(&plane, &vecIntersect) >= 0.0f)
 			{
 				nCheckCollision++;
 			}
