@@ -82,6 +82,9 @@
     <Filter Include="manager">
       <UniqueIdentifier>{574eb47e-9fd1-433d-ac87-93bb5d5c6b07}</UniqueIdentifier>
     </Filter>
+    <Filter Include="goal">
+      <UniqueIdentifier>{1b8ad9b2-c38a-4672-ae0c-2922756859e3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -257,6 +260,9 @@
     </ClCompile>
     <ClCompile Include="code\list_manager.cpp">
       <Filter>manager</Filter>
+    </ClCompile>
+    <ClCompile Include="code\goal.cpp">
+      <Filter>goal</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -436,6 +442,12 @@
     </ClInclude>
     <ClInclude Include="code\list_manager.h">
       <Filter>manager</Filter>
+    </ClInclude>
+    <ClInclude Include="code\list.h">
+      <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="code\goal.h">
+      <Filter>goal</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
