@@ -36,6 +36,7 @@ private:	// 自分だけがアクセス可能
 		CRoad* pRoadStart;		// 移動開始地点
 		CRoad* pRoadTarget;		// 目標位置
 		float speed;
+		float speedDest;
 	};
 
 public:	// 誰でもアクセス可能

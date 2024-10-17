@@ -12,6 +12,16 @@
 
 // マクロ定義
 
+// 無名名前空間を定義
+namespace
+{
+	const float SPEED_STREET = (12.0f);	// 直進時の速度
+	const float SPEED_CURVE = (5.0f);	// カーブ時の速度
+	const float SPEED_INER = (0.05f);	// 速度の慣性
+	const float ROT_MULTI = (0.09f);	// 向き補正倍率
+	const float ROT_CURVE = (0.2f);	// カーブ判定角度
+}
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -26,6 +36,7 @@ CCar::CCar()
 	m_Info.pRoadStart = nullptr;
 	m_Info.pRoadTarget = nullptr;
 	m_Info.speed = 0.0f;
+	m_Info.speedDest = 0.0f;
 }
 
 //==========================================================
@@ -66,8 +77,10 @@ void CCar::Update(void)
 
 	if (m_pObj != nullptr)
 	{
+		m_Info.rot.y += D3DX_PI;
 		m_pObj->SetPosition(m_Info.pos);
 		m_pObj->SetRotation(m_Info.rot);
+		m_Info.rot.y -= D3DX_PI;
 	}
 }
 
@@ -109,6 +122,9 @@ void CCar::Move()
 	// 角度調整
 	Rot();
 
+	m_Info.speed += (m_Info.speedDest - m_Info.speed) * SPEED_INER;
+	CManager::GetInstance()->GetDebugProc()->Print("車の速度 [ %f ]\n", m_Info.speed);
+
 	m_Info.move.x = m_Info.speed * sinf(m_Info.rot.y);
 	m_Info.move.y = 0.0f;
 	m_Info.move.z = m_Info.speed * cosf(m_Info.rot.y);
@@ -138,40 +154,37 @@ void CCar::Rot()
 	}
 
 	//差分追加
-	fRotMove += fRotDiff * 0.1f;
+	fRotMove += fRotDiff * ROT_MULTI;
 
 	//角度一致判定
-	if (fabsf(fRotDiff) >= 0.2f)
+	if (fabsf(fRotDiff) >= ROT_CURVE)
 	{
-		m_Info.speed = 7.0f;
+		m_Info.speedDest = SPEED_CURVE;
 	}
 	else
 	{
-		m_Info.speed = 10.0f;
+		m_Info.speedDest = SPEED_STREET;
 	}
 
 	if (fRotMove > D3DX_PI)
 	{
-		fRotMove -= (D3DX_PI * 2);
+		fRotMove -= D3DX_PI * 2.0f;
 	}
 	else if (fRotMove <= -D3DX_PI)
 	{
-		fRotMove += (D3DX_PI * 2);
+		fRotMove += D3DX_PI * 2.0f;
 	}
 
 	m_Info.rot.y = fRotMove;
 
 	if (m_Info.rot.y > D3DX_PI)
 	{
-		m_Info.rot.y -= (D3DX_PI * 2);
+		m_Info.rot.y -= D3DX_PI * 2.0f;
 	}
 	else if (m_Info.rot.y <= -D3DX_PI)
 	{
-		m_Info.rot.y += (D3DX_PI * 2);
+		m_Info.rot.y += D3DX_PI * 2.0f;
 	}
-
-	CManager::GetInstance()->GetDebugProc()->Print("車の目標角度          [ %f ]\n", m_Info.rotDest.y);
-	CManager::GetInstance()->GetDebugProc()->Print("車の角度              [ %f ]\n", m_Info.rot.y);
 }
 
 //==========================================================
@@ -183,7 +196,6 @@ void CCar::MoveRoad()
 		SearchRoad();
 
 	float length = D3DXVec3Length(&(m_Info.pRoadTarget->GetPosition() - m_Info.pos));
-	CManager::GetInstance()->GetDebugProc()->Print("車の目的地への距離    [ %f ]\n", length);
 	if (length < 100.0f)
 		ReachRoad();
 }
@@ -234,21 +246,16 @@ void CCar::ReachRoad()
 
 		pRoadNext = m_Info.pRoadTarget->GetConnectRoad((CRoad::DIRECTION)roadPoint);
 
-		if (pRoadNext- pRoadNext->TYPE_CROSSING || pRoadNext->TYPE_T_JUNCTION)
-		{
-			if (pRoadNext == m_Info.pRoadStart)
-			{
-
-			}
-		}
-		else
+		if (m_Info.pRoadTarget->GetType() == pRoadNext->TYPE_STOP)
 		{
 			
 		}
-
-		if (pRoadNext == m_Info.pRoadStart)
+		else
 		{
-			continue;
+			if (pRoadNext == m_Info.pRoadStart)
+			{
+				continue;
+			}
 		}
 
 		if (pRoadNext != nullptr)
