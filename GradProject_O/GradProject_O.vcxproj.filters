@@ -261,6 +261,9 @@
     <ClCompile Include="code\list_manager.cpp">
       <Filter>manager</Filter>
     </ClCompile>
+    <ClCompile Include="code\goal.cpp">
+      <Filter>goal</Filter>
+    </ClCompile>
     <ClCompile Include="code\police.cpp">
       <Filter>car</Filter>
     </ClCompile>

@@ -31,6 +31,7 @@
 #include "road_manager.h"
 #include "car.h"
 #include "car_manager.h"
+#include "goal.h"
 
 // ñ≥ñºñºëOãÛä‘ÇíËã`
 namespace {
@@ -162,7 +163,7 @@ HRESULT CGame::Init(void)
 
     CCar* pCar = CCar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     CCarManager::GetInstance()->ListIn(pCar);
-
+    CGole::Create(D3DXVECTOR3(5000.0f, 0.0f, 0.0f), 600.0f, 15.0f);
     // ìπê∂ê¨
     SetRoad();
 
