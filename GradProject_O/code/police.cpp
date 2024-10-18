@@ -22,6 +22,7 @@
 namespace
 {
 	const float LENGTH_POINT = (200.0f);	// 到達判定距離
+	const float CHASE_SPEED = (20.0f);		// 追跡時の加速
 	const int CHASE_TIME = (300);			// 追跡時間
 	const float CHASE_BEGIN = (500.0f);		// 追跡開始距離
 	const float CHASE_CONTINUE = (1500.0f);	// 追跡継続距離
@@ -118,6 +119,8 @@ void CPolice::MoveRoad()
 	{
 		if (m_Info.pPlayer != nullptr)
 			SetPosTarget(m_Info.pPlayer->GetPosition());
+
+		SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
 	}
 	else
 	{
@@ -234,7 +237,7 @@ void CPolice::SearchPlayer()
 }
 
 //==========================================================
-// 追跡処理
+// 追跡経路探索処理
 //==========================================================
 void CPolice::ChasePlayer()
 {

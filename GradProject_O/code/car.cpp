@@ -82,6 +82,7 @@ void CCar::Uninit(void)
 void CCar::Update(void)
 {
 	m_Info.posOld = m_Info.pos;
+	m_Info.speedDest = 0.0f;
 
 	// ˆÚ“®æ‚ÌŒˆ’è
 	MoveRoad();
@@ -173,11 +174,11 @@ void CCar::Rot()
 	//Šp“xˆê’v”»’è
 	if (fabsf(fRotDiff) >= ROT_CURVE)
 	{
-		m_Info.speedDest = SPEED_CURVE;
+		m_Info.speedDest += SPEED_CURVE;
 	}
 	else
 	{
-		m_Info.speedDest = SPEED_STREET;
+		m_Info.speedDest += SPEED_STREET;
 	}
 
 	if (fRotMove > D3DX_PI)
