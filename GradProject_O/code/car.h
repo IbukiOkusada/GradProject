@@ -56,6 +56,10 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
 	D3DXVECTOR3 GetRotation(void) { return m_Info.rot; }
 	D3DXVECTOR3 GetOldPosition(void) { return m_Info.posOld; }
+	float GetSpeed(void) { return m_Info.speed; }
+	float GetSpeedDest(void) { return m_Info.speedDest; }
+	CRoad* GetRoadStart(void) { return m_Info.pRoadStart; }
+	CRoad* GetRoadTarget(void) { return m_Info.pRoadTarget; }
 	CCar* GetNext(void) { return m_pNext; }
 	CCar* GetPrev(void) { return m_pPrev; }
 
@@ -63,12 +67,20 @@ public:	// 誰でもアクセス可能
 	void SetMove(const D3DXVECTOR3 move) { m_Info.move = move; }
 	void SetPosition(const D3DXVECTOR3 pos) { m_Info.pos = pos; }
 	void SetRotation(const D3DXVECTOR3 rot) { m_Info.rot = rot; }
+	void SetPosTarget(const D3DXVECTOR3 pos) { m_Info.posTarget = pos; }
+	void SetSpeed(const float speed) { m_Info.speed = speed; }
+	void SetSpeedDest(const float speedDest) { m_Info.speedDest = speedDest; }
+	void SetRoadStart(CRoad* RoadStart) { m_Info.pRoadStart = RoadStart; }
+	void SetRoadTarget(CRoad* RoadTarget) { m_Info.pRoadTarget = RoadTarget; }
 	void SetNext(CCar* pNext) { m_pNext = pNext; }
 	void SetPrev(CCar* pPrev) { m_pPrev = pPrev; }
 
-protected:	// 子クラスはアクセス可能
+protected:	// 派生クラスからもアクセス可能
 
 	// メンバ関数
+	virtual void MoveRoad();
+	void SearchRoad();
+	virtual void ReachRoad();
 
 	// メンバ変数
 	CObjectX* m_pObj;
@@ -78,9 +90,6 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 	void Move();
 	void Rot();
-	void MoveRoad();
-	void SearchRoad();
-	void ReachRoad();
 	void Collision();
 
 	// メンバ変数

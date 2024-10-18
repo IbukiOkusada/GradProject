@@ -37,6 +37,8 @@
 #include "input_keyboard.h"
 #include "input_gamepad.h"
 #include "camera_manager.h"
+#include "road.h"
+#include "road_manager.h"
 
 //===============================================
 // マクロ定義
@@ -87,6 +89,7 @@ CPlayer::CPlayer()
 	m_Info.posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Info.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Info.pRoad = nullptr;
 	m_fRotMove = 0.0f;
 	m_fRotDiff = 0.0f;
 	m_fRotDest = 0.0f;
@@ -99,7 +102,6 @@ CPlayer::CPlayer()
 	m_pObj = nullptr;
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
-
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 
@@ -166,6 +168,9 @@ void CPlayer::Update(void)
 		
 		// プレイヤー操作
 		Controller();
+
+		// 最寄りの道検索
+		SearchRoad();
 
 		// オンライン送信
 		CManager::GetInstance()->GetScene()->SendPosition(m_Info.pos);
@@ -284,7 +289,7 @@ void CPlayer::Move(void)
 	{
 		float fSpeed = (float)pInputPad->GetLeftTriggerPress(0) / 255;
 		m_fBrake = fSpeed;
-		float b = 1.0 - (1.0 - BRAKE) * fSpeed;
+		float b = 1.0f - (1.0f - BRAKE) * fSpeed;
 	}
 	// 入力装置確認
 	if (nullptr == pInputKey){
@@ -368,6 +373,38 @@ void CPlayer::Adjust(void)
 			break;
 		}
 	}
+}
+
+//===============================================
+// 最寄りの道判定
+//===============================================
+void CPlayer::SearchRoad()
+{
+	CRoadManager* pRoadManager = CRoadManager::GetInstance();
+
+	CRoad* pRoad = pRoadManager->GetTop();
+	CRoad* pRoadClose = pRoadManager->GetTop();
+	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
+	float lengthClose = 0.0f;
+
+	while (pRoad != nullptr)
+	{// 使用されていない状態まで
+
+		CRoad* pRoadNext = pRoad->GetNext();	// 次のオブジェクトへのポインタを取得
+
+		// 距離判定処理
+		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
+
+		if (length > lengthClose)
+		{
+			length = lengthClose;
+			pRoadClose = pRoad;
+		}
+
+		pRoad = pRoadNext;	// 次のオブジェクトに移動
+	}
+
+	m_Info.pRoad = pRoadClose;
 }
 
 //===============================================

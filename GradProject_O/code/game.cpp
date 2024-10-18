@@ -30,6 +30,7 @@
 #include "road.h"
 #include "road_manager.h"
 #include "car.h"
+#include "police.h"
 #include "car_manager.h"
 #include "goal.h"
 
@@ -161,7 +162,7 @@ HRESULT CGame::Init(void)
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
-    CCar* pCar = CCar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    CCar* pCar = CPolice::Create(D3DXVECTOR3(100.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     CCarManager::GetInstance()->ListIn(pCar);
     CGole::Create(D3DXVECTOR3(5000.0f, 0.0f, 0.0f), 600.0f, 15.0f);
     // ìπê∂ê¨
