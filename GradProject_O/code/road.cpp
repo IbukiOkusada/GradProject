@@ -123,6 +123,7 @@ void CRoad::Connect(CRoad* pRoad, const DIRECTION dic)
 	if (dic < DIRECTION::DIC_UP || dic >= DIRECTION::DIC_MAX) { return; }
 
 	m_apConnectRoad[dic] = pRoad;
+	m_apConnectLength[dic] = D3DXVec3Length(&(m_Info.pos - pRoad->GetPosition()));
 }
 
 //==========================================================

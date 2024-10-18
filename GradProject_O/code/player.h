@@ -16,6 +16,7 @@
 class CWaist;
 class CCharacter;
 class CObjectX;
+class CRoad;
 
 // マクロ定義
 #define MAX_ITEM  (1280)  // 所持できるアイテムの最大数
@@ -93,6 +94,7 @@ private:	// 自分だけがアクセス可能な定義
 		D3DXMATRIX mtxWorld;	// ワールドマトリックス
 		STATE state;			// 状態
 		float fStateCounter;	// 状態管理カウンター
+		CRoad* pRoad;			// 最寄りの道
 	};
 
 public:	// 誰でもアクセス可能
@@ -125,6 +127,7 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
 	D3DXVECTOR3 GetRotation(void) { return m_Info.rot; }
 	D3DXVECTOR3 GetOldPosition(void) { return m_Info.posOld; }
+	CRoad* GetRoad(void) { return m_Info.pRoad; }
 	CPlayer* GetNext(void) { return m_pNext; }
 	CPlayer* GetPrev(void) { return m_pPrev; }
 
@@ -139,6 +142,7 @@ private:	// 自分だけがアクセス可能
 	void Adjust(void);
 	void Collision(void);
 	void Engine(float fThrottle);
+	void SearchRoad();
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
 	CPlayer *m_pNext;			// 次のオブジェクトへのポインタ
