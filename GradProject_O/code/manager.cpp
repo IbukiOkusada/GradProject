@@ -329,7 +329,7 @@ void CManager::Draw(void)
 {
 	if (m_pScene != NULL)
 	{
-		CEffekseer::GetInstance()->Draw();
+		
 		m_pScene->Draw();
 	}
 }

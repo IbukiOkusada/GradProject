@@ -13,7 +13,7 @@
 #include "object.h"
 #include "camera.h"
 #include "input_keyboard.h"
-
+#include "effekseerControl.h"
 //===================================================
 // コンストラクタ
 //===================================================
@@ -217,7 +217,9 @@ void CRenderer::Draw(void)
 	{// 描画が成功した場合
 
 		// オブジェクトの描画
+	
 		CObjectManager::GetInstance()->Draw();
+		CEffekseer::GetInstance()->Draw();
 		CManager::GetInstance()->GetCamera()->SetCamera();
 
 		// デバッグ表示
