@@ -32,24 +32,24 @@
 //===============================================
 // 静的メンバ変数
 //===============================================
-CManager *CManager::m_pManager = NULL;
+CManager *CManager::m_pManager = nullptr;
 
 //===================================================
 // コンストラクタ
 //===================================================
 CManager::CManager()
 {
-	m_pRenderer = NULL;		// レンダラーのポインタ
+	m_pRenderer = nullptr;		// レンダラーのポインタ
 	m_pInput = nullptr;
-	m_pDebugProc = NULL;		// デバッグ表示のポインタ
-	m_pSound = NULL;			// サウンドのポインタ
-	m_pCamera = NULL;			// カメラのポインタ
-	m_pLight = NULL;			// ライトのポインタ
-	m_pTexture = NULL;		// テクスチャのポインタ
-	m_pModelFile = NULL;		// Xファイル情報のポインタ
-	m_pSlow = NULL;			// スロー状態へのポインタ
-	m_pScene = NULL;			// シーンのポインタ
-	m_pFade = NULL;			// フェードへのポインタ
+	m_pDebugProc = nullptr;		// デバッグ表示のポインタ
+	m_pSound = nullptr;			// サウンドのポインタ
+	m_pCamera = nullptr;			// カメラのポインタ
+	m_pLight = nullptr;			// ライトのポインタ
+	m_pTexture = nullptr;		// テクスチャのポインタ
+	m_pModelFile = nullptr;		// Xファイル情報のポインタ
+	m_pSlow = nullptr;			// スロー状態へのポインタ
+	m_pScene = nullptr;			// シーンのポインタ
+	m_pFade = nullptr;			// フェードへのポインタ
 }
 
 //===================================================
@@ -67,13 +67,13 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
 
 	// レンダラーの生成
-	if (m_pRenderer == NULL)
+	if (m_pRenderer == nullptr)
 	{// 使用していない場合
 		m_pRenderer = DEBUG_NEW CRenderer;
 	}
 
 	//初期化処理
-	if (m_pRenderer != NULL)
+	if (m_pRenderer != nullptr)
 	{// 使用している場合
 		if (FAILED(m_pRenderer->Init(hWnd, TRUE)))
 		{//初期化が失敗した場合
@@ -82,42 +82,36 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	// 入力の生成
-	if (m_pInput == NULL)
+	if (m_pInput == nullptr)
 	{// 使用していない場合
 		m_pInput = CInput::Create(hInstance, hWnd);
 	}
 
 	// デバッグ表示の生成
-	if (m_pDebugProc == NULL)
+	if (m_pDebugProc == nullptr)
 	{// 使用していない場合
-		m_pDebugProc = DEBUG_NEW CDebugProc;
-	}
-
-	//初期化処理
-	if (m_pDebugProc != NULL)
-	{// 使用している場合
-		m_pDebugProc->Init();
+		m_pDebugProc = CDebugProc::Create();
 	}
 
 	// サウンドの生成
-	if (m_pSound == NULL)
+	if (m_pSound == nullptr)
 	{// 使用していない場合
 		m_pSound = DEBUG_NEW CSound;
 
 		// 初期化
-		if (m_pSound != NULL)
+		if (m_pSound != nullptr)
 		{
 			m_pSound->Init(hWnd);
 		}
 	}
 
 	// カメラの生成
-	if (m_pCamera == NULL)
+	if (m_pCamera == nullptr)
 	{// 使用していない場合
 		m_pCamera = DEBUG_NEW CMultiCamera;
 
 		// 初期化
-		if (m_pCamera != NULL)
+		if (m_pCamera != nullptr)
 		{
 			m_pCamera->Init();
 
@@ -136,37 +130,37 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 
 	// ライトの生成
-	if (m_pLight == NULL)
+	if (m_pLight == nullptr)
 	{// 使用していない場合
 		m_pLight = DEBUG_NEW CLight;
 
 		// 初期化
-		if (m_pLight != NULL)
+		if (m_pLight != nullptr)
 		{
 			m_pLight->Init();
 		}
 	}
 
 	//テクスチャの生成
-	if (m_pTexture == NULL)
+	if (m_pTexture == nullptr)
 	{// 使用していない場合
 		m_pTexture = DEBUG_NEW CTexture;
 
 		// 初期読み込み
-		if (m_pTexture != NULL)
+		if (m_pTexture != nullptr)
 		{
 			m_pTexture->Load();
 		}
 	}
 
 	// Xファイル情報の生成
-	if (m_pModelFile == NULL)
+	if (m_pModelFile == nullptr)
 	{// 使用していない場合
 		m_pModelFile = DEBUG_NEW CXFile;
 	}
 
 	// スロー情報の生成
-	if (m_pSlow == NULL)
+	if (m_pSlow == nullptr)
 	{
 		m_pSlow = DEBUG_NEW CSlow;
 		m_pSlow->Init();
@@ -189,25 +183,25 @@ void CManager::Uninit(void)
 	m_pSound->Stop();
 	// エフェクシア初期化
 	CEffekseer::GetInstance()->Uninit();
-	if (m_pFade != NULL)
+	if (m_pFade != nullptr)
 	{
 		m_pFade->Uninit();
 		delete m_pFade;
-		m_pFade = NULL;
+		m_pFade = nullptr;
 	}
 
-	if (m_pScene != NULL)
+	if (m_pScene != nullptr)
 	{
 		m_pScene->Uninit();
 		delete m_pScene;
-		m_pScene = NULL;
+		m_pScene = nullptr;
 	}
 
-	if (m_pSlow != NULL)
+	if (m_pSlow != nullptr)
 	{
 		m_pSlow->Uninit();
 		delete m_pSlow;
-		m_pSlow = NULL;
+		m_pSlow = nullptr;
 	}
 
 	if (m_pLight != nullptr)
@@ -231,63 +225,60 @@ void CManager::Uninit(void)
 		m_pSound = nullptr;
 	}
 
-	if (m_pInput != NULL)
+	if (m_pInput != nullptr)
 	{// 使用している場合
 
 		m_pInput->Release();
-		m_pInput = NULL;	// 使用していない状態にする
+		m_pInput = nullptr;	// 使用していない状態にする
 	}
 
-	if (m_pDebugProc != NULL)
+	if (m_pDebugProc != nullptr)
 	{// 使用している場合
 		// 終了処理
 		m_pDebugProc->Uninit();
-
-		delete m_pDebugProc;	// メモリの開放
-
-		m_pDebugProc = NULL;	// 使用していない状態にする
+		m_pDebugProc = nullptr;	// 使用していない状態にする
 	}
 
-	if (m_pRenderer != NULL)
+	if (m_pRenderer != nullptr)
 	{// 使用している場合
 		// 終了処理
 		m_pRenderer->Uninit();
 
 		delete m_pRenderer;	// メモリの開放
 
-		m_pRenderer = NULL;	// 使用していない状態にする
+		m_pRenderer = nullptr;	// 使用していない状態にする
 	}
 
-	if (m_pSound != NULL)
+	if (m_pSound != nullptr)
 	{// 使用している場合
 		// 終了処理
 		m_pSound->Uninit();
 
 		delete m_pSound;	// メモリの開放
 
-		m_pSound = NULL;	// 使用していない状態にする
+		m_pSound = nullptr;	// 使用していない状態にする
 	}
 
 	// テクスチャの廃棄
-	if (m_pTexture != NULL)
+	if (m_pTexture != nullptr)
 	{// 使用している場合
 		// 終了処理
 		m_pTexture->Unload();
 
 		delete m_pTexture;	// メモリの開放
 
-		m_pTexture = NULL;	// 使用していない状態にする
+		m_pTexture = nullptr;	// 使用していない状態にする
 	}
 
 	// Xファイル情報の廃棄
-	if (m_pModelFile != NULL)
+	if (m_pModelFile != nullptr)
 	{// 使用している場合
 		// 終了処理
 		m_pModelFile->Unload();
 
 		delete m_pModelFile;	// メモリの開放
 
-		m_pModelFile = NULL;	// 使用していない状態にする
+		m_pModelFile = nullptr;	// 使用していない状態にする
 	}
 
 	// 各種マネージャの破棄
@@ -299,23 +290,23 @@ void CManager::Uninit(void)
 //===================================================
 void CManager::Update(void)
 {
-	if (m_pFade != NULL)
+	if (m_pFade != nullptr)
 	{
 		m_pFade->Update();
 	}
 	// デバッグ表示の更新処理
-	if (m_pDebugProc != NULL)
+	if (m_pDebugProc != nullptr)
 	{// 使用している場合
 		m_pDebugProc->Update();
 	}
 
 	// 入力の更新処理
-	if (m_pInput != NULL)
+	if (m_pInput != nullptr)
 	{// 使用している場合
 		m_pInput->Update();
 	}
 
-	if (m_pScene != NULL)
+	if (m_pScene != nullptr)
 	{
 		CEffekseer::GetInstance()->Update();
 		m_pScene->Update();
@@ -327,7 +318,7 @@ void CManager::Update(void)
 //===================================================
 void CManager::Draw(void)
 {
-	if (m_pScene != NULL)
+	if (m_pScene != nullptr)
 	{
 		
 		m_pScene->Draw();
@@ -411,7 +402,7 @@ CFade *CManager::GetFade(void)
 //===================================================
 CManager *CManager::GetInstance(void)
 {
-	if (m_pManager == NULL)
+	if (m_pManager == nullptr)
 	{
 		m_pManager = new CManager;
 	}
@@ -424,11 +415,11 @@ CManager *CManager::GetInstance(void)
 //===================================================
 void CManager::Release(void)
 {
-	if (m_pManager != NULL)
+	if (m_pManager != nullptr)
 	{
 		m_pManager->Uninit();
 		delete m_pManager;
-		m_pManager = NULL;
+		m_pManager = nullptr;
 	}
 }
 
@@ -444,47 +435,47 @@ void CManager::DataReset(void)
 	CObjectManager::GetInstance()->Uninit();
 
 	// テクスチャの廃棄
-	if (m_pTexture != NULL)
+	if (m_pTexture != nullptr)
 	{// 使用している場合
 	 // 終了処理
 		m_pTexture->Unload();
 
 		delete m_pTexture;	// メモリの開放
 
-		m_pTexture = NULL;	// 使用していない状態にする
+		m_pTexture = nullptr;	// 使用していない状態にする
 	}
 
 	// Xファイル情報の廃棄
-	if (m_pModelFile != NULL)
+	if (m_pModelFile != nullptr)
 	{// 使用している場合
 		// 終了処理
 		m_pModelFile->Unload();
 
 		delete m_pModelFile;	// メモリの開放
 
-		m_pModelFile = NULL;	// 使用していない状態にする
+		m_pModelFile = nullptr;	// 使用していない状態にする
 	}
 
 	// ポイントライトを無効にする
 	m_pLight->EnablePointLight(false);
 
 	//フェードの削除
-	m_pFade = NULL;
+	m_pFade = nullptr;
 
 	//テクスチャの生成
-	if (m_pTexture == NULL)
+	if (m_pTexture == nullptr)
 	{// 使用していない場合
 		m_pTexture = DEBUG_NEW CTexture;
 
 		// 初期読み込み
-		if (m_pTexture != NULL)
+		if (m_pTexture != nullptr)
 		{
 			m_pTexture->Load();
 		}
 	}
 
 	// Xファイル情報の生成
-	if (m_pModelFile == NULL)
+	if (m_pModelFile == nullptr)
 	{// 使用していない場合
 		m_pModelFile = DEBUG_NEW CXFile;
 	}
@@ -502,24 +493,24 @@ void CManager::DataReset(void)
 void CManager::SetMode(CScene::MODE mode)
 {
 	// サウンドの停止
-	if (m_pSound != NULL)
+	if (m_pSound != nullptr)
 	{
 		m_pSound->Stop();
 	}
 
 	// 現在のモードの停止
-	if (m_pScene != NULL)
+	if (m_pScene != nullptr)
 	{
 		m_pScene->Uninit();
 		delete m_pScene;
-		m_pScene = NULL;
+		m_pScene = nullptr;
 	}
 
-	if (m_pFade != NULL)
+	if (m_pFade != nullptr)
 	{
 		m_pFade->Uninit();
 		delete m_pFade;
-		m_pFade = NULL;
+		m_pFade = nullptr;
 	}
 
 	// データリセット
@@ -529,13 +520,13 @@ void CManager::SetMode(CScene::MODE mode)
 	m_pScene = CScene::Create(mode);
 	m_pScene->SetMode(mode);
 
-	if (m_pScene != NULL)
+	if (m_pScene != nullptr)
 	{
 		m_pScene->Init();
 	}
 
 	// フェードの生成
-	if (m_pFade == NULL)
+	if (m_pFade == nullptr)
 	{
 		m_pFade = CFade::Create(mode);
 	}
@@ -566,7 +557,7 @@ CScene::~CScene()
 //===================================================
 CScene *CScene::Create(MODE mode)
 {
-	CScene *pScene = NULL;
+	CScene *pScene = nullptr;
 
 	// モード別に生成
 	switch (mode)
@@ -617,19 +608,19 @@ void CScene::Uninit(void)
 void CScene::Update(void)
 {
 	// カメラの更新処理
-	if (CManager::GetInstance()->GetCamera() != NULL)
+	if (CManager::GetInstance()->GetCamera() != nullptr)
 	{
 		CManager::GetInstance()->GetCamera()->Update();
 	}
 
 	// スローの更新処理
-	if (CManager::GetInstance()->GetSlow() != NULL)
+	if (CManager::GetInstance()->GetSlow() != nullptr)
 	{
 		CManager::GetInstance()->GetSlow()->Update();
 	}
 
 	// レンダラーの更新処理
-	if (CManager::GetInstance()->GetRenderer() != NULL)
+	if (CManager::GetInstance()->GetRenderer() != nullptr)
 	{// 使用している場合
 		CManager::GetInstance()->GetRenderer()->Update();
 	}
@@ -644,7 +635,7 @@ void CScene::Update(void)
 void CScene::Draw(void)
 {
 	// 描画処理
-	if (CManager::GetInstance()->GetRenderer() != NULL)
+	if (CManager::GetInstance()->GetRenderer() != nullptr)
 	{// 使用している場合
 		CManager::GetInstance()->GetRenderer()->Draw();
 	}
