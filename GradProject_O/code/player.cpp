@@ -103,6 +103,8 @@ CPlayer::CPlayer()
 	m_pObj = nullptr;
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 
@@ -141,13 +143,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 // 終了処理
 //===============================================
 void CPlayer::Uninit(void)
-{
-	if (m_pObj != nullptr)
-	{
-		m_pObj->Uninit();
-		m_pObj = nullptr;
-	}
-
+{	
+	SAFE_UNINIT(m_pObj)
+	SAFE_DELETE(m_pTailLamp);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// 廃棄
@@ -203,12 +201,15 @@ void CPlayer::Update(void)
 
 	// エフェクト
 	{
-		D3DXVECTOR3 rot = GetRotation();
+		m_pTailLamp->m_pos = GetPosition();
+		m_pTailLamp->m_rot = m_pObj->GetRotation();
+		
+		/*D3DXVECTOR3 rot = GetRotation();
 		rot.y -= D3DX_PI * 0.5f;
 		D3DXVECTOR3 pos = GetPosition();
 		pos.x += sinf(rot.y) * 100.0f;
 		pos.z += cosf(rot.y) * 100.0f;
-		CParticle::Create(pos, CEffect::TYPE_SMAKE);
+		CParticle::Create(pos, CEffect::TYPE_SMAKE);*/
 	}
 }
 

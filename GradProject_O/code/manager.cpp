@@ -167,7 +167,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	}
 	// エフェクシア初期化
 	CEffekseer::GetInstance()->Init();
-	CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\00_Basic\\Laser01.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 20, true);
+	
 	// モードの生成
 	SetMode(CScene::MODE_GAME);
 
@@ -181,8 +181,7 @@ void CManager::Uninit(void)
 {
 	// サウンドの停止
 	m_pSound->Stop();
-	// エフェクシア初期化
-	CEffekseer::GetInstance()->Uninit();
+
 	if (m_pFade != nullptr)
 	{
 		m_pFade->Uninit();
@@ -283,6 +282,8 @@ void CManager::Uninit(void)
 
 	// 各種マネージャの破棄
 	CManagerRegistry::Release();
+	// エフェクシア破棄
+	CEffekseer::GetInstance()->Uninit();
 }
 
 //===================================================
