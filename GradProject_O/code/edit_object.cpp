@@ -46,5 +46,5 @@ void CEdit_Obj::Uninit(void)
 //==========================================================
 void CEdit_Obj::Update(void)
 {
-
+	CDebugProc::GetInstance()->Print(" [ 障害物配置モード ]\n");
 }

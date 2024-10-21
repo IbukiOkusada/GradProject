@@ -14,7 +14,7 @@
 //==========================================================
 class CInputMouse : public CInput
 {
-public:	// 誰でもアクセス可能
+public:	// 誰でもアクセス可能な定義
 
 	//マウス
 	enum BUTTON
@@ -25,6 +25,19 @@ public:	// 誰でもアクセス可能
 		BUTTON_MAX
 	};
 
+	// レイ情報構造体
+	struct SRayInfo
+	{
+		D3DXVECTOR3 origin;	// 開始点
+		D3DXVECTOR3 end;	// 終点
+		D3DXVECTOR3 vec;	// 方向
+		D3DXVECTOR3 vecold;	// 前回の方向
+
+		SRayInfo() : origin(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), end(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), 
+			vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), vecold(D3DXVECTOR3(0.0f, 0.0f, 0.0f)) {}
+	};
+
+public:	// 誰でもアクセス可能
 	CInputMouse();	// コンストラクタ
 	~CInputMouse();	// デストラクタ
 
@@ -37,7 +50,7 @@ public:	// 誰でもアクセス可能
 	bool GetRelease(int nKey);
 	bool GetRepeat(int nKey);
 	D3DXVECTOR3 GetCousorMove();
-	D3DXVECTOR3 GetWorldPos() { return m_WorldPos; }
+	SRayInfo GetRayInfo() { return m_RayInfo; }
 	static CInputMouse* Create(HINSTANCE hInstance, HWND hWnd);
 	static CInputMouse* GetInstance() { return m_pInstance; }
 
@@ -49,7 +62,7 @@ private:	// 自分だけアクセス可能
 	DIMOUSESTATE2 m_Release;	//リリース情報
 	DIMOUSESTATE2 m_Repeat;	//リピート情報
 	POINT m_Point;			//カーソルポインター
-	D3DXVECTOR3 m_WorldPos;
+	SRayInfo m_RayInfo;
 	static CInputMouse* m_pInstance;
 };
 

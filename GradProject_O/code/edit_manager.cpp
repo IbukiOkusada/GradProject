@@ -73,8 +73,8 @@ void CEditManager::Update(void)
 
 	// デバッグ表示
 	pProc->Print("+---------------------------------------------------------------\n");
-	pProc->Print("<エディター起動中> 終了[ F4 ]\n");
-	pProc->Print("<マウス> [ %f, %f, %f ]\n", pMouse->GetWorldPos().x, pMouse->GetWorldPos().y, pMouse->GetWorldPos().z);
+	pProc->Print("<エディター起動中> 終了[ F4 ] : モード切替[ F3 ] : ");
+	//pProc->Print("<マウス> [ %f, %f, %f ]\n", pMouse->GetWorldPos().x, pMouse->GetWorldPos().y, pMouse->GetWorldPos().z);
 
 	// エディター終了
 	if (pKey->GetTrigger(DIK_F4) && m_bFlag)
@@ -89,7 +89,7 @@ void CEditManager::Update(void)
 
 	// 状態切り替え
 	if (pKey->GetTrigger(DIK_F3)) {
-		m_SelectType = static_cast<CEdit::TYPE>((m_SelectType + 1) / CEdit::TYPE_MAX);
+		m_SelectType = static_cast<CEdit::TYPE>((m_SelectType + 1) % CEdit::TYPE_MAX);
 		ChangeEdit(CEdit::Create(m_SelectType));
 	}
 
