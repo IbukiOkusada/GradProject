@@ -12,7 +12,7 @@
 //==========================================================
 class CTask
 {
-protected:	// 誰でもアクセス可能
+public:	// 誰でもアクセス可能
 
 	// 種類列挙型の定義
 	enum TYPE
@@ -21,13 +21,9 @@ protected:	// 誰でもアクセス可能
 		TYPE_BG,		// 背景
 		TYPE_PLAYER,	// プレイヤー
 		TYPE_ENEMY,		// 敵
-		TYPE_BULLET,	// 弾
-		TYPE_ITEM,		// アイテム
-		TYPE_EXPLOSION,	// 爆発
 		TYPE_EFFECT,	// エフェクト
-		TYPE_BLOCK,		// ブロック
 		TYPE_MODEL,		// モデル
-		TYPE_CAR,		// 車　
+		TYPE_CAR,		// 車
 		TYPE_PAUSE,		// ポーズ画面
 		TYPE_MAP,		// マップ表示
 		TYPE_MAX
@@ -46,6 +42,7 @@ public:
 	CTask *GetPrev(void) { return m_pPrev; }
 	void SetNext(CTask *pNext) { m_pNext = pNext; }
 	void SetPrev(CTask *pPrev) { m_pPrev = pPrev; }
+	TYPE GetType(void) { return m_type; }
 	bool GetDeath(void) { return m_bDeath; }
 
 protected:	// 派生クラスからもアクセス可能

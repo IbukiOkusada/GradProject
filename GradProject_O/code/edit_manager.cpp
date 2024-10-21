@@ -6,6 +6,9 @@
 //==========================================================
 #include "edit_manager.h"
 #include "input_keyboard.h"
+#include "manager.h"
+#include "debugproc.h"
+#include "input_mouse.h"
 
 CEditManager* CEditManager::m_pInstance = nullptr;
 
@@ -32,6 +35,11 @@ CEditManager::~CEditManager()
 //==========================================================
 HRESULT CEditManager::Init(void)
 {
+	m_bFlag = false;
+
+	// エディター初期化
+	m_SelectType = CEdit::TYPE_OBJ;
+	ChangeEdit(CEdit::Create(m_SelectType));
 	return S_OK;
 }
 
@@ -60,6 +68,24 @@ void CEditManager::Uninit(void)
 void CEditManager::Update(void)
 {
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CDebugProc* pProc = CManager::GetInstance()->GetDebugProc();
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+
+	// デバッグ表示
+	pProc->Print("+---------------------------------------------------------------\n");
+	pProc->Print("<エディター起動中> 終了[ F4 ]\n");
+	pProc->Print("<マウス> [ %f, %f, %f ]\n", pMouse->GetWorldPos().x, pMouse->GetWorldPos().y, pMouse->GetWorldPos().z);
+
+	// エディター終了
+	if (pKey->GetTrigger(DIK_F4) && m_bFlag)
+	{
+		Uninit();
+		return;
+	}
+	else
+	{
+		m_bFlag = true;
+	}
 
 	// 状態切り替え
 	if (pKey->GetTrigger(DIK_F3)) {
@@ -72,6 +98,8 @@ void CEditManager::Update(void)
 	{
 		m_pEdit->Update();
 	}
+
+	pProc->Print("+---------------------------------------------------------------\n");
 }
 
 //===============================================
@@ -79,6 +107,7 @@ void CEditManager::Update(void)
 //===============================================
 void CEditManager::ChangeEdit(CEdit* pEdit)
 {
+	// 使用されていたら廃棄
 	if (m_pEdit != nullptr)
 	{
 		m_pEdit->Uninit();
@@ -96,6 +125,7 @@ CEditManager* CEditManager::Create()
 	if (m_pInstance == nullptr)
 	{
 		m_pInstance = DEBUG_NEW CEditManager;
+		m_pInstance->Init();
 	}
 
 	return m_pInstance;
@@ -114,6 +144,7 @@ CEditManager* CEditManager::GetInstance()
 //===============================================
 void CEditManager::Release(void)
 {
+	// 終了
 	if (m_pInstance != nullptr)
 	{
 		m_pInstance->Uninit();

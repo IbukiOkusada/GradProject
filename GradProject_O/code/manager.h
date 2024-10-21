@@ -26,7 +26,6 @@ class CMapCamera;
 class CTime;
 class CPlayer;
 class CFileLoad;
-class CEditor;
 class CEnemyRoute;
 class CCarManager;
 class CEnemyManager;
@@ -62,7 +61,6 @@ public:
 	virtual CMapCamera *GetMapCamera(void) { return NULL; }
 	virtual CPlayer *GetPlayer(void) { return NULL; }
 	virtual CFileLoad *GetFileLoad(void) { return NULL; }
-	virtual CEditor *GetEditor(void) { return NULL; }
 	virtual CTime* GetTime(void) { return nullptr; }
 	virtual void SendPosition(D3DXVECTOR3&) {  }
 	virtual void SendRotation(D3DXVECTOR3&) {  }
@@ -106,7 +104,6 @@ public:	// 誰でもアクセス可能
 	CScene *GetScene(void) { return m_pScene; }
 	static CManager *GetInstance(void);
 	static void Release(void);
-	void ManagerRelease(void);
 
 private:	// 自分だけがアクセス可能
 
