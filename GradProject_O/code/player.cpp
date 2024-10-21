@@ -39,6 +39,7 @@
 #include "camera_manager.h"
 #include "road.h"
 #include "road_manager.h"
+#include "collision.h"
 
 //===============================================
 // マクロ定義
@@ -171,6 +172,9 @@ void CPlayer::Update(void)
 
 		// 最寄りの道検索
 		SearchRoad();
+
+		// 当たり判定
+		Collision();
 
 		// オンライン送信
 		CManager::GetInstance()->GetScene()->SendPosition(m_Info.pos);
@@ -408,6 +412,36 @@ void CPlayer::SearchRoad()
 }
 
 //===============================================
+// 当たり判定処理
+//===============================================
+bool CPlayer::Collision(void)
+{
+	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
+
+	while (pObjectX != nullptr)
+	{// 使用されていない状態まで
+
+		CObjectX* pObjectXNext = pObjectX->GetNext();	// 次のオブジェクトへのポインタを取得
+
+		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
+		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
+		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
+		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+
+		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+
+		if (bCollision)
+		{
+			return true;
+		}
+
+		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
+	}
+
+	return false;
+}
+
+//===============================================
 // 状態管理
 //===============================================
 void CPlayer::StateSet(void)
@@ -509,7 +543,8 @@ void CPlayer::SetMatrix(void)
 //===============================================
 // 指定モーションに設定
 //===============================================
-void CPlayer::SetMotion(int nMotion) {
+void CPlayer::SetMotion(int nMotion)
+{
 	
 	
 }
@@ -520,12 +555,4 @@ void CPlayer::SetMotion(int nMotion) {
 void CPlayer::SetDraw(bool bDraw)
 {
 	
-}
-
-//===============================================
-// 
-//===============================================
-void CPlayer::Collision(void)
-{
-
 }

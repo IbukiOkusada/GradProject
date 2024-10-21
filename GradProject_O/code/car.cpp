@@ -286,7 +286,7 @@ void CCar::ReachRoad()
 //==========================================================
 // 当たり判定処理
 //==========================================================
-void CCar::Collision()
+bool CCar::Collision()
 {
 	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
 
@@ -307,8 +307,11 @@ void CCar::Collision()
 			CRoad* pRoadNext = m_Info.pRoadTarget;
 			m_Info.pRoadTarget = m_Info.pRoadStart;
 			m_Info.pRoadStart = pRoadNext;
+			return true;
 		}
 
 		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
 	}
+
+	return false;
 }

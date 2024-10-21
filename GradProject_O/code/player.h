@@ -140,9 +140,10 @@ private:	// 自分だけがアクセス可能
 	void Move(void);
 	void Rotate(void);
 	void Adjust(void);
-	void Collision(void);
+	bool Collision(void);
 	void Engine(float fThrottle);
-	void SearchRoad();
+	void SearchRoad(void);
+
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
 	CPlayer *m_pNext;			// 次のオブジェクトへのポインタ

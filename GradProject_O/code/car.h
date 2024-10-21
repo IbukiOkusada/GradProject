@@ -90,7 +90,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 	void Move();
 	void Rot();
-	void Collision();
+	bool Collision();
 
 	// メンバ変数
 	CCar* m_pPrev;			// 前のオブジェクトへのポインタ
