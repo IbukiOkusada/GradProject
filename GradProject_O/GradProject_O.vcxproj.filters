@@ -85,6 +85,12 @@
     <Filter Include="goal">
       <UniqueIdentifier>{1b8ad9b2-c38a-4672-ae0c-2922756859e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="effekseer">
+      <UniqueIdentifier>{979386c4-8445-465a-ad47-ac7ea4ce1aa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="edit">
+      <UniqueIdentifier>{b881f908-3acf-4e43-a896-a764d635d1ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -266,6 +272,21 @@
     </ClCompile>
     <ClCompile Include="code\police.cpp">
       <Filter>car</Filter>
+    </ClCompile>
+    <ClCompile Include="code\effekseerControl.cpp">
+      <Filter>effekseer</Filter>
+    </ClCompile>
+    <ClCompile Include="code\edit.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
+    <ClCompile Include="code\edit_object.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
+    <ClCompile Include="code\edit_road.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
+    <ClCompile Include="code\edit_manager.cpp">
+      <Filter>edit</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -454,6 +475,21 @@
     </ClInclude>
     <ClInclude Include="code\police.h">
       <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\effekseerControl.h">
+      <Filter>effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit.h">
+      <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_object.h">
+      <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_road.h">
+      <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_manager.h">
+      <Filter>edit</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

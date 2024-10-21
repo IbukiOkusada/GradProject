@@ -38,6 +38,22 @@
 #include "dinput.h"
 #include "xaudio2.h"					//サウンド処理に必要
 
+
+// エフェクシア
+#ifndef _DEBUG
+#pragma comment(lib, "Effekseer.lib")
+#else
+#pragma comment(lib, "Effekseerd.lib")
+#endif
+#include <Effekseer.h>
+
+#ifndef _DEBUG
+#pragma comment(lib, "EffekseerRendererDX9.lib")
+#else
+#pragma comment(lib, "EffekseerRendererDX9d.lib")
+#endif
+#include <EffekseerRendererDX9.h>
+
 // メモリリーク出力用マクロ
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>		// メモリリーク検出に必要

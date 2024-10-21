@@ -34,6 +34,7 @@ public:	// 誰でもアクセス可能
 		TYPE_EFFECT,	// エフェクト
 		TYPE_BLOCK,	// ブロック
 		TYPE_MODEL,	// 3Dモデル
+		TYPE_EDIT,	// エディター
 		TYPE_MAX
 	};
 
