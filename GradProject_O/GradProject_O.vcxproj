@@ -165,6 +165,10 @@
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\convenience.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
+    <ClCompile Include="code\edit.cpp" />
+    <ClCompile Include="code\edit_manager.cpp" />
+    <ClCompile Include="code\edit_object.cpp" />
+    <ClCompile Include="code\edit_road.cpp" />
     <ClCompile Include="code\effect.cpp" />
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\game.cpp" />
@@ -227,6 +231,10 @@
     <ClInclude Include="code\car.h" />
     <ClInclude Include="code\car_manager.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\edit.h" />
+    <ClInclude Include="code\edit_manager.h" />
+    <ClInclude Include="code\edit_object.h" />
+    <ClInclude Include="code\edit_road.h" />
     <ClInclude Include="code\goal.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\convenience.h" />
