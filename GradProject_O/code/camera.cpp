@@ -1080,4 +1080,8 @@ void CMultiCamera::SetCamera(void)
 
 	//ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &mtxView);
+
+	// マトリックス設定
+	SetMtxView(mtxView);
+	SetMtxProjection(mtxProjection);
 }
