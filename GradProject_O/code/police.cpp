@@ -25,8 +25,8 @@ namespace
 	const float CHASE_SPEED = (20.0f);		// 追跡時の加速
 	const float SECURE_SPEED = (-35.0f);	// 確保時の加速
 	const int CHASE_TIME = (300);			// 追跡時間
-	const float CHASE_SECURE = (500.0f);	// 追跡開始距離
-	const float CHASE_BEGIN = (800.0f);		// 追跡開始距離
+	const float CHASE_SECURE = (400.0f);	// 追跡確保距離
+	const float CHASE_BEGIN = (700.0f);		// 追跡開始距離
 	const float CHASE_CONTINUE = (2000.0f);	// 追跡継続距離
 	const float CHASE_END = (3000.0f);		// 追跡終了距離
 }
@@ -202,7 +202,7 @@ void CPolice::SearchPlayer()
 			SetRoadTarget(nullptr);
 
 			SetSpeedDest(SECURE_SPEED);
-			SetSpeed(GetSpeed() * 0.9f);
+			SetSpeed(GetSpeed() * 0.8f);
 		}
 		else if (length < CHASE_BEGIN)
 		{// 追跡開始
