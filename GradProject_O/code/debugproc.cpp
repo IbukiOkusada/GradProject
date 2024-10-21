@@ -46,7 +46,7 @@ CDebugProc::CDebugProc()
 	//デバッグ表示情報のクリア
 	m_bDisp = false;
 	m_pFont = nullptr;
-	memset(&m_aStr[0], NULL, sizeof(m_aStr));
+	m_pStr = nullptr;
 }
 
 //==========================================================
@@ -157,14 +157,17 @@ void CDebugProc::Draw(void)
 
 	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
-	if (m_bDisp == true)
+	if (m_bDisp == true && m_pStr != nullptr)
 	{//デバックモードがオンの時
 		//テキストの描画
-		m_pFont->DrawText(nullptr, &m_aStr[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
+		m_pFont->DrawText(nullptr, m_pStr, -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	}
 
-	//デバッグ表示情報のクリア
-	memset(&m_aStr[0], NULL, sizeof(m_aStr));
+	if (m_pStr != nullptr)
+	{
+		delete[] m_pStr;
+		m_pStr = nullptr;
+	}
 }
 
 //==========================================================
@@ -173,10 +176,19 @@ void CDebugProc::Draw(void)
 void CDebugProc::Print(const char *fmt, ...)
 {
 	va_list args = nullptr;
+	char* pTemp = m_pStr;	// 借入
+	m_pStr = nullptr;
 	char aString[MAX_DEBUGSTRING] = "";		// 指定文字格納用
 	char aSaveString[MAX_DEBUGSTRING] = "";	// 可変引数中身格納用
 	int nLength = 0;	// 可変引数内の文字の長さ
 	int nStopLength;	// 可変引数挿入場所より
+	int nNowLength = 0;	// 現在格納中文字列の長さ
+
+	// 文字列の長さを取得
+	if (pTemp != nullptr)
+	{
+		nNowLength = static_cast<int>(strlen(pTemp));
+	}
 
 	// 文字列の代入
 	strcpy(&aString[0], fmt);
@@ -232,8 +244,14 @@ void CDebugProc::Print(const char *fmt, ...)
 				break;
 			case 's':	// 文字列
 
-				sprintf(&aSaveString[0], "%s", va_arg(args, char*));
+				sprintf(&aSaveString[0], "%s", va_arg(args, const char*));
 
+				break;
+
+			default:	// それ以外
+				{
+				continue;
+				}
 				break;
 			}
 
@@ -258,8 +276,24 @@ void CDebugProc::Print(const char *fmt, ...)
 
 	va_end(args);
 
+	// 今回連結する文字列の長さを取得
+	int nCurrentLength = (int)strlen(&aString[0]);
+
+	// 文字列のメモリを確保
+	m_pStr = new char[nNowLength + nCurrentLength + 1];
+	memset(m_pStr, NULL, sizeof(*m_pStr));
+
 	// 文字列を連結する
-	strcat(&m_aStr[0], &aString[0]);
+	if (pTemp != nullptr)
+	{ // 元の文字
+		strcat(m_pStr, pTemp);
+
+		// 元のデータを廃棄
+		delete[] pTemp;
+	}
+
+	// 今回の文字
+	strcat(m_pStr, &aString[0]);
 }
 
 //==========================================================

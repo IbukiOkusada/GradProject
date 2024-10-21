@@ -186,10 +186,8 @@ void CPlayer::Update(void)
 
 	if (m_pObj != nullptr)
 	{
-		D3DXVECTOR3 rot = GetRotation();
-		rot.y += D3DX_PI * 0.5f;
 		m_pObj->SetPosition(GetPosition());
-		m_pObj->SetRotation(rot);
+		m_pObj->SetRotation(GetRotation());
 	}
 
 	{
