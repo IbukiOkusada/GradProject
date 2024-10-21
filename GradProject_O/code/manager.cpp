@@ -28,7 +28,7 @@
 #include "road_manager.h"
 #include "car_manager.h"
 #include "manager_registry.h"
-
+#include "effekseerControl.h"
 //===============================================
 // 静的メンバ変数
 //===============================================
@@ -171,7 +171,9 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pSlow = DEBUG_NEW CSlow;
 		m_pSlow->Init();
 	}
-
+	// エフェクシア初期化
+	CEffekseer::GetInstance()->Init();
+	CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\00_Basic\\Laser01.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 20, true);
 	// モードの生成
 	SetMode(CScene::MODE_GAME);
 
@@ -185,7 +187,8 @@ void CManager::Uninit(void)
 {
 	// サウンドの停止
 	m_pSound->Stop();
-
+	// エフェクシア初期化
+	CEffekseer::GetInstance()->Uninit();
 	if (m_pFade != NULL)
 	{
 		m_pFade->Uninit();
@@ -314,6 +317,7 @@ void CManager::Update(void)
 
 	if (m_pScene != NULL)
 	{
+		CEffekseer::GetInstance()->Update();
 		m_pScene->Update();
 	}
 }
@@ -325,6 +329,7 @@ void CManager::Draw(void)
 {
 	if (m_pScene != NULL)
 	{
+		CEffekseer::GetInstance()->Draw();
 		m_pScene->Draw();
 	}
 }

@@ -114,17 +114,18 @@ private:	// 自分だけがアクセス可能
 	void DataReset(void);
 
 	// 静的メンバ変数
-	CRenderer *m_pRenderer;	// レンダラーのポインタ
+	CRenderer* m_pRenderer;	// レンダラーのポインタ
 	CInput* m_pInput;		// 入力のポイント
-	CDebugProc *m_pDebugProc;	// デバッグ表示のポインタ
-	CMultiCamera *m_pCamera;		// カメラのポインタ
-	CLight *m_pLight;		// ライトのポインタ
-	CTexture *m_pTexture;	// テクスチャのポインタ
-	CXFile *m_pModelFile;	// Xファイルのポインタ
-	CSound *m_pSound;		// サウンドのポインタ
-	CSlow *m_pSlow;			// スローのポインタ
-	CScene *m_pScene;		// シーンのポインタ
+	CDebugProc* m_pDebugProc;	// デバッグ表示のポインタ
+	CMultiCamera* m_pCamera;		// カメラのポインタ
+	CLight* m_pLight;		// ライトのポインタ
+	CTexture* m_pTexture;	// テクスチャのポインタ
+	CXFile* m_pModelFile;	// Xファイルのポインタ
+	CSound* m_pSound;		// サウンドのポインタ
+	CSlow* m_pSlow;			// スローのポインタ
+	CScene* m_pScene;		// シーンのポインタ
 	CFade* m_pFade;			// フェードのポインタ
+
 	static CManager *m_pManager;	// マネージャーのポインタ
 };
 

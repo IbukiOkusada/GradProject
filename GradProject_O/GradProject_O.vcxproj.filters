@@ -85,6 +85,9 @@
     <Filter Include="goal">
       <UniqueIdentifier>{1b8ad9b2-c38a-4672-ae0c-2922756859e3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="effekseer">
+      <UniqueIdentifier>{979386c4-8445-465a-ad47-ac7ea4ce1aa8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -266,6 +269,9 @@
     </ClCompile>
     <ClCompile Include="code\police.cpp">
       <Filter>car</Filter>
+    </ClCompile>
+    <ClCompile Include="code\effekseerControl.cpp">
+      <Filter>effekseer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -454,6 +460,9 @@
     </ClInclude>
     <ClInclude Include="code\police.h">
       <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\effekseerControl.h">
+      <Filter>effekseer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
