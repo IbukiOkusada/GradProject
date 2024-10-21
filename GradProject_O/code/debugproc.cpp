@@ -175,6 +175,11 @@ void CDebugProc::Draw(void)
 //==========================================================
 void CDebugProc::Print(const char *fmt, ...)
 {
+#if _DEBUG
+
+#else
+	return;
+#endif
 	va_list args = nullptr;
 	char* pTemp = m_pStr;	// ŽØ“ü
 	m_pStr = nullptr;
