@@ -130,6 +130,7 @@ public:	// 誰でもアクセス可能
 	CRoad* GetRoad(void) { return m_Info.pRoad; }
 	CPlayer* GetNext(void) { return m_pNext; }
 	CPlayer* GetPrev(void) { return m_pPrev; }
+	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 
 private:	// 自分だけがアクセス可能
 

@@ -23,9 +23,11 @@ namespace
 {
 	const float LENGTH_POINT = (200.0f);	// 到達判定距離
 	const float CHASE_SPEED = (20.0f);		// 追跡時の加速
+	const float SECURE_SPEED = (-35.0f);	// 確保時の加速
 	const int CHASE_TIME = (300);			// 追跡時間
-	const float CHASE_BEGIN = (500.0f);		// 追跡開始距離
-	const float CHASE_CONTINUE = (1500.0f);	// 追跡継続距離
+	const float CHASE_SECURE = (500.0f);	// 追跡開始距離
+	const float CHASE_BEGIN = (800.0f);		// 追跡開始距離
+	const float CHASE_CONTINUE = (2000.0f);	// 追跡継続距離
 	const float CHASE_END = (3000.0f);		// 追跡終了距離
 }
 
@@ -53,7 +55,7 @@ CPolice::~CPolice()
 //==========================================================
 HRESULT CPolice::Init(void)
 {
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car002.x");
+	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car003.x");
 	return S_OK;
 }
 
@@ -190,7 +192,19 @@ void CPolice::SearchPlayer()
 		length = D3DXVec3Length(&(GetPosition() - m_Info.pPlayer->GetPosition()));
 		CManager::GetInstance()->GetDebugProc()->Print("車と車の距離 [ %f ]\n", length);
 
-		if (length < CHASE_BEGIN)
+		if (length < CHASE_SECURE)
+		{// 追跡開始
+
+			m_Info.bChase = true;
+			m_Info.nChaseCount = CHASE_TIME;
+
+			SetRoadStart(nullptr);
+			SetRoadTarget(nullptr);
+
+			SetSpeedDest(SECURE_SPEED);
+			SetSpeed(GetSpeed() * 0.9f);
+		}
+		else if (length < CHASE_BEGIN)
 		{// 追跡開始
 
 			m_Info.bChase = true;
