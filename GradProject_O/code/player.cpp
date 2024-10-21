@@ -200,7 +200,7 @@ void CPlayer::Update(void)
 	// エフェクト
 	{
 		m_pTailLamp->m_pos = GetPosition();
-		m_pTailLamp->m_rot = m_pObj->GetRotation();
+		m_pTailLamp->m_rot = GetRotation();
 	
 	}
 }
