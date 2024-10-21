@@ -53,7 +53,7 @@ CPolice::~CPolice()
 //==========================================================
 HRESULT CPolice::Init(void)
 {
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car002.x");
+	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car003.x");
 	return S_OK;
 }
 
