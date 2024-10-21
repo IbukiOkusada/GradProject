@@ -37,6 +37,7 @@ public:	// 誰でもアクセス可能
 	bool GetRelease(int nKey);
 	bool GetRepeat(int nKey);
 	D3DXVECTOR3 GetCousorMove();
+	D3DXVECTOR3 GetWorldPos() { return m_WorldPos; }
 	static CInputMouse* Create(HINSTANCE hInstance, HWND hWnd);
 	static CInputMouse* GetInstance() { return m_pInstance; }
 
@@ -48,6 +49,7 @@ private:	// 自分だけアクセス可能
 	DIMOUSESTATE2 m_Release;	//リリース情報
 	DIMOUSESTATE2 m_Repeat;	//リピート情報
 	POINT m_Point;			//カーソルポインター
+	D3DXVECTOR3 m_WorldPos;
 	static CInputMouse* m_pInstance;
 };
 
