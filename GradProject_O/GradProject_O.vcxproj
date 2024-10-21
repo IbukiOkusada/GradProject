@@ -129,6 +129,8 @@
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>precompile.h</ForcedIncludeFiles>
       <LanguageStandard_C>Default</LanguageStandard_C>
+      <LanguageStandard>Default</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

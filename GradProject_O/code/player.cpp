@@ -104,7 +104,7 @@ CPlayer::CPlayer()
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	
+	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 
@@ -186,10 +186,8 @@ void CPlayer::Update(void)
 
 	if (m_pObj != nullptr)
 	{
-		D3DXVECTOR3 rot = GetRotation();
-		rot.y -= D3DX_PI * 0.5f;
 		m_pObj->SetPosition(GetPosition());
-		m_pObj->SetRotation(rot);
+		m_pObj->SetRotation(GetRotation());
 	}
 
 	{
@@ -202,8 +200,10 @@ void CPlayer::Update(void)
 	// エフェクト
 	{
 		m_pTailLamp->m_pos = GetPosition();
-		m_pTailLamp->m_rot = GetRotation();
-	
+		m_pTailLamp->m_rot = m_pObj->GetRotation();
+		m_pBackdust->m_pos = GetPosition();
+		m_pBackdust->m_rot = m_pObj->GetRotation();
+		m_pBackdust->m_fScale = m_fEngine * 100.0f;
 	}
 }
 
