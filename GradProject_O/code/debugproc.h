@@ -36,7 +36,7 @@ public:	// 誰でもアクセス可能
 
 private:	// 自分だけがアクセス可能
 	static LPD3DXFONT m_pFont;	//フォントへのポインタ
-	char m_aStr[MAX_DEBUGSTRING];	//デバッグ表示用の文字列
+	char* m_pStr;					// デバッグ表示用文字列の格納用
 	bool m_bDisp;		//デバッグ表示のON/OFF
 	static const char *m_apMode[CScene::MODE_MAX];
 	static CDebugProc* m_pInstance;

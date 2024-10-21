@@ -186,10 +186,8 @@ void CPlayer::Update(void)
 
 	if (m_pObj != nullptr)
 	{
-		D3DXVECTOR3 rot = GetRotation();
-		rot.y += D3DX_PI * 0.5f;
 		m_pObj->SetPosition(GetPosition());
-		m_pObj->SetRotation(rot);
+		m_pObj->SetRotation(GetRotation());
 	}
 
 	{
@@ -202,14 +200,7 @@ void CPlayer::Update(void)
 	// エフェクト
 	{
 		m_pTailLamp->m_pos = GetPosition();
-		m_pTailLamp->m_rot = m_pObj->GetRotation();
-		
-		/*D3DXVECTOR3 rot = GetRotation();
-		rot.y -= D3DX_PI * 0.5f;
-		D3DXVECTOR3 pos = GetPosition();
-		pos.x += sinf(rot.y) * 100.0f;
-		pos.z += cosf(rot.y) * 100.0f;
-		CParticle::Create(pos, CEffect::TYPE_SMAKE);*/
+		m_pTailLamp->m_rot = GetRotation();
 	}
 }
 
