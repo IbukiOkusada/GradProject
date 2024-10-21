@@ -19,8 +19,8 @@
 #include "input_keyboard.h"
 
 // 静的メンバ変数宣言
-LPD3DXFONT CDebugProc::m_pFont = NULL;	// デバッグフォントへのポインタ
-
+LPD3DXFONT CDebugProc::m_pFont = nullptr;	// デバッグフォントへのポインタ
+CDebugProc* CDebugProc::m_pInstance = nullptr;
 //**********************************************************
 //マクロ定義
 //**********************************************************
@@ -45,7 +45,7 @@ CDebugProc::CDebugProc()
 {
 	//デバッグ表示情報のクリア
 	m_bDisp = false;
-	m_pFont = NULL;
+	m_pFont = nullptr;
 	memset(&m_aStr[0], NULL, sizeof(m_aStr));
 }
 
@@ -85,10 +85,16 @@ void CDebugProc::Init(void)
 void CDebugProc::Uninit(void)
 {
 	//デバッグ表示用フォントの廃棄
-	if (m_pFont != NULL)
+	if (m_pFont != nullptr)
 	{
 		m_pFont->Release();
-		m_pFont = NULL;
+		m_pFont = nullptr;
+	}
+
+	if (m_pInstance != nullptr)
+	{
+		delete m_pInstance;
+		m_pInstance = nullptr;
 	}
 }
 
@@ -154,7 +160,7 @@ void CDebugProc::Draw(void)
 	if (m_bDisp == true)
 	{//デバックモードがオンの時
 		//テキストの描画
-		m_pFont->DrawText(NULL, &m_aStr[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
+		m_pFont->DrawText(nullptr, &m_aStr[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	}
 
 	//デバッグ表示情報のクリア
@@ -166,9 +172,9 @@ void CDebugProc::Draw(void)
 //==========================================================
 void CDebugProc::Print(const char *fmt, ...)
 {
-	va_list args;
-	char aString[MAX_DEBUGSTRING];		// 指定文字格納用
-	char aSaveString[MAX_DEBUGSTRING];	// 可変引数中身格納用
+	va_list args = nullptr;
+	char aString[MAX_DEBUGSTRING] = "";		// 指定文字格納用
+	char aSaveString[MAX_DEBUGSTRING] = "";	// 可変引数中身格納用
 	int nLength = 0;	// 可変引数内の文字の長さ
 	int nStopLength;	// 可変引数挿入場所より
 
@@ -226,7 +232,7 @@ void CDebugProc::Print(const char *fmt, ...)
 				break;
 			case 's':	// 文字列
 
-				sprintf(&aSaveString[0], "%s", va_arg(args, const char*));
+				sprintf(&aSaveString[0], "%s", va_arg(args, char*));
 
 				break;
 			}
@@ -256,4 +262,16 @@ void CDebugProc::Print(const char *fmt, ...)
 	strcat(&m_aStr[0], &aString[0]);
 }
 
+//==========================================================
+//デバッグ表示の設定処理
+//==========================================================
+CDebugProc* CDebugProc::Create()
+{
+	if (m_pInstance == nullptr)
+	{
+		m_pInstance = DEBUG_NEW CDebugProc;
+		m_pInstance->Init();
+	}
 
+	return m_pInstance;
+}

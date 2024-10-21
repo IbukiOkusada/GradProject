@@ -5,6 +5,7 @@
 //
 //==========================================================
 #include "task_manager.h"
+#include "edit_manager.h"
 #include "task.h"
 
 CTaskManager *CTaskManager::m_pInstance = nullptr;
@@ -93,11 +94,18 @@ void CTaskManager::ReleaseAll(void)
 void CTaskManager::UpdateAll(void)
 {
 	CTask *pTask = m_pTop;	// 先頭を取得
+	CEditManager* pEdit = CEditManager::GetInstance();
 
 	while (pTask != nullptr)
 	{// 使用されていない状態まで
 
 		CTask *pTaskNext = pTask->GetNext();	// 次のオブジェクトへのポインタを取得
+
+		// エディット中
+		if (pEdit != nullptr && pTask->GetType() != CTask::TYPE_MODEL) { 
+			pTask = pTaskNext;	// 次のオブジェクトに移動
+			continue;
+		}
 
 		if (!pTask->GetDeath())
 		{

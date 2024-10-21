@@ -35,6 +35,7 @@ private:	// 自分だけがアクセス可能
 	void ChangeEdit(CEdit* pEdit);
 
 	// メンバ変数
+	bool m_bFlag;	// 終了フラグ
 	CEdit::TYPE m_SelectType;
 	CEdit* m_pEdit;	// エディター用ポインタ
 	static CEditManager* m_pInstance;
