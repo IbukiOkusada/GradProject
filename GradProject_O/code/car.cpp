@@ -11,6 +11,8 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "collision.h"
+#include "player.h"
+#include "player_manager.h"
 
 // マクロ定義
 
@@ -40,6 +42,7 @@ CCar::CCar()
 	m_Info.pRoadTarget = nullptr;
 	m_Info.speed = 0.0f;
 	m_Info.speedDest = 0.0f;
+	m_Info.bBreak = false;
 }
 
 //==========================================================
@@ -134,16 +137,19 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 //==========================================================
 void CCar::Move()
 {
-	// 角度調整
-	Rot();
+	if (!m_Info.bBreak)
+	{
+		// 角度調整
+		Rot();
 
-	m_Info.speed += (m_Info.speedDest - m_Info.speed) * SPEED_INER;
-	CManager::GetInstance()->GetDebugProc()->Print("車の速度 [ %f ]\n", m_Info.speed);
+		m_Info.speed += (m_Info.speedDest - m_Info.speed) * SPEED_INER;
+		CManager::GetInstance()->GetDebugProc()->Print("車の速度 [ %f ]\n", m_Info.speed);
 
-	m_Info.move.x = m_Info.speed * sinf(m_Info.rot.y);
-	m_Info.move.y = 0.0f;
-	m_Info.move.z = m_Info.speed * cosf(m_Info.rot.y);
-	m_Info.pos += m_Info.move;
+		m_Info.move.x = m_Info.speed * sinf(m_Info.rot.y);
+		m_Info.move.y = 0.0f;
+		m_Info.move.z = m_Info.speed * cosf(m_Info.rot.y);
+		m_Info.pos += m_Info.move;
+	}
 }
 
 //==========================================================
@@ -307,6 +313,13 @@ bool CCar::Collision()
 			CRoad* pRoadNext = m_Info.pRoadTarget;
 			m_Info.pRoadTarget = m_Info.pRoadStart;
 			m_Info.pRoadStart = pRoadNext;
+
+			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+			if (pPlayer->GetModelIndex() == pObjectX->GetIdx())
+			{
+				m_Info.bBreak = true;
+			}
+
 			return true;
 		}
 
