@@ -71,16 +71,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\lib\Effekseer\Include\EffekseerRendererGL;.\lib\Effekseer\Include\EffekseerRendererDX11;.\lib\Effekseer\Include\EffekseerRendererDX9;.\lib\Effekseer\Include\Effekseer;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>.\lib\Effekseer\Lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\lib\Effekseer\Include\EffekseerRendererGL;.\lib\Effekseer\Include\EffekseerRendererDX11;.\lib\Effekseer\Include\EffekseerRendererDX9;.\lib\Effekseer\Include\Effekseer;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>.\lib\Effekseer\Lib;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -165,7 +165,12 @@
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\convenience.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
+    <ClCompile Include="code\edit.cpp" />
+    <ClCompile Include="code\edit_manager.cpp" />
+    <ClCompile Include="code\edit_object.cpp" />
+    <ClCompile Include="code\edit_road.cpp" />
     <ClCompile Include="code\effect.cpp" />
+    <ClCompile Include="code\effekseerControl.cpp" />
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\goal.cpp" />
@@ -227,6 +232,11 @@
     <ClInclude Include="code\car.h" />
     <ClInclude Include="code\car_manager.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\effekseerControl.h" />
+    <ClInclude Include="code\edit.h" />
+    <ClInclude Include="code\edit_manager.h" />
+    <ClInclude Include="code\edit_object.h" />
+    <ClInclude Include="code\edit_road.h" />
     <ClInclude Include="code\goal.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\convenience.h" />

@@ -78,8 +78,8 @@ public:	// 誰でもアクセス可能
 	float GetLength(void) { return m_fLength; }
 
 	// メンバ関数(設定)
-	D3DXMATRIX SetMtxView(D3DXMATRIX mtxView) { m_mtxView = mtxView; }
-	D3DXMATRIX SetMtxProjection(D3DXMATRIX mtxProjection) { m_mtxProjection = mtxProjection; }
+	void SetMtxView(D3DXMATRIX mtxView) { m_mtxView = mtxView; }
+	void SetMtxProjection(D3DXMATRIX mtxProjection) { m_mtxProjection = mtxProjection; }
 	void SetNext(CCamera *pNext) { m_pNext = pNext; }
 	void SetPrev(CCamera *pPrev) { m_pPrev = pPrev; }
 	void SetDraw(const bool bDraw) { m_bDraw = bDraw; }

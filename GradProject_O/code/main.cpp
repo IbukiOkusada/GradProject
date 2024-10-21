@@ -12,7 +12,6 @@
 #include <crtdbg.h>
 
 //マクロ定義
-#define CLASS_NAME	"WindowClass"		//ウインドウクラスの名前
 #define WINDOW_NAME	"GradProject"	//ウインドウの名前
 
 //プロトタイプ宣言

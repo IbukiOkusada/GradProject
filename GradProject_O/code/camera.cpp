@@ -16,6 +16,7 @@
 #include "camera.h"
 #include "camera_manager.h"
 #include "slow.h"
+#include "edit_manager.h"
 
 //無名名前空間
 namespace
@@ -33,7 +34,7 @@ namespace
 	const float CAMERA_MAXLENGTH = (5000.0f);		// カメラ最大距離
 	const float CAMERA_MINLENGTH = (120.0f);			// カメラ最小距離
 	const float MOUSE_MOVESPEED = (0.9f);		// マウス移動速度
-	const float MOUSE_ROTATESPEED_X = (0.001f);		// マウス回転速度x軸
+	const float MOUSE_ROTATESPEED_X = (0.005f);		// マウス回転速度x軸
 	const float MOUSE_ROTATESPEED_Z = (0.005f);		// マウス回転速度z軸
 	const float MOUSE_ROTATESPEEDEDIT_X = (0.01f);		// マウス回転速度x軸
 	const float MOUSE_ROTATESPEEDEDIT_Z = (0.01f);		// マウス回転速度z軸
@@ -123,14 +124,18 @@ void CCamera::Update(void)
 		m_OldposV = m_posV;
 		m_Oldrot = m_rot;
 	}
-	
-	MouseCamera();
+
+	// エディター中
+	if (CEditManager::GetInstance() != nullptr)
+	{
+
+		MoveV();
+		MoveR();
+		MouseCamera();
+	}
 
 	//ズーム
-	Zoom();
-
-	CManager::GetInstance()->GetDebugProc()->Print("向き[%f, %f, %f]\n", m_rot.x, m_rot.y, m_rot.z);
-	
+	Zoom();	
 }
 
 //==========================================================
@@ -439,120 +444,113 @@ void CCamera::MouseCamera(void)
 {
 	CInputMouse *pMouse = CInputMouse::GetInstance();
 
-	//if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true && pMouse->GetPress(CInputMouse::BUTTON_RBUTTON) == true)
-	//{//左右同時に押されているとき
-	//	m_move.x += cosf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -cosf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
-	//	m_move.z += sinf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -sinf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
+	if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true && pMouse->GetPress(CInputMouse::BUTTON_RBUTTON) == true)
+	{//左右同時に押されているとき
+		m_move.x += cosf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -cosf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
+		m_move.z += sinf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -sinf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
 
-	//	CManager::GetInstance()->GetDebugProc()->Print("移動量 [ %f, %f ]", m_move.x, m_move.z);
+		//移動量を加算
+		m_posV.x += m_move.x;
+		m_posV.z += m_move.z;
 
-	//	//移動量を加算
-	//	m_posV.x += m_move.x;
-	//	m_posV.z += m_move.z;
+		//移動量を初期化
+		m_move.x = 0.0f;
+		m_move.z = 0.0f;
 
-	//	//移動量を初期化
-	//	m_move.x = 0.0f;
-	//	m_move.z = 0.0f;
+		//注視点設定
+		SetR();
+	}
+	else if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true)
+	{//左キーが押されているとき
+		m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
+		m_rot.z -= pMouse->GetCousorMove().y * 0.005f;
 
-	//	//注視点設定
-	//	SetR();
-	//}
-	//else if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true)
-	//{//左キーが押されているとき
-	//	m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
-	//	m_rot.z -= pMouse->GetCousorMove().y * 0.005f;
+		if (m_rot.y > D3DX_PI)
+		{//角度がΠを超えた場合
+			m_rot.y = D3DX_PI;
+			m_rot.y *= -1.0f;
+		}
+		else if (m_rot.y < -D3DX_PI)
+		{//角度がΠを超えた場合
+			m_rot.y = -D3DX_PI;
+			m_rot.y *= -1.0f;
+		}
+		if (m_rot.z < MIN_CAMERA_ROTZ)
+		{//角度が限界を超えた場合
+			m_rot.z = MIN_CAMERA_ROTZ;
+		}
+		else if (m_rot.z > MAX_CAMERA_ROTZ)
+		{//角度が限界を超えた場合
+			m_rot.z = MAX_CAMERA_ROTZ;
+		}
+	}
+	else if (pMouse->GetPress(CInputMouse::BUTTON_RBUTTON) == true)
+	{//右キーが押されているとき
+		m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
+		m_rot.z -= pMouse->GetCousorMove().y * MOUSE_ROTATESPEED_Z;
 
-	//	if (m_rot.y > D3DX_PI)
-	//	{//角度がΠを超えた場合
-	//		m_rot.y = D3DX_PI;
-	//		m_rot.y *= -1.0f;
-	//	}
-	//	else if (m_rot.y < -D3DX_PI)
-	//	{//角度がΠを超えた場合
-	//		m_rot.y = -D3DX_PI;
-	//		m_rot.y *= -1.0f;
-	//	}
-	//	if (m_rot.z < MIN_CAMERA_ROTZ)
-	//	{//角度が限界を超えた場合
-	//		m_rot.z = MIN_CAMERA_ROTZ;
-	//	}
-	//	else if (m_rot.z > MAX_CAMERA_ROTZ)
-	//	{//角度が限界を超えた場合
-	//		m_rot.z = MAX_CAMERA_ROTZ;
-	//	}
-	//}
-	//else if (pMouse->GetPress(CInputMouse::BUTTON_RBUTTON) == true)
-	//{//右キーが押されているとき
-	//	m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
-	//	m_rot.z -= pMouse->GetCousorMove().y * MOUSE_ROTATESPEED_Z;
+		if (m_rot.y > D3DX_PI)
+		{//角度がΠを超えた場合
+			m_rot.y = D3DX_PI;
+			m_rot.y *= -1.0f;
+		}
+		else if (m_rot.y < -D3DX_PI)
+		{//角度がΠを超えた場合
+			m_rot.y = -D3DX_PI;
+			m_rot.y *= -1.0f;
+		}
+		if (m_rot.z < MIN_CAMERA_ROTZ)
+		{//角度が限界を超えた場合
+			m_rot.z = MIN_CAMERA_ROTZ;
+		}
+		else if (m_rot.z > MAX_CAMERA_ROTZ)
+		{//角度が限界を超えた場合
+			m_rot.z = MAX_CAMERA_ROTZ;
+		}
 
-	//	if (m_rot.y > D3DX_PI)
-	//	{//角度がΠを超えた場合
-	//		m_rot.y = D3DX_PI;
-	//		m_rot.y *= -1.0f;
-	//	}
-	//	else if (m_rot.y < -D3DX_PI)
-	//	{//角度がΠを超えた場合
-	//		m_rot.y = -D3DX_PI;
-	//		m_rot.y *= -1.0f;
-	//	}
-	//	if (m_rot.z < MIN_CAMERA_ROTZ)
-	//	{//角度が限界を超えた場合
-	//		m_rot.z = MIN_CAMERA_ROTZ;
-	//	}
-	//	else if (m_rot.z > MAX_CAMERA_ROTZ)
-	//	{//角度が限界を超えた場合
-	//		m_rot.z = MAX_CAMERA_ROTZ;
-	//	}
+		//視点設定
+		SetR();
+	}
 
-	//	//視点設定
-	//	SetR();
-	//}
+	if (m_rot.y > D3DX_PI)
+	{//角度がΠを超えた場合
+		m_rot.y = D3DX_PI;
+		m_rot.y *= -1.0f;
+	}
+	else if (m_rot.y < -D3DX_PI)
+	{//角度がΠを超えた場合
+		m_rot.y = -D3DX_PI;
+		m_rot.y *= -1.0f;
+	}
 
-	//m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
+	if (m_rot.y < -D3DX_PI)
+	{//角度がΠを超えた場合
+		m_rot.y += D3DX_PI * 2;
+	}
+	else if (m_rot.y > D3DX_PI)
+	{//角度がΠを超えた場合
+		m_rot.y += -D3DX_PI * 2;
+	}
+	if (m_rot.z < MIN_CAMERA_ROTZ)
+	{//角度が限界を超えた場合
+		m_rot.z = MIN_CAMERA_ROTZ;
+	}
+	else if (m_rot.z > MAX_CAMERA_ROTZ)
+	{//角度が限界を超えた場合
+		m_rot.z = MAX_CAMERA_ROTZ;
+	}
 
-	//if (m_rot.y > D3DX_PI)
-	//{//角度がΠを超えた場合
-	//	m_rot.y = D3DX_PI;
-	//	m_rot.y *= -1.0f;
-	//}
-	//else if (m_rot.y < -D3DX_PI)
-	//{//角度がΠを超えた場合
-	//	m_rot.y = -D3DX_PI;
-	//	m_rot.y *= -1.0f;
-	//}
+	//ホイールの使用量で距離の変更
+	m_fLength += pMouse->GetCousorMove().z * MOUSE_WHEELSPEED;
 
-	//m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
-	//m_rot.z -= pMouse->GetCousorMove().y * 0.003f;
-
-	//if (m_rot.y < -D3DX_PI)
-	//{//角度がΠを超えた場合
-	//	m_rot.y += D3DX_PI * 2;
-	//}
-	//else if (m_rot.y > D3DX_PI)
-	//{//角度がΠを超えた場合
-	//	m_rot.y += -D3DX_PI * 2;
-	//}
-	//if (m_rot.z < MIN_CAMERA_ROTZ)
-	//{//角度が限界を超えた場合
-	//	m_rot.z = MIN_CAMERA_ROTZ;
-	//}
-	//else if (m_rot.z > MAX_CAMERA_ROTZ)
-	//{//角度が限界を超えた場合
-	//	m_rot.z = MAX_CAMERA_ROTZ;
-	//}
-
-	////ホイールの使用量で距離の変更
-	//m_fLength += pMouse->GetCousorMove().z * MOUSE_WHEELSPEED;
-
-	//if (m_fLength > CAMERA_MAXLENGTH)
-	//{//距離が最大を超えた場合
-	//	m_fLength = CAMERA_MAXLENGTH;
-	//}
-	//else if (m_fLength < CAMERA_MINLENGTH)
-	//{//距離が最小を超えた場合
-	//	m_fLength = CAMERA_MINLENGTH;
-	//}
+	if (m_fLength > CAMERA_MAXLENGTH)
+	{//距離が最大を超えた場合
+		m_fLength = CAMERA_MAXLENGTH;
+	}
+	else if (m_fLength < CAMERA_MINLENGTH)
+	{//距離が最小を超えた場合
+		m_fLength = CAMERA_MINLENGTH;
+	}
 
 	//視点設定
 	SetV();
@@ -1080,4 +1078,8 @@ void CMultiCamera::SetCamera(void)
 
 	//ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &mtxView);
+
+	// マトリックス設定
+	SetMtxView(mtxView);
+	SetMtxProjection(mtxProjection);
 }

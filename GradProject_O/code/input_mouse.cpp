@@ -7,6 +7,8 @@
 #include "input_mouse.h"
 #include "manager.h"
 #include "debugproc.h"
+#include "camera.h"
+#include "renderer.h"
 
 #define REPEAT_TIME (15)	//リピートタイマー
 
@@ -117,6 +119,9 @@ void CInputMouse::Uninit(void)
 void CInputMouse::Update(void)
 {
 	DIMOUSESTATE2 MouseState;	//マウスの入力情報
+	CCamera* pCam = CManager::GetInstance()->GetCamera();
+	D3DVIEWPORT9 viewport;
+	CManager::GetInstance()->GetRenderer()->GetDevice()->GetViewport(&viewport);
 
 	//入力デバイスからデータを取得
 	if (SUCCEEDED(m_pDevice->GetDeviceState(sizeof(MouseState), (LPVOID)&MouseState)))
@@ -130,6 +135,24 @@ void CInputMouse::Update(void)
 
 		//マウスの現在のポインタを取得する
 		GetCursorPos(&m_Point);
+
+		// スクリーン座標に変換
+		ScreenToClient(FindWindowA(CLASS_NAME, nullptr), &m_Point);
+
+		// 座標
+		D3DXVECTOR3 vnear = D3DXVECTOR3(m_Point.x, m_Point.y, 0.0f);
+		D3DXVECTOR3 vfar = D3DXVECTOR3(m_Point.x, m_Point.y, 1.0f);
+		D3DXVECTOR3 origin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		D3DXVECTOR3 end = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+		D3DXVec3Unproject(&origin, &vnear, &viewport, &pCam->GetMtxProjection(), &pCam->GetMtxView(), nullptr);
+		D3DXVec3Unproject(&end, &vfar, &viewport, &pCam->GetMtxProjection(), &pCam->GetMtxView(), nullptr);
+
+		// 4. レイの方向を計算
+		D3DXVECTOR3 rayDir = end - origin;
+		D3DXVec3Normalize(&rayDir, &rayDir);
+
+		m_WorldPos = rayDir;
 	}
 	else
 	{

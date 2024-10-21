@@ -11,7 +11,10 @@
 #include "object.h"
 #include "objectX.h"
 #include "task.h"
+#include "effekseerControl.h"
+#include "convenience.h"
 
+using namespace std;
 // 前方宣言
 class CWaist;
 class CCharacter;
@@ -130,6 +133,7 @@ public:	// 誰でもアクセス可能
 	CRoad* GetRoad(void) { return m_Info.pRoad; }
 	CPlayer* GetNext(void) { return m_pNext; }
 	CPlayer* GetPrev(void) { return m_pPrev; }
+	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 
 private:	// 自分だけがアクセス可能
 
@@ -140,9 +144,10 @@ private:	// 自分だけがアクセス可能
 	void Move(void);
 	void Rotate(void);
 	void Adjust(void);
-	void Collision(void);
+	bool Collision(void);
 	void Engine(float fThrottle);
-	void SearchRoad();
+	void SearchRoad(void);
+
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
 	CPlayer *m_pNext;			// 次のオブジェクトへのポインタ
@@ -157,6 +162,7 @@ private:	// 自分だけがアクセス可能
 	int m_nId;					// ID
 	TYPE m_type;
 	CObjectX* m_pObj;
+	CEffekseer::CEffectData * m_pTailLamp;
 };
 
 #endif

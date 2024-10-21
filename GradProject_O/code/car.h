@@ -38,6 +38,7 @@ private:	// 自分だけがアクセス可能
 		CRoad* pRoadTarget;		// 目標地点
 		float speed;
 		float speedDest;
+		bool bBreak;
 	};
 
 public:	// 誰でもアクセス可能
@@ -62,6 +63,7 @@ public:	// 誰でもアクセス可能
 	CRoad* GetRoadTarget(void) { return m_Info.pRoadTarget; }
 	CCar* GetNext(void) { return m_pNext; }
 	CCar* GetPrev(void) { return m_pPrev; }
+	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 
 	// メンバ関数(設定)
 	void SetMove(const D3DXVECTOR3 move) { m_Info.move = move; }
@@ -90,7 +92,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 	void Move();
 	void Rot();
-	void Collision();
+	bool Collision();
 
 	// メンバ変数
 	CCar* m_pPrev;			// 前のオブジェクトへのポインタ

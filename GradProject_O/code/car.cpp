@@ -11,6 +11,8 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "collision.h"
+#include "player.h"
+#include "player_manager.h"
 
 // マクロ定義
 
@@ -40,6 +42,7 @@ CCar::CCar()
 	m_Info.pRoadTarget = nullptr;
 	m_Info.speed = 0.0f;
 	m_Info.speedDest = 0.0f;
+	m_Info.bBreak = false;
 }
 
 //==========================================================
@@ -82,6 +85,7 @@ void CCar::Uninit(void)
 void CCar::Update(void)
 {
 	m_Info.posOld = m_Info.pos;
+	m_Info.speedDest = 0.0f;
 
 	// 移動先の決定
 	MoveRoad();
@@ -133,16 +137,19 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 //==========================================================
 void CCar::Move()
 {
-	// 角度調整
-	Rot();
+	if (!m_Info.bBreak)
+	{
+		// 角度調整
+		Rot();
 
-	m_Info.speed += (m_Info.speedDest - m_Info.speed) * SPEED_INER;
-	CManager::GetInstance()->GetDebugProc()->Print("車の速度 [ %f ]\n", m_Info.speed);
+		m_Info.speed += (m_Info.speedDest - m_Info.speed) * SPEED_INER;
+		CManager::GetInstance()->GetDebugProc()->Print("車の速度 [ %f ]\n", m_Info.speed);
 
-	m_Info.move.x = m_Info.speed * sinf(m_Info.rot.y);
-	m_Info.move.y = 0.0f;
-	m_Info.move.z = m_Info.speed * cosf(m_Info.rot.y);
-	m_Info.pos += m_Info.move;
+		m_Info.move.x = m_Info.speed * sinf(m_Info.rot.y);
+		m_Info.move.y = 0.0f;
+		m_Info.move.z = m_Info.speed * cosf(m_Info.rot.y);
+		m_Info.pos += m_Info.move;
+	}
 }
 
 //==========================================================
@@ -173,11 +180,11 @@ void CCar::Rot()
 	//角度一致判定
 	if (fabsf(fRotDiff) >= ROT_CURVE)
 	{
-		m_Info.speedDest = SPEED_CURVE;
+		m_Info.speedDest += SPEED_CURVE;
 	}
 	else
 	{
-		m_Info.speedDest = SPEED_STREET;
+		m_Info.speedDest += SPEED_STREET;
 	}
 
 	if (fRotMove > D3DX_PI)
@@ -285,7 +292,7 @@ void CCar::ReachRoad()
 //==========================================================
 // 当たり判定処理
 //==========================================================
-void CCar::Collision()
+bool CCar::Collision()
 {
 	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
 
@@ -306,8 +313,18 @@ void CCar::Collision()
 			CRoad* pRoadNext = m_Info.pRoadTarget;
 			m_Info.pRoadTarget = m_Info.pRoadStart;
 			m_Info.pRoadStart = pRoadNext;
+
+			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+			if (pPlayer->GetModelIndex() == pObjectX->GetIdx())
+			{
+				m_Info.bBreak = true;
+			}
+
+			return true;
 		}
 
 		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
 	}
+
+	return false;
 }

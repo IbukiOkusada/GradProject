@@ -39,6 +39,7 @@
 #include "camera_manager.h"
 #include "road.h"
 #include "road_manager.h"
+#include "collision.h"
 
 //===============================================
 // マクロ定義
@@ -102,6 +103,8 @@ CPlayer::CPlayer()
 	m_pObj = nullptr;
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 
@@ -140,13 +143,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 // 終了処理
 //===============================================
 void CPlayer::Uninit(void)
-{
-	if (m_pObj != nullptr)
-	{
-		m_pObj->Uninit();
-		m_pObj = nullptr;
-	}
-
+{	
+	SAFE_UNINIT(m_pObj)
+	SAFE_DELETE(m_pTailLamp);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// 廃棄
@@ -171,6 +170,9 @@ void CPlayer::Update(void)
 
 		// 最寄りの道検索
 		SearchRoad();
+
+		// 当たり判定
+		Collision();
 
 		// オンライン送信
 		CManager::GetInstance()->GetScene()->SendPosition(m_Info.pos);
@@ -199,12 +201,15 @@ void CPlayer::Update(void)
 
 	// エフェクト
 	{
-		D3DXVECTOR3 rot = GetRotation();
+		m_pTailLamp->m_pos = GetPosition();
+		m_pTailLamp->m_rot = m_pObj->GetRotation();
+		
+		/*D3DXVECTOR3 rot = GetRotation();
 		rot.y -= D3DX_PI * 0.5f;
 		D3DXVECTOR3 pos = GetPosition();
 		pos.x += sinf(rot.y) * 100.0f;
 		pos.z += cosf(rot.y) * 100.0f;
-		CParticle::Create(pos, CEffect::TYPE_SMAKE);
+		CParticle::Create(pos, CEffect::TYPE_SMAKE);*/
 	}
 }
 
@@ -408,6 +413,36 @@ void CPlayer::SearchRoad()
 }
 
 //===============================================
+// 当たり判定処理
+//===============================================
+bool CPlayer::Collision(void)
+{
+	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
+
+	while (pObjectX != nullptr)
+	{// 使用されていない状態まで
+
+		CObjectX* pObjectXNext = pObjectX->GetNext();	// 次のオブジェクトへのポインタを取得
+
+		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
+		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
+		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
+		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+
+		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+
+		if (bCollision)
+		{
+			return true;
+		}
+
+		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
+	}
+
+	return false;
+}
+
+//===============================================
 // 状態管理
 //===============================================
 void CPlayer::StateSet(void)
@@ -509,7 +544,8 @@ void CPlayer::SetMatrix(void)
 //===============================================
 // 指定モーションに設定
 //===============================================
-void CPlayer::SetMotion(int nMotion) {
+void CPlayer::SetMotion(int nMotion)
+{
 	
 	
 }
@@ -520,12 +556,4 @@ void CPlayer::SetMotion(int nMotion) {
 void CPlayer::SetDraw(bool bDraw)
 {
 	
-}
-
-//===============================================
-// 
-//===============================================
-void CPlayer::Collision(void)
-{
-
 }

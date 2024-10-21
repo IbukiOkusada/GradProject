@@ -33,6 +33,7 @@
 #include "police.h"
 #include "car_manager.h"
 #include "goal.h"
+#include "edit_manager.h"
 
 // 無名名前空間を定義
 namespace {
@@ -206,6 +207,9 @@ void CGame::Uninit(void)
     //Winsock終了処理
     WSACleanup();	// WSACleanup関数 : winsockの終了処理
 
+    // エディット設定
+    CEditManager::Release();
+
     m_state = STATE_LOCAL;
 }
 
@@ -221,6 +225,21 @@ void CGame::Update(void)
 	{//ポーズキー(Pキー)が押された
 		m_bPause = m_bPause ? false : true;
 	}
+
+    // エディター関連
+#if _DEBUG
+
+    CEditManager* pMgr = CEditManager::GetInstance();
+    // エディター生成
+    if (pInputKey->GetTrigger(DIK_F4) && CEditManager::GetInstance() == nullptr)
+    {
+        pMgr = CEditManager::Create();
+    }
+
+    // エディター更新
+    if (pMgr != nullptr) { pMgr->Update(); }
+
+#endif
 
     CScene::Update();
 }
