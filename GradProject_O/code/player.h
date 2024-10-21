@@ -11,7 +11,10 @@
 #include "object.h"
 #include "objectX.h"
 #include "task.h"
+#include "effekseerControl.h"
+#include "convenience.h"
 
+using namespace std;
 // 前方宣言
 class CWaist;
 class CCharacter;
@@ -159,6 +162,7 @@ private:	// 自分だけがアクセス可能
 	int m_nId;					// ID
 	TYPE m_type;
 	CObjectX* m_pObj;
+	CEffekseer::CEffectData * m_pTailLamp;
 };
 
 #endif
