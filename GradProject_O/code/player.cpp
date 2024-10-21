@@ -203,13 +203,7 @@ void CPlayer::Update(void)
 	{
 		m_pTailLamp->m_pos = GetPosition();
 		m_pTailLamp->m_rot = m_pObj->GetRotation();
-		
-		/*D3DXVECTOR3 rot = GetRotation();
-		rot.y -= D3DX_PI * 0.5f;
-		D3DXVECTOR3 pos = GetPosition();
-		pos.x += sinf(rot.y) * 100.0f;
-		pos.z += cosf(rot.y) * 100.0f;
-		CParticle::Create(pos, CEffect::TYPE_SMAKE);*/
+	
 	}
 }
 

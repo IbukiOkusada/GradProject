@@ -11,7 +11,7 @@
 #include "object.h"
 #include "objectX.h"
 #include "task.h"
-
+#include "effekseerControl.h"
 // 前方宣言
 class CWaist;
 class CCharacter;
@@ -51,7 +51,7 @@ public:	// 誰でもアクセス可能
 	virtual void Uninit(void);
 	virtual void Update(void);
 	static CCar*Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move);
-
+	void TailLamp();
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
@@ -98,7 +98,7 @@ private:	// 自分だけがアクセス可能
 	CCar* m_pPrev;			// 前のオブジェクトへのポインタ
 	CCar* m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;				// 自分自身の情報
-
+	CEffekseer::CEffectData* m_pTailLamp;
 };
 
 #endif

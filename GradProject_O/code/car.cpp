@@ -59,6 +59,7 @@ CCar::~CCar()
 HRESULT CCar::Init(void)
 {
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car002.x");
+	TailLamp();
 	return S_OK;
 }
 
@@ -68,12 +69,8 @@ HRESULT CCar::Init(void)
 void CCar::Uninit(void)
 {
 	// 描画オブジェクトを廃棄
-	if (m_pObj != nullptr)
-	{
-		m_pObj->Uninit();
-		m_pObj = nullptr;
-	}
-
+	SAFE_UNINIT(m_pObj);
+	SAFE_DELETE(m_pTailLamp);
 	CCarManager::GetInstance()->ListOut(this);
 
 	Release();
@@ -103,6 +100,8 @@ void CCar::Update(void)
 		m_pObj->SetRotation(m_Info.rot);
 		m_Info.rot.y -= D3DX_PI;
 	}
+	m_pTailLamp->m_pos = m_Info.pos;
+	m_pTailLamp->m_rot = m_Info.rot;
 }
 
 //==========================================================
@@ -131,7 +130,11 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 
 	return pCar;
 }
+void CCar::TailLamp()
+{
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 
+}
 //==========================================================
 // 移動処理
 //==========================================================
