@@ -231,7 +231,7 @@ void CEffekseer::Draw()
 //======================================================
 CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale, bool bLoop, bool bAutoDelete)
 {
-	CEffectData* pEffect = new CEffectData;
+	CEffectData* pEffect = DEBUG_NEW CEffectData;
 	pEffect->efcRef = Loading(path);
 	pEffect->Path = path;
 	// エフェクトの再生

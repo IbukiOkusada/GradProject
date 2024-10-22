@@ -146,6 +146,7 @@ void CPlayer::Uninit(void)
 {	
 	SAFE_UNINIT(m_pObj)
 	SAFE_DELETE(m_pTailLamp);
+	SAFE_DELETE(m_pBackdust);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// ”pŠü
