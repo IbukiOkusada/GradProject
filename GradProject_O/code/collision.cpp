@@ -489,6 +489,70 @@ bool CollideOBBToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 rotO, D3DXVECTOR3 size
 }
 
 //========================================
+// RayとOBBの衝突判定処理
+//========================================
+bool CollideRayToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeMaxV, D3DXVECTOR3 sizeMinV)
+{
+	D3DXVECTOR3 posPlaneCenter[6] = {};
+	D3DXVECTOR3 vecIntersect = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 vecNorPlaneCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 sizeV = (sizeMaxV - sizeMinV) * 0.5f;
+	D3DXPLANE plane = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	int nCheckCollision = 0;
+
+	//箱の各面の中心を求める
+	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
+	posPlaneCenter[1] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(-sizeV.x, 0.0f, 0.0f));
+	posPlaneCenter[2] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeV.y, 0.0f));
+	posPlaneCenter[3] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, -sizeV.y, 0.0f));
+	posPlaneCenter[4] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeV.z));
+	posPlaneCenter[5] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, -sizeV.z));
+
+	for (int nCnt = 0; nCnt < 6; nCnt++)
+	{
+		//各面の法線ベクトルを計算する
+		vecNorPlaneCenter = posV - posPlaneCenter[nCnt];
+		D3DXVec3Normalize(&vecNorPlaneCenter, &vecNorPlaneCenter);
+
+		//法線ベクトルから平面の式を計算する
+		D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
+
+		// 衝突地点を計算
+		if (D3DXPlaneIntersectLine(&vecIntersect, &plane, &posO, &(posO + vecO)) == nullptr)
+		{
+			continue;
+		}
+
+		for (int nCnt = 0; nCnt < 6; nCnt++)
+		{
+			//各面の法線ベクトルを計算する
+			D3DXVECTOR3 vecNorPlaneCenterDest = posV - posPlaneCenter[nCnt];
+			D3DXVec3Normalize(&vecNorPlaneCenterDest, &vecNorPlaneCenterDest);
+
+			//法線ベクトルから平面の式を計算する
+			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenterDest);
+
+			//平面の式と点から
+			if (D3DXPlaneDotCoord(&plane, &vecIntersect) >= 0.0f)
+			{
+				nCheckCollision++;
+			}
+		}
+
+		// 箱の中にいるか判定
+		if (nCheckCollision != 6)
+		{
+			continue;
+		}
+
+		*pOut = vecIntersect;
+		return true;
+	}
+
+	return false;
+}
+
+//========================================
 // 線分に対するの射影変換
 //========================================
 float lengthAxis(D3DXVECTOR3 separationAxis, D3DXVECTOR3 e1, D3DXVECTOR3 e2, D3DXVECTOR3 e3)
