@@ -90,8 +90,8 @@ void CObjectX::Draw(void)
 	//Update();
 
 	// マトリックス計算
-	CalWorldMtx();
-
+	//CalWorldMtx();
+	Quaternion();
 	// 描画
 	DrawOnry();
 }
@@ -114,7 +114,33 @@ void CObjectX::CalWorldMtx()
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 }
+void CObjectX::Quaternion()
+{
+	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
+	D3DXQUATERNION qYaw, qPitch, qRoll;
+	// ヨー: Y軸回転
+	D3DXQuaternionRotationAxis(&qYaw, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), m_rot.y);
 
+	// ピッチ: X軸回転
+	D3DXQuaternionRotationAxis(&qPitch, &D3DXVECTOR3(1.0f, 0.0f, 0.0f), m_rot.x);
+
+	// ロール: Z軸回転
+	D3DXQuaternionRotationAxis(&qRoll, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), m_rot.z);
+	D3DXQUATERNION qResult;
+	D3DXQuaternionMultiply(&qResult, &qRoll, &qPitch);  // ロールとピッチを掛け合わせ
+	D3DXQuaternionMultiply(&qResult, &qResult, &qYaw);  // さらにヨーを掛け合わせ
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxWorld);
+
+	//向きを反映
+	D3DXMatrixRotationQuaternion(&mtxRot, &qResult);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+	//位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+}
 //==========================================================
 // 描画のみ
 //==========================================================

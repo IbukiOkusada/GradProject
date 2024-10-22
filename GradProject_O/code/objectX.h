@@ -65,7 +65,7 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3& GetVtxMin(void);
 
 protected:
-
+	void Quaternion();
 	void DrawOnry();
 	void CalWorldMtx();
 
