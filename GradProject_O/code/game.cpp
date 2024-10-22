@@ -164,8 +164,23 @@ HRESULT CGame::Init(void)
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
     CCar* pCar = CCar::Create(D3DXVECTOR3(1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-    pCar = CCar::Create(D3DXVECTOR3(-1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     CCarManager::GetInstance()->ListIn(pCar);
+    pCar = CCar::Create(D3DXVECTOR3(1000.0f, 0.0f, 2000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    CCarManager::GetInstance()->ListIn(pCar); 
+    //pCar = CCar::Create(D3DXVECTOR3(1000.0f, 0.0f, -2000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    //CCarManager::GetInstance()->ListIn(pCar);
+    //pCar = CCar::Create(D3DXVECTOR3(-1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    //CCarManager::GetInstance()->ListIn(pCar);
+    //pCar = CCar::Create(D3DXVECTOR3(-1000.0f, 0.0f, -2000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    //CCarManager::GetInstance()->ListIn(pCar);
+    //pCar = CCar::Create(D3DXVECTOR3(0.0f, 0.0f, 2000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    //CCarManager::GetInstance()->ListIn(pCar);
+    //pCar = CCar::Create(D3DXVECTOR3(0.0f, 0.0f, -2000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    //CCarManager::GetInstance()->ListIn(pCar);
+
+    pCar = CPolice::Create(D3DXVECTOR3(-1000.0f, 0.0f, 2000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+    CCarManager::GetInstance()->ListIn(pCar);
+
     CGole::Create(D3DXVECTOR3(5000.0f, 0.0f, 0.0f), 600.0f, 15.0f);
     // ìπê∂ê¨
     SetRoad();
