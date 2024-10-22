@@ -9,6 +9,9 @@
 
 #include "edit.h"
 
+// 前方宣言
+class CRoad;
+
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
@@ -31,8 +34,13 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void ClickCheck();
+	bool CursorCollision(CRoad* pRoad);
+	bool TriangleCollision(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayDir,
+		const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2);
 
 	// メンバ変数
+	CRoad* m_pSelectRoad;
 };
 
 #endif

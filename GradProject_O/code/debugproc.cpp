@@ -160,7 +160,7 @@ void CDebugProc::Draw(void)
 	if (m_bDisp == true && m_pStr != nullptr)
 	{//デバックモードがオンの時
 		//テキストの描画
-		m_pFont->DrawText(nullptr, m_pStr, -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
+		m_pFont->DrawText(nullptr, m_pStr, -1, &rect, DT_LEFT, D3DCOLOR_RGBA(0, 0, 0, 255));
 	}
 
 	if (m_pStr != nullptr)
@@ -176,6 +176,8 @@ void CDebugProc::Draw(void)
 void CDebugProc::Print(const char *fmt, ...)
 {
 #if _DEBUG
+
+	if (!m_bDisp) { return; }
 
 #else
 	return;

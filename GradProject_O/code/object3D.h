@@ -43,6 +43,7 @@ public:	// 誰でもアクセス可能
 	void SetMtx(void);
 	D3DXMATRIX *GetMtx(void) { return &m_mtxWorld; }
 	void SetLighting(bool bValue) { m_bLighting = bValue; }
+	VERTEX_3D* GetVertex() { return m_pVtx; }
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
@@ -53,6 +54,7 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ変数
+	VERTEX_3D* m_pVtx;
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	//頂点バッファへのポインタ
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 	D3DXVECTOR3 m_pos;		//位置
