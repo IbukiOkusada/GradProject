@@ -491,7 +491,7 @@ bool CollideOBBToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 rotO, D3DXVECTOR3 size
 //========================================
 // RayÇ∆OBBÇÃè’ìÀîªíËèàóù
 //========================================
-bool CollideRayToOBB(D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeMaxV, D3DXVECTOR3 sizeMinV)
+bool CollideRayToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeMaxV, D3DXVECTOR3 sizeMinV)
 {
 	D3DXVECTOR3 posPlaneCenter[6] = {};
 	D3DXVECTOR3 vecIntersect = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -545,6 +545,7 @@ bool CollideRayToOBB(D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DXVECTOR3 posV, D3DXV
 			continue;
 		}
 
+		*pOut = vecIntersect;
 		return true;
 	}
 

@@ -21,14 +21,15 @@
 // 無名名前空間を定義
 namespace
 {
-	const float LENGTH_POINT = (200.0f);	// 到達判定距離
-	const float CHASE_SPEED = (20.0f);		// 追跡時の加速
-	const float SECURE_SPEED = (-35.0f);	// 確保時の加速
-	const int CHASE_TIME = (300);			// 追跡時間
-	const float CHASE_SECURE = (400.0f);	// 追跡確保距離
-	const float CHASE_BEGIN = (700.0f);		// 追跡開始距離
-	const float CHASE_CONTINUE = (2000.0f);	// 追跡継続距離
-	const float CHASE_END = (3000.0f);		// 追跡終了距離
+	const float LENGTH_POINT = (200.0f);		// 到達判定距離
+	const float CHASE_SPEED = (20.0f);			// 追跡時の加速
+	const float SECURE_SPEEDDEST = (-35.0f);	// 確保時の目標速度
+	const float SECURE_SPEED = (0.8f);			// 確保時の加速倍率
+	const int CHASE_TIME = (300);				// 追跡時間
+	const float CHASE_SECURE = (400.0f);		// 追跡確保距離
+	const float CHASE_BEGIN = (700.0f);			// 追跡開始距離
+	const float CHASE_CONTINUE = (2000.0f);		// 追跡継続距離
+	const float CHASE_END = (3000.0f);			// 追跡終了距離
 }
 
 //==========================================================
@@ -202,8 +203,8 @@ void CPolice::SearchPlayer()
 			SetRoadStart(nullptr);
 			SetRoadTarget(nullptr);
 
-			SetSpeedDest(SECURE_SPEED);
-			SetSpeed(GetSpeed() * 0.8f);
+			SetSpeedDest(SECURE_SPEEDDEST);
+			SetSpeed(GetSpeed() * SECURE_SPEED);
 		}
 		else if (length < CHASE_BEGIN)
 		{// 追跡開始
