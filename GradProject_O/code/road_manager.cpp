@@ -181,6 +181,23 @@ void CRoadManager::AllConnect(void)
 {
 	CRoad* pRoad = GetTop();
 
+	// 一度綺麗にする
+	while (pRoad != nullptr)
+	{
+		CRoad* pNext = pRoad->GetNext();	// 保持
+
+		// クリア
+		pRoad->Connect(nullptr, CRoad::DIC_UP);
+		pRoad->Connect(nullptr, CRoad::DIC_DOWN);
+		pRoad->Connect(nullptr, CRoad::DIC_LEFT);
+		pRoad->Connect(nullptr, CRoad::DIC_RIGHT);
+
+		// 次に移動
+		pRoad = pNext;
+	}
+
+	pRoad = GetTop();
+
 	// 全て確認
 	while (pRoad != nullptr)
 	{
