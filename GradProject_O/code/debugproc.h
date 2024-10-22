@@ -33,6 +33,7 @@ public:	// 誰でもアクセス可能
 	void Draw(void);
 	void Print(const char *fmt, ...);
 	static CDebugProc* Create();
+	static CDebugProc* GetInstance() { return m_pInstance; }
 
 private:	// 自分だけがアクセス可能
 	static LPD3DXFONT m_pFont;	//フォントへのポインタ

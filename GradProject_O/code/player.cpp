@@ -104,7 +104,7 @@ CPlayer::CPlayer()
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	
+	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 
@@ -146,6 +146,7 @@ void CPlayer::Uninit(void)
 {	
 	SAFE_UNINIT(m_pObj)
 	SAFE_DELETE(m_pTailLamp);
+	SAFE_DELETE(m_pBackdust);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// ”pŠü
@@ -203,7 +204,9 @@ void CPlayer::Update(void)
 	{
 		m_pTailLamp->m_pos = GetPosition();
 		m_pTailLamp->m_rot = m_pObj->GetRotation();
-	
+		m_pBackdust->m_pos = GetPosition();
+		m_pBackdust->m_rot = m_pObj->GetRotation();
+		m_pBackdust->m_fScale = m_fEngine * 300.0f;
 	}
 }
 

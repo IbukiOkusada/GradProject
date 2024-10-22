@@ -163,6 +163,7 @@ private:	// 自分だけがアクセス可能
 	TYPE m_type;
 	CObjectX* m_pObj;
 	CEffekseer::CEffectData * m_pTailLamp;
+	CEffekseer::CEffectData* m_pBackdust;
 };
 
 #endif

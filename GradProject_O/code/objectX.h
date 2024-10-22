@@ -64,6 +64,11 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3& GetVtxMax(void);
 	D3DXVECTOR3& GetVtxMin(void);
 
+protected:
+	void Quaternion();
+	void DrawOnry();
+	void CalWorldMtx();
+
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数

@@ -142,17 +142,16 @@ void CInputMouse::Update(void)
 		// À•W
 		D3DXVECTOR3 vnear = D3DXVECTOR3(m_Point.x, m_Point.y, 0.0f);
 		D3DXVECTOR3 vfar = D3DXVECTOR3(m_Point.x, m_Point.y, 1.0f);
-		D3DXVECTOR3 origin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		D3DXVECTOR3 end = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-		D3DXVec3Unproject(&origin, &vnear, &viewport, &pCam->GetMtxProjection(), &pCam->GetMtxView(), nullptr);
-		D3DXVec3Unproject(&end, &vfar, &viewport, &pCam->GetMtxProjection(), &pCam->GetMtxView(), nullptr);
+		D3DXVec3Unproject(&m_RayInfo.origin, &vnear, &viewport, &pCam->GetMtxProjection(), &pCam->GetMtxView(), nullptr);
+		D3DXVec3Unproject(&m_RayInfo.end, &vfar, &viewport, &pCam->GetMtxProjection(), &pCam->GetMtxView(), nullptr);
 
 		// 4. ƒŒƒC‚Ì•ûŒü‚ðŒvŽZ
-		D3DXVECTOR3 rayDir = end - origin;
+		D3DXVECTOR3 rayDir = m_RayInfo.end - m_RayInfo.origin;
 		D3DXVec3Normalize(&rayDir, &rayDir);
 
-		m_WorldPos = rayDir;
+		m_RayInfo.vecold = m_RayInfo.vec;
+		m_RayInfo.vec = rayDir;
 	}
 	else
 	{

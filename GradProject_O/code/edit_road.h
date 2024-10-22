@@ -9,6 +9,10 @@
 
 #include "edit.h"
 
+// 前方宣言
+class CRoad;
+class CEdit_Arrow;
+
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
@@ -31,8 +35,16 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void ClickCheck();	// 選択確認
+	void ReConnect();	// 再連結
+	void Delete();		// 削除
+	bool CursorCollision(CRoad* pRoad);
+	bool TriangleCollision(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayDir,
+		const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2);
 
 	// メンバ変数
+	CRoad* m_pSelectRoad;
+	CEdit_Arrow* m_pArrow;
 };
 
 #endif
