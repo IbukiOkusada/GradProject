@@ -58,6 +58,9 @@
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>		// メモリリーク検出に必要
 
+// 当たり判定
+#include "collision.h"
+
 // crtdbg.hのバグ対策用マクロ
 #if _DEBUG
 #define DEBUG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )

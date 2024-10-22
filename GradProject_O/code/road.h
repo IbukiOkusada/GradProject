@@ -83,6 +83,7 @@ public:	// 誰でもアクセス可能
 	void Connect(CRoad* pRoad, const DIRECTION dic);
 	void SetNext(CRoad* pNext) { m_pNext = pNext; }
 	void SetPrev(CRoad* pPrev) { m_pPrev = pPrev; }
+	void SetPosition(const D3DXVECTOR3& pos);
 
 private:	// 自分だけがアクセス可能
 

@@ -53,6 +53,8 @@ public:	// 誰でもアクセス可能
 	SRayInfo GetRayInfo() { return m_RayInfo; }
 	static CInputMouse* Create(HINSTANCE hInstance, HWND hWnd);
 	static CInputMouse* GetInstance() { return m_pInstance; }
+	POINT& GetPoint() { return m_Point; }
+	POINT& GetPointOld() { return m_PointOld; }
 
 private:	// 自分だけアクセス可能
 
@@ -62,6 +64,7 @@ private:	// 自分だけアクセス可能
 	DIMOUSESTATE2 m_Release;	//リリース情報
 	DIMOUSESTATE2 m_Repeat;	//リピート情報
 	POINT m_Point;			//カーソルポインター
+	POINT m_PointOld;		//カーソルポインター
 	SRayInfo m_RayInfo;
 	static CInputMouse* m_pInstance;
 };

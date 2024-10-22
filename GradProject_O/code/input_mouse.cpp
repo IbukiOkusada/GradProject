@@ -126,6 +126,9 @@ void CInputMouse::Update(void)
 	//入力デバイスからデータを取得
 	if (SUCCEEDED(m_pDevice->GetDeviceState(sizeof(MouseState), (LPVOID)&MouseState)))
 	{
+
+		m_PointOld = m_Point;
+
 		for (int nCnt = 0; nCnt < 8; nCnt++)
 		{
 			m_Trigger.rgbButtons[nCnt] = (m_State.rgbButtons[nCnt] ^ MouseState.rgbButtons[nCnt]) & MouseState.rgbButtons[nCnt];	//キーボードからのトリガー情報を保存

@@ -25,6 +25,25 @@ public:
 		TYPE_MAX
 	};
 
+private:
+
+	// 移動情報
+	struct SInfo
+	{
+		D3DXVECTOR3 startpos;		// 座標
+		D3DXVECTOR3 touchpos;		// 前回の座標
+		D3DXVECTOR2 touchscrpos;	// 触れたスクリーン座標
+		D3DXVECTOR3 touchvec;
+
+		SInfo() : startpos({ 0.0f, 0.0f, 0.0f }), touchpos({ 0.0f, 0.0f, 0.0f }), touchscrpos({0.0f, 0.0f}), touchvec({ 0.0f, 0.0f, 0.0f }) {}
+	};
+
+	struct SObj
+	{
+		CObjectX* pObj;
+		TYPE type;
+	};
+
 public:	// 誰でもアクセス可能
 
 	CEdit_Arrow();	// コンストラクタ(オーバーロード)
@@ -38,17 +57,22 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(取得)
 	D3DXVECTOR3& GetPosition() { return m_pos; }
-
+	SObj* GetHold() { return m_pHold; }
 	// メンバ関数(設定)
 	void SetPosition(const D3DXVECTOR3& pos);
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void Move();
+	void Select();
+	void Release();
 
 	// メンバ変数
-	CObjectX* m_apObj[TYPE_MAX];
+	SObj m_aObj[TYPE_MAX];
 	D3DXVECTOR3 m_pos;	// 座標
+	SInfo m_Info;
+	SObj* m_pHold;	// 選択
 };
 
 #endif

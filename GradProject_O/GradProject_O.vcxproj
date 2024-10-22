@@ -97,6 +97,7 @@
       <ForcedIncludeFiles>precompile.h</ForcedIncludeFiles>
       <LanguageStandard_C>Default</LanguageStandard_C>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -129,7 +130,7 @@
       <PrecompiledHeaderFile>precompile.h</PrecompiledHeaderFile>
       <ForcedIncludeFiles>precompile.h</ForcedIncludeFiles>
       <LanguageStandard_C>Default</LanguageStandard_C>
-      <LanguageStandard>Default</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
