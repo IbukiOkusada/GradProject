@@ -159,6 +159,7 @@ private:	// 自分だけがアクセス可能
 	float m_fBrake;
 	float m_fEngine;
 	float m_fTurnSpeed;
+	float m_fHandle;
 	int m_nId;					// ID
 	TYPE m_type;
 	CObjectX* m_pObj;

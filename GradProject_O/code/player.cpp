@@ -53,8 +53,8 @@ namespace {
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
 	const int LIFE = (10);
 	const float MOVE = (6.2f);		// 移動量
-	const float BRAKE = (0.5f);		// ブレーキ
-
+	const float BRAKE = (0.7f);		// ブレーキ
+	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量
 	const float GRAVITY = (-0.6f);		//プレイヤー重力
 	const float ROT_MULTI = (1.0f);	// 向き補正倍率
@@ -64,6 +64,7 @@ namespace {
 	const float ENGINE_INER = (0.01f);		// 慣性
 	const float ENGINE_BRAKE = (0.006f);		// 慣性
 	const float TUURN_INER = (0.9f);		// 慣性
+	const float DRIFT_INER = (0.98f);		// ドリフト慣性
 	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
 }
@@ -96,7 +97,8 @@ CPlayer::CPlayer()
 	m_fRotDest = 0.0f;
 	m_fBrake = 0.0f;
 	m_fEngine = 0.0f;
-	m_fTurnSpeed = 0.f;
+	m_fTurnSpeed = 0.0f;
+	m_fHandle = 0.0f;
 	m_type = TYPE_NONE;
 	m_nId = -1;
 	m_Info.fSlideMove = 0.0f;
@@ -133,7 +135,7 @@ HRESULT CPlayer::Init(void)
 //===============================================
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\car000.x");
+	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
 	SetMatrix();
 
 	return S_OK;
@@ -188,9 +190,20 @@ void CPlayer::Update(void)
 	if (m_pObj != nullptr)
 	{
 		D3DXVECTOR3 rot = GetRotation();
+		D3DXVECTOR3 pos = GetPosition();
+		pos.y += 100.0f;
 		rot.y -= D3DX_PI * 0.5f;
-		m_pObj->SetPosition(GetPosition());
+		rot.z += m_fTurnSpeed * 15.0f;
+		m_pObj->SetPosition(pos);
 		m_pObj->SetRotation(rot);
+		// エフェクト
+		{
+			m_pTailLamp->m_pos = pos;
+			m_pTailLamp->m_rot = rot;
+			m_pBackdust->m_pos = GetPosition();
+			m_pBackdust->m_rot = m_pObj->GetRotation();
+			m_pBackdust->m_fScale = m_fEngine * 300.0f;
+		}
 	}
 
 	{
@@ -200,14 +213,7 @@ void CPlayer::Update(void)
 		pCamera->Pursue(GetPosition(), rot, 3000.0f);
 	}
 
-	// エフェクト
-	{
-		m_pTailLamp->m_pos = GetPosition();
-		m_pTailLamp->m_rot = m_pObj->GetRotation();
-		m_pBackdust->m_pos = GetPosition();
-		m_pBackdust->m_rot = m_pObj->GetRotation();
-		m_pBackdust->m_fScale = m_fEngine * 300.0f;
-	}
+	
 }
 
 //===============================================
@@ -279,20 +285,17 @@ void CPlayer::Move(void)
 	{
 		fThrottle = (float)pInputPad->GetRightTriggerPress(0) / 255;
 	}
-	Engine(fThrottle);
+
 	if (pInputKey->GetPress(DIK_S))
 	{
-		
-		m_Info.move*=BRAKE;
-	
 		m_fBrake = 1.0f;
 	}
 	else
 	{
-		float fSpeed = (float)pInputPad->GetLeftTriggerPress(0) / 255;
-		m_fBrake = fSpeed;
-		float b = 1.0f - (1.0f - BRAKE) * fSpeed;
+		m_fBrake = (float)pInputPad->GetLeftTriggerPress(0) / 255;
+	
 	}
+	Engine(fThrottle);
 	// 入力装置確認
 	if (nullptr == pInputKey){
 		return;
@@ -300,8 +303,13 @@ void CPlayer::Move(void)
 
 
 	m_Info.pos += m_Info.move;
-
-	m_Info.move *= INER;//移動量の減衰
+	float fHandle = m_fHandle;
+	if (fHandle < 0.0f)
+	{
+		fHandle *= -1;
+	}
+	float fIner = INER + (m_fEngine * m_fBrake * fHandle) * (DRIFT_INER - INER);
+	m_Info.move *= fIner;//移動量の減衰
 }
 //===============================================
 //簡易エンジンシミュ
@@ -317,8 +325,11 @@ void  CPlayer::Engine(float fThrottle)
 			m_fEngine = 0;
 		}
 	}
+
 	m_Info.move.z += MOVE * sinf(-m_Info.rot.y) * m_fEngine;
 	m_Info.move.x += MOVE * cosf(-m_Info.rot.y) * m_fEngine;
+	m_Info.move.z -= MOVE * sinf(-m_Info.rot.y) * m_fEngine * m_fBrake * BRAKE;
+	m_Info.move.x -= MOVE * cosf(-m_Info.rot.y) * m_fEngine * m_fBrake * BRAKE;
 	CManager::GetInstance()->GetDebugProc()->Print("fThrottle:%f\nm_fEngine%f\n", fThrottle, m_fEngine);
 }
 //===============================================
@@ -330,16 +341,17 @@ void CPlayer::Rotate(void)
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	if (pInputKey->GetPress(DIK_D))
 	{
-		m_fTurnSpeed += TURN * (1.0f);
+		m_fHandle = 1.0f;
 	}
 	else if (pInputKey->GetPress(DIK_A))
 	{
-		m_fTurnSpeed -= TURN * (1.0f );
+		m_fHandle = -1.0f;
 	}
 	else
 	{
-		m_fTurnSpeed += TURN *pInputPad->GetLStick(0, 0.1f).x;
+		m_fHandle = pInputPad->GetLStick(0, 0.1f).x;
 	}
+	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT);
 	m_fTurnSpeed*= TUURN_INER;
 	// 入力装置確認
 	if (nullptr == pInputKey) {
