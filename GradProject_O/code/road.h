@@ -46,10 +46,11 @@ public:	// 誰でもアクセス可能な定義
 		D3DXVECTOR3 pos;	// 座標
 		D3DXVECTOR3 rot;	// 向き
 		D3DXVECTOR2 size;	// 幅
+		D3DXVECTOR2 sizeOrigin;	// 幅
 
 		// コンストラクタ
-		SInfo() : pos({ 0.0f, 0.0f, 0.0f }), rot({ 0.0f, 0.0f, 0.0f }), size({ 0.0f, 0.0f }) {}
-		SInfo(const D3DXVECTOR3& _pos, const D3DXVECTOR3& _rot, const D3DXVECTOR2& _size) : pos(_pos), rot(_rot), size(_size) {}
+		SInfo() : pos({ 0.0f, 0.0f, 0.0f }), rot({ 0.0f, 0.0f, 0.0f }), size({ 0.0f, 0.0f }), sizeOrigin(size) {}
+		SInfo(const D3DXVECTOR3& _pos, const D3DXVECTOR3& _rot, const D3DXVECTOR2& _size) : pos(_pos), rot(_rot), size(_size), sizeOrigin(size) {}
 	};
 
 public:	// 誰でもアクセス可能

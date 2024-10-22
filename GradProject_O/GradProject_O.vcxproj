@@ -226,6 +226,7 @@
     <ClCompile Include="code\tutorial.cpp" />
     <ClCompile Include="code\Xfile.cpp" />
     <ClCompile Include="code\road.cpp" />
+    <ClCompile Include="code\edit_arrow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\billboard.h" />
@@ -295,6 +296,7 @@
     <ClInclude Include="code\tutorial.h" />
     <ClInclude Include="code\Xfile.h" />
     <ClInclude Include="code\road.h" />
+    <ClInclude Include="code\edit_arrow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

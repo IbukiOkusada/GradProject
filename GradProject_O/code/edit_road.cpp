@@ -6,10 +6,12 @@
 //==========================================================
 #include "edit_road.h"
 #include "input_mouse.h"
+#include "input_keyboard.h"
 #include "debugproc.h"
 #include "road_manager.h"
 #include "road.h"
 #include "object3D.h"
+#include "edit_arrow.h"
 
 //==========================================================
 // コンストラクタ
@@ -18,6 +20,7 @@ CEdit_Road::CEdit_Road()
 {
 	// 値のクリア
 	m_pSelectRoad = nullptr;
+	m_pArrow = nullptr;
 }
 
 //==========================================================
@@ -41,6 +44,15 @@ HRESULT CEdit_Road::Init(void)
 //==========================================================
 void CEdit_Road::Uninit(void)
 {
+	// 矢印終了
+	if (m_pArrow != nullptr)
+	{
+		m_pArrow->Uninit();
+		m_pArrow = nullptr;
+	}
+
+	m_pSelectRoad = nullptr;
+
 	CEdit::Uninit();
 }
 
@@ -55,10 +67,21 @@ void CEdit_Road::Update(void)
 	// 選択
 	ClickCheck();
 
-	if (m_pSelectRoad != nullptr)
-	{
-		m_pSelectRoad->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
-	}
+	CDebugProc::GetInstance()->Print("[");
+
+	// 再連結
+	ReConnect();
+
+	// 選択されていない
+	if (m_pSelectRoad == nullptr) { CDebugProc::GetInstance()->Print("]\n"); return; }
+
+	// 選択されたものを色変える
+	m_pSelectRoad->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+
+	// 削除
+	Delete();
+
+	CDebugProc::GetInstance()->Print("]\n");
 }
 
 //==========================================================
@@ -91,10 +114,28 @@ void CEdit_Road::ClickCheck()
 		if (CursorCollision(pRoad))
 		{
 			m_pSelectRoad = pRoad;
+
+			if (m_pArrow == nullptr)
+			{
+				m_pArrow = CEdit_Arrow::Create(m_pSelectRoad->GetPosition());
+			}
+
+			m_pArrow->SetPosition(m_pSelectRoad->GetPosition());
+
+			return;
 		}
 
 		pRoad = pNext;
 	}
+
+	// 道が選ばれていない
+	if (m_pSelectRoad != nullptr) { return; }
+
+	// 矢印使用中
+	if (m_pArrow == nullptr) { return; }
+
+	m_pArrow->Uninit();
+	m_pArrow = nullptr;
 }
 
 //==========================================================
@@ -168,4 +209,38 @@ bool CEdit_Road::TriangleCollision(const D3DXVECTOR3& rayOrigin, const D3DXVECTO
 	if (v < 0.0f || u + v > 1.0f) return false;
 
 	return true;  // 衝突が発生した場合
+}
+
+//==========================================================
+// 繋ぎなおし
+//==========================================================
+void CEdit_Road::ReConnect()
+{
+	CDebugProc::GetInstance()->Print(" 道再連結 : F5, ");
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+
+	// 入力確認
+	if (!pKey->GetTrigger(DIK_F5)) { return; }
+
+	// 再接続
+	CRoadManager::GetInstance()->AllConnect();
+}
+
+//==========================================================
+// 削除
+//==========================================================
+void CEdit_Road::Delete()
+{
+	CDebugProc::GetInstance()->Print(" 道削除 : Delete or BackSpace, ");
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+
+	// 入力確認
+	if (!pKey->GetTrigger(DIK_DELETE) && !pKey->GetTrigger(DIK_BACKSPACE)) { return; }
+
+	// 再接続
+	m_pSelectRoad->Uninit();
+	m_pSelectRoad = nullptr;
+
+	// 再連結
+	ReConnect();
 }
