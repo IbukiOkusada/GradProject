@@ -442,10 +442,14 @@ void CCamera::SetR(void)
 //==========================================================
 void CCamera::MouseCamera(void)
 {
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 	CInputMouse *pMouse = CInputMouse::GetInstance();
 
 	if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true && pMouse->GetPress(CInputMouse::BUTTON_RBUTTON) == true)
 	{//¶‰E“¯Žž‚É‰Ÿ‚³‚ê‚Ä‚¢‚é‚Æ‚«
+
+		if (!pKey->GetPress(DIK_LALT) && !pKey->GetPress(DIK_RALT)) { return; }
+
 		m_move.x += cosf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -cosf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
 		m_move.z += sinf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -sinf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
 
@@ -462,6 +466,9 @@ void CCamera::MouseCamera(void)
 	}
 	else if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true)
 	{//¶ƒL[‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é‚Æ‚«
+
+		if (!pKey->GetPress(DIK_LALT) && !pKey->GetPress(DIK_RALT)) { return; }
+
 		m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
 		m_rot.z -= pMouse->GetCousorMove().y * 0.005f;
 

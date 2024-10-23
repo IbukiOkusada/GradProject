@@ -263,3 +263,15 @@ void CRoad::Rotation(TYPE type)
 
 	m_pObj->SetRotation(m_Info.rot);
 }
+
+//==========================================================
+// À•W
+//==========================================================
+void CRoad::SetPosition(const D3DXVECTOR3& pos)
+{
+	m_Info.pos = pos;
+	
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetPosition(m_Info.pos);
+}

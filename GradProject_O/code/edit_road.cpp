@@ -13,6 +13,11 @@
 #include "object3D.h"
 #include "edit_arrow.h"
 
+namespace
+{
+	const float MIN_LENGTH = 100.0f;	// 最小移動量
+}
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -36,6 +41,7 @@ CEdit_Road::~CEdit_Road()
 //==========================================================
 HRESULT CEdit_Road::Init(void)
 {
+	m_fMoveLength = MIN_LENGTH;
 	return S_OK;
 }
 
@@ -63,6 +69,7 @@ void CEdit_Road::Uninit(void)
 void CEdit_Road::Update(void)
 {
 	CDebugProc::GetInstance()->Print(" [ 道配置モード ]\n");
+	CRoad* pOld = m_pSelectRoad;
 
 	// 選択
 	ClickCheck();
@@ -72,11 +79,20 @@ void CEdit_Road::Update(void)
 	// 再連結
 	ReConnect();
 
-	// 選択されていない
-	if (m_pSelectRoad == nullptr) { CDebugProc::GetInstance()->Print("]\n"); return; }
+	// 選択されていない、もしくは選択した直後
+	if (m_pSelectRoad == nullptr || pOld == nullptr) { CDebugProc::GetInstance()->Print("]\n"); return; }
 
 	// 選択されたものを色変える
 	m_pSelectRoad->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+
+	// 矢印の更新
+	if (m_pArrow != nullptr)
+	{
+		m_pArrow->Update();
+	}
+
+	// 移動
+	Move();
 
 	// 削除
 	Delete();
@@ -96,6 +112,15 @@ void CEdit_Road::ClickCheck()
 	if (!pMouse->GetTrigger(CInputMouse::BUTTON_LBUTTON)) 
 	{ 
 		return; 
+	}
+
+	// 矢印選択中
+	if (m_pArrow != nullptr)
+	{
+		if (m_pArrow->GetHold() != nullptr)
+		{
+			return;
+		}
 	}
 
 	if (m_pSelectRoad != nullptr)
@@ -243,4 +268,58 @@ void CEdit_Road::Delete()
 
 	// 再連結
 	ReConnect();
+
+	// 矢印使用中
+	if (m_pArrow == nullptr) { return; }
+
+	m_pArrow->Uninit();
+	m_pArrow = nullptr;
+}
+
+//==========================================================
+// 移動
+//==========================================================
+void CEdit_Road::Move()
+{
+	if (m_pSelectRoad == nullptr) { return; }
+	if (m_pArrow == nullptr) { return; }
+
+	D3DXVECTOR3 pos = m_pSelectRoad->GetPosition();	// 座標
+	D3DXVECTOR3 Arrowpos = m_pArrow->GetPosition();	// 矢印座標
+
+	// X座標
+	float length = fabsf(Arrowpos.x - pos.x);
+	int setpos = static_cast<int>(Arrowpos.x);
+	int movelength = static_cast<int>(m_fMoveLength);
+
+	// 大きい
+	if (length >= m_fMoveLength)
+	{
+		pos.x = static_cast<float>(setpos - (setpos % movelength));
+	}
+
+	// Y座標
+	length = fabsf(Arrowpos.y - pos.y);
+	setpos = static_cast<int>(Arrowpos.y);
+	movelength = static_cast<int>(m_fMoveLength);
+
+	// 大きい
+	if (length >= m_fMoveLength)
+	{
+		pos.y = static_cast<float>(setpos - (setpos % movelength));
+	}
+
+	// Z座標
+	length = fabsf(Arrowpos.z - pos.z);
+	setpos = static_cast<int>(Arrowpos.z);
+	movelength = static_cast<int>(m_fMoveLength);
+
+	// 大きい
+	if (length >= m_fMoveLength)
+	{
+		pos.z = static_cast<float>(setpos - (setpos % movelength));
+	}
+
+	// 選択した道の座標設定
+	m_pSelectRoad->SetPosition(pos);
 }

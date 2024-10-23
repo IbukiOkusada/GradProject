@@ -520,6 +520,7 @@ bool CollideRayToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DX
 		// è’ìÀínì_ÇåvéZ
 		if (D3DXPlaneIntersectLine(&vecIntersect, &plane, &posO, &(posO + vecO)) == nullptr)
 		{
+			*pOut = vecIntersect;
 			continue;
 		}
 
