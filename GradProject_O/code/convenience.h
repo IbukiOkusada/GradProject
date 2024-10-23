@@ -2,7 +2,7 @@
 #include <memory>
 #include <mutex>
 //=============================================
-//距離取得関数
+//便利関数
 //=============================================
 using namespace std;
 #ifndef CONVENIENCE
@@ -27,7 +27,7 @@ public:
 	CMaster() : value(make_shared<T>()) {};
 
 	//各種アクセサメソッド
-	T Get() { return value.get(); };										//ゲット
+	T Get() { return *value.get(); };										//ゲット
 	T Get(mutex mut) { lock_guard<mutex> lock(mut); return value.get(); };	//ゲット(スレッドセーフ)
 	shared_ptr<T> GetPtr() { return value; };								//本体取得
 

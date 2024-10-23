@@ -41,37 +41,6 @@ public:
 	};
 
 
-	// アクション列挙型
-	enum ACTION
-	{
-		ACTION_NEUTRAL = 0,		// 待機
-		ACTION_WALK,			// 歩行
-		ACTION_JUMP,			// ジャンプ
-		ACTION_SLIDING,			// スライディング
-		ACTION_WALLSTAND,		// 壁ずり
-		ACTION_WALLKICK,		// 壁キック
-		ACTION_SLIDEJUMP,		// しゃがみジャンプ
-		ACTION_NORMALATK,		// 攻撃
-		ACTION_WALLDUSH,		// 壁走り
-		ACTION_CEILINGDUSH,		// 天井走り
-		ACTION_KICKUP,			// 蹴りあがり
-		ACTION_AXEKICK,			// かかと落とし
-		ACTION_RIDERKICK,		// ライダーキック
-		ACTION_TITLENEUTRAL,	// タイトル待機
-		ACTION_DAMAGE,			// ダメージ
-		ACTION_DEATH,			// ダウン
-		ACTION_MAX
-	};
-
-	// 攻撃種類
-	enum ATK
-	{
-		ATK_NORMAL = 0,	// 通常
-		ATK_AXEKICK,	// かかと落とし
-		ATK_RIDERKICK,	// ライダーキック
-		ATK_SLOWKICK,	// スローライダーキック
-		ATK_MAX
-	};
 
 private:	// 自分だけがアクセス可能な定義
 
@@ -147,7 +116,8 @@ private:	// 自分だけがアクセス可能
 	bool Collision(void);
 	void Engine(float fThrottle);
 	void SearchRoad(void);
-
+	void Damage(float fDamage);
+	void DEBUGKEY();
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
 	CPlayer *m_pNext;			// 次のオブジェクトへのポインタ
@@ -160,11 +130,15 @@ private:	// 自分だけがアクセス可能
 	float m_fEngine;
 	float m_fTurnSpeed;
 	float m_fHandle;
+	float m_fLife;
+	float m_fCamera;
 	int m_nId;					// ID
 	TYPE m_type;
 	CObjectX* m_pObj;
 	CEffekseer::CEffectData * m_pTailLamp;
 	CEffekseer::CEffectData* m_pBackdust;
+	CEffekseer::CEffectData* m_pAfterburner;
+	CEffekseer::CEffectData* m_pDamageEffect;
 };
 
 #endif
