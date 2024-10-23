@@ -32,10 +32,9 @@ private:
 	{
 		D3DXVECTOR3 startpos;		// 座標
 		D3DXVECTOR3 touchpos;		// 前回の座標
-		D3DXVECTOR2 touchscrpos;	// 触れたスクリーン座標
-		D3DXVECTOR3 touchvec;
+		D3DXVECTOR3 touchworldpos;	// 触れたスクリーン座標
 
-		SInfo() : startpos({ 0.0f, 0.0f, 0.0f }), touchpos({ 0.0f, 0.0f, 0.0f }), touchscrpos({0.0f, 0.0f}), touchvec({ 0.0f, 0.0f, 0.0f }) {}
+		SInfo() : startpos(VECTOR3_ZERO), touchpos(VECTOR3_ZERO), touchworldpos(VECTOR3_ZERO) {}
 	};
 
 	struct SObj

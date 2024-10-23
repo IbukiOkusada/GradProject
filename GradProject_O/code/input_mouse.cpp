@@ -10,6 +10,11 @@
 #include "camera.h"
 #include "renderer.h"
 
+namespace
+{
+	const float LENGTH = 800.0f;
+}
+
 #define REPEAT_TIME (15)	//リピートタイマー
 
 // 静的メンバ変数
@@ -27,6 +32,8 @@ CInputMouse::CInputMouse()
 	m_Release = {};
 	m_Repeat = {};
 	m_Point = {};
+	m_RayInfo = SRayInfo();
+	m_WorldInfo = SWorldInfo();
 }
 
 //==========================================================
@@ -155,6 +162,10 @@ void CInputMouse::Update(void)
 
 		m_RayInfo.vecold = m_RayInfo.vec;
 		m_RayInfo.vec = rayDir;
+
+		// ワールド座標を計算
+		m_WorldInfo.posold = m_WorldInfo.pos;
+		m_WorldInfo.pos = m_RayInfo.origin + m_RayInfo.vec * LENGTH;
 	}
 	else
 	{

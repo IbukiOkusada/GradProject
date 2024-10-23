@@ -21,9 +21,9 @@ namespace
 
 	const D3DXVECTOR3 SETPOS[CEdit_Arrow::TYPE_MAX] = {	// 設置座標
 		{0.0f, 0.0f, 0.0f},
-		{130.0f, 0.0f, 0.0f},
-		{0.0f, 130.0f, 0.0f},
-		{0.0f, 0.0f, -130.0f},
+		{180.0f, 0.0f, 0.0f},
+		{0.0f, 180.0f, 0.0f},
+		{0.0f, 0.0f, -180.0f},
 	};
 }
 
@@ -156,48 +156,44 @@ void CEdit_Arrow::Move()
 	bool press = pMouse->GetPress(CInputMouse::BUTTON_LBUTTON);
 	if (!press) { return; }
 
-	// マウスの移動量取得
-	D3DXVECTOR2 nowpoint= D3DXVECTOR2(pMouse->GetPoint().x, pMouse->GetPoint().y);
-	D3DXVECTOR3 vec = pMouse->GetRayInfo().vec;
-	D3DXVECTOR2 diff = nowpoint - m_Info.touchscrpos;
-
-	// 3. 初期レイの方向と現在のレイの方向を比較して、ズレを計算
-	float dotProduct = D3DXVec3Dot(&m_Info.touchvec, &pMouse->GetRayInfo().vec);
-
-	// 4. クリックした位置から進む新しい座標を計算
-	float distance = dotProduct;  // ドット積で方向を補正
+	D3DXVECTOR3 worldpos = pMouse->GetWorldInfo().pos;
+	D3DXVECTOR3 move = worldpos - m_Info.touchworldpos;
+	
+	// 4. 新しい位置を計算
 	D3DXVECTOR3 newpos = m_Info.touchpos;
-
-	CDebugProc::GetInstance()->Print("初回タッチ座標 [ %f, %f ]\n", m_Info.touchscrpos.x, m_Info.touchscrpos.y);
-	CDebugProc::GetInstance()->Print("タッチ座標 [ %f, %f ]\n", nowpoint.x, nowpoint.y);
-	CDebugProc::GetInstance()->Print("ズレ [ %f ]\n", nowpoint.x, nowpoint.y);
 
 	// 種類指定
 	switch (m_pHold->type)
 	{
 	case TYPE_ALL:
 	{
-		newpos = m_Info.touchpos + vec * distance;
+		newpos = m_Info.touchpos + move;
+		newpos.y = m_Info.touchpos.y;
+		CDebugProc::GetInstance()->Print("全部！\n");
 	}
 	break;
 
 	case TYPE_X:
 	{
-		newpos.x = m_Info.touchpos.x + vec.x * distance;
+		newpos.x = m_Info.touchpos.x + move.x;
+		CDebugProc::GetInstance()->Print("X！\n");
 	}
 	break;
 
 	case TYPE_Y:
 	{
-		newpos.y = m_Info.touchpos.y + vec.y * distance;
+		newpos.y = m_Info.touchpos.y + move.y;
+		CDebugProc::GetInstance()->Print("Y！\n");
 	}
 	break;
 
 	case TYPE_Z:
 	{
-		newpos.z = m_Info.touchpos.z + vec.z * distance;
+		newpos.z = m_Info.touchpos.z + move.z;
+		CDebugProc::GetInstance()->Print("Z！\n");
 	}
 	break;
+
 	default:
 		break;
 	}
@@ -218,6 +214,9 @@ void CEdit_Arrow::Select()
 	D3DXVECTOR3 origin = pMouse->GetRayInfo().origin;
 	D3DXVECTOR3 vec = pMouse->GetRayInfo().vec;
 	D3DXVECTOR3 touchpos = m_Info.startpos;
+	float length = 1000000.0f;
+
+	if (!trigger) { return; }
 
 	for (int i = 0; i < TYPE_MAX; i++)
 	{
@@ -233,15 +232,19 @@ void CEdit_Arrow::Select()
 
 		// 当たった時のみ
 		if (!hit) { continue; }
-		if (!trigger) { return; }
+
+		D3DXVECTOR3 diff = (touchpos - origin);
+		float nowlength = D3DXVec3Length(&diff);
+
+		// 距離
+		if (nowlength > length) { continue; }
 
 		// 記憶 触れた座標取得
 		m_pHold = &m_aObj[i];
 		m_Info.startpos = m_pos;
 		m_Info.touchpos = touchpos;
-		m_Info.touchscrpos.x = pMouse->GetPoint().x;
-		m_Info.touchscrpos.y = pMouse->GetPoint().y;
-		m_Info.touchvec = pMouse->GetRayInfo().vec;
+		m_Info.touchworldpos = pMouse->GetWorldInfo().pos;
+		length = nowlength;
 	}
 }
 

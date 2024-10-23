@@ -496,20 +496,21 @@ bool CollideRayToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DX
 	D3DXVECTOR3 posPlaneCenter[6] = {};
 	D3DXVECTOR3 vecIntersect = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 vecNorPlaneCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 sizeV = (sizeMaxV - sizeMinV) * 0.5f;
 	D3DXPLANE plane = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	int nCheckCollision = 0;
 
 	//箱の各面の中心を求める
-	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
-	posPlaneCenter[1] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(-sizeV.x, 0.0f, 0.0f));
-	posPlaneCenter[2] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeV.y, 0.0f));
-	posPlaneCenter[3] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, -sizeV.y, 0.0f));
-	posPlaneCenter[4] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeV.z));
-	posPlaneCenter[5] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, -sizeV.z));
+	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeMaxV.x, 0.0f, 0.0f));
+	posPlaneCenter[1] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeMinV.x, 0.0f, 0.0f));
+	posPlaneCenter[2] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeMaxV.y, 0.0f));
+	posPlaneCenter[3] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeMinV.y, 0.0f));
+	posPlaneCenter[4] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeMaxV.z));
+	posPlaneCenter[5] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeMinV.z));
 
 	for (int nCnt = 0; nCnt < 6; nCnt++)
 	{
+		nCheckCollision = 0;
+
 		//各面の法線ベクトルを計算する
 		vecNorPlaneCenter = posV - posPlaneCenter[nCnt];
 		D3DXVec3Normalize(&vecNorPlaneCenter, &vecNorPlaneCenter);
@@ -520,18 +521,17 @@ bool CollideRayToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DX
 		// 衝突地点を計算
 		if (D3DXPlaneIntersectLine(&vecIntersect, &plane, &posO, &(posO + vecO)) == nullptr)
 		{
-			*pOut = vecIntersect;
 			continue;
 		}
 
-		for (int nCnt = 0; nCnt < 6; nCnt++)
+		for (int i = 0; i < 6; i++)
 		{
 			//各面の法線ベクトルを計算する
-			D3DXVECTOR3 vecNorPlaneCenterDest = posV - posPlaneCenter[nCnt];
+			D3DXVECTOR3 vecNorPlaneCenterDest = posV - posPlaneCenter[i];
 			D3DXVec3Normalize(&vecNorPlaneCenterDest, &vecNorPlaneCenterDest);
 
 			//法線ベクトルから平面の式を計算する
-			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenterDest);
+			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[i], &vecNorPlaneCenterDest);
 
 			//平面の式と点から
 			if (D3DXPlaneDotCoord(&plane, &vecIntersect) >= 0.0f)
