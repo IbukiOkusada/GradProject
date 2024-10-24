@@ -112,6 +112,7 @@ CPlayer::CPlayer()
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
 	m_pDamageEffect = nullptr;
+	m_pSound = nullptr;
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -134,7 +135,7 @@ HRESULT CPlayer::Init(void)
 	// ˜‚Ì¶¬
 	m_Info.state = STATE_APPEAR;
 	m_type = TYPE_NONE;
-
+	
 	return S_OK;
 }
 
@@ -145,7 +146,8 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
 	SetMatrix();
-
+	m_pSound = CMasterSound::CObjectSound::Create("data\\BGM\\morning_jazz.wav", -1);
+	m_pSound->SetVolume(0.5f);
 	return S_OK;
 }
 

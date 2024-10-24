@@ -200,6 +200,7 @@
     <ClCompile Include="code\object.cpp" />
     <ClCompile Include="code\object2D.cpp" />
     <ClCompile Include="code\object3D.cpp" />
+    <ClCompile Include="code\objectsound.cpp" />
     <ClCompile Include="code\objectX.cpp" />
     <ClCompile Include="code\object_manager.cpp" />
     <ClCompile Include="code\particle.cpp" />
@@ -273,6 +274,7 @@
     <ClInclude Include="code\object.h" />
     <ClInclude Include="code\object2D.h" />
     <ClInclude Include="code\object3D.h" />
+    <ClInclude Include="code\objectsound.h" />
     <ClInclude Include="code\objectX.h" />
     <ClInclude Include="code\object_manager.h" />
     <ClInclude Include="code\particle.h" />

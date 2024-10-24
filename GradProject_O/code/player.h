@@ -13,7 +13,7 @@
 #include "task.h"
 #include "effekseerControl.h"
 #include "convenience.h"
-
+#include "objectsound.h"
 using namespace std;
 // 前方宣言
 class CWaist;
@@ -140,6 +140,7 @@ private:	// 自分だけがアクセス可能
 	CEffekseer::CEffectData* m_pBackdust;
 	CEffekseer::CEffectData* m_pAfterburner;
 	CEffekseer::CEffectData* m_pDamageEffect;
+	CMasterSound::CObjectSound* m_pSound;
 };
 
 #endif
