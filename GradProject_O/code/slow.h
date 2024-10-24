@@ -26,6 +26,8 @@ public:		// 誰でもアクセス可能
 	void SetSlow(bool bUse);
 	void SetSlow(float fValue) { m_fAdd = fValue; }
 
+	static CSlow *GetInstance(void) { return m_pInstance; }
+
 private:	// 自分だけがアクセス可能
 
 	bool m_b;		// カウントが回ったか否か
@@ -35,6 +37,9 @@ private:	// 自分だけがアクセス可能
 	int m_nTimer;		// カウント規定値
 	float m_fAdd;		// スロー倍率
 	float m_fMulOld;	// 前回の倍率
+	float m_DeltaTime;
+
+	static CSlow *m_pInstance;  // スローのポインタ
 };
 
 #endif

@@ -132,6 +132,7 @@ private:	// 自分だけがアクセス可能
 	float m_fHandle;
 	float m_fLife;
 	float m_fCamera;
+	float m_fSlowRate = 1.0f;
 	int m_nId;					// ID
 	TYPE m_type;
 	CObjectX* m_pObj;

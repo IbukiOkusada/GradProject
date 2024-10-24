@@ -246,7 +246,6 @@ void CPlayer::Update(void)
 		m_Info.move *= 0.7f;
 		m_fCamera += (CAMERA_DETAH - m_fCamera) * 0.02f;
 	}
-	
 }
 
 //===============================================
@@ -339,7 +338,7 @@ void CPlayer::Move(void)
 	
 	D3DXVECTOR3 move = m_Info.move * FRAME_RATE_SCALER;
 
-	m_Info.pos += move * deltatime;
+	m_Info.pos += move * deltatime * CSlow::GetInstance()->Get();
 	float fHandle = m_fHandle;
 	if (fHandle < 0.0f)
 	{
