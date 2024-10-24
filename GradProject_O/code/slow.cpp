@@ -7,11 +7,24 @@
 #include "main.h"
 #include "slow.h"
 #include "manager.h"
+#include "deltatime.h"
 #include "debugproc.h"
+#include "input_keyboard.h"
 
-// マクロ定義
-#define MAX_SLOWTIME	(10)		// スローの限界時間
-#define BOOST_CNT		(3)	// スロー量増加タイマー
+//==========================================================
+// 静的メンバ変数宣言
+//==========================================================
+CSlow *CSlow::m_pInstance = nullptr;
+
+//==========================================================
+// 定数定義
+//==========================================================
+namespace {
+
+	const int MAX_SLOWTIME = 10;  // スローの限界時間
+	const int BOOST_CNT = 3;      // スロー量増加タイマー
+	const float SLOW_RATE = 60.0f;
+}
 
 //==========================================================
 // コンストラクタ
@@ -20,9 +33,12 @@ CSlow::CSlow()
 {
 	// 値のクリア
 	m_b = false;
+	m_bUse = false;
 	m_nTimeCnt = 0;
 	m_nTimer = 0;
 	m_fAdd = 0.0f;
+	m_DeltaTime = 0.0f;
+	m_pInstance = this;
 }
 
 //==========================================================
@@ -40,9 +56,17 @@ void CSlow::Init(void)
 {
 	// 値のクリア
 	m_b = false;
+	m_bUse = false;
 	m_nTimeCnt = 0;
 	m_nTimer = 0;
-	m_fAdd = 1.0f;
+
+	CDeltaTime* pDeltaTime = CDeltaTime::GetInstance();
+	
+	if (pDeltaTime != nullptr)
+		m_DeltaTime = pDeltaTime->GetDeltaTime();
+	
+
+	m_fAdd = SLOW_RATE * m_DeltaTime;
 }
 
 //==========================================================
@@ -50,7 +74,8 @@ void CSlow::Init(void)
 //==========================================================
 void CSlow::Uninit(void)
 {
-
+	// 使用していない状態にする
+	m_pInstance = nullptr;
 }
 
 //==========================================================
@@ -58,6 +83,11 @@ void CSlow::Uninit(void)
 //==========================================================
 void CSlow::Update(void)
 {
+	CDeltaTime* pDeltaTime = CDeltaTime::GetInstance();
+	
+	if (pDeltaTime != nullptr)
+		m_DeltaTime = pDeltaTime->GetDeltaTime();
+
 	m_fMulOld = m_fAdd;
 
 	if (m_nTimer > 0)
@@ -85,14 +115,16 @@ void CSlow::Update(void)
 
 	if (m_nTimer > 0)
 	{
-		m_fAdd = 1.0f / (float)(m_nTimer);	// 位置フレーム辺りの倍率
+		m_fAdd = (SLOW_RATE / (float)(m_nTimer)) * m_DeltaTime;	// 位置フレーム辺りの倍率
 	}
 	else
 	{
-		if (m_fAdd <= 1.0f)
-		{
-			m_fAdd = 1.0f;
-		}
+		m_fAdd = SLOW_RATE * m_DeltaTime;
+	}
+
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_F3))
+	{
+		m_nTimer = 10;
 	}
 }
 

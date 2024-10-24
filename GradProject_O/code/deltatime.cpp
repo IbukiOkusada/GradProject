@@ -8,12 +8,19 @@
 #include "debugproc.h"
 
 //==========================================================
+// 静的メンバ変数宣言
+//==========================================================
+CDeltaTime *CDeltaTime::m_pInstance = nullptr;
+
+//==========================================================
 // コンストラクタ
 //==========================================================
 CDeltaTime::CDeltaTime()
 {
 	m_Timer.CurrentTime = std::chrono::high_resolution_clock::now();
 	m_Timer.LastTime = std::chrono::high_resolution_clock::now();
+
+	m_pInstance = this;
 }
 
 //==========================================================
@@ -29,8 +36,6 @@ CDeltaTime::~CDeltaTime()
 //==========================================================
 HRESULT CDeltaTime::Init(void)
 {
-	
-
 	return S_OK;
 }
 
@@ -39,7 +44,8 @@ HRESULT CDeltaTime::Init(void)
 //==========================================================
 void CDeltaTime::Uninit(void)
 {
-
+	// 使用していない状態にする
+	m_pInstance = nullptr;
 }
 
 //==========================================================
@@ -49,9 +55,9 @@ void CDeltaTime::Update(void)
 {
 	m_Timer.CurrentTime = std::chrono::high_resolution_clock::now();  // 現在の時間を取得
 	m_Timer.DeltaTime = m_Timer.CurrentTime - m_Timer.LastTime;       // 現在の時間と前回の時間の差分を計算
-	m_Timer.LastTime = m_Timer.CurrentTime;      
+	m_Timer.LastTime = m_Timer.CurrentTime;                           // 前回の時間に現在の時間を代入
 	
-	CManager::GetInstance()->GetDebugProc()->Print("[ でるた～たいむ : %f ]\n", m_Timer.DeltaTime.count());
+	CManager::GetInstance()->GetDebugProc()->Print("[ DeltaTime : %f ]\n", m_Timer.DeltaTime.count());
 }
 
 //==========================================================

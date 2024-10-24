@@ -28,7 +28,8 @@ public:	// 誰でもアクセス可能
 	static CDeltaTime* Create(void);
 
 	// メンバ関数(取得)
-	float GetDeltaTime(void);
+	float GetDeltaTime(void);                                      // デルタタイム
+	static CDeltaTime *GetInstance(void) { return m_pInstance; }  // 自分自身
 
 	// メンバ関数(設定)
 
@@ -39,7 +40,7 @@ private:	// 自分だけがアクセス可能
 	{
 		std::chrono::high_resolution_clock::time_point CurrentTime;  // 現在の時間
 		std::chrono::high_resolution_clock::time_point LastTime;     // 前回の時間
-		std::chrono::duration<float> DeltaTime;                      // デルタタイム
+		std::chrono::duration<float> DeltaTime;                      // 差分
 	};
 
 	Timer m_Timer;  // タイマーの情報
@@ -47,6 +48,8 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 
 	// メンバ変数
+	static CDeltaTime *m_pInstance;  // デルタタイムのポインタ
+
 };
 
 #endif
