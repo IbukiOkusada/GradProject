@@ -247,6 +247,15 @@ void CObjectX::BindFile(int nIdx)
 }
 
 //==========================================================
+// モデルファイル読み込み
+//==========================================================
+void CObjectX::BindFile(const char* file)
+{
+	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();
+	m_nIdxModel = pModelFile->Regist(file);	//使用するモデルの設定
+}
+
+//==========================================================
 // 座標の設定
 //==========================================================
 void CObjectX::SetPosition(const D3DXVECTOR3 pos)

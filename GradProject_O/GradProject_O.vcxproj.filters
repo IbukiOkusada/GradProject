@@ -73,9 +73,6 @@
     <Filter Include="input\keyconfig">
       <UniqueIdentifier>{12a8d1e3-b458-4e40-a21d-2f571de8b3d4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="road">
-      <UniqueIdentifier>{bf788a71-3783-4bbf-891b-1372a05cedbe}</UniqueIdentifier>
-    </Filter>
     <Filter Include="car">
       <UniqueIdentifier>{0a8c99d7-edcf-4a8e-bd6b-e7e245bf06c3}</UniqueIdentifier>
     </Filter>
@@ -90,6 +87,15 @@
     </Filter>
     <Filter Include="edit">
       <UniqueIdentifier>{b881f908-3acf-4e43-a896-a764d635d1ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map">
+      <UniqueIdentifier>{69329785-10b2-4f8b-8d16-5ba2ffdf5a67}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map\road">
+      <UniqueIdentifier>{bf788a71-3783-4bbf-891b-1372a05cedbe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="map\obstacle">
+      <UniqueIdentifier>{b4975c2b-62bd-437f-ba2c-12735b2f9cef}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -238,13 +244,13 @@
       <Filter>input</Filter>
     </ClCompile>
     <ClCompile Include="code\road.cpp">
-      <Filter>road</Filter>
+      <Filter>map\road</Filter>
     </ClCompile>
     <ClCompile Include="code\collision.cpp">
       <Filter>system</Filter>
     </ClCompile>
     <ClCompile Include="code\road_manager.cpp">
-      <Filter>road</Filter>
+      <Filter>map\road</Filter>
     </ClCompile>
     <ClCompile Include="code\convenience.cpp">
       <Filter>ソース ファイル</Filter>
@@ -296,6 +302,9 @@
     </ClCompile>
     <ClCompile Include="code\deltatime.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\map_obstacle.cpp">
+      <Filter>map\obstacle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -447,13 +456,13 @@
       <Filter>input</Filter>
     </ClInclude>
     <ClInclude Include="code\road.h">
-      <Filter>road</Filter>
+      <Filter>map\road</Filter>
     </ClInclude>
     <ClInclude Include="code\collision.h">
       <Filter>system</Filter>
     </ClInclude>
     <ClInclude Include="code\road_manager.h">
-      <Filter>road</Filter>
+      <Filter>map\road</Filter>
     </ClInclude>
     <ClInclude Include="code\convenience.h">
       <Filter>ヘッダー ファイル</Filter>
@@ -508,6 +517,9 @@
     </ClInclude>
     <ClInclude Include="code\deltatime.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\map_obstacle.h">
+      <Filter>map\obstacle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -37,6 +37,7 @@ public:	// 誰でもアクセス可能
 	virtual void Update(void);
 	virtual void Draw(void);
 	void BindFile(int nIdx);
+	void BindFile(const char* file);
 
 	static CObjectX *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *pFileName, const int nPriority = 4);
 	static bool Collision(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, COLLISION_AXIS& Axis);
