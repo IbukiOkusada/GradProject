@@ -291,6 +291,9 @@
     <ClCompile Include="code\edit_arrow.cpp">
       <Filter>edit</Filter>
     </ClCompile>
+    <ClCompile Include="code\objectsound.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -496,6 +499,9 @@
     </ClInclude>
     <ClInclude Include="code\edit_arrow.h">
       <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="code\objectsound.h">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

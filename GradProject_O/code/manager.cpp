@@ -29,6 +29,7 @@
 #include "car_manager.h"
 #include "manager_registry.h"
 #include "effekseerControl.h"
+#include "objectsound.h"
 //===============================================
 // 静的メンバ変数
 //===============================================
@@ -104,6 +105,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 			m_pSound->Init(hWnd);
 		}
 	}
+	CMasterSound::GetInstance()->Init(hWnd);
 
 	// カメラの生成
 	if (m_pCamera == nullptr)
@@ -282,6 +284,7 @@ void CManager::Uninit(void)
 
 	// 各種マネージャの破棄
 	CManagerRegistry::Release();
+	CMasterSound::GetInstance()->Uninit();
 	// エフェクシア破棄
 	CEffekseer::GetInstance()->Uninit();
 }
