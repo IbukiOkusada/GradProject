@@ -347,7 +347,7 @@ void CPlayer::Move(void)
 	m_fbrakePitch += (1.0f - m_fbrakePitch) * (m_fEngine * m_fBrake * fHandle) * BRAKE_INER;
 	m_fbrakeVolume -= m_fbrakeVolume* BRAKE_INER;
 	m_fbrakePitch -= m_fbrakePitch *BRAKE_INER;
-	m_pSoundBrake->SetVolume(m_fbrakeVolume);
+	m_pSoundBrake->SetVolume(m_fbrakeVolume * 0.8f);
 	m_pSoundBrake->SetPitch(0.5f + m_fbrakePitch);
 	m_Info.move *= fIner;//ˆÚ“®—Ê‚ÌŒ¸Š
 }
