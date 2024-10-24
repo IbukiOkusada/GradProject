@@ -8,9 +8,10 @@
 #define _ROADMANAGER_H_		// 二重インクルード防止用マクロを定義
 
 #include "list_manager.h"
+#include "list.h"
+#include "road.h"
 
 // 前方宣言
-class CRoad;
 
 //==========================================================
 // サンプルのクラス定義
@@ -36,6 +37,7 @@ public:	// 誰でもアクセス可能
 	void ListOut(CRoad* pRoad);
 	int GetNum(void) { return m_nNum; }
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
+	Clist<CRoad::SInfo*>* GetList() { return &m_InfoList; }
 
 	// 道連結関数
 	void AllConnect(void);
@@ -51,6 +53,8 @@ private:	// 自分だけがアクセス可能
 	CRoad* m_pCur;	// 最後尾
 	int m_nNum;
 	static CRoadManager* m_pInstance;	// インスタンス
+	Clist<CRoad::SInfo*> m_InfoList;
+	
 };
 
 #endif

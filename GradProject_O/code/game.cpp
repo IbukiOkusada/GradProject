@@ -668,38 +668,26 @@ bool CGame::StartDirection(void)
 //===================================================
 void CGame::SetRoad()
 {
-    // x一列目
-    CRoad::Create({ -2400.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ -1200.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 0.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 1200.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
+    // ファイルを開く
+    std::ifstream File("data\\FILE\\map\\road.bin", std::ios::binary);
+    if (!File.is_open()) {
+        // 例外処理
+        return;
+    }
 
-    // 二列目
-    CRoad::Create({ -2400.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ -1200.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 0.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ 1200.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
+    // サイズ読み込み
+    int size = 0;
+    File.read(reinterpret_cast<char*>(&size), sizeof(size));
 
-    // 三列目
-    CRoad::Create({ -2400.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ -1200.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 1200.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
+    // データ読み込み
+    std::vector<CRoad::SInfo> roaddata(size);
+    File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CRoad::SInfo));
 
-    // 四列目
-    CRoad::Create({ -2400.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ -1200.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ 0.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ 1200.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
+    for (const auto& it : roaddata)
+    {
+        CRoad::Create(it.pos, it.rot, it.sizeOrigin);
+    }
 
-    // 五列目
-    CRoad::Create({ -2400.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ -1200.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 0.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 1200.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
+    // ファイルを閉じる
+    File.close();
 }
