@@ -63,6 +63,10 @@ public:	// 誰でもアクセス可能
 	int GetModelType(void) { return m_nIdxModel; }
 	D3DXVECTOR3& GetVtxMax(void);
 	D3DXVECTOR3& GetVtxMin(void);
+	D3DXCOLOR& GetColMuliti() { return m_ColMulti; }
+	void SetColMulti(const D3DXCOLOR& col) { m_ColMulti = col; }
+	D3DXCOLOR& GetColAdd() { return m_AddCol; }
+	void SetColAdd(const D3DXCOLOR& col) { m_AddCol = col; }
 
 protected:
 	void Quaternion();
@@ -85,6 +89,8 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_pos;	// 位置
 	D3DXVECTOR3 m_rot;	// 向き
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
+	D3DXCOLOR m_ColMulti;
+	D3DXCOLOR m_AddCol;
 	int m_nIdxModel;		// モデル番号
 	bool m_bEnableCollision;	//当たり判定の有効・無効
 };

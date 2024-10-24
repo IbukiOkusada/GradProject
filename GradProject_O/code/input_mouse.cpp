@@ -163,6 +163,8 @@ void CInputMouse::Update(void)
 		m_RayInfo.vecold = m_RayInfo.vec;
 		m_RayInfo.vec = rayDir;
 
+		float length = LENGTH;
+
 		// ワールド座標を計算
 		m_WorldInfo.posold = m_WorldInfo.pos;
 		m_WorldInfo.pos = m_RayInfo.origin + m_RayInfo.vec * LENGTH;

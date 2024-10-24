@@ -8,6 +8,8 @@
 #include "objectX.h"
 #include "input_mouse.h"
 #include "debugproc.h"
+#include "camera.h"
+#include "camera_manager.h"
 
 // 無名名前空間
 namespace
@@ -25,6 +27,8 @@ namespace
 		{0.0f, 180.0f, 0.0f},
 		{0.0f, 0.0f, -180.0f},
 	};
+
+	const float DEF_LENGTH = 500.0f;
 }
 
 //==========================================================
@@ -124,6 +128,15 @@ void CEdit_Arrow::Update(void)
 		if (m_aObj[i].pObj == nullptr) { continue; }
 
 		m_aObj[i].pObj->SetPosition(m_pos + SETPOS[i]);
+
+		if (m_pHold != &m_aObj[i]) {
+			m_aObj[i].pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			m_aObj[i].pObj->SetColAdd(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f));
+		}
+		else {
+			m_aObj[i].pObj->SetColMulti(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f));
+			m_aObj[i].pObj->SetColAdd(D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
+		}
 	}
 }
 
@@ -158,6 +171,7 @@ void CEdit_Arrow::Move()
 
 	D3DXVECTOR3 worldpos = pMouse->GetWorldInfo().pos;
 	D3DXVECTOR3 move = worldpos - m_Info.touchworldpos;
+	move *= (CCameraManager::GetInstance()->GetTop()->GetLength() / DEF_LENGTH);
 	
 	// 4. 新しい位置を計算
 	D3DXVECTOR3 newpos = m_Info.touchpos;

@@ -38,7 +38,7 @@ namespace
 	const float MOUSE_ROTATESPEED_Z = (0.005f);		// マウス回転速度z軸
 	const float MOUSE_ROTATESPEEDEDIT_X = (0.01f);		// マウス回転速度x軸
 	const float MOUSE_ROTATESPEEDEDIT_Z = (0.01f);		// マウス回転速度z軸
-	const float MOUSE_WHEELSPEED = (0.1f);			// マウスホイール回転速度
+	const float MOUSE_WHEELSPEED = (0.4f);			// マウスホイール回転速度
 	const float MAX_SLOWROT = (0.15f);		// 
 	const float MESSAGERAND = (120);
 	const float SLOW_CAMERAROT = (0.7f);
