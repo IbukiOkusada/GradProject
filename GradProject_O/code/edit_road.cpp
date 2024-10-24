@@ -16,6 +16,8 @@
 namespace
 {
 	const float MIN_LENGTH = 100.0f;	// 最小移動量
+	const char* FILENAME = "data\\FILE\\map\\road.bin";
+	const D3DXVECTOR2 SET_SIZE = D3DXVECTOR2(600.0f, 600.0f);
 }
 
 //==========================================================
@@ -79,8 +81,18 @@ void CEdit_Road::Update(void)
 	// 再連結
 	ReConnect();
 
+	// 保存
+	Save();
+
 	// 選択されていない、もしくは選択した直後
-	if (m_pSelectRoad == nullptr || pOld == nullptr) { CDebugProc::GetInstance()->Print("]\n"); return; }
+	if (m_pSelectRoad == nullptr || pOld == nullptr) { 
+
+		// 生成
+		Create();
+
+		CDebugProc::GetInstance()->Print("]\n"); 
+		return; 
+	}
 
 	// 選択されたものを色変える
 	m_pSelectRoad->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
@@ -322,4 +334,87 @@ void CEdit_Road::Move()
 
 	// 選択した道の座標設定
 	m_pSelectRoad->SetPosition(pos);
+}
+
+//==========================================================
+// 保存
+//==========================================================
+void CEdit_Road::Save()
+{
+	CDebugProc::GetInstance()->Print(" 保存 : F7, ");
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+
+	// 入力確認
+	if (!pKey->GetTrigger(DIK_F7)) { return; }
+
+	CRoadManager* pMgr = CRoadManager::GetInstance();
+	// ファイルを開く
+	std::ofstream File(FILENAME, std::ios::binary);
+	if (!File.is_open()) {
+		return;
+	}
+
+	std::vector<CRoad::SInfo> savedata;
+
+	for (int i = 0; i < pMgr->GetList()->GetNum(); i++)
+	{
+		savedata.push_back(*pMgr->GetList()->Get(i));
+	}
+
+	savedata.erase(savedata.begin());
+	savedata.pop_back();
+	int size = savedata.size();
+
+	// ベクトルのサイズをセーブ
+	File.write(reinterpret_cast<const char*>(&size), sizeof(size));
+
+	// データをバイナリファイルに書き出す
+	File.write(reinterpret_cast<char*>(savedata.data()), size * sizeof(CRoad::SInfo));
+
+	// ファイルを閉じる
+	File.close();
+}
+
+//==========================================================
+// 保存
+//==========================================================
+void CEdit_Road::Create()
+{
+	CDebugProc::GetInstance()->Print(" 生成 : マウスホイールクリック, ");
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+
+	// 入力確認
+	if (!pMouse->GetTrigger(CInputMouse::BUTTON_WHEEL)) { return; }
+
+	D3DXVECTOR3 rayDir = pMouse->GetRayInfo().vec;
+	D3DXVECTOR3 rayOrigin = pMouse->GetRayInfo().origin;
+
+	// レイが Y = 0 の平面と平行な場合（方向ベクトルの Y 成分が 0）
+	if (fabs(rayDir.y) < 1e-6f) {
+		return;  // 交差しない
+	}
+
+	// 交差までの距離 t を計算
+	float t = -rayOrigin.y / rayDir.y;
+
+	// t が負の場合、レイの逆方向にあるので交差しない
+	if (t < 0.0f) {
+		return;
+	}
+
+	D3DXVECTOR3 pos;
+
+	// 交点の座標を計算（Y = 0 平面上）
+	pos.x = rayOrigin.x + t * rayDir.x;
+	pos.y = 0.0f;  // Y = 0 なので固定
+	pos.z = rayOrigin.z + t * rayDir.z;
+
+	// 端数切捨て
+	int setpos = static_cast<int>(pos.x);
+	int movelength = static_cast<int>(MIN_LENGTH);
+	pos.x -= setpos % movelength;
+	setpos = static_cast<int>(pos.z);
+	pos.z -= setpos % movelength;
+
+	CRoad::Create(pos, VECTOR3_ZERO, SET_SIZE);
 }

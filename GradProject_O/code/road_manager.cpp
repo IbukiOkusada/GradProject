@@ -50,6 +50,8 @@ void CRoadManager::Uninit(void)
 	// 親クラスの終了処理
 	CListManager::Uninit();
 
+	m_InfoList.Clear();
+
 	// インスタンスの廃棄
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		delete m_pInstance;
@@ -103,6 +105,8 @@ void CRoadManager::ListIn(CRoad* pRoad)
 		m_pTop = pRoad;	// 自分自身が先頭になる
 		m_pCur = pRoad;	// 自分自身が最後尾になる
 	}
+
+	m_InfoList.Regist(pRoad->GetInfo());
 
 	m_nNum++;
 }

@@ -40,6 +40,7 @@
 #include "road.h"
 #include "road_manager.h"
 #include "collision.h"
+#include "deltatime.h"
 
 //===============================================
 // マクロ定義
@@ -69,6 +70,7 @@ namespace {
 	const float DRIFT_INER = (0.98f);		// ドリフト慣性
 	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
+	const float FRAME_RATE_SCALER = 60.0f;  // フレームレートを考慮した速度の調整
 }
 
 // 前方宣言
@@ -326,8 +328,12 @@ void CPlayer::Move(void)
 		return;
 	}
 
+	// デルタタイム取得
+	float deltatime = CManager::GetInstance()->GetDeltaTime()->GetDeltaTime();
+	
+	D3DXVECTOR3 move = m_Info.move * FRAME_RATE_SCALER;
 
-	m_Info.pos += m_Info.move;
+	m_Info.pos += move * deltatime;
 	float fHandle = m_fHandle;
 	if (fHandle < 0.0f)
 	{

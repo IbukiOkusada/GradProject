@@ -30,6 +30,7 @@
 #include "manager_registry.h"
 #include "effekseerControl.h"
 #include "objectsound.h"
+#include "deltatime.h"
 //===============================================
 // 静的メンバ変数
 //===============================================
@@ -51,6 +52,7 @@ CManager::CManager()
 	m_pSlow = nullptr;			// スロー状態へのポインタ
 	m_pScene = nullptr;			// シーンのポインタ
 	m_pFade = nullptr;			// フェードへのポインタ
+	m_pDeltaTime = nullptr;     // タイマーへのポインタ
 }
 
 //===================================================
@@ -167,6 +169,13 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pSlow = DEBUG_NEW CSlow;
 		m_pSlow->Init();
 	}
+
+	if (m_pDeltaTime == nullptr)
+	{
+		m_pDeltaTime = DEBUG_NEW CDeltaTime;
+		m_pDeltaTime->Init();
+	}
+
 	// エフェクシア初期化
 	CEffekseer::GetInstance()->Init();
 	
@@ -282,6 +291,20 @@ void CManager::Uninit(void)
 		m_pModelFile = nullptr;	// 使用していない状態にする
 	}
 
+	// タイマーの破棄
+	if (m_pDeltaTime != nullptr)
+	{// 使用している場合
+
+		// 終了処理
+		m_pDeltaTime->Uninit();
+
+		// メモリの解放
+		delete m_pDeltaTime;
+
+		// 使用していない状態にする
+		m_pDeltaTime = nullptr;
+	}
+
 	// 各種マネージャの破棄
 	CManagerRegistry::Release();
 	CMasterSound::GetInstance()->Uninit();
@@ -294,6 +317,11 @@ void CManager::Uninit(void)
 //===================================================
 void CManager::Update(void)
 {
+	if (m_pDeltaTime != nullptr)
+	{
+		m_pDeltaTime->Update();
+	}
+
 	if (m_pFade != nullptr)
 	{
 		m_pFade->Update();
@@ -399,6 +427,14 @@ CSlow *CManager::GetSlow(void)
 CFade *CManager::GetFade(void)
 {
 	return m_pFade;
+}
+
+//===================================================
+// タイマー情報の取得
+//===================================================
+CDeltaTime* CManager::GetDeltaTime(void)
+{
+	return m_pDeltaTime;
 }
 
 //===================================================
