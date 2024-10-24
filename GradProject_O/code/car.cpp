@@ -11,6 +11,8 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "collision.h"
+#include "deltatime.h"
+#include "slow.h"
 #include "player.h"
 #include "player_manager.h"
 
@@ -25,6 +27,7 @@ namespace
 	const float ROT_MULTI = (0.06f);		// 向き補正倍率
 	const float ROT_CURVE = (0.15f);		// カーブ判定角度
 	const float LENGTH_POINT = (200.0f);	// 到達判定距離
+	const float FRAME_RATE_SCALER = 60.0f;  // フレームレートを考慮した速度の調整
 }
 
 //==========================================================
@@ -151,7 +154,11 @@ void CCar::Move()
 		m_Info.move.x = m_Info.speed * sinf(m_Info.rot.y);
 		m_Info.move.y = 0.0f;
 		m_Info.move.z = m_Info.speed * cosf(m_Info.rot.y);
-		m_Info.pos += m_Info.move;
+
+		// デルタタイム取得
+		float DeltaTime = CDeltaTime::GetInstance()->GetDeltaTime();
+
+		m_Info.pos += m_Info.move * FRAME_RATE_SCALER * DeltaTime;
 	}
 }
 

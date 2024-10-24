@@ -68,6 +68,7 @@ namespace {
 	const float ENGINE_BRAKE = (0.006f);		// 慣性
 	const float TUURN_INER = (0.9f);		// 慣性
 	const float DRIFT_INER = (0.98f);		// ドリフト慣性
+	const float BRAKE_INER = (0.05f);
 	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
 	const float FRAME_RATE_SCALER = 60.0f;  // フレームレートを考慮した速度の調整
@@ -112,6 +113,9 @@ CPlayer::CPlayer()
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
 	m_pDamageEffect = nullptr;
+	m_pSound = nullptr;
+	m_fbrakePitch = 0.0f;
+	m_fbrakeVolume = 0.0f;
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -134,7 +138,7 @@ HRESULT CPlayer::Init(void)
 	// 腰の生成
 	m_Info.state = STATE_APPEAR;
 	m_type = TYPE_NONE;
-
+	
 	return S_OK;
 }
 
@@ -145,7 +149,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
 	SetMatrix();
-
+	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
+	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
+	m_pSoundBrake->SetVolume(0.0f);
 	return S_OK;
 }
 
@@ -159,6 +165,8 @@ void CPlayer::Uninit(void)
 	SAFE_DELETE(m_pBackdust);
 	SAFE_DELETE(m_pAfterburner);
 	SAFE_DELETE(m_pDamageEffect);
+	SAFE_DELETE(m_pSound);
+	SAFE_DELETE(m_pSoundBrake);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// 廃棄
@@ -238,7 +246,6 @@ void CPlayer::Update(void)
 		m_Info.move *= 0.7f;
 		m_fCamera += (CAMERA_DETAH - m_fCamera) * 0.02f;
 	}
-	
 }
 
 //===============================================
@@ -329,15 +336,19 @@ void CPlayer::Move(void)
 	// デルタタイム取得
 	float deltatime = CManager::GetInstance()->GetDeltaTime()->GetDeltaTime();
 	
-	D3DXVECTOR3 move = m_Info.move * FRAME_RATE_SCALER;
-
-	m_Info.pos += move * deltatime;
+	m_Info.pos += m_Info.move * FRAME_RATE_SCALER * deltatime;
 	float fHandle = m_fHandle;
 	if (fHandle < 0.0f)
 	{
 		fHandle *= -1;
 	}
 	float fIner = INER + (m_fEngine * m_fBrake * fHandle) * (DRIFT_INER - INER);
+	m_fbrakeVolume += (1.0f - m_fbrakeVolume) * (m_fEngine * m_fBrake) * BRAKE_INER;
+	m_fbrakePitch += (1.0f - m_fbrakePitch) * (m_fEngine * m_fBrake * fHandle) * BRAKE_INER;
+	m_fbrakeVolume -= m_fbrakeVolume* BRAKE_INER;
+	m_fbrakePitch -= m_fbrakePitch *BRAKE_INER;
+	m_pSoundBrake->SetVolume(m_fbrakeVolume * 0.8f);
+	m_pSoundBrake->SetPitch(0.5f + m_fbrakePitch);
 	m_Info.move *= fIner;//移動量の減衰
 }
 //===============================================
@@ -345,7 +356,8 @@ void CPlayer::Move(void)
 //===============================================
 void  CPlayer::Engine(float fThrottle)
 {
-	m_fEngine +=  (1.0f - m_fEngine) * fThrottle * ENGINE_INER;
+	float fAccel = (1.0f - m_fEngine) * fThrottle * ENGINE_INER;
+	m_fEngine += fAccel;
 	if (fThrottle <= 0)
 	{
 		m_fEngine -= ENGINE_BRAKE;
@@ -354,7 +366,10 @@ void  CPlayer::Engine(float fThrottle)
 			m_fEngine = 0;
 		}
 	}
+	m_pSound->SetPitch(0.5f + m_fEngine*1.5f);
+	m_pSound->SetVolume(0.5 + fAccel*100.0f + m_fEngine);
 
+	m_pSoundBrake->SetVolume(m_fBrake * m_fEngine * 0.3f);
 	m_Info.move.z += MOVE * sinf(-m_Info.rot.y) * m_fEngine;
 	m_Info.move.x += MOVE * cosf(-m_Info.rot.y) * m_fEngine;
 	m_Info.move.z -= MOVE * sinf(-m_Info.rot.y) * m_fEngine * m_fBrake * BRAKE;
