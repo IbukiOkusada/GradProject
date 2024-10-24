@@ -158,10 +158,7 @@ void CCar::Move()
 		// デルタタイム取得
 		float DeltaTime = CDeltaTime::GetInstance()->GetDeltaTime();
 
-		// スローの倍率取得
-		float SlowRate = CSlow::GetInstance()->Get();
-
-		m_Info.pos += m_Info.move * FRAME_RATE_SCALER * DeltaTime * SlowRate;
+		m_Info.pos += m_Info.move * FRAME_RATE_SCALER * DeltaTime;
 	}
 }
 

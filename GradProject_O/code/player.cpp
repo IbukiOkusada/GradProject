@@ -336,9 +336,7 @@ void CPlayer::Move(void)
 	// デルタタイム取得
 	float deltatime = CManager::GetInstance()->GetDeltaTime()->GetDeltaTime();
 	
-	D3DXVECTOR3 move = m_Info.move * FRAME_RATE_SCALER;
-
-	m_Info.pos += move * deltatime * CSlow::GetInstance()->Get();
+	m_Info.pos += m_Info.move * FRAME_RATE_SCALER * deltatime;
 	float fHandle = m_fHandle;
 	if (fHandle < 0.0f)
 	{
