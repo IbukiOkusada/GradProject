@@ -5,10 +5,10 @@
 //
 //==========================================================
 #include "map_obstacle.h"
+#include "map_manager.h"
 #include "objectX.h"
 
 // 静的メンバ変数宣言
-std::vector<std::string> CMapObstacle::m_LoadFileName = {};
 Clist<CMapObstacle*>* CMapObstacle::m_pList = nullptr;
 
 //==========================================================
@@ -39,8 +39,19 @@ CMapObstacle::~CMapObstacle()
 //==========================================================
 HRESULT CMapObstacle::Init(void)
 {
-	m_pObj = CObjectX::Create(m_Info.pos, m_Info.rot, m_LoadFileName[m_Info.fileidx].c_str());
+	std::vector<std::string> str = CMapManager::GetInstance()->GetFileNameList();
+	m_pObj = CObjectX::Create(m_Info.pos, m_Info.rot, str[m_Info.fileidx].c_str());
 	
+	return S_OK;
+}
+
+//==========================================================
+// 初期化処理(オーバーロード)
+//==========================================================
+HRESULT CMapObstacle::Init(const std::string& filename)
+{
+	m_pObj = CObjectX::Create(m_Info.pos, m_Info.rot, filename.c_str());
+
 	return S_OK;
 }
 
@@ -124,69 +135,13 @@ void CMapObstacle::SetRotation(const D3DXVECTOR3& rot)
 //==========================================================
 void CMapObstacle::BindModel(const int& idx)
 {
-	if (idx < 0 || idx >= m_LoadFileName.size()) { m_Info.fileidx = 0;}
+	if (idx < 0 || idx >= CMapManager::GetInstance()->GetFileNameList().size()) { m_Info.fileidx = 0;}
 
 	m_Info.fileidx = idx;
 
 	if (m_pObj == nullptr) { return; }
 
-	m_pObj->BindFile(m_LoadFileName[idx].c_str());
-}
+	std::vector<std::string> str = CMapManager::GetInstance()->GetFileNameList();
 
-//==========================================================
-// モデルファイル読み込み
-//==========================================================
-void CMapObstacle::FileLoad(const std::string& filename)
-{
-	// ファイルを開く
-	std::ifstream File(filename);
-	if (!File.is_open()) {
-		return;
-	}
-
-	// コメント用
-	std::string hoge;
-
-	// モデル名
-	std::string modelname;
-
-	// データ読み込み
-	std::string line;
-	while (std::getline(File, line))
-	{
-		// コメントはスキップ
-		if (line.empty() ||
-			line[0] == '#')
-		{
-			continue;
-		}
-
-		// ストリーム作成
-		std::istringstream lineStream(line);
-
-		if (line.find("MODEL_FILENAME") != std::string::npos)
-		{// TEXT_FILENAMEでモデル名読み込み
-
-			// ストリーム作成
-			std::istringstream lineStream(line);
-
-			// 情報渡す
-			lineStream >>
-				hoge >>
-				hoge >>			// ＝
-				modelname;// モデルファイル名
-
-			// 情報読み込み
-			m_LoadFileName.push_back(modelname);
-			continue;
-		}
-
-		if (line.find("END_SCRIPT") != std::string::npos)
-		{
-			break;
-		}
-	}
-
-	// ファイルを閉じる
-	File.close();
+	m_pObj->BindFile(str[idx].c_str());
 }

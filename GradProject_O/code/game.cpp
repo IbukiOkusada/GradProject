@@ -35,6 +35,7 @@
 #include "goal.h"
 #include "edit_manager.h"
 #include "map_obstacle.h"
+#include "map_manager.h"
 
 // 無名名前空間を定義
 namespace {
@@ -161,8 +162,8 @@ HRESULT CGame::Init(void)
         CObjectX::Create(D3DXVECTOR3(12000.0f, 0.0f,  1000.0f * i), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), "data\\MODEL\\bill.x");
     }*/
 
-    // 障害物生成
-    CMapObstacle::FileLoad("data\\TXT\\model_info.txt");
+    // マップ読み込み
+    CMapManager::GetInstance()->Load();
 
     CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
@@ -187,11 +188,6 @@ HRESULT CGame::Init(void)
     CCarManager::GetInstance()->ListIn(pCar);
 
     CGole::Create(D3DXVECTOR3(5000.0f, 0.0f, 0.0f), 600.0f, 15.0f);
-    // 道生成
-    SetRoad();
-
-    // 道連結
-    CRoadManager::GetInstance()->AllConnect();
 
     return S_OK;
 }
@@ -666,33 +662,4 @@ void CGame::AddressLoad(char *pAddrss)
 bool CGame::StartDirection(void)
 {
 	return false;
-}
-
-//===================================================
-// 道生成
-//===================================================
-void CGame::SetRoad()
-{
-    // ファイルを開く
-    std::ifstream File("data\\FILE\\map\\road.bin", std::ios::binary);
-    if (!File.is_open()) {
-        // 例外処理
-        return;
-    }
-
-    // サイズ読み込み
-    int size = 0;
-    File.read(reinterpret_cast<char*>(&size), sizeof(size));
-
-    // データ読み込み
-    std::vector<CRoad::SInfo> roaddata(size);
-    File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CRoad::SInfo));
-
-    for (const auto& it : roaddata)
-    {
-        CRoad::Create(it.pos, it.rot, it.sizeOrigin);
-    }
-
-    // ファイルを閉じる
-    File.close();
 }

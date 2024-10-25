@@ -41,6 +41,7 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数
 	HRESULT Init(void) override;
+	HRESULT Init(const std::string& filename);
 	void Uninit(void) override;
 	void Update(void) override;
 	
@@ -48,6 +49,7 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3& GetPosition() { return m_Info.pos; }
 	D3DXVECTOR3& GetRotation() { return m_Info.rot; }
 	CObjectX* GetObj() { return m_pObj; }
+	SInfo& GetInfo() { return m_Info; }
 
 	// 設定関数
 	void SetPosition(const D3DXVECTOR3& pos);
@@ -61,8 +63,6 @@ public:	// 誰でもアクセス可能
 	{ if (m_pList == nullptr) { m_pList = m_pList->Create(); }return m_pList; }
 	static void ListRelease() // リスト解放
 	{ if (m_pList != nullptr) { delete m_pList; m_pList = nullptr; } }
-	static std::vector<std::string>* GetFileNameList() { return &m_LoadFileName; }
-	static void FileLoad(const std::string& filename);
 
 private:	// 自分だけがアクセス可能
 
@@ -71,8 +71,6 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	CObjectX* m_pObj;	// 障害物
 	SInfo m_Info;		// 基本情報
-
-	static std::vector<std::string> m_LoadFileName;
 	static Clist<CMapObstacle*>* m_pList;	// リスト
 };
 

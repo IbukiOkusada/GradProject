@@ -13,6 +13,11 @@
 #include "input_mouse.h"
 #include "input_keyboard.h"
 
+namespace
+{
+	const std::string FILENAME = "data\\FILE\\map\\obstacle.bin";
+}
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -58,7 +63,7 @@ void CEdit_Obj::Uninit(void)
 //==========================================================
 void CEdit_Obj::Update(void)
 {
-	CDebugProc::GetInstance()->Print(" [ 道配置モード ]\n");
+	CDebugProc::GetInstance()->Print(" [ 障害物配置モード ]\n");
 	CMapObstacle* pOld = m_pSelect;
 
 	// 選択
@@ -227,38 +232,38 @@ void CEdit_Obj::Move()
 //==========================================================
 void CEdit_Obj::Save()
 {
-	//CDebugProc::GetInstance()->Print(" 保存 : F7, ");
-	//CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CDebugProc::GetInstance()->Print(" 保存 : F7, ");
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 
-	//// 入力確認
-	//if (!pKey->GetTrigger(DIK_F7)) { return; }
+	Clist<CMapObstacle*>* pList = CMapObstacle::GetList();
+	if (pList == nullptr) { return; }
 
-	//CMapObstacleManager* pMgr = CMapObstacleManager::GetInstance();
-	//// ファイルを開く
-	//std::ofstream File(FILENAME, std::ios::binary);
-	//if (!File.is_open()) {
-	//	return;
-	//}
+	// 入力確認
+	if (!pKey->GetTrigger(DIK_F7)) { return; }
 
-	//std::vector<CMapObstacle::SInfo> savedata;
+	// ファイルを開く
+	std::ofstream File(FILENAME, std::ios::binary);
+	if (!File.is_open()) {
+		return;
+	}
 
-	//for (int i = 0; i < pMgr->GetList()->GetNum(); i++)
-	//{
-	//	savedata.push_back(*pMgr->GetList()->Get(i));
-	//}
+	std::vector<CMapObstacle::SInfo> savedata;
 
-	//savedata.erase(savedata.begin());
-	//savedata.pop_back();
-	//int size = savedata.size();
+	for (int i = 0; i < pList->GetNum(); i++)
+	{
+		savedata.push_back(pList->Get(i)->GetInfo());
+	}
 
-	//// ベクトルのサイズをセーブ
-	//File.write(reinterpret_cast<const char*>(&size), sizeof(size));
+	int size = savedata.size();
 
-	//// データをバイナリファイルに書き出す
-	//File.write(reinterpret_cast<char*>(savedata.data()), size * sizeof(CMapObstacle::SInfo));
+	// ベクトルのサイズをセーブ
+	File.write(reinterpret_cast<const char*>(&size), sizeof(size));
 
-	//// ファイルを閉じる
-	//File.close();
+	// データをバイナリファイルに書き出す
+	File.write(reinterpret_cast<char*>(savedata.data()), size * sizeof(CMapObstacle::SInfo));
+
+	// ファイルを閉じる
+	File.close();
 }
 
 //==========================================================
