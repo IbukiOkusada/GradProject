@@ -308,6 +308,7 @@ void CManager::Uninit(void)
 	// 各種マネージャの破棄
 	CManagerRegistry::Release();
 	CMasterSound::GetInstance()->Uninit();
+	CMasterSound::Release();
 	// エフェクシア破棄
 	CEffekseer::GetInstance()->Uninit();
 }

@@ -91,6 +91,9 @@
     <Filter Include="edit">
       <UniqueIdentifier>{b881f908-3acf-4e43-a896-a764d635d1ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="radio">
+      <UniqueIdentifier>{59970b06-3a29-424f-be12-5287963cc640}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -296,6 +299,9 @@
     </ClCompile>
     <ClCompile Include="code\deltatime.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\radio.cpp">
+      <Filter>radio</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -508,6 +514,9 @@
     </ClInclude>
     <ClInclude Include="code\deltatime.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\radio.h">
+      <Filter>radio</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

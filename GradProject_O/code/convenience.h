@@ -15,9 +15,11 @@ float GetDistance(D3DXVECTOR3 vec1, D3DXVECTOR3 vec2);
 
 #define SAFE_DELETE(p)		if ((p) != nullptr) { delete (p);		(p) = nullptr; }	// 破棄
 
+#define SAFE_DELETEARRAY(p)		if ((p) != nullptr) { delete[] (p);		(p) = nullptr; }	// 破棄
+
 #define SAFE_UNINIT(p)		if ((p) != nullptr) { (p)->Uninit();	(p) = nullptr; }	// Uninitを使用した破棄
 
-
+#define SAFE_UNINIT_DELETE(p)		if ((p) != nullptr) { (p)->Uninit();	 delete (p);	(p) = nullptr; }	// Uninitを使用した破棄
 
 
 //汎用テンプレート
