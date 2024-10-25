@@ -311,6 +311,7 @@ void CCar::ReachRoad()
 //==========================================================
 bool CCar::Collision()
 {
+	return false;
 	CObjectX* pObjectX = CObjectX::GetTop();	// æ“ª‚ğæ“¾
 
 	while (pObjectX != nullptr)

@@ -55,7 +55,7 @@ namespace {
 	const float LIFE = (100.0f);
 	const float CAMERA_NORMAL = (3000.0f);
 	const float CAMERA_DETAH = (6000.0f);
-	const float MOVE = (6.2f);		// 移動量
+	const float MOVE = (6.2f * 0.7f);		// 移動量
 	const float BRAKE = (0.7f);		// ブレーキ
 	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量

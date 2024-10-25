@@ -107,6 +107,15 @@ void CEdit_Obj::Update(void)
 	// íœ
 	Delete();
 
+	CDebugProc::GetInstance()->Print("]\n\n");
+
+	// áŠQ•¨î•ñ
+	if (m_pSelect == nullptr) { return; }
+	CDebugProc::GetInstance()->Print("[ “¹î•ñ : ");
+	D3DXVECTOR3 pos = m_pSelect->GetPosition();
+	CDebugProc::GetInstance()->Print("À•W : [ %f, %f, %f] : ", pos.x, pos.y, pos.z);
+	D3DXVECTOR3 rot = m_pSelect->GetRotation();
+	CDebugProc::GetInstance()->Print("Œü‚« : [ %f, %f, %f] : ", rot.x, rot.y, rot.z);
 	CDebugProc::GetInstance()->Print("]\n");
 }
 
@@ -117,6 +126,7 @@ void CEdit_Obj::ClickCheck()
 {
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 	Clist<CMapObstacle*>* pList = CMapObstacle::GetList();
+	float length = 10000000.0f;
 
 	if (CMapObstacle::GetList() == nullptr) { return; }
 
@@ -157,8 +167,6 @@ void CEdit_Obj::ClickCheck()
 			}
 
 			m_pArrow->SetPosition(m_pSelect->GetPosition());
-
-			return;
 		}
 	}
 
@@ -193,6 +201,20 @@ bool CEdit_Obj::CursorCollision(CMapObstacle* pObj)
 	// Žg—p‚³‚ê‚Ä‚¢‚È‚©‚Á‚½‚ç•Ô‚·
 	if (collision::CollideRayToOBB(&touchpos, origin, vec, pos, rot, vtxmax, vtxmin))
 	{
+		if (m_pSelect != nullptr)
+		{
+			D3DXVECTOR3 vec = touchpos - origin;
+			float nowlength = D3DXVec3Length(&vec);
+
+			vec = m_pSelect->GetPosition() - origin;
+			float length = D3DXVec3Length(&vec);
+
+			if (nowlength > length)
+			{
+				return false;
+			}
+		}
+
 		return true;
 	}
 
