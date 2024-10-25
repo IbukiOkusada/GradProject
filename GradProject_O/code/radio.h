@@ -50,6 +50,8 @@ private:	// 自分だけがアクセス可能
 	int m_nChannel;
 	bool m_bSwitch;
 	radio m_pRadio[CHANNEL_MAX];
+	CMasterSound::CObjectSound* m_pSE;
+	float m_fFade;
 };
 
 #endif

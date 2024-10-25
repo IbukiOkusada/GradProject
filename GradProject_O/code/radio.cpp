@@ -25,6 +25,7 @@ namespace
 			"data\\BGM\\mantra.wav",
 		},
 	};
+	const char* BUTTON_SE = { "data\\SE\\switch_04_button.wav" };
 };
 //==========================================================
 // コンストラクタ
@@ -35,7 +36,7 @@ CRadio::CRadio()
 	 m_fVolume = 0.25f;
 	 m_nChannel = 0;
 	 m_bSwitch = false;
-
+	 m_fFade = 0.0f;
 }
 
 //==========================================================
@@ -65,6 +66,8 @@ HRESULT CRadio::Init(void)
 			}
 		}
 	}
+	m_pSE = CMasterSound::CObjectSound::Create(BUTTON_SE, 0);
+	m_pSE->Stop();
 	return S_OK;
 }
 
@@ -94,16 +97,15 @@ void CRadio::Uninit(void)
 //==========================================================
 void CRadio::Update(void)
 {
-	CMasterSound::CObjectSound* pSound = nullptr;
+	m_fFade += (1.0f - m_fFade) * 0.05f;
 	VolumeChange();
 	ChannelChange();
 	for (int i = 0; i < CRadio::CHANNEL_MAX; i++)
 	{
-		;
 	
 		if (m_nChannel == i)
 		{
-			m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->SetVolume(m_fVolume);
+			m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->SetVolume(m_fVolume * m_fFade);
 		}
 		else
 		{
@@ -155,10 +157,14 @@ void CRadio::ChannelChange(void)
 	if (pInputKey->GetTrigger(DIK_RIGHT) || pInputPad->GetTrigger(CInputPad::BUTTON_RIGHT, 0))
 	{
 		m_nChannel += 1;
+		m_pSE->Play();
+		m_fFade = 0.0f;
 	}
 	else if (pInputKey->GetTrigger(DIK_LEFT) || pInputPad->GetTrigger(CInputPad::BUTTON_LEFT, 0))
 	{
 		m_nChannel -= 1;
+		m_pSE->Play();
+		m_fFade = 0.0f;
 	}
 	m_nChannel %= CHANNEL_MAX;
 	if (m_nChannel < 0)
