@@ -70,6 +70,7 @@ void CEdit_Road::Uninit(void)
 void CEdit_Road::Update(void)
 {
 	CDebugProc::GetInstance()->Print(" [ 道配置モード ]\n");
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 	CRoad* pOld = m_pSelectRoad;
 
 	// 選択
@@ -82,6 +83,8 @@ void CEdit_Road::Update(void)
 
 	// 保存
 	Save();
+
+	if (pKey->GetPress(DIK_LALT) || pKey->GetPress(DIK_RALT)) { CDebugProc::GetInstance()->Print("]\n"); return; }
 
 	// 選択されていない、もしくは選択した直後
 	if (m_pSelectRoad == nullptr || pOld == nullptr) { 

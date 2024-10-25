@@ -40,9 +40,11 @@ private:	// 自分だけがアクセス可能
 	void Save();		// 保存
 	void Create();		// 生成
 	bool CursorCollision(CMapObstacle* pObj);
+	void ModelChange();	// モデル変更
 
 	// メンバ変数
 	CEdit_Arrow* m_pArrow;	// 矢印
+	float m_fMouseWheel;	// マウスホイールの移動量
 	CMapObstacle* m_pSelect;	// 選択中オブジェクト
 };
 

@@ -8,5 +8,7 @@
 SCRIPT
 
 MODEL_FILENAME = data/MODEL/bill.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/car000.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/car002.x	# [0]砂場
 
 END_SCRIPT

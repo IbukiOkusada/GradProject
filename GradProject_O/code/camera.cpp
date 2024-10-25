@@ -547,6 +547,11 @@ void CCamera::MouseCamera(void)
 		m_rot.z = MAX_CAMERA_ROTZ;
 	}
 
+	//視点設定
+	SetV();
+
+	if (!pKey->GetPress(DIK_LALT) && !pKey->GetPress(DIK_RALT)) { return; }
+
 	//ホイールの使用量で距離の変更
 	m_fLength += pMouse->GetCousorMove().z * MOUSE_WHEELSPEED;
 

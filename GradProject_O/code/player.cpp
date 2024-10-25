@@ -442,6 +442,9 @@ void CPlayer::SearchRoad()
 
 	CRoad* pRoad = pRoadManager->GetTop();
 	CRoad* pRoadClose = pRoadManager->GetTop();
+	if (pRoad == nullptr) {
+		return;
+	}
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 

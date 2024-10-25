@@ -12,6 +12,7 @@
 #include "objectX.h"
 #include "input_mouse.h"
 #include "input_keyboard.h"
+#include "map_manager.h"
 
 namespace
 {
@@ -26,6 +27,7 @@ CEdit_Obj::CEdit_Obj()
 	// 値のクリア
 	m_pSelect = nullptr;
 	m_pArrow = nullptr;
+	m_fMouseWheel = 0.0f;
 }
 
 //==========================================================
@@ -64,6 +66,7 @@ void CEdit_Obj::Uninit(void)
 void CEdit_Obj::Update(void)
 {
 	CDebugProc::GetInstance()->Print(" [ 障害物配置モード ]\n");
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 	CMapObstacle* pOld = m_pSelect;
 
 	// 選択
@@ -73,6 +76,8 @@ void CEdit_Obj::Update(void)
 
 	// 保存
 	Save();
+
+	if (pKey->GetPress(DIK_LALT) || pKey->GetPress(DIK_RALT)) { CDebugProc::GetInstance()->Print("]\n"); return; }
 
 	// 選択されていない、もしくは選択した直後
 	if (m_pSelect == nullptr || pOld == nullptr) {
@@ -92,6 +97,9 @@ void CEdit_Obj::Update(void)
 	{
 		m_pArrow->Update();
 	}
+
+	// モデル変更
+	ModelChange();
 
 	// 移動
 	Move();
@@ -225,6 +233,36 @@ void CEdit_Obj::Move()
 
 	// 選択した道の座標設定
 	m_pSelect->SetPosition(pos);
+}
+
+//==========================================================
+// モデル変更
+//==========================================================
+void CEdit_Obj::ModelChange()
+{
+	if (m_pSelect == nullptr) { return; }
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+
+	float old = m_fMouseWheel;
+	m_fMouseWheel += pMouse->GetCousorMove().z;
+
+	// マウスホイール
+	if (m_fMouseWheel == old) { return; }
+
+	if (static_cast<int>(m_fMouseWheel) % 20 != 0) { return; }
+
+	int idx = m_pSelect->GetInfo().fileidx;
+
+	if (m_fMouseWheel >= old)
+	{
+		idx = (idx + 1) % CMapManager::GetInstance()->GetFileNameList().size();
+	}
+	else
+	{
+		idx = (idx + CMapManager::GetInstance()->GetFileNameList().size() - 1) % CMapManager::GetInstance()->GetFileNameList().size();
+	}
+
+	m_pSelect->BindModel(idx);
 }
 
 //==========================================================

@@ -183,28 +183,28 @@ void CEdit_Arrow::Move()
 	{
 		newpos = m_Info.touchpos + move;
 		newpos.y = m_Info.touchpos.y;
-		CDebugProc::GetInstance()->Print("全部！\n");
+		CDebugProc::GetInstance()->Print("全部！");
 	}
 	break;
 
 	case TYPE_X:
 	{
 		newpos.x = m_Info.touchpos.x + move.x;
-		CDebugProc::GetInstance()->Print("X！\n");
+		CDebugProc::GetInstance()->Print("X！");
 	}
 	break;
 
 	case TYPE_Y:
 	{
 		newpos.y = m_Info.touchpos.y + move.y;
-		CDebugProc::GetInstance()->Print("Y！\n");
+		CDebugProc::GetInstance()->Print("Y！");
 	}
 	break;
 
 	case TYPE_Z:
 	{
 		newpos.z = m_Info.touchpos.z + move.z;
-		CDebugProc::GetInstance()->Print("Z！\n");
+		CDebugProc::GetInstance()->Print("Z！");
 	}
 	break;
 
