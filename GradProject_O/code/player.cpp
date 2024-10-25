@@ -152,6 +152,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
+	pRadio = CRadio::Create();
 	return S_OK;
 }
 
@@ -165,8 +166,10 @@ void CPlayer::Uninit(void)
 	SAFE_DELETE(m_pBackdust);
 	SAFE_DELETE(m_pAfterburner);
 	SAFE_DELETE(m_pDamageEffect);
-	SAFE_DELETE(m_pSound);
-	SAFE_DELETE(m_pSoundBrake);
+	SAFE_UNINIT_DELETE(m_pSound);
+	SAFE_UNINIT_DELETE(m_pSoundBrake);
+
+	SAFE_UNINIT_DELETE(pRadio);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// ”pŠü
@@ -183,7 +186,7 @@ void CPlayer::Update(void)
 	m_Info.posOld = GetPosition();
 
 	StateSet();	
-
+	pRadio->Update();
 	if (m_type == TYPE_ACTIVE)
 	{
 		

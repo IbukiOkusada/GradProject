@@ -33,7 +33,7 @@ public:	// 誰でもアクセス可能な定義
 		HRESULT Init();
 		void Uninit();
 		void Play();
-		
+		void Stop();
 		void Pause();
 		void Start();
 	
@@ -78,6 +78,7 @@ public:	// 誰でもアクセス可能
 	void Start();
 
 	static CMasterSound* GetInstance() { if (m_pInstance == nullptr) { m_pInstance = DEBUG_NEW CMasterSound;}return m_pInstance; }
+	static void Release() { if (m_pInstance != nullptr) { delete m_pInstance; } }
 private:	// 自分だけがアクセス可能
 	// メンバ変数
 	static CMasterSound* m_pInstance;

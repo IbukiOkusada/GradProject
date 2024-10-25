@@ -14,6 +14,7 @@
 #include "effekseerControl.h"
 #include "convenience.h"
 #include "objectsound.h"
+#include "radio.h"
 using namespace std;
 // 前方宣言
 class CWaist;
@@ -144,6 +145,7 @@ private:	// 自分だけがアクセス可能
 	CMasterSound::CObjectSound* m_pSoundBrake;
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
+	CRadio* pRadio;
 };
 
 
