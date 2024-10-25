@@ -114,7 +114,7 @@ void CPolice::MoveRoad()
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
-	if (pRoadTarget == nullptr)
+	if (pRoadTarget == nullptr && !m_Info.bChase)
 		SearchRoad();
 
 	SearchPlayer();

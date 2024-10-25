@@ -39,6 +39,7 @@ private:	// 自分だけがアクセス可能
 		float speed;
 		float speedDest;
 		bool bBreak;
+		bool bBack;
 	};
 
 public:	// 誰でもアクセス可能

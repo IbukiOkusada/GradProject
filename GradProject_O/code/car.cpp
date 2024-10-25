@@ -43,6 +43,7 @@ CCar::CCar()
 	m_Info.speed = 0.0f;
 	m_Info.speedDest = 0.0f;
 	m_Info.bBreak = false;
+	m_Info.bBack = false;
 }
 
 //==========================================================
