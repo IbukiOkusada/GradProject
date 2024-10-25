@@ -135,7 +135,7 @@ HRESULT CMasterSound::CObjectSound::Init()
 //=============================================================================
 void CMasterSound::CObjectSound::Uninit()
 {
-	SAFE_DELETE(m_pDataAudio);
+
 	// 一時停止
 	XAUDIO2_VOICE_STATE xa2state;
 	// 状態取得
@@ -150,8 +150,8 @@ void CMasterSound::CObjectSound::Uninit()
 	m_pSourceVoice = NULL;
 
 	// オーディオデータの開放
-	free(m_pSourceVoice);
-	m_pSourceVoice = NULL;
+	free(m_pDataAudio);
+	m_pDataAudio = NULL;
 }
 //=============================================================================
 // 最初から再生

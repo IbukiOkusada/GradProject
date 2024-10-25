@@ -103,7 +103,6 @@ void CRadio::Update(void)
 	
 		if (m_nChannel == i)
 		{
-			m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->Start();
 			m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->SetVolume(m_fVolume);
 		}
 		else
