@@ -34,6 +34,8 @@
 #include "car_manager.h"
 #include "goal.h"
 #include "edit_manager.h"
+#include "map_obstacle.h"
+#include "map_manager.h"
 
 // 無名名前空間を定義
 namespace {
@@ -149,7 +151,7 @@ HRESULT CGame::Init(void)
     }
 
     CMeshField::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
-    for (int i = 0; i < 10; i++)
+    /*for (int i = 0; i < 10; i++)
     {
         CObjectX::Create(D3DXVECTOR3(1000.0f*i, 0.0f, 1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bill.x");
         CObjectX::Create(D3DXVECTOR3(1000.0f * i, 0.0f, -1000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bill.x");
@@ -158,7 +160,11 @@ HRESULT CGame::Init(void)
     {
         CObjectX::Create(D3DXVECTOR3(10000.0f, 0.0f, 2000.0f + 1000.0f * i), D3DXVECTOR3(0.0f, D3DX_PI/2, 0.0f), "data\\MODEL\\bill.x");
         CObjectX::Create(D3DXVECTOR3(12000.0f, 0.0f,  1000.0f * i), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), "data\\MODEL\\bill.x");
-    }
+    }*/
+
+    // マップ読み込み
+    CMapManager::GetInstance()->Load();
+
     CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
@@ -182,11 +188,6 @@ HRESULT CGame::Init(void)
     CCarManager::GetInstance()->ListIn(pCar);
 
     CGole::Create(D3DXVECTOR3(5000.0f, 0.0f, 0.0f), 600.0f, 15.0f);
-    // 道生成
-    SetRoad();
-
-    // 道連結
-    CRoadManager::GetInstance()->AllConnect();
 
     return S_OK;
 }
@@ -661,45 +662,4 @@ void CGame::AddressLoad(char *pAddrss)
 bool CGame::StartDirection(void)
 {
 	return false;
-}
-
-//===================================================
-// 道生成
-//===================================================
-void CGame::SetRoad()
-{
-    // x一列目
-    CRoad::Create({ -2400.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ -1200.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 0.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 1200.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, -2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-
-    // 二列目
-    CRoad::Create({ -2400.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ -1200.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 0.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ 1200.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, -1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-
-    // 三列目
-    CRoad::Create({ -2400.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ -1200.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 1200.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-
-    // 四列目
-    CRoad::Create({ -2400.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ -1200.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ 0.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    //CRoad::Create({ 1200.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, 1200.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-
-    // 五列目
-    CRoad::Create({ -2400.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ -1200.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 0.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 1200.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
-    CRoad::Create({ 2400.0f, 0.0f, 2400.0f }, { 0.0f, 0.0f, 0.0f }, { 600.0f, 600.0f });
 }

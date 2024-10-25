@@ -33,8 +33,17 @@ public:	// 誰でもアクセス可能な定義
 		D3DXVECTOR3 vec;	// 方向
 		D3DXVECTOR3 vecold;	// 前回の方向
 
-		SRayInfo() : origin(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), end(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), 
-			vec(D3DXVECTOR3(0.0f, 0.0f, 0.0f)), vecold(D3DXVECTOR3(0.0f, 0.0f, 0.0f)) {}
+		SRayInfo() : origin(VECTOR3_ZERO), end(VECTOR3_ZERO), 
+			vec(VECTOR3_ZERO), vecold(VECTOR3_ZERO) {}
+	};
+
+	// 3D空間上情報
+	struct SWorldInfo
+	{
+		D3DXVECTOR3 pos;	// 現在のワールド座標
+		D3DXVECTOR3 posold;	// 前回のワールド座標
+
+		SWorldInfo() : pos(VECTOR3_ZERO), posold(VECTOR3_ZERO){}
 	};
 
 public:	// 誰でもアクセス可能
@@ -51,8 +60,11 @@ public:	// 誰でもアクセス可能
 	bool GetRepeat(int nKey);
 	D3DXVECTOR3 GetCousorMove();
 	SRayInfo GetRayInfo() { return m_RayInfo; }
+	SWorldInfo GetWorldInfo() { return m_WorldInfo; }
 	static CInputMouse* Create(HINSTANCE hInstance, HWND hWnd);
 	static CInputMouse* GetInstance() { return m_pInstance; }
+	POINT& GetPoint() { return m_Point; }
+	POINT& GetPointOld() { return m_PointOld; }
 
 private:	// 自分だけアクセス可能
 
@@ -62,7 +74,9 @@ private:	// 自分だけアクセス可能
 	DIMOUSESTATE2 m_Release;	//リリース情報
 	DIMOUSESTATE2 m_Repeat;	//リピート情報
 	POINT m_Point;			//カーソルポインター
+	POINT m_PointOld;		//カーソルポインター
 	SRayInfo m_RayInfo;
+	SWorldInfo m_WorldInfo;
 	static CInputMouse* m_pInstance;
 };
 

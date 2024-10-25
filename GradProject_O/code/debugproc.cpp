@@ -22,9 +22,13 @@
 LPD3DXFONT CDebugProc::m_pFont = nullptr;	// デバッグフォントへのポインタ
 CDebugProc* CDebugProc::m_pInstance = nullptr;
 //**********************************************************
-//マクロ定義
+// 無名名前空間
 //**********************************************************
-#define MAX_FLOATNUM	(2)		//小数点以下の表示桁数
+namespace
+{
+	const int MAX_FLOATNUM = (2);		//小数点以下の表示桁数
+	const int MAX_DEBUGSTRING = (2048);	//デバッグ表示の最大文字数;
+}
 
 //**********************************************************
 //デバッグONOFF表示メッセージ
@@ -180,7 +184,7 @@ void CDebugProc::Print(const char *fmt, ...)
 	if (!m_bDisp) { return; }
 
 #else
-	return;
+	if (!m_bDisp) { return; }
 #endif
 	va_list args = nullptr;
 	char* pTemp = m_pStr;	// 借入
@@ -287,7 +291,7 @@ void CDebugProc::Print(const char *fmt, ...)
 	int nCurrentLength = (int)strlen(&aString[0]);
 
 	// 文字列のメモリを確保
-	m_pStr = new char[nNowLength + nCurrentLength + 1];
+	m_pStr = DEBUG_NEW char[nNowLength + nCurrentLength + 1];
 	memset(m_pStr, NULL, sizeof(*m_pStr));
 
 	// 文字列を連結する

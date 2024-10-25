@@ -75,9 +75,6 @@ private:
 	bool EndCheck(void);
 	bool StartDirection(void);
 
-	// メンバ関数
-	void SetRoad();
-
 	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
 	CPlayer** m_ppPlayer;		// プレイヤーのポインタ
 	CMultiCamera **m_ppCamera;	// カメラのポインタ

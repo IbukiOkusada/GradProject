@@ -9,6 +9,7 @@
 #include "manager.h"
 #include "renderer.h"
 #include "camera.h"
+#include "deltatime.h"
 #include <codecvt>
 #include <locale>
 
@@ -192,7 +193,7 @@ void CEffekseer::Draw()
 {
 	CCamera* pCamera = CManager::GetInstance()->GetCamera();
 
-	m_efkRenderer->SetTime(time / 60.0f);
+	m_efkRenderer->SetTime(time * CManager::GetInstance()->GetDeltaTime()->GetDeltaTime());
 	
 	// ŠÔ‚ğXV‚·‚é
 	if (pCamera != NULL)

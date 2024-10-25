@@ -141,7 +141,7 @@ CMeshCylinder *CMeshCylinder::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 ro
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// メモリの確保
-	pMeshWall = new CMeshCylinder(nPriority);
+	pMeshWall = DEBUG_NEW CMeshCylinder(nPriority);
 
 	if (pMeshWall != NULL)
 	{// 確保できた場合
@@ -326,7 +326,7 @@ CMeshSmake *CMeshSmake::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// メモリの確保
-	pMeshWall = new CMeshSmake(6);
+	pMeshWall = DEBUG_NEW CMeshSmake(6);
 
 	if (pMeshWall != NULL)
 	{// 確保できた場合

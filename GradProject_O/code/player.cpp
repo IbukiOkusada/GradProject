@@ -40,6 +40,7 @@
 #include "road.h"
 #include "road_manager.h"
 #include "collision.h"
+#include "deltatime.h"
 
 //===============================================
 // マクロ定義
@@ -51,10 +52,12 @@ namespace {
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
 	const float CAMROT_INER = (0.2f);			// カメラ慣性
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
-	const int LIFE = (10);
+	const float LIFE = (100.0f);
+	const float CAMERA_NORMAL = (3000.0f);
+	const float CAMERA_DETAH = (6000.0f);
 	const float MOVE = (6.2f);		// 移動量
-	const float BRAKE = (0.5f);		// ブレーキ
-
+	const float BRAKE = (0.7f);		// ブレーキ
+	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量
 	const float GRAVITY = (-0.6f);		//プレイヤー重力
 	const float ROT_MULTI = (1.0f);	// 向き補正倍率
@@ -64,8 +67,11 @@ namespace {
 	const float ENGINE_INER = (0.01f);		// 慣性
 	const float ENGINE_BRAKE = (0.006f);		// 慣性
 	const float TUURN_INER = (0.9f);		// 慣性
+	const float DRIFT_INER = (0.98f);		// ドリフト慣性
+	const float BRAKE_INER = (0.05f);
 	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
+	const float FRAME_RATE_SCALER = 60.0f;  // フレームレートを考慮した速度の調整
 }
 
 // 前方宣言
@@ -96,13 +102,21 @@ CPlayer::CPlayer()
 	m_fRotDest = 0.0f;
 	m_fBrake = 0.0f;
 	m_fEngine = 0.0f;
-	m_fTurnSpeed = 0.f;
+	m_fTurnSpeed = 0.0f;
+	m_fHandle = 0.0f;
+	m_fLife = LIFE;
+	m_fCamera = CAMERA_NORMAL;
 	m_type = TYPE_NONE;
 	m_nId = -1;
 	m_Info.fSlideMove = 0.0f;
 	m_pObj = nullptr;
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
+	m_pDamageEffect = nullptr;
+	m_pSound = nullptr;
+	m_fbrakePitch = 0.0f;
+	m_fbrakeVolume = 0.0f;
+	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	CPlayerManager::GetInstance()->ListIn(this);
@@ -124,7 +138,7 @@ HRESULT CPlayer::Init(void)
 	// 腰の生成
 	m_Info.state = STATE_APPEAR;
 	m_type = TYPE_NONE;
-
+	
 	return S_OK;
 }
 
@@ -133,9 +147,11 @@ HRESULT CPlayer::Init(void)
 //===============================================
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\car000.x");
+	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
 	SetMatrix();
-
+	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
+	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
+	m_pSoundBrake->SetVolume(0.0f);
 	return S_OK;
 }
 
@@ -147,6 +163,10 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT(m_pObj)
 	SAFE_DELETE(m_pTailLamp);
 	SAFE_DELETE(m_pBackdust);
+	SAFE_DELETE(m_pAfterburner);
+	SAFE_DELETE(m_pDamageEffect);
+	SAFE_DELETE(m_pSound);
+	SAFE_DELETE(m_pSoundBrake);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// 廃棄
@@ -158,6 +178,7 @@ void CPlayer::Uninit(void)
 //===============================================
 void CPlayer::Update(void)
 {	
+	DEBUGKEY();
 	// 前回の座標を取得
 	m_Info.posOld = GetPosition();
 
@@ -188,25 +209,42 @@ void CPlayer::Update(void)
 	if (m_pObj != nullptr)
 	{
 		D3DXVECTOR3 rot = GetRotation();
+		D3DXVECTOR3 pos = GetPosition();
+		pos.y += 100.0f;
 		rot.y -= D3DX_PI * 0.5f;
-		m_pObj->SetPosition(GetPosition());
+		rot.z += m_fTurnSpeed * 15.0f;
+		m_pObj->SetPosition(pos);
 		m_pObj->SetRotation(rot);
+		// エフェクト
+		{
+			m_pTailLamp->m_pos = pos;
+			m_pTailLamp->m_rot = rot;
+			m_pBackdust->m_pos = GetPosition();
+			m_pBackdust->m_rot = m_pObj->GetRotation();
+			m_pBackdust->m_fScale = m_fEngine * 300.0f;
+			
+			m_pAfterburner->m_pos = GetPosition();;
+		
+			m_pAfterburner->m_fScale = m_fEngine * m_fBrake * 150.0f;
+		
+		}
+		if (m_pDamageEffect != nullptr)
+		{
+			m_pDamageEffect->m_pos = pos;
+			m_pDamageEffect->m_rot = rot;
+		}
 	}
 
 	{
 		D3DXVECTOR3 rot = GetRotation();
 		rot.y -= D3DX_PI * 0.5f;
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-		pCamera->Pursue(GetPosition(), rot, 3000.0f);
+		pCamera->Pursue(GetPosition(), rot, m_fCamera);
 	}
-
-	// エフェクト
+	if (m_fLife<=0)
 	{
-		m_pTailLamp->m_pos = GetPosition();
-		m_pTailLamp->m_rot = m_pObj->GetRotation();
-		m_pBackdust->m_pos = GetPosition();
-		m_pBackdust->m_rot = m_pObj->GetRotation();
-		m_pBackdust->m_fScale = m_fEngine * 300.0f;
+		m_Info.move *= 0.7f;
+		m_fCamera += (CAMERA_DETAH - m_fCamera) * 0.02f;
 	}
 }
 
@@ -279,36 +317,47 @@ void CPlayer::Move(void)
 	{
 		fThrottle = (float)pInputPad->GetRightTriggerPress(0) / 255;
 	}
-	Engine(fThrottle);
+
 	if (pInputKey->GetPress(DIK_S))
 	{
-		
-		m_Info.move*=BRAKE;
-	
 		m_fBrake = 1.0f;
 	}
 	else
 	{
-		float fSpeed = (float)pInputPad->GetLeftTriggerPress(0) / 255;
-		m_fBrake = fSpeed;
-		float b = 1.0f - (1.0f - BRAKE) * fSpeed;
+		m_fBrake = (float)pInputPad->GetLeftTriggerPress(0) / 255;
+	
 	}
+	Engine(fThrottle);
 	// 入力装置確認
 	if (nullptr == pInputKey){
 		return;
 	}
 
-
-	m_Info.pos += m_Info.move;
-
-	m_Info.move *= INER;//移動量の減衰
+	// デルタタイム取得
+	float deltatime = CManager::GetInstance()->GetDeltaTime()->GetDeltaTime();
+	
+	m_Info.pos += m_Info.move * FRAME_RATE_SCALER * deltatime;
+	float fHandle = m_fHandle;
+	if (fHandle < 0.0f)
+	{
+		fHandle *= -1;
+	}
+	float fIner = INER + (m_fEngine * m_fBrake * fHandle) * (DRIFT_INER - INER);
+	m_fbrakeVolume += (1.0f - m_fbrakeVolume) * (m_fEngine * m_fBrake) * BRAKE_INER;
+	m_fbrakePitch += (1.0f - m_fbrakePitch) * (m_fEngine * m_fBrake * fHandle) * BRAKE_INER;
+	m_fbrakeVolume -= m_fbrakeVolume* BRAKE_INER;
+	m_fbrakePitch -= m_fbrakePitch *BRAKE_INER;
+	m_pSoundBrake->SetVolume(m_fbrakeVolume * 0.8f);
+	m_pSoundBrake->SetPitch(0.5f + m_fbrakePitch);
+	m_Info.move *= fIner;//移動量の減衰
 }
 //===============================================
 //簡易エンジンシミュ
 //===============================================
 void  CPlayer::Engine(float fThrottle)
 {
-	m_fEngine +=  (1.0f - m_fEngine) * fThrottle * ENGINE_INER;
+	float fAccel = (1.0f - m_fEngine) * fThrottle * ENGINE_INER;
+	m_fEngine += fAccel;
 	if (fThrottle <= 0)
 	{
 		m_fEngine -= ENGINE_BRAKE;
@@ -317,8 +366,14 @@ void  CPlayer::Engine(float fThrottle)
 			m_fEngine = 0;
 		}
 	}
+	m_pSound->SetPitch(0.5f + m_fEngine*1.5f);
+	m_pSound->SetVolume(0.5 + fAccel*100.0f + m_fEngine);
+
+	m_pSoundBrake->SetVolume(m_fBrake * m_fEngine * 0.3f);
 	m_Info.move.z += MOVE * sinf(-m_Info.rot.y) * m_fEngine;
 	m_Info.move.x += MOVE * cosf(-m_Info.rot.y) * m_fEngine;
+	m_Info.move.z -= MOVE * sinf(-m_Info.rot.y) * m_fEngine * m_fBrake * BRAKE;
+	m_Info.move.x -= MOVE * cosf(-m_Info.rot.y) * m_fEngine * m_fBrake * BRAKE;
 	CManager::GetInstance()->GetDebugProc()->Print("fThrottle:%f\nm_fEngine%f\n", fThrottle, m_fEngine);
 }
 //===============================================
@@ -330,16 +385,17 @@ void CPlayer::Rotate(void)
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	if (pInputKey->GetPress(DIK_D))
 	{
-		m_fTurnSpeed += TURN * (1.0f);
+		m_fHandle = 1.0f;
 	}
 	else if (pInputKey->GetPress(DIK_A))
 	{
-		m_fTurnSpeed -= TURN * (1.0f );
+		m_fHandle = -1.0f;
 	}
 	else
 	{
-		m_fTurnSpeed += TURN *pInputPad->GetLStick(0, 0.1f).x;
+		m_fHandle = pInputPad->GetLStick(0, 0.1f).x;
 	}
+	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT);
 	m_fTurnSpeed*= TUURN_INER;
 	// 入力装置確認
 	if (nullptr == pInputKey) {
@@ -439,6 +495,44 @@ bool CPlayer::Collision(void)
 	return false;
 }
 
+//===============================================
+// ダメージ
+//===============================================
+void CPlayer::Damage(float fDamage)
+{
+	m_fLife -= fDamage;
+	if (m_fLife <= 0.0f)
+	{
+		SAFE_DELETE(m_pDamageEffect);
+		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\explosion.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, false, false);
+	}
+	else if (m_fLife <= LIFE * 0.5f)
+	{
+		SAFE_DELETE(m_pDamageEffect);
+		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\moderately_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
+	}
+	else if (m_fLife <= LIFE * 0.8f)
+	{
+		SAFE_DELETE(m_pDamageEffect);
+		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\minor_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
+	}
+}
+//===============================================
+// デバッグキー
+//===============================================
+#if _DEBUG
+void CPlayer::DEBUGKEY(void)
+{
+	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
+	CInputPad* pInputPad = CInputPad::GetInstance();
+	if (pInputKey->GetTrigger(DIK_K))
+	{
+		Damage(40.0f);
+	}
+}
+#else
+void CPlayer::DEBUGKEY(void){}
+#endif
 //===============================================
 // 状態管理
 //===============================================

@@ -62,7 +62,7 @@ CSample* CSample::Create(void)
 {
 	CSample* pSample = nullptr;
 
-	pSample = new CSample;
+	pSample = DEBUG_NEW CSample;
 
 	if (pSample != nullptr)
 	{

@@ -1,0 +1,45 @@
+newmtl BSurfaceMeshSG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+bump  -bm 1 Main_Normal_DirectX.png
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 23.00
+newmtl BSurfaceMeshSG1
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Engineering_Base_color.png
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 23.00
+newmtl BSurfaceMeshSG2
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Plain_Base_color.png
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 23.00
+newmtl BSurfaceMeshSG3
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd ReactiveStuff_Base_color.png
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 23.00
+newmtl BSurfaceMeshSG4
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd Control_Base_color.png
+Ni 1.00
+Ks 0.20 0.20 0.20
+Ns 23.00

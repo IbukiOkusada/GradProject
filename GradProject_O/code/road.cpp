@@ -57,8 +57,10 @@ CRoad::~CRoad()
 HRESULT CRoad::Init(void)
 {
 	// オブジェクトの生成
+	CTexture* pTex = CManager::GetInstance()->GetTexture();
 	m_pObj = CObject3D::Create(m_Info.pos, m_Info.rot);
 	m_pObj->SetpVtx(m_Info.size.x, m_Info.size.y);
+	m_pObj->BindTexture(pTex->Regist(FILENAME[TYPE_CROSSING]));
 
 	return S_OK;
 }
@@ -262,4 +264,16 @@ void CRoad::Rotation(TYPE type)
 	}
 
 	m_pObj->SetRotation(m_Info.rot);
+}
+
+//==========================================================
+// 座標
+//==========================================================
+void CRoad::SetPosition(const D3DXVECTOR3& pos)
+{
+	m_Info.pos = pos;
+	
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetPosition(m_Info.pos);
 }
