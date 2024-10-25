@@ -190,7 +190,7 @@ void CCharacter::LoadFile(FILE *pFile)
 			fscanf(pFile, "%s", &aStr[0]); //=
 			fscanf(pFile, "%d", &m_nNumParts); //パーツ数取得
 
-			m_ppParts = new CModel*[m_nNumParts];	// パーツ数分確保
+			m_ppParts = DEBUG_NEW CModel*[m_nNumParts];	// パーツ数分確保
 
 			for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 			{
@@ -209,7 +209,7 @@ void CCharacter::LoadFile(FILE *pFile)
 
 			if (m_pMotion == NULL)
 			{// モーションが確保されていない場合
-				m_pMotion = new CMotion;
+				m_pMotion = DEBUG_NEW CMotion;
 				m_pMotion->SetModel(m_ppParts, m_nNumParts);
 			}
 
@@ -370,7 +370,7 @@ CCharacter *CCharacter::Create(const char* pFileName)
 	CCharacter *pCharacter = NULL;
 
 	// キャラクターの生成
-	pCharacter = new CCharacter;
+	pCharacter = DEBUG_NEW CCharacter;
 
 	if (pCharacter != NULL)
 	{// 生成できた場合
@@ -393,7 +393,7 @@ CCharacter *CCharacter::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char* pFi
 	CCharacter *pCharacter = NULL;
 
 	// オブジェクト2Dの生成
-	pCharacter = new CCharacter;
+	pCharacter = DEBUG_NEW CCharacter;
 
 	if (pCharacter != NULL)
 	{// 生成できた場合

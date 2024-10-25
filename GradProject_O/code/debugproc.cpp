@@ -291,7 +291,7 @@ void CDebugProc::Print(const char *fmt, ...)
 	int nCurrentLength = (int)strlen(&aString[0]);
 
 	// •¶š—ñ‚Ìƒƒ‚ƒŠ‚ğŠm•Û
-	m_pStr = new char[nNowLength + nCurrentLength + 1];
+	m_pStr = DEBUG_NEW char[nNowLength + nCurrentLength + 1];
 	memset(m_pStr, NULL, sizeof(*m_pStr));
 
 	// •¶š—ñ‚ğ˜AŒ‹‚·‚é

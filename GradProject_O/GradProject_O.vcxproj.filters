@@ -267,9 +267,6 @@
     <ClCompile Include="code\sample\sample.cpp">
       <Filter>sample</Filter>
     </ClCompile>
-    <ClCompile Include="code\manager_registry.cpp">
-      <Filter>manager</Filter>
-    </ClCompile>
     <ClCompile Include="code\list_manager.cpp">
       <Filter>manager</Filter>
     </ClCompile>
@@ -305,6 +302,9 @@
     </ClCompile>
     <ClCompile Include="code\map_obstacle.cpp">
       <Filter>map\obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="code\map_manager.cpp">
+      <Filter>map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -479,9 +479,6 @@
     <ClInclude Include="code\sample\sample.h">
       <Filter>sample</Filter>
     </ClInclude>
-    <ClInclude Include="code\manager_registry.h">
-      <Filter>manager</Filter>
-    </ClInclude>
     <ClInclude Include="code\list_manager.h">
       <Filter>manager</Filter>
     </ClInclude>
@@ -520,6 +517,9 @@
     </ClInclude>
     <ClInclude Include="code\map_obstacle.h">
       <Filter>map\obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="code\map_manager.h">
+      <Filter>map</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

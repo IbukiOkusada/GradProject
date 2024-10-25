@@ -184,7 +184,7 @@ CFade *CFade::Create(CScene::MODE modeNext)
 {
 	CFade *pFade = NULL;
 
-	pFade = new CFade;
+	pFade = DEBUG_NEW CFade;
 
 	if (pFade != NULL)
 	{

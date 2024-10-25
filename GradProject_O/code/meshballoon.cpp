@@ -76,7 +76,7 @@ CMeshBalloon *CMeshBalloon::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 {
 	CMeshBalloon *pMesh = nullptr;
 
-	pMesh = new CMeshBalloon;
+	pMesh = DEBUG_NEW CMeshBalloon;
 
 	if (pMesh != NULL)
 	{

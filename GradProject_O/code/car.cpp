@@ -114,7 +114,7 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 {
 	CCar *pCar = nullptr;
 
-	pCar = new CCar;
+	pCar = DEBUG_NEW CCar;
 
 	if (pCar != nullptr)
 	{
