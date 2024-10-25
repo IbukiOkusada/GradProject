@@ -147,5 +147,5 @@ void CDeltaTime::Slow(void)
 		m_bSlow = false;
 	}
 
-	CManager::GetInstance()->GetDebugProc()->Print("[ ‚·‚ë` ]\n");
+	CManager::GetInstance()->GetDebugProc()->Print("[ ƒXƒ[’† ]\n");
 }
