@@ -114,7 +114,7 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 {
 	CCar *pCar = nullptr;
 
-	pCar = new CCar;
+	pCar = DEBUG_NEW CCar;
 
 	if (pCar != nullptr)
 	{
@@ -158,10 +158,7 @@ void CCar::Move()
 		// デルタタイム取得
 		float DeltaTime = CDeltaTime::GetInstance()->GetDeltaTime();
 
-		// スローの倍率取得
-		float SlowRate = CSlow::GetInstance()->Get();
-
-		m_Info.pos += m_Info.move * FRAME_RATE_SCALER * DeltaTime * SlowRate;
+		m_Info.pos += m_Info.move * FRAME_RATE_SCALER * DeltaTime;
 	}
 }
 

@@ -211,7 +211,7 @@ CObjectX *CObjectX::Create(D3DXVECTOR3 pos,D3DXVECTOR3 rot, const char *pFileNam
 	CXFile *pModelFile = CManager::GetInstance()->GetModelFile();
 
 	// オブジェクトXの生成
-	pObjectX = new CObjectX(nPriority);
+	pObjectX = DEBUG_NEW CObjectX(nPriority);
 
 	if (pObjectX != NULL)
 	{// 生成できた場合
@@ -244,6 +244,15 @@ CObjectX *CObjectX::Create(D3DXVECTOR3 pos,D3DXVECTOR3 rot, const char *pFileNam
 void CObjectX::BindFile(int nIdx)
 {
 	m_nIdxModel = nIdx;	//使用するモデルの設定
+}
+
+//==========================================================
+// モデルファイル読み込み
+//==========================================================
+void CObjectX::BindFile(const char* file)
+{
+	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();
+	m_nIdxModel = pModelFile->Regist(file);	//使用するモデルの設定
 }
 
 //==========================================================

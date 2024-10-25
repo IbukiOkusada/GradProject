@@ -27,7 +27,6 @@
 #include "player_manager.h"
 #include "road_manager.h"
 #include "car_manager.h"
-#include "manager_registry.h"
 #include "effekseerControl.h"
 #include "objectsound.h"
 #include "deltatime.h"
@@ -306,7 +305,7 @@ void CManager::Uninit(void)
 	}
 
 	// 各種マネージャの破棄
-	CManagerRegistry::Release();
+	CListManager::Release();
 	CMasterSound::GetInstance()->Uninit();
 	CMasterSound::Release();
 	// エフェクシア破棄
@@ -445,7 +444,7 @@ CManager *CManager::GetInstance(void)
 {
 	if (m_pManager == nullptr)
 	{
-		m_pManager = new CManager;
+		m_pManager = DEBUG_NEW CManager;
 	}
 
 	return m_pManager;

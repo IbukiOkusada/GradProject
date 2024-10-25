@@ -253,7 +253,7 @@ CObjectManager* CObjectManager::GetInstance()
 {
 	if (m_pInstance == nullptr)
 	{
-		m_pInstance = new CObjectManager;
+		m_pInstance = DEBUG_NEW CObjectManager;
 		m_pInstance->Init();
 	}
 

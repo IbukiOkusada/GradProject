@@ -122,10 +122,10 @@ void CSlow::Update(void)
 		m_fAdd = SLOW_RATE * m_DeltaTime;
 	}
 
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_F3))
-	{
-		m_nTimer = 10;
-	}
+	//if (CInputKeyboard::GetInstance()->GetTrigger(DIK_F3))
+	//{
+	//	m_nTimer = 10;
+	//}
 }
 
 //==========================================================

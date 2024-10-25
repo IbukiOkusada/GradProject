@@ -186,7 +186,6 @@
     <ClCompile Include="code\list_manager.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
-    <ClCompile Include="code\manager_registry.cpp" />
     <ClCompile Include="code\mesh.cpp" />
     <ClCompile Include="code\meshballoon.cpp" />
     <ClCompile Include="code\meshcylinder.cpp" />
@@ -203,6 +202,7 @@
     <ClCompile Include="code\objectsound.cpp" />
     <ClCompile Include="code\objectX.cpp" />
     <ClCompile Include="code\object_manager.cpp" />
+    <ClCompile Include="code\map_obstacle.cpp" />
     <ClCompile Include="code\particle.cpp" />
     <ClCompile Include="code\player.cpp" />
     <ClCompile Include="code\player_manager.cpp" />
@@ -231,6 +231,7 @@
     <ClCompile Include="code\Xfile.cpp" />
     <ClCompile Include="code\road.cpp" />
     <ClCompile Include="code\edit_arrow.cpp" />
+    <ClCompile Include="code\map_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\billboard.h" />
@@ -261,7 +262,6 @@
     <ClInclude Include="code\list_manager.h" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />
-    <ClInclude Include="code\manager_registry.h" />
     <ClInclude Include="code\mesh.h" />
     <ClInclude Include="code\meshballoon.h" />
     <ClInclude Include="code\meshcylinder.h" />
@@ -278,6 +278,7 @@
     <ClInclude Include="code\objectsound.h" />
     <ClInclude Include="code\objectX.h" />
     <ClInclude Include="code\object_manager.h" />
+    <ClInclude Include="code\map_obstacle.h" />
     <ClInclude Include="code\particle.h" />
     <ClInclude Include="code\player.h" />
     <ClInclude Include="code\player_manager.h" />
@@ -304,6 +305,7 @@
     <ClInclude Include="code\Xfile.h" />
     <ClInclude Include="code\road.h" />
     <ClInclude Include="code\edit_arrow.h" />
+    <ClInclude Include="code\map_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

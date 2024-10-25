@@ -263,7 +263,7 @@ CModel *CModel::Create(const char *pFileName)
 	CModel *pModel = NULL;
 
 	// オブジェクトXの生成
-	pModel = new CModel;
+	pModel = DEBUG_NEW CModel;
 
 	if (pModel != NULL)
 	{// 生成できた場合

@@ -55,7 +55,7 @@ CSampleObject *CSampleObject::Create(void)
 {
 	CSampleObject *pSample = nullptr;
 
-	pSample = new CSampleObject;
+	pSample = DEBUG_NEW CSampleObject;
 
 	if (pSample != nullptr)
 	{
