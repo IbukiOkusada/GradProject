@@ -50,6 +50,7 @@ private:	// 自分だけがアクセス可能な定義
 	{
 		STATE_APPEAR = 0,	// 出現状態
 		STATE_NORMAL,		// 通常状態
+		STATE_NITRO	,		// ブースト状態
 		STATE_DAMAGE,		// ダメージ状態
 		STATE_DEATH,		// 死亡状態
 		STATE_SPAWN,		// 復活中状態
@@ -118,6 +119,7 @@ private:	// 自分だけがアクセス可能
 	void Engine(float fThrottle);
 	void SearchRoad(void);
 	void Damage(float fDamage);
+	void Nitro();
 	void DEBUGKEY();
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
@@ -134,6 +136,7 @@ private:	// 自分だけがアクセス可能
 	float m_fLife;
 	float m_fCamera;
 	float m_fSlowRate = 1.0f;
+	float m_fNitroCool;
 	int m_nId;					// ID
 	TYPE m_type;
 	CObjectX* m_pObj;

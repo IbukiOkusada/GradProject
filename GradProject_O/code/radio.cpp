@@ -13,16 +13,19 @@ namespace
 {
 	std::vector<std::vector<const char*>> Path =
 	{
-		{
+		{//リラックス
 			"data\\BGM\\morning_jazz.wav",
+			"data\\BGM\\moment.wav",
 		},
 
-		{
+		{//メタル
 			"data\\BGM\\power_is_you.wav",
+			"data\\BGM\\rammstein_style.wav",
 		},
 
-		{
+		{//テクノ
 			"data\\BGM\\mantra.wav",
+			"data\\BGM\\theme_90s.wav",
 		},
 	};
 	const char* BUTTON_SE = { "data\\SE\\switch_04_button.wav" };

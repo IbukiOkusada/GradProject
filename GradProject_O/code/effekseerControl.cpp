@@ -12,7 +12,7 @@
 #include "deltatime.h"
 #include <codecvt>
 #include <locale>
-
+#include "slow.h"
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4099)
 CEffekseer* CEffekseer::pInstance = NULL;
@@ -193,7 +193,8 @@ void CEffekseer::Draw()
 {
 	CCamera* pCamera = CManager::GetInstance()->GetCamera();
 
-	m_efkRenderer->SetTime(time * CManager::GetInstance()->GetDeltaTime()->GetDeltaTime());
+	float fSlawMul = CManager::GetInstance()->GetSlow()->Get();
+	m_efkRenderer->SetTime(time * CManager::GetInstance()->GetDeltaTime()->GetDeltaTime() * fSlawMul);
 	
 	// ŠÔ‚ğXV‚·‚é
 	if (pCamera != NULL)

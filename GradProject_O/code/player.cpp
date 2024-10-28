@@ -108,6 +108,7 @@ CPlayer::CPlayer()
 	m_fCamera = CAMERA_NORMAL;
 	m_type = TYPE_NONE;
 	m_nId = -1;
+	m_fNitroCool = 0.0f;
 	m_Info.fSlideMove = 0.0f;
 	m_pObj = nullptr;
 	m_pPrev = nullptr;
@@ -249,6 +250,7 @@ void CPlayer::Update(void)
 		m_Info.move *= 0.7f;
 		m_fCamera += (CAMERA_DETAH - m_fCamera) * 0.02f;
 	}
+
 }
 
 //===============================================
@@ -330,6 +332,7 @@ void CPlayer::Move(void)
 		m_fBrake = (float)pInputPad->GetLeftTriggerPress(0) / 255;
 	
 	}
+	Nitro(); 
 	Engine(fThrottle);
 	// 入力装置確認
 	if (nullptr == pInputKey){
@@ -345,7 +348,12 @@ void CPlayer::Move(void)
 	{
 		fHandle *= -1;
 	}
-	float fIner = INER + (m_fEngine * m_fBrake * fHandle) * (DRIFT_INER - INER);
+	float fEngine = m_fEngine;
+	if (fEngine > 1.0f)
+	{
+		fEngine = 1.0f;
+	}
+	float fIner = INER + (fEngine * m_fBrake * fHandle) * (DRIFT_INER - INER);
 	m_fbrakeVolume += (1.0f - m_fbrakeVolume) * (m_fEngine * m_fBrake) * BRAKE_INER;
 	m_fbrakePitch += (1.0f - m_fbrakePitch) * (m_fEngine * m_fBrake * fHandle) * BRAKE_INER;
 	m_fbrakeVolume -= m_fbrakeVolume* BRAKE_INER;
@@ -369,12 +377,15 @@ void  CPlayer::Engine(float fThrottle)
 			m_fEngine = 0;
 		}
 	}
+	//回転数から音量とピッチを操作
 	m_pSound->SetPitch(0.5f + m_fEngine*1.5f);
 	m_pSound->SetVolume(0.5 + fAccel*100.0f + m_fEngine);
 
 	m_pSoundBrake->SetVolume(m_fBrake * m_fEngine * 0.3f);
+	//加速
 	m_Info.move.z += MOVE * sinf(-m_Info.rot.y) * m_fEngine;
 	m_Info.move.x += MOVE * cosf(-m_Info.rot.y) * m_fEngine;
+	//ブレーキ
 	m_Info.move.z -= MOVE * sinf(-m_Info.rot.y) * m_fEngine * m_fBrake * BRAKE;
 	m_Info.move.x -= MOVE * cosf(-m_Info.rot.y) * m_fEngine * m_fBrake * BRAKE;
 	CManager::GetInstance()->GetDebugProc()->Print("fThrottle:%f\nm_fEngine%f\n", fThrottle, m_fEngine);
@@ -398,6 +409,7 @@ void CPlayer::Rotate(void)
 	{
 		m_fHandle = pInputPad->GetLStick(0, 0.1f).x;
 	}
+	
 	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT);
 	m_fTurnSpeed*= TUURN_INER;
 	// 入力装置確認
@@ -524,6 +536,34 @@ void CPlayer::Damage(float fDamage)
 	}
 }
 //===============================================
+// 加速
+//===============================================
+void CPlayer::Nitro()
+{
+	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
+	CInputPad* pInputPad = CInputPad::GetInstance();
+	if (m_fNitroCool==0.0f&& (pInputKey->GetTrigger(DIK_SPACE)|| pInputPad->GetTrigger(CInputPad::BUTTON_B,0)))
+	{
+ 		Damage(LIFE * 0.1f);
+		m_Info.state = STATE::STATE_NITRO;
+		m_Info.fStateCounter = 60.0f;
+		m_fNitroCool = 120.0f;
+	}
+	if (m_Info.state == STATE::STATE_NITRO)
+	{
+		m_fEngine = 2.0f;
+	}
+	else
+	{
+		m_fNitroCool--;;
+		if (m_fNitroCool < 0.0f)
+		{
+			m_fNitroCool = 0.0f;
+		}
+	}
+	
+}
+//===============================================
 // デバッグキー
 //===============================================
 #if _DEBUG
@@ -564,6 +604,17 @@ void CPlayer::StateSet(void)
 
 	}
 		break;
+	case STATE_NITRO:
+	{
+		m_Info.fStateCounter -= fSlawMul;
+
+		if (m_Info.fStateCounter <= 0.0f)
+		{
+			m_Info.fStateCounter = 0.0f;
+			m_Info.state = STATE_NORMAL;
+		}
+	}
+	break;
 
 	case STATE_DAMAGE:
 	{
