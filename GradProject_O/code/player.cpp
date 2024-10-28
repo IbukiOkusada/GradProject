@@ -508,7 +508,12 @@ bool CPlayer::Collision(void)
 			D3DXVECTOR3 vecMoveNor = m_Info.move;
 			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
 			D3DXVec3Normalize(&pVecCollision, &pVecCollision);
-			m_fEngine *= 0.9f + (D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
+			m_fEngine *= 0.95f + (D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
+
+			if (m_fEngine > 1.0f)
+			{
+				m_fEngine = 1.0f;
+			}
 
 			return true;
 		}

@@ -341,16 +341,19 @@ bool CollidePointToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3* posO, D3DXVECTOR3 posOldO
 		}
 
 		// 衝突地点を計算
-		D3DXPlaneIntersectLine(&vecIntersect, &plane, posO, &posOldO);
+		if (D3DXPlaneIntersectLine(&vecIntersect, &plane, posO, &posOldO) == nullptr)
+		{
+			continue;
+		}
 
-		for (int nCnt = 0; nCnt < 6; nCnt++)
+		for (int nCntBox = 0; nCntBox < 6; nCntBox++)
 		{
 			//各面の法線ベクトルを計算する
-			D3DXVECTOR3 vecNorPlaneCenterDest = posV - posPlaneCenter[nCnt];
+			D3DXVECTOR3 vecNorPlaneCenterDest = posV - posPlaneCenter[nCntBox];
 			D3DXVec3Normalize(&vecNorPlaneCenterDest, &vecNorPlaneCenterDest);
 
 			//法線ベクトルから平面の式を計算する
-			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenterDest);
+			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCntBox], &vecNorPlaneCenterDest);
 
 			//平面の式と点から
 			if (D3DXPlaneDotCoord(&plane, &vecIntersect) >= 0.0f)
