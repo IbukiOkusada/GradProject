@@ -8,5 +8,6 @@
 SCRIPT
 
 MODEL_FILENAME = data/MODEL/bill.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/bill2.x	# [0]砂場
 
 END_SCRIPT

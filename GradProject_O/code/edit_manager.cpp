@@ -1,14 +1,18 @@
 //==========================================================
 //
-// タスク管理の処理 [task_manager.cpp]
+// エディット管理の処理 [edit_manager.cpp]
 // Author : Ibuki Okusada
 //
 //==========================================================
 #include "edit_manager.h"
 #include "input_keyboard.h"
-#include "manager.h"
-#include "debugproc.h"
 #include "input_mouse.h"
+#include "debugproc.h"
+#include "manager.h"
+#include "map_manager.h"
+#include "map_obstacle.h"
+#include "road.h"
+#include "road_manager.h"
 
 CEditManager* CEditManager::m_pInstance = nullptr;
 
@@ -71,9 +75,13 @@ void CEditManager::Update(void)
 	CDebugProc* pProc = CManager::GetInstance()->GetDebugProc();
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 
+
 	// デバッグ表示
 	pProc->Print("+---------------------------------------------------------------\n");
-	pProc->Print("<エディター起動中> 終了[ F4 ] : モード切替[ F3 ] : ");
+	pProc->Print("<エディター起動中> モデル読み込み数 [ %d ]", CMapManager::GetInstance()->GetFileNameList().size());
+	if (CMapObstacle::GetList() != nullptr) { pProc->Print(" : 障害物配置数 [ %d ]", CMapObstacle::GetList()->GetNum()); }
+	if (CRoadManager::GetInstance() != nullptr) { pProc->Print(" : 道配置数 [ %d ]\n", CRoadManager::GetInstance()->GetNum());}
+	pProc->Print("終了[ F4 ] : モード切替[ F3 ] : ");
 	//pProc->Print("<マウス> [ %f, %f, %f ]\n", pMouse->GetWorldPos().x, pMouse->GetWorldPos().y, pMouse->GetWorldPos().z);
 
 	// エディター終了
@@ -97,6 +105,10 @@ void CEditManager::Update(void)
 	if (m_pEdit != nullptr)
 	{
 		m_pEdit->Update();
+	}
+	else
+	{
+		pProc->Print("\n");
 	}
 
 	pProc->Print("+---------------------------------------------------------------\n");

@@ -12,6 +12,7 @@
 #include "objectX.h"
 #include "input_mouse.h"
 #include "input_keyboard.h"
+#include "map_manager.h"
 
 namespace
 {
@@ -26,6 +27,7 @@ CEdit_Obj::CEdit_Obj()
 	// 値のクリア
 	m_pSelect = nullptr;
 	m_pArrow = nullptr;
+	m_fMouseWheel = 0.0f;
 }
 
 //==========================================================
@@ -64,6 +66,7 @@ void CEdit_Obj::Uninit(void)
 void CEdit_Obj::Update(void)
 {
 	CDebugProc::GetInstance()->Print(" [ 障害物配置モード ]\n");
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 	CMapObstacle* pOld = m_pSelect;
 
 	// 選択
@@ -73,6 +76,8 @@ void CEdit_Obj::Update(void)
 
 	// 保存
 	Save();
+
+	if (pKey->GetPress(DIK_LALT) || pKey->GetPress(DIK_RALT)) { CDebugProc::GetInstance()->Print("]\n"); return; }
 
 	// 選択されていない、もしくは選択した直後
 	if (m_pSelect == nullptr || pOld == nullptr) {
@@ -93,12 +98,24 @@ void CEdit_Obj::Update(void)
 		m_pArrow->Update();
 	}
 
+	// モデル変更
+	ModelChange();
+
 	// 移動
 	Move();
 
 	// 削除
 	Delete();
 
+	CDebugProc::GetInstance()->Print("]\n\n");
+
+	// 障害物情報
+	if (m_pSelect == nullptr) { return; }
+	CDebugProc::GetInstance()->Print("[ 道情報 : ");
+	D3DXVECTOR3 pos = m_pSelect->GetPosition();
+	CDebugProc::GetInstance()->Print("座標 : [ %f, %f, %f] : ", pos.x, pos.y, pos.z);
+	D3DXVECTOR3 rot = m_pSelect->GetRotation();
+	CDebugProc::GetInstance()->Print("向き : [ %f, %f, %f] : ", rot.x, rot.y, rot.z);
 	CDebugProc::GetInstance()->Print("]\n");
 }
 
@@ -109,6 +126,7 @@ void CEdit_Obj::ClickCheck()
 {
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 	Clist<CMapObstacle*>* pList = CMapObstacle::GetList();
+	float length = 10000000.0f;
 
 	if (CMapObstacle::GetList() == nullptr) { return; }
 
@@ -149,8 +167,6 @@ void CEdit_Obj::ClickCheck()
 			}
 
 			m_pArrow->SetPosition(m_pSelect->GetPosition());
-
-			return;
 		}
 	}
 
@@ -185,6 +201,20 @@ bool CEdit_Obj::CursorCollision(CMapObstacle* pObj)
 	// 使用されていなかったら返す
 	if (collision::CollideRayToOBB(&touchpos, origin, vec, pos, rot, vtxmax, vtxmin))
 	{
+		if (m_pSelect != nullptr)
+		{
+			D3DXVECTOR3 vec = touchpos - origin;
+			float nowlength = D3DXVec3Length(&vec);
+
+			vec = m_pSelect->GetPosition() - origin;
+			float length = D3DXVec3Length(&vec);
+
+			if (nowlength > length)
+			{
+				return false;
+			}
+		}
+
 		return true;
 	}
 
@@ -225,6 +255,36 @@ void CEdit_Obj::Move()
 
 	// 選択した道の座標設定
 	m_pSelect->SetPosition(pos);
+}
+
+//==========================================================
+// モデル変更
+//==========================================================
+void CEdit_Obj::ModelChange()
+{
+	if (m_pSelect == nullptr) { return; }
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+
+	float old = m_fMouseWheel;
+	m_fMouseWheel += pMouse->GetCousorMove().z;
+
+	// マウスホイール
+	if (m_fMouseWheel == old) { return; }
+
+	if (static_cast<int>(m_fMouseWheel) % 20 != 0) { return; }
+
+	int idx = m_pSelect->GetInfo().fileidx;
+
+	if (m_fMouseWheel >= old)
+	{
+		idx = (idx + 1) % CMapManager::GetInstance()->GetFileNameList().size();
+	}
+	else
+	{
+		idx = (idx + CMapManager::GetInstance()->GetFileNameList().size() - 1) % CMapManager::GetInstance()->GetFileNameList().size();
+	}
+
+	m_pSelect->BindModel(idx);
 }
 
 //==========================================================

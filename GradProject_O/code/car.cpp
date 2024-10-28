@@ -262,6 +262,10 @@ void CCar::MoveRoad()
 	if (m_Info.pRoadTarget == nullptr)
 		SearchRoad();
 
+	if (m_Info.pRoadTarget == nullptr) {
+		return;
+	}
+
 	float length = D3DXVec3Length(&(m_Info.pRoadTarget->GetPosition() - m_Info.pos));
 	if (length < LENGTH_POINT)
 		ReachRoad();
@@ -278,6 +282,9 @@ void CCar::SearchRoad()
 
 	CRoad* pRoad = pRoadManager->GetTop();
 	CRoad* pRoadClose = pRoadManager->GetTop();
+	if (pRoad == nullptr) {
+		return;
+	}
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
@@ -340,6 +347,7 @@ void CCar::ReachRoad()
 //==========================================================
 bool CCar::Collision()
 {
+	return false;
 	CObjectX* pObjectX = CObjectX::GetTop();	// æ“ª‚ğæ“¾
 
 	while (pObjectX != nullptr)

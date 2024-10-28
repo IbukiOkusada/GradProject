@@ -135,17 +135,23 @@ HRESULT CMasterSound::CObjectSound::Init()
 //=============================================================================
 void CMasterSound::CObjectSound::Uninit()
 {
-	SAFE_DELETE(m_pDataAudio);
-	// 一時停止
-	m_pSourceVoice->Stop(0);
 
+	// 一時停止
+	XAUDIO2_VOICE_STATE xa2state;
+	// 状態取得
+	m_pSourceVoice->GetState(&xa2state);
+	if (xa2state.BuffersQueued != 0)
+	{// 再生中
+		// 一時停止
+		m_pSourceVoice->Stop(0);
+	}
 	// ソースボイスの破棄
 	m_pSourceVoice->DestroyVoice();
 	m_pSourceVoice = NULL;
 
 	// オーディオデータの開放
-	free(m_pSourceVoice);
-	m_pSourceVoice = NULL;
+	free(m_pDataAudio);
+	m_pDataAudio = NULL;
 }
 //=============================================================================
 // 最初から再生
@@ -170,6 +176,25 @@ void CMasterSound::CObjectSound::Play()
 
 }
 //=============================================================================
+// 停止
+//=============================================================================
+void CMasterSound::CObjectSound::Stop()
+{
+	XAUDIO2_VOICE_STATE xa2state;
+	// 状態取得
+	m_pSourceVoice->GetState(&xa2state);
+	if (xa2state.BuffersQueued != 0)
+	{// 再生中
+		// 一時停止
+		m_pSourceVoice->Stop(0);
+	}
+	// オーディオバッファの削除
+	m_pSourceVoice->FlushSourceBuffers();
+	// オーディオバッファの登録
+	m_pSourceVoice->SubmitSourceBuffer(&m_buffer);
+
+}
+//=============================================================================
 // 一時停止
 //=============================================================================
 void CMasterSound::CObjectSound::Pause()
@@ -190,6 +215,7 @@ void CMasterSound::CObjectSound::Start()
 //=============================================================================
 void CMasterSound::CObjectSound::SetVolume(float fVolume)
 {
+	m_fVolume = fVolume;
 	m_pSourceVoice->SetVolume(fVolume);
 }
 //=============================================================================
@@ -197,6 +223,7 @@ void CMasterSound::CObjectSound::SetVolume(float fVolume)
 //=============================================================================
 void CMasterSound::CObjectSound::SetPitch(float fPitch)
 {
+	m_fPitch = fPitch;
 	m_pSourceVoice->SetFrequencyRatio(fPitch);
 }
 //=============================================================================

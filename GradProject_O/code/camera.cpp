@@ -118,7 +118,7 @@ void CCamera::Update(void)
 	if(m_mode != MODE_STARTDOOR)
 	{
 		//視点の移動
-		MoveV();
+		//MoveV();
 
 		m_OldposR = m_posR;
 		m_OldposV = m_posV;
@@ -547,6 +547,11 @@ void CCamera::MouseCamera(void)
 		m_rot.z = MAX_CAMERA_ROTZ;
 	}
 
+	//視点設定
+	SetV();
+
+	if (!pKey->GetPress(DIK_LALT) && !pKey->GetPress(DIK_RALT)) { return; }
+
 	//ホイールの使用量で距離の変更
 	m_fLength += pMouse->GetCousorMove().z * MOUSE_WHEELSPEED;
 
@@ -597,7 +602,7 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 	m_posV.y += VDiff.y * 0.9f;
 	m_posV.z += VDiff.z * 0.9f;
 
-	if (CManager::GetInstance()->GetSlow()->Get() == 1.0f)
+	//if (CManager::GetInstance()->GetSlow()->Get() == 1.0f)
 	{
 		float fRotDiff;
 		float fRotDest;

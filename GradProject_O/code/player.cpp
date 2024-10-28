@@ -55,7 +55,7 @@ namespace {
 	const float LIFE = (100.0f);
 	const float CAMERA_NORMAL = (3000.0f);
 	const float CAMERA_DETAH = (6000.0f);
-	const float MOVE = (6.2f);		// 移動量
+	const float MOVE = (6.2f * 0.7f);		// 移動量
 	const float BRAKE = (0.7f);		// ブレーキ
 	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量
@@ -152,6 +152,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
+	pRadio = CRadio::Create();
 	return S_OK;
 }
 
@@ -165,8 +166,10 @@ void CPlayer::Uninit(void)
 	SAFE_DELETE(m_pBackdust);
 	SAFE_DELETE(m_pAfterburner);
 	SAFE_DELETE(m_pDamageEffect);
-	SAFE_DELETE(m_pSound);
-	SAFE_DELETE(m_pSoundBrake);
+	SAFE_UNINIT_DELETE(m_pSound);
+	SAFE_UNINIT_DELETE(m_pSoundBrake);
+
+	SAFE_UNINIT_DELETE(pRadio);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// 廃棄
@@ -183,7 +186,7 @@ void CPlayer::Update(void)
 	m_Info.posOld = GetPosition();
 
 	StateSet();	
-
+	pRadio->Update();
 	if (m_type == TYPE_ACTIVE)
 	{
 		
@@ -442,6 +445,9 @@ void CPlayer::SearchRoad()
 
 	CRoad* pRoad = pRoadManager->GetTop();
 	CRoad* pRoadClose = pRoadManager->GetTop();
+	if (pRoad == nullptr) {
+		return;
+	}
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
