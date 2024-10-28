@@ -41,6 +41,7 @@ CPolice::CPolice()
 	m_Info.pPlayer = nullptr;
 	m_Info.nChaseCount = 0;
 	m_Info.bChase = false;
+	m_pPatrolLamp = nullptr;
 }
 
 //==========================================================
@@ -67,7 +68,7 @@ HRESULT CPolice::Init(void)
 void CPolice::Uninit(void)
 {
 	CCar::Uninit();
-
+	SAFE_DELETE(m_pPatrolLamp);
 	Release();
 }
 
@@ -77,6 +78,19 @@ void CPolice::Uninit(void)
 void CPolice::Update(void)
 {
 	CCar::Update();
+	if (m_Info.bChase)
+	{
+		if (m_pPatrolLamp == nullptr)
+		{
+			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+		}
+		m_pPatrolLamp->m_pos = GetPosition();
+		m_pPatrolLamp->m_rot = GetRotation();
+	}
+	else
+	{
+		SAFE_DELETE(m_pPatrolLamp);
+	}
 }
 
 //==========================================================
