@@ -305,6 +305,88 @@ bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV,
 	return false;
 }
 
+//==================================================================================================
+//点と箱の当たり判定
+//==================================================================================================
+bool CollidePointToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV)
+{
+	D3DXVECTOR3 posCorner[8] = {};
+	D3DXVECTOR3 posPlaneCenter[6] = {};
+	D3DXVECTOR3 vecIntersect = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 vecNorPlaneCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXPLANE plane = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	int nCheckCollision = 0;
+
+	//箱の各面の中心を求める
+	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
+	posPlaneCenter[1] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(-sizeV.x, 0.0f, 0.0f));
+	posPlaneCenter[2] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeV.y, 0.0f));
+	posPlaneCenter[3] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, -sizeV.y, 0.0f));
+	posPlaneCenter[4] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeV.z));
+	posPlaneCenter[5] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, -sizeV.z));
+
+	for (int nCnt = 0; nCnt < 6; nCnt++)
+	{
+		//各面の法線ベクトルを計算する
+		vecNorPlaneCenter = posV - posPlaneCenter[nCnt];
+		D3DXVec3Normalize(&vecNorPlaneCenter, &vecNorPlaneCenter);
+
+		//法線ベクトルから平面の式を計算する
+		D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
+
+		//平面の式と点から
+		if (D3DXPlaneDotCoord(&plane, posO) < 0.0f || D3DXPlaneDotCoord(&plane, &posOldO) > 0.0f)
+		{
+			continue;
+		}
+
+		// 衝突地点を計算
+		D3DXPlaneIntersectLine(&vecIntersect, &plane, posO, &posOldO);
+
+		for (int nCnt = 0; nCnt < 6; nCnt++)
+		{
+			//各面の法線ベクトルを計算する
+			D3DXVECTOR3 vecNorPlaneCenterDest = posV - posPlaneCenter[nCnt];
+			D3DXVec3Normalize(&vecNorPlaneCenterDest, &vecNorPlaneCenterDest);
+
+			//法線ベクトルから平面の式を計算する
+			D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenterDest);
+
+			//平面の式と点から
+			if (D3DXPlaneDotCoord(&plane, &vecIntersect) >= 0.0f)
+			{
+				nCheckCollision++;
+			}
+		}
+
+		// 箱の中にいるか判定
+		if (nCheckCollision != 6)
+		{
+			continue;
+		}
+
+		// 計算用変数
+		D3DXVECTOR3 vecMove, vecMoveRef;
+		float fDot;
+
+		// 移動量計算
+		vecMove = vecIntersect - *posO;
+
+		// 押し戻し距離計算
+		fDot = D3DXVec3Dot(&vecMove, &vecNorPlaneCenter);
+		vecMove = *posO - vecIntersect;
+		vecMoveRef = vecMove + (vecNorPlaneCenter * fDot * 1.0f);
+
+		// 押し戻し距離代入
+		*pOut = vecMoveRef;
+		*posO = vecIntersect + vecMoveRef;
+
+		return true;
+	}
+
+	return false;
+}
+
 //========================================
 // OBBとOBBの衝突判定処理
 //========================================

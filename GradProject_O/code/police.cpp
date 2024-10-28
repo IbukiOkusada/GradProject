@@ -22,7 +22,7 @@
 namespace
 {
 	const float LENGTH_POINT = (200.0f);		// 到達判定距離
-	const float CHASE_SPEED = (20.0f);			// 追跡時の加速
+	const float CHASE_SPEED = (17.0f);			// 追跡時の加速
 	const float SECURE_SPEEDDEST = (-35.0f);	// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);			// 確保時の加速倍率
 	const int CHASE_TIME = (300);				// 追跡時間
@@ -114,7 +114,7 @@ void CPolice::MoveRoad()
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
-	if (pRoadTarget == nullptr)
+	if (pRoadTarget == nullptr && !m_Info.bChase)
 		SearchRoad();
 
 	SearchPlayer();

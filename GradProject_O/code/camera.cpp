@@ -118,7 +118,7 @@ void CCamera::Update(void)
 	if(m_mode != MODE_STARTDOOR)
 	{
 		//Ž‹“_‚ÌˆÚ“®
-		MoveV();
+		//MoveV();
 
 		m_OldposR = m_posR;
 		m_OldposV = m_posV;
@@ -602,7 +602,7 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 	m_posV.y += VDiff.y * 0.9f;
 	m_posV.z += VDiff.z * 0.9f;
 
-	if (CManager::GetInstance()->GetSlow()->Get() == 1.0f)
+	//if (CManager::GetInstance()->GetSlow()->Get() == 1.0f)
 	{
 		float fRotDiff;
 		float fRotDest;

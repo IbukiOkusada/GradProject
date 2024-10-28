@@ -111,6 +111,13 @@ void CEdit_Road::Update(void)
 	// 削除
 	Delete();
 
+	CDebugProc::GetInstance()->Print("]\n\n");
+
+	// 道情報
+	if (m_pSelectRoad == nullptr) { return; }
+	CDebugProc::GetInstance()->Print("[ 道情報 : ");
+	D3DXVECTOR3 pos = m_pSelectRoad->GetPosition();
+	CDebugProc::GetInstance()->Print("座標 : [ %f, %f, %f] : ", pos.x, pos.y, pos.z);
 	CDebugProc::GetInstance()->Print("]\n");
 }
 
@@ -363,8 +370,6 @@ void CEdit_Road::Save()
 		savedata.push_back(*pMgr->GetList()->Get(i));
 	}
 
-	savedata.erase(savedata.begin());
-	savedata.pop_back();
 	int size = savedata.size();
 
 	// ベクトルのサイズをセーブ

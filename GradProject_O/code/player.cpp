@@ -55,7 +55,7 @@ namespace {
 	const float LIFE = (100.0f);
 	const float CAMERA_NORMAL = (3000.0f);
 	const float CAMERA_DETAH = (6000.0f);
-	const float MOVE = (6.2f);		// 移動量
+	const float MOVE = (6.2f * 0.7f);		// 移動量
 	const float BRAKE = (0.7f);		// ブレーキ
 	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量
@@ -499,11 +499,17 @@ bool CPlayer::Collision(void)
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
 		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
 		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+		D3DXVECTOR3 pVecCollision;
 
-		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		bool bCollision = collision::CollidePointToOBB(&pVecCollision, &m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
 
 		if (bCollision)
 		{
+			D3DXVECTOR3 vecMoveNor = m_Info.move;
+			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
+			D3DXVec3Normalize(&pVecCollision, &pVecCollision);
+			m_fEngine *= 0.9f + (D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
+
 			return true;
 		}
 
