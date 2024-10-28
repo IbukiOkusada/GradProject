@@ -481,11 +481,17 @@ bool CPlayer::Collision(void)
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
 		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
 		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+		D3DXVECTOR3 pVecCollision;
 
-		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		bool bCollision = collision::CollidePointToOBB(&pVecCollision, &m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
 
 		if (bCollision)
 		{
+			D3DXVECTOR3 vecMoveNor = m_Info.move;
+			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
+			D3DXVec3Normalize(&pVecCollision, &pVecCollision);
+			m_fEngine *= 0.9f + (D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
+
 			return true;
 		}
 

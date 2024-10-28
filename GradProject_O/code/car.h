@@ -36,8 +36,9 @@ private:	// 自分だけがアクセス可能
 		D3DXVECTOR3 posTarget;	// 目標位置
 		CRoad* pRoadStart;		// 移動開始地点
 		CRoad* pRoadTarget;		// 目標地点
-		float speed;
-		float speedDest;
+		int nBackTime;
+		float fSpeed;
+		float fSpeedDest;
 		bool bBreak;
 		bool bBack;
 	};
@@ -58,8 +59,8 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
 	D3DXVECTOR3 GetRotation(void) { return m_Info.rot; }
 	D3DXVECTOR3 GetOldPosition(void) { return m_Info.posOld; }
-	float GetSpeed(void) { return m_Info.speed; }
-	float GetSpeedDest(void) { return m_Info.speedDest; }
+	float GetSpeed(void) { return m_Info.fSpeed; }
+	float GetSpeedDest(void) { return m_Info.fSpeedDest; }
 	CRoad* GetRoadStart(void) { return m_Info.pRoadStart; }
 	CRoad* GetRoadTarget(void) { return m_Info.pRoadTarget; }
 	CCar* GetNext(void) { return m_pNext; }
@@ -71,8 +72,8 @@ public:	// 誰でもアクセス可能
 	void SetPosition(const D3DXVECTOR3 pos) { m_Info.pos = pos; }
 	void SetRotation(const D3DXVECTOR3 rot) { m_Info.rot = rot; }
 	void SetPosTarget(const D3DXVECTOR3 pos) { m_Info.posTarget = pos; }
-	void SetSpeed(const float speed) { m_Info.speed = speed; }
-	void SetSpeedDest(const float speedDest) { m_Info.speedDest = speedDest; }
+	void SetSpeed(const float speed) { m_Info.fSpeed = speed; }
+	void SetSpeedDest(const float speedDest) { m_Info.fSpeedDest = speedDest; }
 	void SetRoadStart(CRoad* RoadStart) { m_Info.pRoadStart = RoadStart; }
 	void SetRoadTarget(CRoad* RoadTarget) { m_Info.pRoadTarget = RoadTarget; }
 	void SetNext(CCar* pNext) { m_pNext = pNext; }
