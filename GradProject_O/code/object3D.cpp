@@ -63,7 +63,7 @@ HRESULT CObject3D::Init(void)
 		NULL);
 
 	VERTEX_3D *pVtx;
-	m_pVtx = new VERTEX_3D[4];
+	m_pVtx = DEBUG_NEW VERTEX_3D[4];
 
 	//頂点バッファをロックし頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(
@@ -229,7 +229,7 @@ CObject3D *CObject3D::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	CObject3D *pObject3D = NULL;
 
 	// オブジェクト2Dの生成
-	pObject3D = new CObject3D;
+	pObject3D = DEBUG_NEW CObject3D;
 
 	if (pObject3D != NULL)
 	{// 生成できた場合

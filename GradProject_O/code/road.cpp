@@ -57,8 +57,10 @@ CRoad::~CRoad()
 HRESULT CRoad::Init(void)
 {
 	// オブジェクトの生成
+	CTexture* pTex = CManager::GetInstance()->GetTexture();
 	m_pObj = CObject3D::Create(m_Info.pos, m_Info.rot);
 	m_pObj->SetpVtx(m_Info.size.x, m_Info.size.y);
+	m_pObj->BindTexture(pTex->Regist(FILENAME[TYPE_CROSSING]));
 
 	return S_OK;
 }
@@ -123,7 +125,11 @@ void CRoad::Connect(CRoad* pRoad, const DIRECTION dic)
 	if (dic < DIRECTION::DIC_UP || dic >= DIRECTION::DIC_MAX) { return; }
 
 	m_apConnectRoad[dic] = pRoad;
-	m_apConnectLength[dic] = D3DXVec3Length(&(m_Info.pos - pRoad->GetPosition()));
+
+	if (pRoad != nullptr)
+	{
+		m_apConnectLength[dic] = D3DXVec3Length(&(m_Info.pos - pRoad->GetPosition()));
+	}
 }
 
 //==========================================================
@@ -258,4 +264,16 @@ void CRoad::Rotation(TYPE type)
 	}
 
 	m_pObj->SetRotation(m_Info.rot);
+}
+
+//==========================================================
+// 座標
+//==========================================================
+void CRoad::SetPosition(const D3DXVECTOR3& pos)
+{
+	m_Info.pos = pos;
+	
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetPosition(m_Info.pos);
 }

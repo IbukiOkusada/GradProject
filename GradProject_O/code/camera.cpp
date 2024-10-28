@@ -38,7 +38,7 @@ namespace
 	const float MOUSE_ROTATESPEED_Z = (0.005f);		// マウス回転速度z軸
 	const float MOUSE_ROTATESPEEDEDIT_X = (0.01f);		// マウス回転速度x軸
 	const float MOUSE_ROTATESPEEDEDIT_Z = (0.01f);		// マウス回転速度z軸
-	const float MOUSE_WHEELSPEED = (0.1f);			// マウスホイール回転速度
+	const float MOUSE_WHEELSPEED = (0.4f);			// マウスホイール回転速度
 	const float MAX_SLOWROT = (0.15f);		// 
 	const float MESSAGERAND = (120);
 	const float SLOW_CAMERAROT = (0.7f);
@@ -118,7 +118,7 @@ void CCamera::Update(void)
 	if(m_mode != MODE_STARTDOOR)
 	{
 		//視点の移動
-		MoveV();
+		//MoveV();
 
 		m_OldposR = m_posR;
 		m_OldposV = m_posV;
@@ -442,10 +442,14 @@ void CCamera::SetR(void)
 //==========================================================
 void CCamera::MouseCamera(void)
 {
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 	CInputMouse *pMouse = CInputMouse::GetInstance();
 
 	if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true && pMouse->GetPress(CInputMouse::BUTTON_RBUTTON) == true)
 	{//左右同時に押されているとき
+
+		if (!pKey->GetPress(DIK_LALT) && !pKey->GetPress(DIK_RALT)) { return; }
+
 		m_move.x += cosf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -cosf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
 		m_move.z += sinf(m_rot.y + (-D3DX_PI * 0.5f)) * (pMouse->GetCousorMove().x * MOUSE_MOVESPEED) + -sinf(m_rot.y) * (pMouse->GetCousorMove().y * MOUSE_MOVESPEED);
 
@@ -462,6 +466,9 @@ void CCamera::MouseCamera(void)
 	}
 	else if (pMouse->GetPress(CInputMouse::BUTTON_LBUTTON) == true)
 	{//左キーが押されているとき
+
+		if (!pKey->GetPress(DIK_LALT) && !pKey->GetPress(DIK_RALT)) { return; }
+
 		m_rot.y -= pMouse->GetCousorMove().x * MOUSE_ROTATESPEED_X;
 		m_rot.z -= pMouse->GetCousorMove().y * 0.005f;
 
@@ -540,6 +547,11 @@ void CCamera::MouseCamera(void)
 		m_rot.z = MAX_CAMERA_ROTZ;
 	}
 
+	//視点設定
+	SetV();
+
+	if (!pKey->GetPress(DIK_LALT) && !pKey->GetPress(DIK_RALT)) { return; }
+
 	//ホイールの使用量で距離の変更
 	m_fLength += pMouse->GetCousorMove().z * MOUSE_WHEELSPEED;
 
@@ -590,7 +602,7 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 	m_posV.y += VDiff.y * 0.9f;
 	m_posV.z += VDiff.z * 0.9f;
 
-	if (CManager::GetInstance()->GetSlow()->Get() == 1.0f)
+	//if (CManager::GetInstance()->GetSlow()->Get() == 1.0f)
 	{
 		float fRotDiff;
 		float fRotDest;

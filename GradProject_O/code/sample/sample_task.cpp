@@ -55,7 +55,7 @@ CSampleTask *CSampleTask::Create(void)
 {
 	CSampleTask *pSampleTask = nullptr;
 
-	pSampleTask = new CSampleTask;
+	pSampleTask = DEBUG_NEW CSampleTask;
 
 	if (pSampleTask != nullptr)
 	{

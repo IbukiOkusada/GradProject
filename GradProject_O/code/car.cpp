@@ -11,6 +11,8 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "collision.h"
+#include "deltatime.h"
+#include "slow.h"
 #include "player.h"
 #include "player_manager.h"
 
@@ -19,12 +21,17 @@
 // 無名名前空間を定義
 namespace
 {
-	const float SPEED_STREET = (15.0f);		// 直進時の速度
-	const float SPEED_CURVE = (10.0f);		// カーブ時の速度
-	const float SPEED_INER = (0.05f);		// 速度の慣性
-	const float ROT_MULTI = (0.06f);		// 向き補正倍率
-	const float ROT_CURVE = (0.15f);		// カーブ判定角度
-	const float LENGTH_POINT = (200.0f);	// 到達判定距離
+	const float SPEED_STREET = (15.0f);			// 直進時の速度
+	const float SPEED_CURVE = (10.0f);			// カーブ時の速度
+	const float SPEED_STREET_BACK = (-10.0f);	// バックで直進時の速度
+	const float SPEED_CURVE_BACK = (-10.0f);	// バックでカーブ時の速度
+	const int TIME_BACK = (80);				// バックする時間
+	const float SPEED_INER = (0.05f);			// 速度の慣性
+	const float ROT_MULTI = (0.06f);			// 向き補正倍率
+	const float ROT_MULTI_BACK = (0.015f);		// バック時の向き補正倍率
+	const float ROT_CURVE = (0.15f);			// カーブ判定角度
+	const float LENGTH_POINT = (200.0f);		// 到達判定距離
+	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
 }
 
 //==========================================================
@@ -40,9 +47,11 @@ CCar::CCar()
 	m_Info.move = VECTOR3_ZERO;
 	m_Info.pRoadStart = nullptr;
 	m_Info.pRoadTarget = nullptr;
-	m_Info.speed = 0.0f;
-	m_Info.speedDest = 0.0f;
+	m_Info.nBackTime = 0;
+	m_Info.fSpeed = 0.0f;
+	m_Info.fSpeedDest = 0.0f;
 	m_Info.bBreak = false;
+	m_Info.bBack = false;
 }
 
 //==========================================================
@@ -82,7 +91,7 @@ void CCar::Uninit(void)
 void CCar::Update(void)
 {
 	m_Info.posOld = m_Info.pos;
-	m_Info.speedDest = 0.0f;
+	m_Info.fSpeedDest = 0.0f;
 
 	// 移動先の決定
 	MoveRoad();
@@ -111,7 +120,7 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 {
 	CCar *pCar = nullptr;
 
-	pCar = new CCar;
+	pCar = DEBUG_NEW CCar;
 
 	if (pCar != nullptr)
 	{
@@ -145,13 +154,27 @@ void CCar::Move()
 		// 角度調整
 		Rot();
 
-		m_Info.speed += (m_Info.speedDest - m_Info.speed) * SPEED_INER;
-		CManager::GetInstance()->GetDebugProc()->Print("車の速度 [ %f ]\n", m_Info.speed);
+		if (m_Info.bBack)
+		{
+			m_Info.nBackTime--;
 
-		m_Info.move.x = m_Info.speed * sinf(m_Info.rot.y);
+			if (m_Info.nBackTime < 0)
+			{
+				m_Info.bBack = false;
+			}
+		}
+
+		m_Info.fSpeed += (m_Info.fSpeedDest - m_Info.fSpeed) * SPEED_INER;
+		CManager::GetInstance()->GetDebugProc()->Print("一般車の速度 [ %f ]\n", m_Info.fSpeed);
+
+		m_Info.move.x = m_Info.fSpeed * sinf(m_Info.rot.y);
 		m_Info.move.y = 0.0f;
-		m_Info.move.z = m_Info.speed * cosf(m_Info.rot.y);
-		m_Info.pos += m_Info.move;
+		m_Info.move.z = m_Info.fSpeed * cosf(m_Info.rot.y);
+
+		// デルタタイム取得
+		float DeltaTime = CDeltaTime::GetInstance()->GetDeltaTime();
+
+		m_Info.pos += m_Info.move * FRAME_RATE_SCALER * DeltaTime;
 	}
 }
 
@@ -177,17 +200,37 @@ void CCar::Rot()
 		fRotDiff += D3DX_PI * 2.0f;
 	}
 
-	//差分追加
-	fRotMove += fRotDiff * ROT_MULTI;
-
 	//角度一致判定
-	if (fabsf(fRotDiff) >= ROT_CURVE)
+	if (m_Info.bBack)
 	{
-		m_Info.speedDest += SPEED_CURVE;
+		//差分追加
+		if (m_Info.fSpeed < -5.0f)
+		{
+			fRotMove += fRotDiff * ROT_MULTI_BACK;
+		}
+
+		if (fabsf(fRotDiff) >= ROT_CURVE)
+		{
+			m_Info.fSpeedDest += SPEED_CURVE_BACK;
+		}
+		else
+		{
+			m_Info.fSpeedDest += SPEED_STREET_BACK;
+		}
 	}
 	else
 	{
-		m_Info.speedDest += SPEED_STREET;
+		//差分追加
+		fRotMove += fRotDiff * ROT_MULTI;
+
+		if (fabsf(fRotDiff) >= ROT_CURVE)
+		{
+			m_Info.fSpeedDest += SPEED_CURVE;
+		}
+		else
+		{
+			m_Info.fSpeedDest += SPEED_STREET;
+		}
 	}
 
 	if (fRotMove > D3DX_PI)
@@ -219,6 +262,10 @@ void CCar::MoveRoad()
 	if (m_Info.pRoadTarget == nullptr)
 		SearchRoad();
 
+	if (m_Info.pRoadTarget == nullptr) {
+		return;
+	}
+
 	float length = D3DXVec3Length(&(m_Info.pRoadTarget->GetPosition() - m_Info.pos));
 	if (length < LENGTH_POINT)
 		ReachRoad();
@@ -235,6 +282,9 @@ void CCar::SearchRoad()
 
 	CRoad* pRoad = pRoadManager->GetTop();
 	CRoad* pRoadClose = pRoadManager->GetTop();
+	if (pRoad == nullptr) {
+		return;
+	}
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
@@ -297,6 +347,7 @@ void CCar::ReachRoad()
 //==========================================================
 bool CCar::Collision()
 {
+	return false;
 	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
 
 	while (pObjectX != nullptr)
@@ -313,9 +364,14 @@ bool CCar::Collision()
 
 		if (bCollision)
 		{
-			CRoad* pRoadNext = m_Info.pRoadTarget;
-			m_Info.pRoadTarget = m_Info.pRoadStart;
-			m_Info.pRoadStart = pRoadNext;
+			if (!m_Info.bBack)
+			{
+				CRoad* pRoadNext = m_Info.pRoadTarget;
+				m_Info.pRoadTarget = m_Info.pRoadStart;
+				m_Info.pRoadStart = pRoadNext;
+				m_Info.bBack = true;
+				m_Info.nBackTime = TIME_BACK;
+			}
 
 			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
 			if (pPlayer->GetModelIndex() == pObjectX->GetIdx())

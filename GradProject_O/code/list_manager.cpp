@@ -1,24 +1,26 @@
 //==========================================================
 //
-// サンプルタスク(リスト管理) [sample.cpp]
+// マネージャー管理(リスト管理) [list_manager.cpp]
 // Author : Ibuki Okusada
 //
 //==========================================================
 #include "list_manager.h"
-#include "manager_registry.h"
 
-// マクロ定義
+// 静的メンバ変数宣言
+Clist<CListManager*>* CListManager::m_pList = nullptr;
 
 //==========================================================
 // コンストラクタ
 //==========================================================
 CListManager::CListManager()
 {
-	// 値のクリア
-	m_pNext = nullptr;
-	m_pPrev = nullptr;
+	if (m_pList == nullptr)
+	{
+		m_pList = m_pList->Create();
+	}
 
-	CManagerRegistry::GetInstance()->ListIn(this);
+	// 値のクリア
+	m_pList->Regist(this);
 }
 
 //==========================================================
@@ -34,5 +36,31 @@ CListManager::~CListManager()
 //==========================================================
 void CListManager::Uninit(void)
 {
-	CManagerRegistry::GetInstance()->ListOut(this);
+	m_pList->Delete(this);
+
+	if (m_pList->Empty())
+	{
+		delete m_pList;
+		m_pList = nullptr;
+	}
+}
+
+//==========================================================
+// 開放
+//==========================================================
+void CListManager::Release()
+{
+	if (m_pList == nullptr) { return; }
+
+	std::vector<CListManager*> list;
+
+	for (int i = 0; i < m_pList->GetNum(); i++)
+	{
+		list.push_back(m_pList->Get(i));
+	}
+
+	for (auto& it : list)
+	{
+		it->Uninit();
+	}
 }

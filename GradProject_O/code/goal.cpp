@@ -102,7 +102,7 @@ CGole* CGole::Create(D3DXVECTOR3 pos, float fRange, float fLimit)
 {
 	CGole* pGoal = nullptr;
 
-	pGoal = new CGole;
+	pGoal = DEBUG_NEW CGole;
 
 	if (pGoal != nullptr)
 	{

@@ -46,10 +46,11 @@ public:	// 誰でもアクセス可能な定義
 		D3DXVECTOR3 pos;	// 座標
 		D3DXVECTOR3 rot;	// 向き
 		D3DXVECTOR2 size;	// 幅
+		D3DXVECTOR2 sizeOrigin;	// 幅
 
 		// コンストラクタ
-		SInfo() : pos({ 0.0f, 0.0f, 0.0f }), rot({ 0.0f, 0.0f, 0.0f }), size({ 0.0f, 0.0f }) {}
-		SInfo(const D3DXVECTOR3& _pos, const D3DXVECTOR3& _rot, const D3DXVECTOR2& _size) : pos(_pos), rot(_rot), size(_size) {}
+		SInfo() : pos({ 0.0f, 0.0f, 0.0f }), rot({ 0.0f, 0.0f, 0.0f }), size({ 0.0f, 0.0f }), sizeOrigin(size) {}
+		SInfo(const D3DXVECTOR3& _pos, const D3DXVECTOR3& _rot, const D3DXVECTOR2& _size) : pos(_pos), rot(_rot), size(_size), sizeOrigin(size) {}
 	};
 
 public:	// 誰でもアクセス可能
@@ -69,7 +70,7 @@ public:	// 誰でもアクセス可能
 	CRoad* GetNext(void) { return m_pNext; }	// 次
 	CRoad* GetPrev(void) { return m_pPrev; }	// 前回
 	CObject3D* GetObj(void) { return m_pObj; }	// 描画オブジェ
-	SInfo& GetInfo(void) { return m_Info; }		// 基本情報
+	SInfo* GetInfo(void) { return &m_Info; }		// 基本情報
 	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }	// 座標
 	D3DXVECTOR2& GetSize(void) { return m_Info.size; }		// 幅高さ
 	CRoad* GetConnectRoad(const DIRECTION& dic) // 連結道路
@@ -82,6 +83,7 @@ public:	// 誰でもアクセス可能
 	void Connect(CRoad* pRoad, const DIRECTION dic);
 	void SetNext(CRoad* pNext) { m_pNext = pNext; }
 	void SetPrev(CRoad* pPrev) { m_pPrev = pPrev; }
+	void SetPosition(const D3DXVECTOR3& pos);
 
 private:	// 自分だけがアクセス可能
 

@@ -11,6 +11,7 @@
 
 // 前方宣言
 class CRoad;
+class CEdit_Arrow;
 
 //==========================================================
 // サンプルのクラス定義
@@ -34,13 +35,20 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	void ClickCheck();
+	void ClickCheck();	// 選択確認
+	void ReConnect();	// 再連結
+	void Delete();		// 削除
+	void Move();		// 移動
+	void Save();		// 保存
+	void Create();		// 生成
 	bool CursorCollision(CRoad* pRoad);
 	bool TriangleCollision(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayDir,
 		const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2);
 
 	// メンバ変数
-	CRoad* m_pSelectRoad;
+	CRoad* m_pSelectRoad;	// 選択した道
+	CEdit_Arrow* m_pArrow;	// 矢印
+	float m_fMoveLength;	// 移動距離
 };
 
 #endif

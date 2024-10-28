@@ -2,7 +2,7 @@
 #include <memory>
 #include <mutex>
 //=============================================
-//距離取得関数
+//便利関数
 //=============================================
 using namespace std;
 #ifndef CONVENIENCE
@@ -15,9 +15,11 @@ float GetDistance(D3DXVECTOR3 vec1, D3DXVECTOR3 vec2);
 
 #define SAFE_DELETE(p)		if ((p) != nullptr) { delete (p);		(p) = nullptr; }	// 破棄
 
+#define SAFE_DELETEARRAY(p)		if ((p) != nullptr) { delete[] (p);		(p) = nullptr; }	// 破棄
+
 #define SAFE_UNINIT(p)		if ((p) != nullptr) { (p)->Uninit();	(p) = nullptr; }	// Uninitを使用した破棄
 
-
+#define SAFE_UNINIT_DELETE(p)		if ((p) != nullptr) { (p)->Uninit();	 delete (p);	(p) = nullptr; }	// Uninitを使用した破棄
 
 
 //汎用テンプレート
@@ -27,7 +29,7 @@ public:
 	CMaster() : value(make_shared<T>()) {};
 
 	//各種アクセサメソッド
-	T Get() { return value.get(); };										//ゲット
+	T Get() { return *value.get(); };										//ゲット
 	T Get(mutex mut) { lock_guard<mutex> lock(mut); return value.get(); };	//ゲット(スレッドセーフ)
 	shared_ptr<T> GetPtr() { return value; };								//本体取得
 

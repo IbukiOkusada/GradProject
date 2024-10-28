@@ -39,6 +39,8 @@ CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 	}
 
 	m_bEnableCollision = true;
+	m_ColMulti = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_AddCol = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 //==========================================================
@@ -172,6 +174,14 @@ void CObjectX::DrawOnry()
 	for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
 	{
 		D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
+		mat.Diffuse.r = mat.Diffuse.r * m_ColMulti.r + m_AddCol.r;
+		mat.Diffuse.g = mat.Diffuse.g * m_ColMulti.g + m_AddCol.g;
+		mat.Diffuse.b = mat.Diffuse.b * m_ColMulti.b + m_AddCol.b;
+		mat.Diffuse.a = mat.Diffuse.a * m_ColMulti.a + m_AddCol.a;
+		mat.Ambient.r = mat.Ambient.r * m_ColMulti.r + m_AddCol.r;
+		mat.Ambient.g = mat.Ambient.g * m_ColMulti.g + m_AddCol.g;
+		mat.Ambient.b = mat.Ambient.b * m_ColMulti.b + m_AddCol.b;
+		mat.Ambient.a = mat.Ambient.a * m_ColMulti.a + m_AddCol.a;
 
 		//マテリアルの設定
 		pDevice->SetMaterial(&mat);
@@ -201,7 +211,7 @@ CObjectX *CObjectX::Create(D3DXVECTOR3 pos,D3DXVECTOR3 rot, const char *pFileNam
 	CXFile *pModelFile = CManager::GetInstance()->GetModelFile();
 
 	// オブジェクトXの生成
-	pObjectX = new CObjectX(nPriority);
+	pObjectX = DEBUG_NEW CObjectX(nPriority);
 
 	if (pObjectX != NULL)
 	{// 生成できた場合
@@ -234,6 +244,15 @@ CObjectX *CObjectX::Create(D3DXVECTOR3 pos,D3DXVECTOR3 rot, const char *pFileNam
 void CObjectX::BindFile(int nIdx)
 {
 	m_nIdxModel = nIdx;	//使用するモデルの設定
+}
+
+//==========================================================
+// モデルファイル読み込み
+//==========================================================
+void CObjectX::BindFile(const char* file)
+{
+	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();
+	m_nIdxModel = pModelFile->Regist(file);	//使用するモデルの設定
 }
 
 //==========================================================

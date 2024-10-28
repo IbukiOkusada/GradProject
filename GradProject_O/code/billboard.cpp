@@ -342,7 +342,7 @@ CObjectBillboard *CObjectBillboard::Create(D3DXVECTOR3 pos, const int nPriority)
 	CObjectBillboard *pObjBillboard = NULL;
 
 	// オブジェクト2Dの生成
-	pObjBillboard = new CObjectBillboard(nPriority);
+	pObjBillboard = DEBUG_NEW CObjectBillboard(nPriority);
 
 	if (pObjBillboard != NULL)
 	{// 生成できた場合

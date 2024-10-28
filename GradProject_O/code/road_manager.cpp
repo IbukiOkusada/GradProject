@@ -50,6 +50,8 @@ void CRoadManager::Uninit(void)
 	// 親クラスの終了処理
 	CListManager::Uninit();
 
+	m_InfoList.Clear();
+
 	// インスタンスの廃棄
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		delete m_pInstance;
@@ -103,6 +105,8 @@ void CRoadManager::ListIn(CRoad* pRoad)
 		m_pTop = pRoad;	// 自分自身が先頭になる
 		m_pCur = pRoad;	// 自分自身が最後尾になる
 	}
+
+	m_InfoList.Regist(pRoad->GetInfo());
 
 	m_nNum++;
 }
@@ -180,6 +184,23 @@ bool CRoadManager::Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight
 void CRoadManager::AllConnect(void)
 {
 	CRoad* pRoad = GetTop();
+
+	// 一度綺麗にする
+	while (pRoad != nullptr)
+	{
+		CRoad* pNext = pRoad->GetNext();	// 保持
+
+		// クリア
+		pRoad->Connect(nullptr, CRoad::DIC_UP);
+		pRoad->Connect(nullptr, CRoad::DIC_DOWN);
+		pRoad->Connect(nullptr, CRoad::DIC_LEFT);
+		pRoad->Connect(nullptr, CRoad::DIC_RIGHT);
+
+		// 次に移動
+		pRoad = pNext;
+	}
+
+	pRoad = GetTop();
 
 	// 全て確認
 	while (pRoad != nullptr)

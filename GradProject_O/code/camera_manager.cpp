@@ -66,7 +66,7 @@ void CCameraManager::Update(void)
 CCameraManager *CCameraManager::GetInstance(void)
 {
 	if (m_pInstance == nullptr) {	// Žg‚í‚ê‚Ä‚¢‚È‚¢
-		m_pInstance = new CCameraManager;
+		m_pInstance = DEBUG_NEW CCameraManager;
 	}
 
 	return m_pInstance;

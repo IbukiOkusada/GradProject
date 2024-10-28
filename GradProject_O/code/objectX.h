@@ -37,6 +37,7 @@ public:	// 誰でもアクセス可能
 	virtual void Update(void);
 	virtual void Draw(void);
 	void BindFile(int nIdx);
+	void BindFile(const char* file);
 
 	static CObjectX *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *pFileName, const int nPriority = 4);
 	static bool Collision(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, COLLISION_AXIS& Axis);
@@ -63,6 +64,10 @@ public:	// 誰でもアクセス可能
 	int GetModelType(void) { return m_nIdxModel; }
 	D3DXVECTOR3& GetVtxMax(void);
 	D3DXVECTOR3& GetVtxMin(void);
+	D3DXCOLOR& GetColMuliti() { return m_ColMulti; }
+	void SetColMulti(const D3DXCOLOR& col) { m_ColMulti = col; }
+	D3DXCOLOR& GetColAdd() { return m_AddCol; }
+	void SetColAdd(const D3DXCOLOR& col) { m_AddCol = col; }
 
 protected:
 	void Quaternion();
@@ -85,6 +90,8 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_pos;	// 位置
 	D3DXVECTOR3 m_rot;	// 向き
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
+	D3DXCOLOR m_ColMulti;
+	D3DXCOLOR m_AddCol;
 	int m_nIdxModel;		// モデル番号
 	bool m_bEnableCollision;	//当たり判定の有効・無効
 };
