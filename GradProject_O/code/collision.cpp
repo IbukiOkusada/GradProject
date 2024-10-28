@@ -236,6 +236,11 @@ bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV,
 	D3DXPLANE plane = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	int nCheckCollision = 0;
 
+	if (D3DXVec3Length(&(*posO - posV)) > D3DXVec3Length(&sizeV) * 2.0f)
+	{
+		return false;
+	}
+
 	//箱の各面の中心を求める
 	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
 	posPlaneCenter[1] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(-sizeV.x, 0.0f, 0.0f));
@@ -316,6 +321,11 @@ bool CollidePointToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3* posO, D3DXVECTOR3 posOldO
 	D3DXVECTOR3 vecNorPlaneCenter = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXPLANE plane = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	int nCheckCollision = 0;
+
+	if(D3DXVec3Length(&(*posO - posV)) > D3DXVec3Length(&sizeV) * 2.0f)
+	{
+		return false;
+	}
 
 	//箱の各面の中心を求める
 	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeV.x, 0.0f, 0.0f));
