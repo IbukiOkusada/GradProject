@@ -27,6 +27,10 @@ namespace
 			"data\\BGM\\mantra.wav",
 			"data\\BGM\\theme_90s.wav",
 		},
+		{//ƒ|ƒbƒv
+			"data\\BGM\\maou_14_shining_star.wav",
+			"data\\BGM\\typhoon.wav",
+		},
 	};
 	const char* BUTTON_SE = { "data\\SE\\switch_04_button.wav" };
 };
