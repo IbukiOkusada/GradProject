@@ -16,7 +16,7 @@ Clist<CGole*> * CGole::pList = nullptr;
 //==========================================================
 CGole::CGole()
 {
-	pMesh = nullptr;
+	pEffect = nullptr;
 	m_fRange = 0.0f;
 	m_fLimit = 0.0f;
 	//Ž©g‚ðƒŠƒXƒg‚É“o˜^
@@ -41,8 +41,8 @@ CGole::~CGole()
 //==========================================================
 HRESULT CGole::Init(void)
 {
-	pMesh = pMesh->Create(m_pos, VECTOR3_ZERO, m_fRange, m_fRange*0.2f,3,24,2);
-	pMesh->SetCol(D3DXCOLOR(0.6f, 1.0f, 0.0f, 0.5f));
+	pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\goal_radius.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, m_fRange, false, false);
+	
 	return S_OK;
 }
 
@@ -51,11 +51,7 @@ HRESULT CGole::Init(void)
 //==========================================================
 void CGole::Uninit(void)
 {
-	if (pMesh != nullptr)
-	{
-		pMesh->Uninit();
-		pMesh = nullptr;
-	}
+	SAFE_DELETE(pEffect);
 	Release();
 }
 
