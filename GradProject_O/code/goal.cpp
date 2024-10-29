@@ -41,7 +41,7 @@ CGole::~CGole()
 //==========================================================
 HRESULT CGole::Init(void)
 {
-	pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\goal_radius.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, m_fRange, false, false);
+	pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\goal_radius.efkefc", m_pos, VECTOR3_ZERO, VECTOR3_ZERO, m_fRange, false, false);
 	
 	return S_OK;
 }
@@ -64,6 +64,7 @@ void CGole::Update(void)
 	{
 		Uninit();
 	}
+
 }
 //==========================================================
 // 距離のチェック
