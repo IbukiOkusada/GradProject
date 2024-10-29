@@ -251,6 +251,9 @@ void CPlayer::Update(void)
 		m_fCamera += (CAMERA_DETAH - m_fCamera) * 0.02f;
 	}
 
+	// デバッグ表示
+	CDebugProc::GetInstance()->Print("プレイヤー :");
+	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 }
 
 //===============================================

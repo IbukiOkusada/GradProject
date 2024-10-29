@@ -15,9 +15,12 @@
 
 namespace
 {
-	const float MIN_LENGTH = 100.0f;	// 最小移動量
+	const float MIN_LENGTH = 50.0f;	// 最小移動量
 	const char* FILENAME = "data\\FILE\\map\\road.bin";
-	const D3DXVECTOR2 SET_SIZE = D3DXVECTOR2(600.0f, 600.0f);
+	const D3DXVECTOR2 SET_SIZE = D3DXVECTOR2(500.0f, 500.0f);
+	const float CHANGESIZE = 50.0f;
+	const float MAX_SIZE = 1500.0f;
+	const float MIN_SIZE = 250.0f;
 }
 
 //==========================================================
@@ -26,8 +29,9 @@ namespace
 CEdit_Road::CEdit_Road()
 {
 	// 値のクリア
-	m_pSelectRoad = nullptr;
+	m_pSelect = nullptr;
 	m_pArrow = nullptr;
+	m_fMouseWheel = 0.0f;
 }
 
 //==========================================================
@@ -59,7 +63,7 @@ void CEdit_Road::Uninit(void)
 		m_pArrow = nullptr;
 	}
 
-	m_pSelectRoad = nullptr;
+	m_pSelect = nullptr;
 
 	CEdit::Uninit();
 }
@@ -71,7 +75,7 @@ void CEdit_Road::Update(void)
 {
 	CDebugProc::GetInstance()->Print(" [ 道配置モード ]\n");
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
-	CRoad* pOld = m_pSelectRoad;
+	CRoad* pOld = m_pSelect;
 
 	// 選択
 	ClickCheck();
@@ -87,7 +91,7 @@ void CEdit_Road::Update(void)
 	if (pKey->GetPress(DIK_LALT) || pKey->GetPress(DIK_RALT)) { CDebugProc::GetInstance()->Print("]\n"); return; }
 
 	// 選択されていない、もしくは選択した直後
-	if (m_pSelectRoad == nullptr || pOld == nullptr) { 
+	if (m_pSelect == nullptr || pOld == nullptr) { 
 
 		// 生成
 		Create();
@@ -97,13 +101,16 @@ void CEdit_Road::Update(void)
 	}
 
 	// 選択されたものを色変える
-	m_pSelectRoad->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+	m_pSelect->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
 
 	// 矢印の更新
 	if (m_pArrow != nullptr)
 	{
 		m_pArrow->Update();
 	}
+
+	// サイズ変更
+	SizeChange();
 
 	// 移動
 	Move();
@@ -114,10 +121,11 @@ void CEdit_Road::Update(void)
 	CDebugProc::GetInstance()->Print("]\n\n");
 
 	// 道情報
-	if (m_pSelectRoad == nullptr) { return; }
+	if (m_pSelect == nullptr) { return; }
 	CDebugProc::GetInstance()->Print("[ 道情報 : ");
-	D3DXVECTOR3 pos = m_pSelectRoad->GetPosition();
-	CDebugProc::GetInstance()->Print("座標 : [ %f, %f, %f] : ", pos.x, pos.y, pos.z);
+	D3DXVECTOR3 pos = m_pSelect->GetPosition();
+	CDebugProc::GetInstance()->Print("座標 : [ %f, %f, %f ] : ", pos.x, pos.y, pos.z);
+	CDebugProc::GetInstance()->Print("幅 : [ %f, %f ] : ", m_pSelect->GetSize().x, m_pSelect->GetSize().y);
 	CDebugProc::GetInstance()->Print("]\n");
 }
 
@@ -144,12 +152,12 @@ void CEdit_Road::ClickCheck()
 		}
 	}
 
-	if (m_pSelectRoad != nullptr)
+	if (m_pSelect != nullptr)
 	{
-		m_pSelectRoad->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		m_pSelect->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 
-	m_pSelectRoad = nullptr;
+	m_pSelect = nullptr;
 
 	// 道を全て確認
 	while (pRoad != nullptr)
@@ -159,14 +167,14 @@ void CEdit_Road::ClickCheck()
 		// 衝突した
 		if (CursorCollision(pRoad))
 		{
-			m_pSelectRoad = pRoad;
+			m_pSelect = pRoad;
 
 			if (m_pArrow == nullptr)
 			{
-				m_pArrow = CEdit_Arrow::Create(m_pSelectRoad->GetPosition());
+				m_pArrow = CEdit_Arrow::Create(m_pSelect->GetPosition());
 			}
 
-			m_pArrow->SetPosition(m_pSelectRoad->GetPosition());
+			m_pArrow->SetPosition(m_pSelect->GetPosition());
 
 			return;
 		}
@@ -175,7 +183,7 @@ void CEdit_Road::ClickCheck()
 	}
 
 	// 道が選ばれていない
-	if (m_pSelectRoad != nullptr) { return; }
+	if (m_pSelect != nullptr) { return; }
 
 	// 矢印使用中
 	if (m_pArrow == nullptr) { return; }
@@ -284,8 +292,8 @@ void CEdit_Road::Delete()
 	if (!pKey->GetTrigger(DIK_DELETE) && !pKey->GetTrigger(DIK_BACKSPACE)) { return; }
 
 	// 再接続
-	m_pSelectRoad->Uninit();
-	m_pSelectRoad = nullptr;
+	m_pSelect->Uninit();
+	m_pSelect = nullptr;
 
 	// 再連結
 	ReConnect();
@@ -302,10 +310,10 @@ void CEdit_Road::Delete()
 //==========================================================
 void CEdit_Road::Move()
 {
-	if (m_pSelectRoad == nullptr) { return; }
+	if (m_pSelect == nullptr) { return; }
 	if (m_pArrow == nullptr) { return; }
 
-	D3DXVECTOR3 pos = m_pSelectRoad->GetPosition();	// 座標
+	D3DXVECTOR3 pos = m_pSelect->GetPosition();	// 座標
 	D3DXVECTOR3 Arrowpos = m_pArrow->GetPosition();	// 矢印座標
 
 	// X座標
@@ -342,7 +350,7 @@ void CEdit_Road::Move()
 	}
 
 	// 選択した道の座標設定
-	m_pSelectRoad->SetPosition(pos);
+	m_pSelect->SetPosition(pos);
 }
 
 //==========================================================
@@ -424,4 +432,44 @@ void CEdit_Road::Create()
 	pos.z -= setpos % movelength;
 
 	CRoad::Create(pos, VECTOR3_ZERO, SET_SIZE);
+}
+
+//==========================================================
+// サイズ変更
+//==========================================================
+void CEdit_Road::SizeChange()
+{
+	if (m_pSelect == nullptr) { return; }
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+
+	float old = m_fMouseWheel;
+	m_fMouseWheel += pMouse->GetCousorMove().z;
+
+	// マウスホイール
+	if (m_fMouseWheel == old) { return; }
+
+	if (static_cast<int>(m_fMouseWheel) % 20 != 0) { return; }
+
+	float size = m_pSelect->GetSize().x;
+
+	if (m_fMouseWheel >= old)
+	{
+		size -= CHANGESIZE;
+
+		if (size < MIN_SIZE)
+		{
+			size = MAX_SIZE;
+		}
+	}
+	else
+	{
+		size += CHANGESIZE;
+
+		if (size > MAX_SIZE)
+		{
+			size = MIN_SIZE;
+		}
+	}
+
+	m_pSelect->SetSize(D3DXVECTOR2(size, size));
 }

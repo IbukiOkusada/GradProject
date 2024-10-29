@@ -44,10 +44,12 @@ private:	// 自分だけがアクセス可能
 	bool CursorCollision(CRoad* pRoad);
 	bool TriangleCollision(const D3DXVECTOR3& rayOrigin, const D3DXVECTOR3& rayDir,
 		const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2);
+	void SizeChange();	// モデル変更
 
 	// メンバ変数
-	CRoad* m_pSelectRoad;	// 選択した道
+	CRoad* m_pSelect;	// 選択した道
 	CEdit_Arrow* m_pArrow;	// 矢印
+	float m_fMouseWheel;	// マウスホイールの移動量
 	float m_fMoveLength;	// 移動距離
 };
 
