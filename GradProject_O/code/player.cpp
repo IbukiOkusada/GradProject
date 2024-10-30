@@ -460,6 +460,7 @@ void CPlayer::SearchRoad()
 
 	CRoad* pRoad = pRoadManager->GetTop();
 	CRoad* pRoadClose = pRoadManager->GetTop();
+	
 
 	if (pRoad == nullptr) 
 	{
@@ -514,6 +515,7 @@ bool CPlayer::Collision(void)
 			D3DXVECTOR3 vecMoveNor = m_Info.move;
 			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
 			D3DXVec3Normalize(&pVecCollision, &pVecCollision);
+
 			m_fEngine *= 0.9f + (D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
 
 			return true;
