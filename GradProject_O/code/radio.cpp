@@ -37,6 +37,11 @@ namespace
 			"data\\BGM\\AcceleHeartLove.wav",
 			"data\\BGM\\BGM_ShinobiDrift.wav",
 		},
+
+		{//クラシック
+			"data\\BGM\\gline.wav",
+			"data\\BGM\\nocturne-op9-2_1.wav",
+		},
 	};
 	const char* BUTTON_SE = { "data\\SE\\switch_04_button.wav" };
 };

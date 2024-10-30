@@ -36,6 +36,7 @@ public:	// 誰でもアクセス可能
 		CHANNEL_TECHNO,
 		CHANNEL_POPS,
 		CHANNEL_SHINOBI,
+		CHANNEL_CLASSIC,
 		CHANNEL_MAX
 	};
 	struct radio
