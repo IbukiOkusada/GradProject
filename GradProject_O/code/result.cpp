@@ -65,6 +65,10 @@ HRESULT CResult::Init(void)
 		CManager::GetInstance()->GetCamera()->SetViewPort(viewport);
 	}
 
+	CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
+	pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+	pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\result.png"));
+
 	//CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT);
 
 	return S_OK;

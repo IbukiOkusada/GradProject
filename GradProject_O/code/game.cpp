@@ -125,9 +125,7 @@ HRESULT CGame::Init(void)
         if (m_nNumPlayer <= 0)
         {// l”‚ªŽw’è‚³‚ê‚Ä‚¢‚È‚¢
             m_nNumPlayer = 1;
-        }
-
-       
+        }       
     }
         break;
 
@@ -161,13 +159,13 @@ HRESULT CGame::Init(void)
 
     for (int i = 0; i < 5; i++)
     {
-        CCar* pCar = CCar::Create(D3DXVECTOR3(1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+        CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
         CCarManager::GetInstance()->ListIn(pCar);
     }
 
     for (int i = 0; i < 5; i++)
     {
-        CCar* pCar = CPolice::Create(D3DXVECTOR3(1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+        CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
         CCarManager::GetInstance()->ListIn(pCar);
     }
 
@@ -213,6 +211,7 @@ void CGame::Uninit(void)
     CEditManager::Release();
 
     m_state = STATE_LOCAL;
+    CGole::ListRelease();
 }
 
 //===============================================
@@ -242,6 +241,11 @@ void CGame::Update(void)
     if (pMgr != nullptr) { pMgr->Update(); }
 
 #endif
+
+    if (CGole::GetInstance()->GetNum() == 0)
+    {
+        CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+    }
 
     CScene::Update();
 }

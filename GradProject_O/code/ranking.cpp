@@ -73,6 +73,10 @@ HRESULT CRanking::Init(void)
 	sprintf(&aBodyPass[0], "%s\\motion_body%s", FILEPASS, FILEEXT);
 	sprintf(&aLegPass[0], "%s\\motion_leg%s", FILEPASS, FILEEXT);
 
+	CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
+	pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+	pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\ranking.png"));
+
 	return S_OK;
 }
 
