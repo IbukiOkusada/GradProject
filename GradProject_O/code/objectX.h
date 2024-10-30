@@ -77,10 +77,6 @@ protected:
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	//D3DMATERIAL9 SetSlowCol(D3DMATERIAL9 *pMat);
-	bool CollisionCheck(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, COLLISION_AXIS axis, const float fRefMulti = 0.5f);
-	bool CollisionCheck(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, D3DXVECTOR3 vtxMinOld, D3DXVECTOR3 vtxMaxOld, COLLISION_AXIS axis);
-	bool CollisionCheckCloss(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3* posCollisioned = nullptr);
 
 	// メンバ変数c
 	static CObjectX *m_pTop;	// 先頭のオブジェクトへのポインタ
@@ -89,6 +85,7 @@ private:	// 自分だけがアクセス可能
 	CObjectX *m_pNext;	// 次のオブジェクトへのポインタ
 	D3DXVECTOR3 m_pos;	// 位置
 	D3DXVECTOR3 m_rot;	// 向き
+	D3DXVECTOR3 m_scale;	// 拡大縮小
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 	D3DXCOLOR m_ColMulti;
 	D3DXCOLOR m_AddCol;

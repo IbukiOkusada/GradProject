@@ -41,6 +41,9 @@ CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 	m_bEnableCollision = true;
 	m_ColMulti = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_AddCol = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+	m_scale = VECTOR3_ZERO;
+	m_pos = VECTOR3_ZERO;
+	m_rot = VECTOR3_ZERO;
 }
 
 //==========================================================
@@ -58,6 +61,7 @@ HRESULT CObjectX::Init(void)
 {
 
 	//各種変数の初期化
+	m_scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
@@ -103,10 +107,14 @@ void CObjectX::Draw(void)
 //==========================================================
 void CObjectX::CalWorldMtx()
 {
-	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans, mtxscale;			//計算用マトリックス
 
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
+
+	// スケールの反映
+	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
@@ -116,9 +124,13 @@ void CObjectX::CalWorldMtx()
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 }
+
+//==========================================================
+// クォータニオンワールドマトリックス計算
+//==========================================================
 void CObjectX::Quaternion()
 {
-	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans, mtxscale;			//計算用マトリックス
 	D3DXQUATERNION qYaw, qPitch, qRoll;
 	// ヨー: Y軸回転
 	D3DXQuaternionRotationAxis(&qYaw, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), m_rot.y);
@@ -134,6 +146,10 @@ void CObjectX::Quaternion()
 
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
+
+	// スケールの反映
+	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
 
 	//向きを反映
 	D3DXMatrixRotationQuaternion(&mtxRot, &qResult);
@@ -301,128 +317,6 @@ void CObjectX::SetRotation(const D3DXVECTOR3 rot)
 //==========================================================
 // 当たり判定
 //==========================================================
-bool CObjectX::Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &posOld, D3DXVECTOR3 &move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, COLLISION_AXIS& Axis)
-{
-	CObjectX *pObj = m_pTop;	// 先頭取得
-	bool bLand = false;	// 着地したか否か
-	D3DXVECTOR3 moveOld = move;
-
-	//仮置き
-	D3DXVECTOR3 posTemp = posOld;
-
-	//Y
-	posTemp.y = pos.y;
-	pObj = m_pTop;
-	while (pObj != NULL)
-	{
-		CObjectX* pObjNext = pObj->m_pNext;
-		if (pObj->m_bEnableCollision == true && pObj->CollisionCheck(posTemp, posOld, move, vtxMin, vtxMax, TYPE_Y))
-		{
-			bLand = true;
-			Axis = TYPE_Y;
-		}
-
-		pObj = pObjNext;
-	}
-
-	//Z
-	posTemp.z = pos.z;
-	pObj = m_pTop;
-	while (pObj != NULL)
-	{
-		CObjectX* pObjNext = pObj->m_pNext;
-		if (pObj->m_bEnableCollision == true)
-		{
-			if (pObj->CollisionCheck(posTemp, posOld, move, vtxMin, vtxMax, TYPE_Z)) {
-				Axis = TYPE_Z;
-			}
-		}
-
-		pObj = pObjNext;
-	}
-
-	//X
-	posTemp.x = pos.x;
-	pObj = m_pTop;
-	while (pObj != NULL)
-	{
-		CObjectX *pObjNext = pObj->m_pNext;
-		if (pObj->m_bEnableCollision == true)
-		{
-			if (pObj->CollisionCheck(posTemp, posOld, move, vtxMin, vtxMax, TYPE_X)) {
-				Axis = TYPE_X;
-			}
-		}
-
-		pObj = pObjNext;
-	}
-
-	pos = posTemp;
-
-	return bLand;
-}
-
-//==========================================================
-// 当たり判定(触れたかどうか)
-//==========================================================
-bool CObjectX::Touch(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax)
-{
-	CObjectX *pObj = m_pTop;	// 先頭取得
-	bool bLand = false;	// 着地したか否か
-
-	while (pObj != NULL)
-	{
-		CObjectX *pObjNext = pObj->m_pNext;
-		if (pObj->m_bEnableCollision == true)
-		{
-			pObj->CollisionCheck(pos, posOld, move, vtxMin, vtxMax, TYPE_X);
-			pObj->CollisionCheck(pos, posOld, move, vtxMin, vtxMax, TYPE_Z);
-		}
-
-		pObj = pObjNext;
-	}
-
-	return bLand;
-}
-
-//==========================================================
-// 当たり判定(外積使用)
-//==========================================================
-bool CObjectX::CollisionCloss(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3* posCollisioned)
-{
-	CObjectX* pObj = m_pTop;	// 先頭取得
-	D3DXVECTOR3 posNear = D3DXVECTOR3(FLT_MAX, 0.0f, 0.0f);
-	bool bCollision = false;
-
-	while (pObj != NULL)
-	{
-		CObjectX* pObjNext = pObj->m_pNext;
-		D3DXVECTOR3 posObjColl = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		if (pObj->CollisionCheckCloss(pos, posOld, &posObjColl))
-		{
-			float fLength = D3DXVec3Length(&(posOld - posObjColl));
-
-			if (D3DXVec3Length(&(posOld - posNear)) > fLength)
-			{
-				posNear = posObjColl;
-			}
-			bCollision = true;
-		}
-
-		pObj = pObjNext;
-	}
-
-	if (posCollisioned != nullptr)
-	{
-		*posCollisioned = posNear;
-	}
-
-	return bCollision;
-}
-
-//==========================================================
-// 当たり判定
-//==========================================================
 void CObjectX::SetRotSize(D3DXVECTOR3 &SetMax, D3DXVECTOR3 &SetMin, D3DXVECTOR3 vtxMax, D3DXVECTOR3 vtxMin, float fRot)
 {
 	//すべて同じ値を先に入れる
@@ -470,193 +364,6 @@ void CObjectX::SetRotSize(D3DXVECTOR3 &SetMax, D3DXVECTOR3 &SetMin, D3DXVECTOR3 
 		SetMin.x = vtxMin.x;	//x座標
 		SetMin.z = vtxMin.z;	//z座標
 	}
-}
-
-//==========================================================
-// 個別判定チェック
-//==========================================================
-bool CObjectX::CollisionCheck(D3DXVECTOR3 &pos, D3DXVECTOR3 &posOld, D3DXVECTOR3 &move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, COLLISION_AXIS axis, const float fRefMulti)
-{
-	CXFile *pFile = CManager::GetInstance()->GetModelFile();
-	bool bLand = false;	// 着地したか否か
-	D3DXVECTOR3 vtxObjMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 vtxObjMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-	// 向きを反映
-	int nIdx = GetIdx();
-	SetRotSize(vtxObjMax,
-		vtxObjMin,
-		pFile->GetMax(nIdx),
-		pFile->GetMin(nIdx),
-		m_rot.y);
-
-	
-	switch (axis)
-	{
-	case CObjectX::TYPE_X:	//X
-		if (pos.y + vtxMax.y > m_pos.y + vtxObjMin.y
-			&& pos.y + vtxMin.y < m_pos.y + vtxObjMax.y
-			&& pos.z + vtxMax.z > m_pos.z + vtxObjMin.z
-			&& pos.z + vtxMin.z < m_pos.z + vtxObjMax.z)
-		{//範囲内にある
-			if (posOld.x + vtxMin.x >= m_pos.x + vtxObjMax.x
-				&& pos.x + vtxMin.x < m_pos.x + vtxObjMax.x)
-			{//右から左にめり込んだ
-				move.x *= -0.0f;
-				move.x *= fRefMulti;
-				pos.x = m_pos.x + vtxObjMax.x - vtxMin.x + 0.1f + move.x;
-			}
-			else if (posOld.x + vtxMax.x <= m_pos.x + vtxObjMin.x
-				&& pos.x + vtxMax.x > m_pos.x + vtxObjMin.x)
-			{//左から右にめり込んだ
-			 //位置を戻す
-				move.x *= -0.0f;
-				move.x *= fRefMulti;
-				pos.x = m_pos.x + vtxObjMin.x - vtxMax.x - 0.1f + move.x;
-			}
-		}
-		break;
-	case CObjectX::TYPE_Y:	//Y
-		if (pos.x + vtxMax.x > m_pos.x + vtxObjMin.x
-			&& pos.x + vtxMin.x < m_pos.x + vtxObjMax.x
-			&& pos.z + vtxMax.z > m_pos.z + vtxObjMin.z
-			&& pos.z + vtxMin.z < m_pos.z + vtxObjMax.z)
-		{//範囲内にある
-			//上からの判定
-			if (posOld.y + vtxMin.y >= m_pos.y + vtxObjMax.y
-				&& pos.y + vtxMin.y < m_pos.y + vtxObjMax.y)
-			{//上からめり込んだ
-				//上にのせる
-				pos.y = m_pos.y + vtxObjMax.y - vtxMin.y;
-				move.y = 0.0f;
-				bLand = true;
-			}
-
-			//下からの判定
-			if (posOld.y + vtxMax.y <= m_pos.y + vtxObjMin.y
-				&& pos.y + vtxMax.y > m_pos.y + vtxObjMin.y)
-			{//下からめり込んだ
-			 //その高さのまま
-				pos.y = m_pos.y - vtxObjMin.y - vtxMax.y;
-				move.y = 0.0f;
-				bLand = true;
-			}
-		}
-		break;
-	case CObjectX::TYPE_Z:	//Z
-		if (pos.x + vtxMax.x > m_pos.x + vtxObjMin.x
-			&& pos.x + vtxMin.x < m_pos.x + vtxObjMax.x
-			&& pos.y + vtxMax.y > m_pos.y + vtxObjMin.y
-			&& pos.y + vtxMin.y < m_pos.y + vtxObjMax.y)
-		{//範囲内にある
-			if (posOld.z + vtxMin.z >= m_pos.z + vtxObjMax.z
-				&& pos.z + vtxMin.z < m_pos.z + vtxObjMax.z)
-			{//奥から手前にめり込んだ
-			 //位置を戻す
-				move.z *= -0.0f;
-				move.z *= fRefMulti;
-				pos.z = m_pos.z + vtxObjMax.z - vtxMin.z + 0.1f + move.z;
-				//move.z = 0.0f;
-			}
-			else if (posOld.z + vtxMax.z <= m_pos.z + vtxObjMin.z
-				&& pos.z + vtxMax.z > m_pos.z + vtxObjMin.z)
-			{//手前から奥にめり込んだ
-			 //位置を戻す
-				move.z *= -0.0f;
-				move.z *= fRefMulti;
-				pos.z = m_pos.z + vtxObjMin.z - vtxMax.z - 0.1f + move.z;
-				//move.z = 0.0f;
-			}
-		}
-		break;
-	default:
-		break;
-	}
-
-	return bLand;
-}
-
-//==========================================================
-// 個別判定チェック(外積使用)
-//==========================================================
-bool CObjectX::CollisionCheckCloss(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3* posCollisioned)
-{
-	CXFile* pFile = CManager::GetInstance()->GetModelFile();
-	D3DXVECTOR3 vtxObjMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 vtxObjMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	bool bCollision = false;
-	D3DXVECTOR3 posCulcNear = D3DXVECTOR3(FLT_MAX, 0.0f, 0.0f);
-
-	// 向きを反映
-	int nIdx = GetIdx();
-	SetRotSize(vtxObjMax,
-		vtxObjMin,
-		pFile->GetMax(nIdx),
-		pFile->GetMin(nIdx),
-		m_rot.y);
-
-	D3DXVECTOR3 posPoint[4] =
-	{
-		D3DXVECTOR3(m_pos.x + vtxObjMin.x,0.0f,m_pos.z + vtxObjMin.z),
-		D3DXVECTOR3(m_pos.x + vtxObjMax.x,0.0f,m_pos.z + vtxObjMin.z),
-		D3DXVECTOR3(m_pos.x + vtxObjMax.x,0.0f,m_pos.z + vtxObjMax.z),
-		D3DXVECTOR3(m_pos.x + vtxObjMin.x,0.0f,m_pos.z + vtxObjMax.z)
-	};
-
-	D3DXVECTOR3 vecMove, vecLine;
-	D3DXVECTOR3 vecToPos, vecToPosOld;
-	float fAreaA = 1.0f, fAreaB = 1.1f;
-
-	for (int cnt = 0; cnt < 4; cnt++)
-	{
-		vecMove = pos - posOld;
-		vecLine = posPoint[(cnt + 1) % 4] - posPoint[cnt];	//境界線ベクトル
-		vecToPos = pos - posPoint[cnt];
-		vecToPos.y = 0.0f;
-		vecToPosOld = posOld - posPoint[cnt];
-		vecToPosOld.y = 0.0f;
-
-		//面積求める
-		fAreaA = (vecToPos.z * vecMove.x) - (vecToPos.x * vecMove.z);
-		fAreaB = (vecLine.z * vecMove.x) - (vecLine.x * vecMove.z);
-
-		if ((vecLine.z * vecToPosOld.x) - (vecLine.x * vecToPosOld.z) >= 0.0f && (vecLine.z * vecToPos.x) - (vecLine.x * vecToPos.z) < 0.0f)
-		{
-			if (fAreaA / fAreaB >= 0.0f && fAreaA / fAreaB <= 1.0f)
-			{
-				float fRate = fAreaA / fAreaB;
-				D3DXVECTOR3 posXZ = posPoint[cnt];
-				posXZ.x += vecLine.x * fRate;
-				posXZ.y = posOld.y;
-				posXZ.z += vecLine.z * fRate;
-				float fTemp1 = D3DXVec3Length(&(D3DXVECTOR3(pos.x, posOld.y, pos.z) - posOld));
-				float fTemp2 = D3DXVec3Length(&(D3DXVECTOR3(posXZ.x, posOld.y, posXZ.z) - posOld));
-				float fRate2 = fTemp2 / fTemp1;
-				D3DXVECTOR3 posCulc = posOld + (pos - posOld) * fRate2;
-
-				if (posCulc.y >= m_pos.y + vtxObjMin.y && posCulc.y <= m_pos.y + vtxObjMax.y)
-				{//ごっつん
-					//衝突位置が欲しければあげる
-					if (posCollisioned != nullptr)
-					{//ほしいみたいなのであげる
-						if (D3DXVec3Length(&(posCulc - posOld)) < D3DXVec3Length(&(posCulcNear - posOld)))
-						{
-							posCulcNear = posCulc;
-						}
-					}
-
-					bCollision = true;
-				}
-			}
-		}
-	}
-
-	if (bCollision == true)
-	{
-		*posCollisioned = posCulcNear;
-	}
-
-	return bCollision;
 }
 
 //==========================================================
@@ -741,181 +448,21 @@ void CObjectX::CollisionLand(D3DXVECTOR3 &pos)
 }
 
 //==========================================================
-// 当たり判定
-//==========================================================
-D3DXVECTOR3 CObjectX::Collision(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, D3DXVECTOR3 vtxMinOld, D3DXVECTOR3 vtxMaxOld, COLLISION_AXIS& Axis)
-{
-	CObjectX *pObj = m_pTop;	// 先頭取得
-	bool bLand = false;	// 着地したか否か
-	D3DXVECTOR3 moveOld = move;
-	D3DXVECTOR3 nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-	//仮置き
-	D3DXVECTOR3 posTemp = posOld;
-
-	//Y
-	posTemp.y = pos.y;
-	pObj = m_pTop;
-	while (pObj != NULL)
-	{
-		CObjectX* pObjNext = pObj->m_pNext;
-		if (pObj->m_bEnableCollision == true && pObj->CollisionCheck(posTemp, posOld, move, vtxMin, vtxMax, vtxMinOld, vtxMaxOld, TYPE_Y))
-		{
-			bLand = true;
-			Axis = TYPE_Y;
-			nor.y = posTemp.y - pObj->GetPosition().y;
-		}
-
-		pObj = pObjNext;
-	}
-
-	//Z
-	posTemp.z = pos.z;
-	pObj = m_pTop;
-	while (pObj != NULL)
-	{
-		CObjectX* pObjNext = pObj->m_pNext;
-		if (pObj->m_bEnableCollision == true && pObj->CollisionCheck(posTemp, posOld, move, vtxMin, vtxMax, vtxMinOld, vtxMaxOld, TYPE_Z))
-		{
-			Axis = TYPE_Z;
-			nor.z = posTemp.z - pObj->GetPosition().z;
-		}
-
-		pObj = pObjNext;
-	}
-
-	//X
-	posTemp.x = pos.x;
-	pObj = m_pTop;
-	while (pObj != NULL)
-	{
-		CObjectX *pObjNext = pObj->m_pNext;
-		if (pObj->m_bEnableCollision == true && pObj->CollisionCheck(posTemp, posOld, move, vtxMin, vtxMax, vtxMinOld, vtxMaxOld, TYPE_X))
-		{
-			bLand = true;
-			Axis = TYPE_X;
-			nor.x = posTemp.x - pObj->GetPosition().x;
-		}
-
-		pObj = pObjNext;
-	}
-
-	pos = posTemp;
-	D3DXVec3Normalize(&nor, &nor);
-
-	return nor;
-}
-
-//==========================================================
-// 当たり判定確認
-//==========================================================
-bool CObjectX::CollisionCheck(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, D3DXVECTOR3 vtxMinOld, D3DXVECTOR3 vtxMaxOld, COLLISION_AXIS axis)
-{
-	CXFile *pFile = CManager::GetInstance()->GetModelFile();
-	bool bLand = false;	// 着地したか否か
-	D3DXVECTOR3 vtxObjMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 vtxObjMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-	// 向きを反映
-	int nIdx = GetIdx();
-	SetRotSize(vtxObjMax,
-		vtxObjMin,
-		pFile->GetMax(nIdx),
-		pFile->GetMin(nIdx),
-		m_rot.y);
-
-
-	switch (axis)
-	{
-	case CObjectX::TYPE_X:	//X
-		if (pos.y + vtxMax.y > m_pos.y + vtxObjMin.y
-			&& pos.y + vtxMin.y < m_pos.y + vtxObjMax.y
-			&& pos.z + vtxMax.z > m_pos.z + vtxObjMin.z
-			&& pos.z + vtxMin.z < m_pos.z + vtxObjMax.z)
-		{//範囲内にある
-			if (posOld.x + vtxMinOld.x >= m_pos.x + vtxObjMax.x
-				&& pos.x + vtxMin.x < m_pos.x + vtxObjMax.x)
-			{//右から左にめり込んだ
-				move.x *= -0.0f;
-				pos.x = m_pos.x + vtxObjMax.x - vtxMin.x + move.x;
-				bLand = true;
-			}
-			else if (posOld.x + vtxMaxOld.x <= m_pos.x + vtxObjMin.x
-				&& pos.x + vtxMax.x > m_pos.x + vtxObjMin.x)
-			{//左から右にめり込んだ
-				move.x *= -0.0f;
-				pos.x = m_pos.x + vtxObjMin.x - vtxMax.x + move.x;
-				bLand = true;
-			}
-		}
-		break;
-	case CObjectX::TYPE_Y:	//Y
-		if (pos.x + vtxMax.x > m_pos.x + vtxObjMin.x
-			&& pos.x + vtxMin.x < m_pos.x + vtxObjMax.x
-			&& pos.z + vtxMax.z > m_pos.z + vtxObjMin.z
-			&& pos.z + vtxMin.z < m_pos.z + vtxObjMax.z)
-		{//範囲内にある
-		 //上からの判定
-			if (posOld.y + vtxMinOld.y >= m_pos.y + vtxObjMax.y
-				&& pos.y + vtxMin.y < m_pos.y + vtxObjMax.y)
-			{//上からめり込んだ
-				pos.y = m_pos.y + vtxObjMax.y - vtxMin.y;
-				move.y = 0.0f;
-				bLand = true;
-			}
-
-			//下からの判定
-			if (posOld.y + vtxMaxOld.y <= m_pos.y + vtxObjMin.y
-				&& pos.y + vtxMax.y > m_pos.y + vtxObjMin.y)
-			{//下からめり込んだ
-				pos.y = m_pos.y - vtxObjMin.y - vtxMax.y;
-				move.y = 0.0f;
-				bLand = true;
-			}
-		}
-		break;
-	case CObjectX::TYPE_Z:	//Z
-		if (pos.x + vtxMax.x > m_pos.x + vtxObjMin.x
-			&& pos.x + vtxMin.x < m_pos.x + vtxObjMax.x
-			&& pos.y + vtxMax.y > m_pos.y + vtxObjMin.y
-			&& pos.y + vtxMin.y < m_pos.y + vtxObjMax.y)
-		{//範囲内にある
-			if (posOld.z + vtxMinOld.z >= m_pos.z + vtxObjMax.z
-				&& pos.z + vtxMin.z < m_pos.z + vtxObjMax.z)
-			{//奥から手前にめり込んだ
-			 //位置を戻す
-				move.z *= -0.0f;
-				pos.z = m_pos.z + vtxObjMax.z - vtxMin.z + move.z;
-				bLand = true;
-			}
-			else if (posOld.z + vtxMaxOld.z <= m_pos.z + vtxObjMin.z
-				&& pos.z + vtxMax.z > m_pos.z + vtxObjMin.z)
-			{//手前から奥にめり込んだ
-			 //位置を戻す
-				move.z *= -0.0f;
-				pos.z = m_pos.z + vtxObjMin.z - vtxMax.z + move.z;
-				bLand = true;
-			}
-		}
-		break;
-	default:
-		break;
-	}
-
-	return bLand;
-}
-
-//==========================================================
 // 最大値取得
 //==========================================================
 D3DXVECTOR3& CObjectX::GetVtxMax(void)
 {
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	D3DXVECTOR3 max = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	if (pFileData == nullptr) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }
+	if (pFileData == nullptr) { return max; }
 
-	return pFileData->vtxMax;
+	max.x = pFileData->vtxMax.x * m_scale.x;
+	max.y = pFileData->vtxMax.y * m_scale.y;
+	max.z = pFileData->vtxMax.z * m_scale.z;
+
+	return max;
 }
 
 //==========================================================
@@ -926,7 +473,13 @@ D3DXVECTOR3& CObjectX::GetVtxMin(void)
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
 
-	if (pFileData == nullptr) { return D3DXVECTOR3(0.0f, 0.0f, 0.0f); }
+	D3DXVECTOR3 min = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	return pFileData->vtxMin;
+	if (pFileData == nullptr) { return min; }
+
+	min.x = pFileData->vtxMin.x * m_scale.x;
+	min.y = pFileData->vtxMin.y * m_scale.y;
+	min.z = pFileData->vtxMin.z * m_scale.z;
+
+	return min;
 }

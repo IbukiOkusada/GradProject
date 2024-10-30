@@ -159,13 +159,13 @@ HRESULT CGame::Init(void)
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
         CCarManager::GetInstance()->ListIn(pCar);
     }
 
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
         CCarManager::GetInstance()->ListIn(pCar);
