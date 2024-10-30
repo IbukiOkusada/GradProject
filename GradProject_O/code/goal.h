@@ -9,6 +9,7 @@
 
 #include "task.h"
 #include "list.h"
+#include "effekseerControl.h"
 //#include "task.h"	// これでファイルインクルードできます
 //前方宣言
 class CMeshCylinder;
@@ -41,8 +42,8 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_pos;				// 座標
 	float m_fRange;					// ゴールの範囲
 	float m_fLimit;					// 速度制限
-	CMeshCylinder* pMesh;
 
+	CEffekseer::CEffectData* pEffect;
 	static Clist<CGole*>* pList;	// 自分のリスト*GetInstance()経由でアクセスする事*
 };
 

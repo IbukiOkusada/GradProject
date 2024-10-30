@@ -195,7 +195,7 @@ void CPlayer::Update(void)
 		Controller();
 
 		// 最寄りの道検索
-		SearchRoad();
+		//SearchRoad();
 
 		// 当たり判定
 		Collision();
@@ -251,6 +251,9 @@ void CPlayer::Update(void)
 		m_fCamera += (CAMERA_DETAH - m_fCamera) * 0.02f;
 	}
 
+	// デバッグ表示
+	CDebugProc::GetInstance()->Print("プレイヤー :");
+	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 }
 
 //===============================================
@@ -457,9 +460,13 @@ void CPlayer::SearchRoad()
 
 	CRoad* pRoad = pRoadManager->GetTop();
 	CRoad* pRoadClose = pRoadManager->GetTop();
-	if (pRoad == nullptr) {
+	
+
+	if (pRoad == nullptr) 
+	{
 		return;
 	}
+
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
@@ -508,12 +515,8 @@ bool CPlayer::Collision(void)
 			D3DXVECTOR3 vecMoveNor = m_Info.move;
 			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
 			D3DXVec3Normalize(&pVecCollision, &pVecCollision);
-			m_fEngine *= 0.95f + (D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
 
-			if (m_fEngine > 1.0f)
-			{
-				m_fEngine = 1.0f;
-			}
+			m_fEngine *= 0.9f + (D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
 
 			return true;
 		}

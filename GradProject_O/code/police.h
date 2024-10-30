@@ -61,6 +61,8 @@ private:	// 自分だけがアクセス可能
 	SInfo m_Info;					// 自分自身の情報
 	std::list<CRoad*> listRoad;		// 追跡用リスト
 	std::list<CRoad*> listChase;	// 追跡用リスト
+
+	CEffekseer::CEffectData* m_pPatrolLamp;
 };
 
 #endif

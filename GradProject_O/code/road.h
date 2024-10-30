@@ -84,6 +84,7 @@ public:	// 誰でもアクセス可能
 	void SetNext(CRoad* pNext) { m_pNext = pNext; }
 	void SetPrev(CRoad* pPrev) { m_pPrev = pPrev; }
 	void SetPosition(const D3DXVECTOR3& pos);
+	void SetSize(const D3DXVECTOR2& size);
 
 private:	// 自分だけがアクセス可能
 

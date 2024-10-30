@@ -34,6 +34,7 @@ public:	// 誰でもアクセス可能
 		CHANNEL_RELAX = 0,
 		CHANNEL_METAL,
 		CHANNEL_TECHNO,
+		CHANNEL_POPS,
 		CHANNEL_MAX
 	};
 	struct radio

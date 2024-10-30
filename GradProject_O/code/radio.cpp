@@ -27,6 +27,10 @@ namespace
 			"data\\BGM\\mantra.wav",
 			"data\\BGM\\theme_90s.wav",
 		},
+		{//ƒ|ƒbƒv
+			"data\\BGM\\maou_14_shining_star.wav",
+			"data\\BGM\\typhoon.wav",
+		},
 	};
 	const char* BUTTON_SE = { "data\\SE\\switch_04_button.wav" };
 };
@@ -81,7 +85,8 @@ void CRadio::Uninit(void)
 {
 	for (int i = 0; i < CRadio::CHANNEL_MAX; i++)
 	{
-		for (int j = 0; j < m_pRadio[i].m_pList->GetNum(); j++)
+		int nNum = m_pRadio[i].m_pList->GetNum();
+		for (int j = nNum - 1; j >= 0; j--)
 		{
 			CMasterSound::CObjectSound* pSound = m_pRadio[i].m_pList->Get(j);
 		
@@ -92,6 +97,7 @@ void CRadio::Uninit(void)
 		}
 		SAFE_DELETE(m_pRadio[i].m_pList);
 	}
+	SAFE_UNINIT_DELETE(m_pSE);
 
 }
 

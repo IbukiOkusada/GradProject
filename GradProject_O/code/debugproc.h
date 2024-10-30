@@ -26,13 +26,16 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	void Print(const char *fmt, ...);
+	void DrawNew(void);
+	void Print(const char* fmt, ...);
+	void PrintNew(const char *fmt, ...);
 	static CDebugProc* Create();
 	static CDebugProc* GetInstance() { return m_pInstance; }
 
 private:	// 自分だけがアクセス可能
 	static LPD3DXFONT m_pFont;	//フォントへのポインタ
 	char* m_pStr;					// デバッグ表示用文字列の格納用
+	char m_aStr[2048];	//デバッグ表示用の文字列
 	bool m_bDisp;		//デバッグ表示のON/OFF
 	static const char *m_apMode[CScene::MODE_MAX];
 	static CDebugProc* m_pInstance;

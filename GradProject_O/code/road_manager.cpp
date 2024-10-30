@@ -155,6 +155,8 @@ void CRoadManager::ListOut(CRoad* pRoad)
 		}
 	}
 
+	m_InfoList.Delete(pRoad->GetInfo());
+
 	m_nNum--;
 }
 

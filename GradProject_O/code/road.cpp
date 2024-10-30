@@ -277,3 +277,16 @@ void CRoad::SetPosition(const D3DXVECTOR3& pos)
 
 	m_pObj->SetPosition(m_Info.pos);
 }
+
+//==========================================================
+// ƒTƒCƒY
+//==========================================================
+void CRoad::SetSize(const D3DXVECTOR2& size)
+{
+	m_Info.size = size;
+	m_Info.sizeOrigin = size;
+
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetpVtx(m_Info.size.x, m_Info.size.y);
+}

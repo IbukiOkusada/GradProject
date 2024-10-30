@@ -159,19 +159,20 @@ HRESULT CGame::Init(void)
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
         CCarManager::GetInstance()->ListIn(pCar);
     }
 
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(1000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
         CCarManager::GetInstance()->ListIn(pCar);
     }
 
-    //CGole::Create(D3DXVECTOR3(5000.0f, 0.0f, 0.0f), 600.0f, 15.0f);
+    CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 15.0f);
+    CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 15.0f);
 
     return S_OK;
 }
