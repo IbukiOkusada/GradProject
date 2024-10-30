@@ -27,9 +27,15 @@ namespace
 			"data\\BGM\\mantra.wav",
 			"data\\BGM\\theme_90s.wav",
 		},
+
 		{//ƒ|ƒbƒv
 			"data\\BGM\\maou_14_shining_star.wav",
 			"data\\BGM\\typhoon.wav",
+		},
+
+		{//”E‚Ñ
+			"data\\BGM\\AcceleHeartLove.wav",
+			"data\\BGM\\BGM_ShinobiDrift.wav",
 		},
 	};
 	const char* BUTTON_SE = { "data\\SE\\switch_04_button.wav" };
@@ -118,9 +124,9 @@ void CRadio::Update(void)
 		}
 		else
 		{
-		
 			m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->SetVolume(0.0f);
 		}
+
 		if (!m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->GetPlay())
 		{
 			m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->Stop();

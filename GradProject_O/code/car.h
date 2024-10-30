@@ -53,7 +53,7 @@ public:	// 誰でもアクセス可能
 	virtual void Uninit(void);
 	virtual void Update(void);
 	static CCar*Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move);
-	void TailLamp();
+
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
@@ -85,6 +85,7 @@ protected:	// 派生クラスからもアクセス可能
 	virtual void MoveRoad();
 	void SearchRoad();
 	virtual void ReachRoad();
+	void TailLamp();
 
 	// メンバ変数
 	CObjectX* m_pObj;

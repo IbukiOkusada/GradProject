@@ -109,8 +109,12 @@ void CCar::Update(void)
 		m_pObj->SetRotation(m_Info.rot);
 		m_Info.rot.y -= D3DX_PI;
 	}
-	m_pTailLamp->m_pos = m_Info.pos;
-	m_pTailLamp->m_rot = m_Info.rot;
+
+	if (m_pTailLamp != nullptr)
+	{
+		m_pTailLamp->m_pos = m_Info.pos;
+		m_pTailLamp->m_rot = m_Info.rot;
+	}
 }
 
 //==========================================================
@@ -139,11 +143,15 @@ CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 
 	return pCar;
 }
+
+//==========================================================
+// ƒe[ƒ‹ƒ‰ƒ“ƒv¶¬
+//==========================================================
 void CCar::TailLamp()
 {
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-
 }
+
 //==========================================================
 // ˆÚ“®ˆ—
 //==========================================================
