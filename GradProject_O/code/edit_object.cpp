@@ -7,7 +7,7 @@
 #include "edit_object.h"
 #include "manager.h"
 #include "debugproc.h"
-#include "edit_arrow.h"
+#include "edit_handle.h"
 #include "map_obstacle.h"
 #include "objectX.h"
 #include "input_mouse.h"
@@ -26,7 +26,7 @@ CEdit_Obj::CEdit_Obj()
 {
 	// 値のクリア
 	m_pSelect = nullptr;
-	m_pArrow = nullptr;
+	m_pHandle = nullptr;
 	m_fMouseWheel = 0.0f;
 }
 
@@ -51,10 +51,10 @@ HRESULT CEdit_Obj::Init(void)
 //==========================================================
 void CEdit_Obj::Uninit(void)
 {
-	if (m_pArrow != nullptr)
+	if (m_pHandle != nullptr)
 	{
-		m_pArrow->Uninit();
-		m_pArrow = nullptr;
+		m_pHandle->Uninit();
+		m_pHandle = nullptr;
 	}
 
 	CEdit::Uninit();
@@ -93,9 +93,9 @@ void CEdit_Obj::Update(void)
 	m_pSelect->GetObj()->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
 
 	// 矢印の更新
-	if (m_pArrow != nullptr)
+	if (m_pHandle != nullptr)
 	{
-		m_pArrow->Update();
+		m_pHandle->Update();
 	}
 
 	// モデル変更
@@ -137,9 +137,9 @@ void CEdit_Obj::ClickCheck()
 	}
 
 	// 矢印選択中
-	if (m_pArrow != nullptr)
+	if (m_pHandle != nullptr)
 	{
-		if (m_pArrow->GetHold() != nullptr)
+		if (m_pHandle->GetHold() != nullptr)
 		{
 			return;
 		}
@@ -161,12 +161,12 @@ void CEdit_Obj::ClickCheck()
 		{
 			m_pSelect = pObj;
 
-			if (m_pArrow == nullptr)
+			if (m_pHandle == nullptr)
 			{
-				m_pArrow = CEdit_Arrow::Create(m_pSelect->GetPosition());
+				m_pHandle = CEdit_Handle::Create(m_pSelect->GetPosition(), CEdit_Handle::TYPE_MOVE);
 			}
 
-			m_pArrow->SetPosition(m_pSelect->GetPosition());
+			m_pHandle->SetPosition(m_pSelect->GetPosition());
 		}
 	}
 
@@ -174,10 +174,10 @@ void CEdit_Obj::ClickCheck()
 	if (m_pSelect != nullptr) { return; }
 
 	// 矢印使用中
-	if (m_pArrow == nullptr) { return; }
+	if (m_pHandle == nullptr) { return; }
 
-	m_pArrow->Uninit();
-	m_pArrow = nullptr;
+	m_pHandle->Uninit();
+	m_pHandle = nullptr;
 }
 
 //==========================================================
@@ -237,10 +237,10 @@ void CEdit_Obj::Delete()
 	m_pSelect = nullptr;
 
 	// 矢印使用中
-	if (m_pArrow == nullptr) { return; }
+	if (m_pHandle == nullptr) { return; }
 
-	m_pArrow->Uninit();
-	m_pArrow = nullptr;
+	m_pHandle->Uninit();
+	m_pHandle = nullptr;
 }
 
 //==========================================================
@@ -249,9 +249,9 @@ void CEdit_Obj::Delete()
 void CEdit_Obj::Move()
 {
 	if (m_pSelect == nullptr) { return; }
-	if (m_pArrow == nullptr) { return; }
+	if (m_pHandle == nullptr) { return; }
 
-	D3DXVECTOR3 pos = m_pArrow->GetPosition();	// 座標
+	D3DXVECTOR3 pos = m_pHandle->GetPosition();	// 座標
 
 	// 選択した道の座標設定
 	m_pSelect->SetPosition(pos);

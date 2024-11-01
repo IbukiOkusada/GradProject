@@ -11,7 +11,7 @@
 #include "road_manager.h"
 #include "road.h"
 #include "object3D.h"
-#include "edit_arrow.h"
+#include "edit_handle.h"
 
 namespace
 {
@@ -30,7 +30,7 @@ CEdit_Road::CEdit_Road()
 {
 	// 値のクリア
 	m_pSelect = nullptr;
-	m_pArrow = nullptr;
+	m_pHandle = nullptr;
 	m_fMouseWheel = 0.0f;
 }
 
@@ -57,10 +57,10 @@ HRESULT CEdit_Road::Init(void)
 void CEdit_Road::Uninit(void)
 {
 	// 矢印終了
-	if (m_pArrow != nullptr)
+	if (m_pHandle != nullptr)
 	{
-		m_pArrow->Uninit();
-		m_pArrow = nullptr;
+		m_pHandle->Uninit();
+		m_pHandle = nullptr;
 	}
 
 	m_pSelect = nullptr;
@@ -104,9 +104,9 @@ void CEdit_Road::Update(void)
 	m_pSelect->GetObj()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
 
 	// 矢印の更新
-	if (m_pArrow != nullptr)
+	if (m_pHandle != nullptr)
 	{
-		m_pArrow->Update();
+		m_pHandle->Update();
 	}
 
 	// サイズ変更
@@ -144,9 +144,9 @@ void CEdit_Road::ClickCheck()
 	}
 
 	// 矢印選択中
-	if (m_pArrow != nullptr)
+	if (m_pHandle != nullptr)
 	{
-		if (m_pArrow->GetHold() != nullptr)
+		if (m_pHandle->GetHold() != nullptr)
 		{
 			return;
 		}
@@ -169,12 +169,12 @@ void CEdit_Road::ClickCheck()
 		{
 			m_pSelect = pRoad;
 
-			if (m_pArrow == nullptr)
+			if (m_pHandle == nullptr)
 			{
-				m_pArrow = CEdit_Arrow::Create(m_pSelect->GetPosition());
+				m_pHandle = CEdit_Handle::Create(m_pSelect->GetPosition(), CEdit_Handle::TYPE_MOVE);
 			}
 
-			m_pArrow->SetPosition(m_pSelect->GetPosition());
+			m_pHandle->SetPosition(m_pSelect->GetPosition());
 
 			return;
 		}
@@ -186,10 +186,10 @@ void CEdit_Road::ClickCheck()
 	if (m_pSelect != nullptr) { return; }
 
 	// 矢印使用中
-	if (m_pArrow == nullptr) { return; }
+	if (m_pHandle == nullptr) { return; }
 
-	m_pArrow->Uninit();
-	m_pArrow = nullptr;
+	m_pHandle->Uninit();
+	m_pHandle = nullptr;
 }
 
 //==========================================================
@@ -299,10 +299,10 @@ void CEdit_Road::Delete()
 	ReConnect();
 
 	// 矢印使用中
-	if (m_pArrow == nullptr) { return; }
+	if (m_pHandle == nullptr) { return; }
 
-	m_pArrow->Uninit();
-	m_pArrow = nullptr;
+	m_pHandle->Uninit();
+	m_pHandle = nullptr;
 }
 
 //==========================================================
@@ -311,14 +311,14 @@ void CEdit_Road::Delete()
 void CEdit_Road::Move()
 {
 	if (m_pSelect == nullptr) { return; }
-	if (m_pArrow == nullptr) { return; }
+	if (m_pHandle == nullptr) { return; }
 
 	D3DXVECTOR3 pos = m_pSelect->GetPosition();	// 座標
-	D3DXVECTOR3 Arrowpos = m_pArrow->GetPosition();	// 矢印座標
+	D3DXVECTOR3 Handlepos = m_pHandle->GetPosition();	// 矢印座標
 
 	// X座標
-	float length = fabsf(Arrowpos.x - pos.x);
-	int setpos = static_cast<int>(Arrowpos.x);
+	float length = fabsf(Handlepos.x - pos.x);
+	int setpos = static_cast<int>(Handlepos.x);
 	int movelength = static_cast<int>(m_fMoveLength);
 
 	// 大きい
@@ -328,8 +328,8 @@ void CEdit_Road::Move()
 	}
 
 	// Y座標
-	length = fabsf(Arrowpos.y - pos.y);
-	setpos = static_cast<int>(Arrowpos.y);
+	length = fabsf(Handlepos.y - pos.y);
+	setpos = static_cast<int>(Handlepos.y);
 	movelength = static_cast<int>(m_fMoveLength);
 
 	// 大きい
@@ -339,8 +339,8 @@ void CEdit_Road::Move()
 	}
 
 	// Z座標
-	length = fabsf(Arrowpos.z - pos.z);
-	setpos = static_cast<int>(Arrowpos.z);
+	length = fabsf(Handlepos.z - pos.z);
+	setpos = static_cast<int>(Handlepos.z);
 	movelength = static_cast<int>(m_fMoveLength);
 
 	// 大きい

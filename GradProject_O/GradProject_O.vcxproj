@@ -170,6 +170,7 @@
     <ClCompile Include="code\debugproc.cpp" />
     <ClCompile Include="code\deltatime.cpp" />
     <ClCompile Include="code\edit.cpp" />
+    <ClCompile Include="code\edit_handle.cpp" />
     <ClCompile Include="code\edit_manager.cpp" />
     <ClCompile Include="code\edit_object.cpp" />
     <ClCompile Include="code\edit_road.cpp" />
@@ -306,6 +307,7 @@
     <ClInclude Include="code\road.h" />
     <ClInclude Include="code\edit_arrow.h" />
     <ClInclude Include="code\map_manager.h" />
+    <ClInclude Include="code\edit_handle.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

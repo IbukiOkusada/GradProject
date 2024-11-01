@@ -10,7 +10,7 @@
 #include "edit.h"
 
 class CMapObstacle;
-class CEdit_Arrow;
+class CEdit_Handle;
 
 //==========================================================
 // サンプルのクラス定義
@@ -43,7 +43,7 @@ private:	// 自分だけがアクセス可能
 	void ModelChange();	// モデル変更
 
 	// メンバ変数
-	CEdit_Arrow* m_pArrow;	// 矢印
+	CEdit_Handle* m_pHandle;	// 矢印
 	float m_fMouseWheel;	// マウスホイールの移動量
 	CMapObstacle* m_pSelect;	// 選択中オブジェクト
 };
