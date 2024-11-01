@@ -46,7 +46,8 @@
 // マクロ定義
 //===============================================
 
-namespace {
+namespace 
+{
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
 	const float DEATH_INTERVAL = (120.0f);	// 死亡インターバル
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
@@ -71,6 +72,7 @@ namespace {
 	const float BRAKE_INER = (0.05f);
 	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
+	const float REF_INER = (1.2f);	// 壁で反射する時の倍率
 	const float FRAME_RATE_SCALER = 60.0f;  // フレームレートを考慮した速度の調整
 }
 
@@ -204,7 +206,8 @@ void CPlayer::Update(void)
 		CManager::GetInstance()->GetScene()->SendPosition(m_Info.pos);
 		CManager::GetInstance()->GetScene()->SendRotation(m_Info.rot);
 	}
-	else {
+	else 
+	{
 
 	}
 	
@@ -338,7 +341,8 @@ void CPlayer::Move(void)
 	Nitro(); 
 	Engine(fThrottle);
 	// 入力装置確認
-	if (nullptr == pInputKey){
+	if (nullptr == pInputKey)
+	{
 		return;
 	}
 
@@ -416,7 +420,8 @@ void CPlayer::Rotate(void)
 	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT);
 	m_fTurnSpeed*= TUURN_INER;
 	// 入力装置確認
-	if (nullptr == pInputKey) {
+	if (nullptr == pInputKey) 
+	{
 		return;
 	}
 
@@ -508,7 +513,7 @@ bool CPlayer::Collision(void)
 		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
 		D3DXVECTOR3 pVecCollision;
 
-		bool bCollision = collision::CollidePointToOBB(&pVecCollision, &m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		bool bCollision = collision::ReflectPointToOBB(&pVecCollision, &m_Info.pos, &m_Info.move, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f, REF_INER);
 
 		if (bCollision)
 		{
@@ -516,7 +521,8 @@ bool CPlayer::Collision(void)
 			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
 			D3DXVec3Normalize(&pVecCollision, &pVecCollision);
 
-			m_fEngine *= 0.9f + (D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
+			float engineLow = fabsf(D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
+			m_fEngine *= 0.9f + engineLow;
 
 			return true;
 		}
