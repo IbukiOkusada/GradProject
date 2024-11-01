@@ -180,14 +180,10 @@ void CMasterSound::CObjectSound::Play()
 //=============================================================================
 void CMasterSound::CObjectSound::Stop()
 {
-	XAUDIO2_VOICE_STATE xa2state;
-	// 状態取得
-	m_pSourceVoice->GetState(&xa2state);
-	if (xa2state.BuffersQueued != 0)
-	{// 再生中
-		// 一時停止
-		m_pSourceVoice->Stop(0);
-	}
+
+	// 一時停止
+	m_pSourceVoice->Stop(0);
+	
 	// オーディオバッファの削除
 	m_pSourceVoice->FlushSourceBuffers();
 	// オーディオバッファの登録
