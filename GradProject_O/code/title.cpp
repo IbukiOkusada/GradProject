@@ -13,6 +13,7 @@
 #include "texture.h"
 #include "input_gamepad.h"
 #include "input_keyboard.h"
+#include "object2D.h"
 
 //===============================================
 // 無名名前空間
@@ -70,6 +71,9 @@ HRESULT CTitle::Init(void)
 
 	// サウンド再生
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
+	CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
+	pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+	pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\title.png"));
 
 	return S_OK;
 }
@@ -92,7 +96,7 @@ void CTitle::Update(void)
 	CInputPad *pInputPad = CInputPad::GetInstance();
 	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();
 
-	if (pInputKey->GetTrigger(DIK_RETURN) || pInputPad->GetTrigger(CInputPad::BUTTON_START, 0)) {
+	if (pInputKey->GetTrigger(DIK_RETURN) || pInputPad->GetTrigger(CInputPad::BUTTON_START, 0) || pInputPad->GetTrigger(CInputPad::BUTTON_A, 0)) {
 		m_bPush = true;
 	}
 

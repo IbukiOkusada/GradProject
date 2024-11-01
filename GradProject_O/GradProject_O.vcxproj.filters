@@ -312,6 +312,9 @@
     <ClCompile Include="code\map_manager.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="code\edit_handle.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -529,6 +532,9 @@
     </ClInclude>
     <ClInclude Include="code\map_manager.h">
       <Filter>map</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_handle.h">
+      <Filter>edit</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

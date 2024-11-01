@@ -14,21 +14,13 @@
 // 無名名前空間
 namespace
 {
-	const char* FILENAME[CEdit_Arrow::TYPE_MAX] = {	// モデルファイル名
+	const float DEF_LENGTH = 500.0f;
+	const char* FILENAME[CEdit_Arrow::VEC_MAX] = {	// モデルファイル名
 		"data\\MODEL\\edit\\cube.x",
 		"data\\MODEL\\edit\\x_arrow.x",
 		"data\\MODEL\\edit\\y_arrow.x",
 		"data\\MODEL\\edit\\z_arrow.x",
 	};
-
-	const D3DXVECTOR3 SETPOS[CEdit_Arrow::TYPE_MAX] = {	// 設置座標
-		{0.0f, 0.0f, 0.0f},
-		{180.0f, 0.0f, 0.0f},
-		{0.0f, 180.0f, 0.0f},
-		{0.0f, 0.0f, -180.0f},
-	};
-
-	const float DEF_LENGTH = 500.0f;
 }
 
 //==========================================================
@@ -36,16 +28,7 @@ namespace
 //==========================================================
 CEdit_Arrow::CEdit_Arrow()
 {
-	// 値のクリア
-	for (int i = 0; i < TYPE_MAX; i++)
-	{
-		m_aObj[i].pObj = nullptr;
-		m_aObj[i].type = static_cast<TYPE>(i);
-	}
 
-	m_pos = VECTOR3_ZERO;
-	m_Info = SInfo();
-	m_pHold = nullptr;
 }
 
 //==========================================================
@@ -84,13 +67,14 @@ HRESULT CEdit_Arrow::Init(void)
 	// モデル生成
 	for (int i = 0; i < TYPE_MAX; i++)
 	{
-		m_aObj[i].pObj = CObjectX::Create(m_pos + SETPOS[i], VECTOR3_ZERO, FILENAME[i], 2);
+		m_aObj[i].pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, FILENAME[i], 2);
 		m_aObj[i].pObj->SetType(CObject::TYPE_EDIT);
 	}
 
 	return S_OK;
 }
 
+#if 0
 //==========================================================
 // 終了処理
 //==========================================================
@@ -107,7 +91,9 @@ void CEdit_Arrow::Uninit(void)
 
 	delete this;
 }
+#endif
 
+#if 0
 //==========================================================
 // 更新処理
 //==========================================================
@@ -139,22 +125,7 @@ void CEdit_Arrow::Update(void)
 		}
 	}
 }
-
-//==========================================================
-// 座標設定
-//==========================================================
-void CEdit_Arrow::SetPosition(const D3DXVECTOR3& pos)
-{
-	m_pos = pos;
-
-	// 座標の更新
-	for (int i = 0; i < TYPE_MAX; i++)
-	{
-		if (m_aObj[i].pObj == nullptr) { continue; }
-
-		m_aObj[i].pObj->SetPosition(m_pos + SETPOS[i]);
-	}
-}
+#endif
 
 //==========================================================
 // 座標設定
@@ -162,7 +133,7 @@ void CEdit_Arrow::SetPosition(const D3DXVECTOR3& pos)
 void CEdit_Arrow::Move()
 {
 	// 操作できるときのみ
-	if (m_pHold == nullptr) { return; }
+	if (GetHold() == nullptr) { return; }
 
 	// 入力確認
 	CInputMouse* pMouse = CInputMouse::GetInstance();
@@ -177,9 +148,9 @@ void CEdit_Arrow::Move()
 	D3DXVECTOR3 newpos = m_Info.touchpos;
 
 	// 種類指定
-	switch (m_pHold->type)
+	switch (GetHold()->type)
 	{
-	case TYPE_ALL:
+	case VEC_ALL:
 	{
 		newpos = m_Info.touchpos + move;
 		newpos.y = m_Info.touchpos.y;
@@ -187,21 +158,21 @@ void CEdit_Arrow::Move()
 	}
 	break;
 
-	case TYPE_X:
+	case VEC_X:
 	{
 		newpos.x = m_Info.touchpos.x + move.x;
 		CDebugProc::GetInstance()->Print("X！");
 	}
 	break;
 
-	case TYPE_Y:
+	case VEC_Y:
 	{
 		newpos.y = m_Info.touchpos.y + move.y;
 		CDebugProc::GetInstance()->Print("Y！");
 	}
 	break;
 
-	case TYPE_Z:
+	case VEC_Z:
 	{
 		newpos.z = m_Info.touchpos.z + move.z;
 		CDebugProc::GetInstance()->Print("Z！");
@@ -213,64 +184,4 @@ void CEdit_Arrow::Move()
 	}
 
 	m_pos = newpos - (m_Info.touchpos - m_Info.startpos);
-}
-
-//==========================================================
-// 選択
-//==========================================================
-void CEdit_Arrow::Select()
-{
-	// 入力確認
-	CInputMouse* pMouse = CInputMouse::GetInstance();
-	bool trigger = pMouse->GetTrigger(CInputMouse::BUTTON_LBUTTON);
-
-	// マウスレイ情報取得
-	D3DXVECTOR3 origin = pMouse->GetRayInfo().origin;
-	D3DXVECTOR3 vec = pMouse->GetRayInfo().vec;
-	D3DXVECTOR3 touchpos = m_Info.startpos;
-	float length = 1000000.0f;
-
-	if (!trigger) { return; }
-
-	for (int i = 0; i < TYPE_MAX; i++)
-	{
-		if (m_aObj[i].pObj == nullptr) { continue; }
-
-		D3DXVECTOR3 pos = m_aObj[i].pObj->GetPosition();
-		D3DXVECTOR3 rot = VECTOR3_ZERO;
-		D3DXVECTOR3 vtxmax = m_aObj[i].pObj->GetVtxMax();
-		D3DXVECTOR3 vtxmin = m_aObj[i].pObj->GetVtxMin();
-
-		// 当たり判定
-		bool hit = collision::CollideRayToOBB(&touchpos, origin, vec, pos, rot, vtxmax, vtxmin);
-
-		// 当たった時のみ
-		if (!hit) { continue; }
-
-		D3DXVECTOR3 diff = (touchpos - origin);
-		float nowlength = D3DXVec3Length(&diff);
-
-		// 距離
-		if (nowlength > length) { continue; }
-
-		// 記憶 触れた座標取得
-		m_pHold = &m_aObj[i];
-		m_Info.startpos = m_pos;
-		m_Info.touchpos = touchpos;
-		m_Info.touchworldpos = pMouse->GetWorldInfo().pos;
-		length = nowlength;
-	}
-}
-
-//==========================================================
-// 離す
-//==========================================================
-void CEdit_Arrow::Release()
-{
-	CInputMouse* pMouse = CInputMouse::GetInstance();
-	bool press = pMouse->GetPress(CInputMouse::BUTTON_LBUTTON);
-	if (press) { return; }
-
-	m_pHold = nullptr;
-	m_Info.startpos = m_pos;
 }

@@ -11,7 +11,7 @@
 
 // 前方宣言
 class CRoad;
-class CEdit_Arrow;
+class CEdit_Handle;
 
 //==========================================================
 // サンプルのクラス定義
@@ -48,7 +48,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	CRoad* m_pSelect;	// 選択した道
-	CEdit_Arrow* m_pArrow;	// 矢印
+	CEdit_Handle* m_pHandle;	// 矢印
 	float m_fMouseWheel;	// マウスホイールの移動量
 	float m_fMoveLength;	// 移動距離
 };
