@@ -100,6 +100,9 @@
     <Filter Include="map\obstacle">
       <UniqueIdentifier>{b4975c2b-62bd-437f-ba2c-12735b2f9cef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="edit\handle">
+      <UniqueIdentifier>{2f005cd0-15d3-4503-8614-a37e4163ebf5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -294,9 +297,6 @@
     <ClCompile Include="code\edit_manager.cpp">
       <Filter>edit</Filter>
     </ClCompile>
-    <ClCompile Include="code\edit_arrow.cpp">
-      <Filter>edit</Filter>
-    </ClCompile>
     <ClCompile Include="code\objectsound.cpp">
       <Filter>system</Filter>
     </ClCompile>
@@ -312,8 +312,14 @@
     <ClCompile Include="code\map_manager.cpp">
       <Filter>map</Filter>
     </ClCompile>
+    <ClCompile Include="code\edit_arrow.cpp">
+      <Filter>edit\handle</Filter>
+    </ClCompile>
     <ClCompile Include="code\edit_handle.cpp">
-      <Filter>edit</Filter>
+      <Filter>edit\handle</Filter>
+    </ClCompile>
+    <ClCompile Include="code\edit_scale.cpp">
+      <Filter>edit\handle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -515,9 +521,6 @@
     <ClInclude Include="code\edit_manager.h">
       <Filter>edit</Filter>
     </ClInclude>
-    <ClInclude Include="code\edit_arrow.h">
-      <Filter>edit</Filter>
-    </ClInclude>
     <ClInclude Include="code\objectsound.h">
       <Filter>system</Filter>
     </ClInclude>
@@ -533,8 +536,14 @@
     <ClInclude Include="code\map_manager.h">
       <Filter>map</Filter>
     </ClInclude>
+    <ClInclude Include="code\edit_arrow.h">
+      <Filter>edit\handle</Filter>
+    </ClInclude>
     <ClInclude Include="code\edit_handle.h">
-      <Filter>edit</Filter>
+      <Filter>edit\handle</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_scale.h">
+      <Filter>edit\handle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

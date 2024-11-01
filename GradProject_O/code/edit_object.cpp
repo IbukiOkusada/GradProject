@@ -28,6 +28,7 @@ CEdit_Obj::CEdit_Obj()
 	m_pSelect = nullptr;
 	m_pHandle = nullptr;
 	m_fMouseWheel = 0.0f;
+	m_startScale = VECTOR3_ZERO;
 }
 
 //==========================================================
@@ -96,13 +97,24 @@ void CEdit_Obj::Update(void)
 	if (m_pHandle != nullptr)
 	{
 		m_pHandle->Update();
+
+		if (m_pHandle->GetOldHold() == nullptr && m_pHandle->GetHold() != nullptr)
+		{
+			m_startScale = m_pSelect->GetScale();
+		}
 	}
+
+	// 矢印変更
+	ModeChange();
 
 	// モデル変更
 	ModelChange();
 
 	// 移動
 	Move();
+
+	// スケール
+	Scale();
 
 	// 削除
 	Delete();
@@ -250,11 +262,37 @@ void CEdit_Obj::Move()
 {
 	if (m_pSelect == nullptr) { return; }
 	if (m_pHandle == nullptr) { return; }
+	if (m_pHandle->GetType() != CEdit_Handle::TYPE_MOVE) { return; }
 
 	D3DXVECTOR3 pos = m_pHandle->GetPosition();	// 座標
 
 	// 選択した道の座標設定
 	m_pSelect->SetPosition(pos);
+}
+
+//==========================================================
+// スケール
+//==========================================================
+void CEdit_Obj::Scale()
+{
+	if (m_pSelect == nullptr) { return; }
+	if (m_pHandle == nullptr) { return; }
+	if (m_pHandle->GetType() != CEdit_Handle::TYPE_SCALE) { return; }
+	if (m_pHandle->GetHold() == nullptr) { return; }
+
+	// ハンドルの移動から変更スケール取得
+	D3DXVECTOR3 handlescale = m_pHandle->GetDiffPosition();	// 座標
+	handlescale *= 0.001f;
+	handlescale += D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+
+	// 調整
+	D3DXVECTOR3 scale = m_startScale;
+	scale.x *= handlescale.x;
+	scale.y *= handlescale.y;
+	scale.z *= handlescale.z;
+
+	// 選択した道の座標設定
+	m_pSelect->SetScale(scale);
 }
 
 //==========================================================
@@ -361,6 +399,30 @@ void CEdit_Obj::Create()
 	info.pos.z = rayOrigin.z + t * rayDir.z;
 	info.fileidx = 0;
 	info.rot = VECTOR3_ZERO;
+	info.scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 
 	CMapObstacle::Create(info);
+}
+
+//==========================================================
+// 状態変更
+//==========================================================
+void CEdit_Obj::ModeChange()
+{
+	if (m_pHandle == nullptr) { return; }
+
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+	CDebugProc::GetInstance()->Print("状態変更 : [ マウスホイールクリック ] : ");
+
+	// 入力確認
+	if (!pMouse->GetTrigger(CInputMouse::BUTTON_WHEEL)) { return; }
+
+	// 種類変更
+	int type = m_pHandle->GetType();
+	type = (type + 1) % CEdit_Handle::TYPE_MAX;
+
+	// 廃棄
+	m_pHandle->Uninit();
+	m_pHandle = nullptr;
+	m_pHandle = CEdit_Handle::Create(m_pSelect->GetPosition(), static_cast<CEdit_Handle::TYPE>(type));
 }

@@ -274,7 +274,7 @@ void CObjectX::BindFile(const char* file)
 //==========================================================
 // 座標の設定
 //==========================================================
-void CObjectX::SetPosition(const D3DXVECTOR3 pos)
+void CObjectX::SetPosition(const D3DXVECTOR3& pos)
 {
 	m_pos = pos; 
 }
@@ -282,7 +282,7 @@ void CObjectX::SetPosition(const D3DXVECTOR3 pos)
 //==========================================================
 // 向きの設定
 //==========================================================
-void CObjectX::SetRotation(const D3DXVECTOR3 rot)
+void CObjectX::SetRotation(const D3DXVECTOR3& rot)
 { 
 	m_rot = rot;
 
@@ -312,6 +312,14 @@ void CObjectX::SetRotation(const D3DXVECTOR3 rot)
 	{// x座標角度限界
 		m_rot.y += -D3DX_PI * 2;
 	}
+}
+
+//==========================================================
+// スケールの設定
+//==========================================================
+void CObjectX::SetScale(const D3DXVECTOR3& scale)
+{
+	m_scale = scale;
 }
 
 //==========================================================

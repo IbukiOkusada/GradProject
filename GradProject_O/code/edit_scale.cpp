@@ -1,10 +1,10 @@
 //==========================================================
 //
-// エディター矢印 [edit_arrow.cpp]
+// エディタースケール [edit_scale.cpp]
 // Author : Ibuki Okusada
 //
 //==========================================================
-#include "edit_arrow.h"
+#include "edit_scale.h"
 #include "objectX.h"
 #include "input_mouse.h"
 #include "debugproc.h"
@@ -15,18 +15,18 @@
 namespace
 {
 	const float DEF_LENGTH = 500.0f;
-	const char* FILENAME[CEdit_Arrow::VEC_MAX] = {	// モデルファイル名
+	const char* FILENAME[CEdit_Handle::VEC_MAX] = {	// モデルファイル名
 		"data\\MODEL\\edit\\cube.x",
-		"data\\MODEL\\edit\\x_arrow.x",
-		"data\\MODEL\\edit\\y_arrow.x",
-		"data\\MODEL\\edit\\z_arrow.x",
+		"data\\MODEL\\edit\\x_scale.x",
+		"data\\MODEL\\edit\\y_scale.x",
+		"data\\MODEL\\edit\\z_scale.x",
 	};
 }
 
 //==========================================================
 // コンストラクタ
 //==========================================================
-CEdit_Arrow::CEdit_Arrow()
+CEdit_Scale::CEdit_Scale()
 {
 
 }
@@ -34,33 +34,15 @@ CEdit_Arrow::CEdit_Arrow()
 //==========================================================
 // デストラクタ
 //==========================================================
-CEdit_Arrow::~CEdit_Arrow()
+CEdit_Scale::~CEdit_Scale()
 {
 
-}
-
-//==========================================================
-// 生成
-//==========================================================
-CEdit_Arrow* CEdit_Arrow::Create(const D3DXVECTOR3& pos)
-{
-	CEdit_Arrow* pArrow = DEBUG_NEW CEdit_Arrow;
-
-	if (pArrow != nullptr)
-	{
-		pArrow->Init();
-		pArrow->SetPosition(pos);
-		pArrow->m_Info.startpos = pos;
-		pArrow->m_Info.touchpos = pos;
-	}
-
-	return pArrow;
 }
 
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CEdit_Arrow::Init(void)
+HRESULT CEdit_Scale::Init(void)
 {
 	m_pos = VECTOR3_ZERO;
 
@@ -78,7 +60,7 @@ HRESULT CEdit_Arrow::Init(void)
 //==========================================================
 // 終了処理
 //==========================================================
-void CEdit_Arrow::Uninit(void)
+void CEdit_Scale::Uninit(void)
 {
 	// 値のクリア
 	for (int i = 0; i < TYPE_MAX; i++)
@@ -97,7 +79,7 @@ void CEdit_Arrow::Uninit(void)
 //==========================================================
 // 更新処理
 //==========================================================
-void CEdit_Arrow::Update(void)
+void CEdit_Scale::Update(void)
 {
 	// 選択
 	Select();
@@ -128,9 +110,9 @@ void CEdit_Arrow::Update(void)
 #endif
 
 //==========================================================
-// 座標設定
+// スケール設定
 //==========================================================
-void CEdit_Arrow::Move()
+void CEdit_Scale::Scale()
 {
 	// 操作できるときのみ
 	if (GetHold() == nullptr) { return; }
@@ -152,8 +134,10 @@ void CEdit_Arrow::Move()
 	{
 	case VEC_ALL:
 	{
-		newpos = m_Info.touchpos + move;
-		newpos.y = m_Info.touchpos.y;
+		newpos = m_Info.touchpos;
+		newpos.x += move.x;
+		newpos.y += move.x;
+		newpos.z += move.x;
 		CDebugProc::GetInstance()->Print("全部！");
 	}
 	break;
@@ -167,7 +151,7 @@ void CEdit_Arrow::Move()
 
 	case VEC_Y:
 	{
-		newpos.y = m_Info.touchpos.y + move.y;
+		newpos.y = m_Info.touchpos.y + (move.y * 0.5f);
 		CDebugProc::GetInstance()->Print("Y！");
 	}
 	break;

@@ -48,13 +48,15 @@ public:	// 誰でもアクセス可能
 	void SetRotSize(D3DXVECTOR3 &SetMax, D3DXVECTOR3 &SetMin, D3DXVECTOR3 vtxMax, D3DXVECTOR3 vtxMin, float fRot);
 
 	// メンバ関数(設定)
-	void SetPosition(const D3DXVECTOR3 pos);
-	void SetRotation(const D3DXVECTOR3 rot);
+	void SetPosition(const D3DXVECTOR3& pos);
+	void SetRotation(const D3DXVECTOR3& rot);
+	void SetScale(const D3DXVECTOR3& scale);
 	void SetEnableCollision(const bool bEnable) { m_bEnableCollision = bEnable; }
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
+	D3DXVECTOR3 GetScale(void) { return m_scale; }
 	CObject2D *GetObject2D(void) { return NULL; }
 	static CObjectX *GetTop(void) { return m_pTop; }
 	CObjectX *GetNext(void) { return m_pNext; }

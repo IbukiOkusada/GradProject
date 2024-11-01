@@ -11,10 +11,16 @@
 #include "camera.h"
 #include "camera_manager.h"
 #include "edit_arrow.h"
+#include "edit_scale.h"
 
 // –³–¼–¼‘O‹óŠÔ
 namespace
 {
+	const char* TEXT[CEdit_Handle::TYPE::TYPE_MAX] = {
+		"ˆÚ“®",
+		"‰ñ“]",
+		"Šgk",
+	};
 
 	const D3DXVECTOR3 SETPOS[CEdit_Handle::VEC_MAX] = {	// Ý’uÀ•W
 		{0.0f, 0.0f, 0.0f},
@@ -41,6 +47,7 @@ CEdit_Handle::CEdit_Handle()
 	m_pos = VECTOR3_ZERO;
 	m_Info = SInfo();
 	m_pHold = nullptr;
+	m_pOldHold = nullptr;
 }
 
 //==========================================================
@@ -61,9 +68,19 @@ CEdit_Handle* CEdit_Handle::Create(const D3DXVECTOR3& pos, const TYPE type)
 	switch (type)
 	{
 	case TYPE::TYPE_MOVE:
-	{
-		pHandle = DEBUG_NEW CEdit_Arrow;;
-	}
+
+		pHandle = DEBUG_NEW CEdit_Arrow;
+
+		break;
+	case TYPE::TYPE_ROT:
+
+		pHandle = DEBUG_NEW CEdit_Scale;
+
+		break;
+	case TYPE::TYPE_SCALE:
+
+		pHandle = DEBUG_NEW CEdit_Scale;
+
 		break;
 	default:
 		break;
@@ -122,11 +139,17 @@ void CEdit_Handle::Uninit(void)
 //==========================================================
 void CEdit_Handle::Update(void)
 {
+	CDebugProc::GetInstance()->Print("Œ»Ý‚Ì•ÏXó‘Ô [ %s ] :", TEXT[m_type]);
+	m_pOldHold = m_pHold;
+
 	// ‘I‘ð
 	Select();
 
 	// ˆÚ“®
 	Move();
+
+	// Šg‘åk¬
+	Scale();
 
 	// —£‚·
 	Release();
@@ -136,7 +159,10 @@ void CEdit_Handle::Update(void)
 	{
 		if (m_aObj[i].pObj == nullptr) { continue; }
 
-		m_aObj[i].pObj->SetPosition(m_pos + SETPOS[i]);
+		if (m_type == TYPE::TYPE_MOVE)
+		{
+			m_aObj[i].pObj->SetPosition(m_pos + SETPOS[i]);
+		}
 
 		if (m_pHold != &m_aObj[i]) {
 			m_aObj[i].pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));

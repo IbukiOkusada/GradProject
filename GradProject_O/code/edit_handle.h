@@ -66,9 +66,12 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(取得)
 	D3DXVECTOR3& GetPosition() { return m_pos; }
+	D3DXVECTOR3& GetDiffPosition() { return m_pos - m_Info.startpos; }
 	SObj* GetHold() { return m_pHold; }
+	SObj* GetOldHold() { return m_pOldHold; }
 	// メンバ関数(設定)
 	void SetPosition(const D3DXVECTOR3& pos);
+	TYPE GetType() { return m_type; }
 
 protected:
 
@@ -87,6 +90,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	SObj* m_pHold;	// 選択
+	SObj* m_pOldHold;
 	TYPE m_type;
 	void Select();
 	void Release();

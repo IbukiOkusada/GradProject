@@ -41,6 +41,8 @@ HRESULT CMapObstacle::Init(void)
 {
 	std::vector<std::string> str = CMapManager::GetInstance()->GetFileNameList();
 	m_pObj = CObjectX::Create(m_Info.pos, m_Info.rot, str[m_Info.fileidx].c_str());
+	m_Info.scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+	m_pObj->SetScale(m_Info.scale);
 	
 	return S_OK;
 }
@@ -127,6 +129,20 @@ void CMapObstacle::SetRotation(const D3DXVECTOR3& rot)
 	if (m_pObj != nullptr)
 	{
 		m_pObj->SetRotation(m_Info.rot);
+	}
+}
+
+//==========================================================
+// スケール設定
+//==========================================================
+void CMapObstacle::SetScale(const D3DXVECTOR3& scale)
+{
+	m_Info.scale = scale;
+
+	// オブジェクトの更新
+	if (m_pObj != nullptr)
+	{
+		m_pObj->SetScale(m_Info.scale);
 	}
 }
 

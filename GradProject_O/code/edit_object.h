@@ -37,12 +37,15 @@ private:	// 自分だけがアクセス可能
 	void ClickCheck();	// 選択確認
 	void Delete();		// 削除
 	void Move();		// 移動
+	void Scale();		// スケール
 	void Save();		// 保存
 	void Create();		// 生成
+	void ModeChange();	// 変更
 	bool CursorCollision(CMapObstacle* pObj);
 	void ModelChange();	// モデル変更
 
 	// メンバ変数
+	D3DXVECTOR3 m_startScale;
 	CEdit_Handle* m_pHandle;	// 矢印
 	float m_fMouseWheel;	// マウスホイールの移動量
 	CMapObstacle* m_pSelect;	// 選択中オブジェクト
