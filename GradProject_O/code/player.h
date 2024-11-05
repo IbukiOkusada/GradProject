@@ -105,6 +105,7 @@ public:	// 誰でもアクセス可能
 	CPlayer* GetNext(void) { return m_pNext; }
 	CPlayer* GetPrev(void) { return m_pPrev; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
+	float GetEngine(void) { return m_fEngine; }
 
 private:	// 自分だけがアクセス可能
 

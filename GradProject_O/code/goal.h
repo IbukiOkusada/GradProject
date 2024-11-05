@@ -38,6 +38,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 	bool CheckRange();
 	bool CheckSpeed();
+	void ScreenEffect();
 	// メンバ変数
 	D3DXVECTOR3 m_pos;				// 座標
 	float m_fRange;					// ゴールの範囲

@@ -18,6 +18,7 @@ class CFileLoad;
 class CClient;
 class CMeshDome;
 class CPause;
+class CSpeedMeter;
 
 // マクロ定義
 #define NUM_FILTER	(2)
@@ -81,6 +82,7 @@ private:
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
 	CTime *m_pTimer;			// タイマー
 	CClient *m_pClient;			// クライアントのポインタ
+	CSpeedMeter* m_pSpeedMeter; // スピードメーターのポインタ
 	char m_aAddress[30];		// 接続先サーバーのアドレス
 	static STATE m_state;		// 状態
 	int m_nSledCnt;				// 現在動作しているスレッド数

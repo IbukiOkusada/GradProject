@@ -20,6 +20,17 @@ class CMultiBg;
 //==========================================================
 class CObject2D : public CObject
 {
+public:
+
+	// 合成方法列挙型
+	enum FUSION
+	{
+		FUSION_ADD = 0,	// 加算合成
+		FUSION_MINUS,		// 減算合成
+		FUSION_NORMAL,	// 合成しない
+		FUSION_MAX
+	};
+
 public:	// 誰でもアクセス可能
 
 	//CObject2D();	// コンストラクタ
@@ -48,6 +59,10 @@ public:	// 誰でもアクセス可能
 	void SetWidth(float fWidth);
 	void SetHeight(float fHeight);
 	void SetIdxTex(int nIdx);
+	void SetFusion(FUSION fusion) { m_fusion = fusion; }
+	void SetAlphaText(bool bTest) { m_bAlphatest = bTest; }
+	void SetZTest(bool bTest) { m_bZtest = bTest; }
+	void SetLighting(bool bTest) { m_bLighting = bTest; }
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
@@ -62,6 +77,7 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数
 	void SetVtx(void);
+	void SetVtx(const float fWidth, const float fHeight);
 	void SetVtx(const int nPatternAnim, const int nTexWidth, const int nTexHeight);
 	void SetVtx(const float fTexU, const float fTexV, const float fWidth, const float fHeight);
 	void SetTex(const float fTexU = 0.0f, const float fTexV = 0.0f, const float fWidth = 1.0f, const float fHeight = 1.0f);
@@ -83,6 +99,10 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_rot;	// 向き
 	D3DXCOLOR m_col;		// 色
 	int m_nIdxTexture;	// テクスチャ番号
+	FUSION m_fusion;	// 合成方法
+	bool m_bZtest;	// Zテストをオンにするか
+	bool m_bLighting;	// ライティングをオフにするか
+	bool m_bAlphatest;	// αテストをオンにするか
 };
 
 #endif

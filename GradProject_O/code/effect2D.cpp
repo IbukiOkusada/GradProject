@@ -13,7 +13,7 @@
 #include "slow.h"
 #include "game.h"
 #include "meshfield.h"
-#include "billboard.h"
+#include "object2D.h"
 
 //===============================================
 // 無名名前空間
@@ -39,11 +39,8 @@ namespace {
 CEffect2D::CEffect2D()
 {
 	// 値のクリア
-	m_Info.col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Info.fLife = 0;
-	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.fRadius = 0.0f;
-	m_Info.Type = TYPE_NONE;
+	m_pObj = nullptr;
+	m_Info = INFO();
 }
 
 //===============================================
@@ -60,12 +57,8 @@ CEffect2D::~CEffect2D()
 HRESULT CEffect2D::Init(void)
 {
 	// オブジェクトの初期化処理
-	m_pObjectBilBoard = CObjectBillboard::Create(m_Info.pos, 6);
-	m_pObjectBilBoard->BindTexture(CManager::GetInstance()->GetTexture()->Regist(CManager::GetInstance()->GetTexture()->GetFileName(SetTex(m_Info.Type))));
-	m_pObjectBilBoard->SetAlphaText(true);
-	m_pObjectBilBoard->SetZTest(true);
-	m_pObjectBilBoard->SetLighting(true);
-	m_pObjectBilBoard->SetFusion(CObjectBillboard::FUSION_ADD);
+	m_pObj = CObject2D::Create(m_Info.pos, VECTOR3_ZERO, 6);
+	m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(CManager::GetInstance()->GetTexture()->GetFileName(SetTex(m_Info.Type))));
 
 	m_Info.fLife = LIFE;	// 体力の初期化
 
@@ -78,9 +71,9 @@ HRESULT CEffect2D::Init(void)
 void CEffect2D::Uninit(void)
 {
 	// オブジェクトの終了処理
-	if (m_pObjectBilBoard != nullptr) {
-		m_pObjectBilBoard->Uninit();
-		m_pObjectBilBoard = nullptr;
+	if (m_pObj != nullptr) {
+		m_pObj->Uninit();
+		m_pObj = nullptr;
 	}
 
 	Release();
@@ -238,11 +231,11 @@ void CEffect2D::ColorSet(void)
 	m_Info.col = COLINFO[m_Info.Type];
 
 
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return;
 	}
 
-	m_pObjectBilBoard->SetCol(m_Info.col);
+	m_pObj->SetCol(m_Info.col);
 }
 
 //===============================================
@@ -253,11 +246,11 @@ void CEffect2D::RadiusSet(void)
 	// 半径の設定
 	m_Info.fRadius = RADIUSINFO[m_Info.Type];
 
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return;
 	}
 
-	m_pObjectBilBoard->SetSize(m_Info.fRadius, m_Info.fRadius);
+	m_pObj->SetSize(m_Info.fRadius, m_Info.fRadius);
 }
 
 //===============================================
@@ -273,13 +266,13 @@ void CEffect2D::SetMove(D3DXVECTOR3 move)
 //===============================================
 void CEffect2D::InfoSet(void)
 {
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return;
 	}
 
-	m_pObjectBilBoard->SetPosition(m_Info.pos);
-	m_pObjectBilBoard->SetCol(m_Info.col);
-	m_pObjectBilBoard->SetSize(m_Info.fRadius, m_Info.fRadius);
+	m_pObj->SetPosition(m_Info.pos);
+	m_pObj->SetCol(m_Info.col);
+	m_pObj->SetSize(m_Info.fRadius, m_Info.fRadius);
 }
 
 //===============================================
@@ -301,6 +294,13 @@ CTexture::TYPE CEffect2D::SetTex(TYPE type)
 
 	}
 	break;
+
+	case TYPE_TARGET:
+	{
+		return CTexture::TYPE_EFFECT;
+
+	}
+	break;
 	}
 
 	return CTexture::TYPE();
@@ -311,7 +311,7 @@ CTexture::TYPE CEffect2D::SetTex(TYPE type)
 //===============================================
 void CEffect2D::DrawSet(void)
 {
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return;
 	}
 
@@ -325,10 +325,19 @@ void CEffect2D::DrawSet(void)
 
 	case TYPE_SMAKE:
 	{
-		m_pObjectBilBoard->SetAlphaText(true);
-		m_pObjectBilBoard->SetZTest(true);
-		m_pObjectBilBoard->SetLighting(true);
-		m_pObjectBilBoard->SetFusion(CObjectBillboard::FUSION_ADD);
+		m_pObj->SetAlphaText(true);
+		m_pObj->SetZTest(true);
+		m_pObj->SetLighting(true);
+		m_pObj->SetFusion(CObject2D::FUSION_ADD);
+	}
+	break;
+
+	case TYPE_TARGET:
+	{
+		m_pObj->SetAlphaText(true);
+		m_pObj->SetZTest(true);
+		m_pObj->SetLighting(true);
+		m_pObj->SetFusion(CObject2D::FUSION_ADD);
 	}
 	break;
 
@@ -340,11 +349,11 @@ void CEffect2D::DrawSet(void)
 //===============================================
 float CEffect2D::GetRange(void) const
 {
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return 0.0f;
 	}
 
-	return m_pObjectBilBoard->GetWidth();
+	return m_pObj->GetWidth();
 }
 
 //===============================================
@@ -352,9 +361,9 @@ float CEffect2D::GetRange(void) const
 //===============================================
 D3DXCOLOR CEffect2D::GetCol(void) const
 {
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
-	return m_pObjectBilBoard->GetCol();
+	return m_pObj->GetCol();
 }

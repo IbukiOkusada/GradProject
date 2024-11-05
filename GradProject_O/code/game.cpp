@@ -36,6 +36,7 @@
 #include "edit_manager.h"
 #include "map_obstacle.h"
 #include "map_manager.h"
+#include "speedmeter.h"
 
 // 無名名前空間を定義
 namespace {
@@ -62,6 +63,7 @@ CGame::CGame()
     m_pMeshDome = nullptr;
     m_pClient = nullptr;
     m_pTimer = nullptr;
+    m_pSpeedMeter = nullptr;
     m_nSledCnt = 0;
     m_bEnd = false;
 	m_fOpenDoorUISin = 0.0f;
@@ -81,6 +83,7 @@ CGame::CGame(int nNumPlayer)
     m_pMeshDome = nullptr;
     m_pClient = nullptr;
     m_pTimer = nullptr;
+    m_pSpeedMeter = nullptr;
     m_nSledCnt = 0;
     m_bEnd = false;
 	m_fOpenDoorUISin = 0.0f;
@@ -172,6 +175,11 @@ HRESULT CGame::Init(void)
     CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 15.0f);
     CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 15.0f);
 
+    if (m_pSpeedMeter == nullptr)
+    {
+        m_pSpeedMeter = CSpeedMeter::Create();
+    }
+
     return S_OK;
 }
 
@@ -201,6 +209,13 @@ void CGame::Uninit(void)
         m_pClient = nullptr;
     }
 
+    if (m_pSpeedMeter != nullptr)
+    {
+        m_pSpeedMeter->Uninit();
+        //delete m_pSpeedMeter;
+        m_pSpeedMeter = nullptr;
+    }
+
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
 
@@ -226,6 +241,11 @@ void CGame::Update(void)
 	{//ポーズキー(Pキー)が押された
 		m_bPause = m_bPause ? false : true;
 	}
+
+    if (m_pSpeedMeter != nullptr)
+    {
+        m_pSpeedMeter->Update();
+    }
 
     // エディター関連
 #if _DEBUG
