@@ -327,6 +327,9 @@
     <ClCompile Include="code\effect2D.cpp">
       <Filter>effect\2D</Filter>
     </ClCompile>
+    <ClCompile Include="code\particle2D.cpp">
+      <Filter>effect\2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -552,6 +555,9 @@
       <Filter>edit\handle</Filter>
     </ClInclude>
     <ClInclude Include="code\effect2D.h">
+      <Filter>effect\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="code\particle2D.h">
       <Filter>effect\2D</Filter>
     </ClInclude>
   </ItemGroup>

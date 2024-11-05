@@ -206,6 +206,7 @@
     <ClCompile Include="code\objectX.cpp" />
     <ClCompile Include="code\object_manager.cpp" />
     <ClCompile Include="code\map_obstacle.cpp" />
+    <ClCompile Include="code\particle2D.cpp" />
     <ClCompile Include="code\particle3D.cpp" />
     <ClCompile Include="code\player.cpp" />
     <ClCompile Include="code\player_manager.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="code\objectX.h" />
     <ClInclude Include="code\object_manager.h" />
     <ClInclude Include="code\map_obstacle.h" />
+    <ClInclude Include="code\particle2D.h" />
     <ClInclude Include="code\particle3D.h" />
     <ClInclude Include="code\player.h" />
     <ClInclude Include="code\player_manager.h" />

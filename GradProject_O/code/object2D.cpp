@@ -50,6 +50,10 @@ CObject2D::CObject2D(const D3DXVECTOR3 pos) : CObject(3)
 	m_fHeight = 0.0f;
 	m_nIdxTexture = -1;
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_fusion = FUSION_NORMAL;
+	m_bLighting = true;
+	m_bAlphatest = true;
+	m_bZtest = true;
 }
 
 //===============================================
@@ -66,6 +70,10 @@ CObject2D::CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nPr
 	m_fHeight = 0.0f;
 	m_nIdxTexture = -1;
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_fusion = FUSION_NORMAL;
+	m_bLighting = true;
+	m_bAlphatest = true;
+	m_bZtest = true;
 }
 
 //===============================================
@@ -82,6 +90,10 @@ CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 	m_fHeight = 0.0f;
 	m_nIdxTexture = -1;
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_fusion = FUSION_NORMAL;
+	m_bLighting = true;
+	m_bAlphatest = true;
+	m_bZtest = true;
 }
 
 //===============================================
@@ -223,12 +235,78 @@ void CObject2D::Draw(void)
 	// テクスチャの設定
 	pDevice->SetTexture(0, pTexture->SetAddress(m_nIdxTexture));
 
+	if (m_bLighting) {
+		//ライティングをオフにする
+		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+	}
+
+	if (m_bZtest) {
+		//Zテストを無効化する
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_ALWAYS);
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, FALSE);
+	}
+
+	if (m_bAlphatest) {
+		//アルファテストを有効にする
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	}
+
+	if (m_fusion == FUSION_ADD)
+	{
+		//αブレンディングを加算合成に設定
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+	}
+	else if (m_fusion == FUSION_MINUS)
+	{
+		//減算合成の設定
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_REVSUBTRACT);
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+	}
+
 	// 描画
 	pDevice->DrawPrimitive(
 		D3DPT_TRIANGLESTRIP,	//プリミティブの種類
 		0,
 		2	//頂点情報構造体のサイズ
 	);
+
+	if (m_bLighting) {
+		//ライティングをオンにする
+		pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	}
+
+	if (m_bZtest) {
+		//Zテストを有効にする
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+		pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
+	}
+
+	if (m_bAlphatest) {
+		//アルファテストを無効にする
+		pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+		pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+		pDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+	}
+
+	if (m_fusion == FUSION_ADD)
+	{
+		//αブレンディングを元に戻す
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	}
+	else if (m_fusion == FUSION_MINUS)
+	{
+		//αブレンディングを元に戻す
+		pDevice->SetRenderState(D3DRS_BLENDOP, D3DBLENDOP_ADD);
+		pDevice->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		pDevice->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
+	}
 }
 
 //===============================================
