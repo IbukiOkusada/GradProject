@@ -163,13 +163,11 @@ HRESULT CGame::Init(void)
     for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-        CCarManager::GetInstance()->ListIn(pCar);
     }
 
     for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-        CCarManager::GetInstance()->ListIn(pCar);
     }
 
     CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 15.0f);

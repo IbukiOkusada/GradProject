@@ -8,6 +8,7 @@
 #define _CARMANAGER_H_		// 二重インクルード防止用マクロを定義
 
 #include "list_manager.h"
+#include "list.h"
 
 // 前方宣言
 class CCar;
@@ -30,11 +31,10 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 	static CCarManager* GetInstance(void);
 	static void Release(void);
-	CCar* GetTop(void) { return m_pTop; }
-	CCar* GetCur(void) { return m_pCur; }
+	Clist<CCar*>* GetList() { if (m_pList == nullptr) { m_pList = m_pList->Create(); }return m_pList; }	// リスト取得
+	void ListRelease() { if (m_pList != nullptr) { delete m_pList; m_pList = nullptr; } }			// リスト解放
 	void ListIn(CCar* pCar);
 	void ListOut(CCar* pCar);
-	int GetNum(void) { return m_nNum; }
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
 
 private:	// 自分だけがアクセス可能
@@ -42,8 +42,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 
 	// メンバ変数
-	CCar* m_pTop;	// 先頭
-	CCar* m_pCur;	// 最後尾
+	Clist<CCar*>* m_pList;
 	int m_nNum;
 	static CCarManager* m_pInstance;	// インスタンス
 };

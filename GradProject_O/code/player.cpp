@@ -39,7 +39,7 @@
 #include "road_manager.h"
 #include "collision.h"
 #include "deltatime.h"
-
+#include "bridge.h"
 //===============================================
 // マクロ定義
 //===============================================
@@ -149,11 +149,13 @@ HRESULT CPlayer::Init(void)
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
+	m_pObj->SetType(CObject::TYPE_PLAYER);
 	SetMatrix();
 	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
+	CBridge::Create(D3DXVECTOR3(10000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
 	return S_OK;
 }
 
@@ -460,9 +462,9 @@ void CPlayer::Adjust(void)
 void CPlayer::SearchRoad()
 {
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
-
-	CRoad* pRoad = pRoadManager->GetTop();
-	CRoad* pRoadClose = pRoadManager->GetTop();
+	auto list = pRoadManager->GetList();
+	CRoad* pRoad = list->Get(0);
+	CRoad* pRoadClose = list->Get(0);
 	
 
 	if (pRoad == nullptr) 
@@ -473,10 +475,9 @@ void CPlayer::SearchRoad()
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
-	while (pRoad != nullptr)
-	{// 使用されていない状態まで
-
-		CRoad* pRoadNext = pRoad->GetNext();	// 次のオブジェクトへのポインタを取得
+	for (int i = 0; i < list->GetNum() - 1; i++)
+	{
+		CRoad* pRoad = list->Get(i);
 
 		// 距離判定処理
 		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
@@ -486,8 +487,6 @@ void CPlayer::SearchRoad()
 			length = lengthClose;
 			pRoadClose = pRoad;
 		}
-
-		pRoad = pRoadNext;	// 次のオブジェクトに移動
 	}
 
 	m_Info.pRoad = pRoadClose;
