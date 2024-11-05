@@ -32,6 +32,7 @@ public:	// 誰でもアクセス可能
 	static CDeltaTime *GetInstance(void) { return m_pInstance; }  // 自分自身
 
 	// メンバ関数(設定)
+	float GetDestTime(void) { return m_Timer.DeltaTime.count(); }
 
 private:	// 自分だけがアクセス可能
 

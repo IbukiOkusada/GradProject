@@ -361,6 +361,63 @@ void CObject2D::SetVtx(void)
 }
 
 //===============================================
+// 頂点情報設定
+//===============================================
+void CObject2D::SetVtx(const float fWidth, const float fHeight)
+{
+	VERTEX_2D* pVtx;
+
+	//頂点バッファをロックし頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(
+		0,
+		0,
+		(void**)&pVtx,
+		0
+	);
+
+	//対角線の長さを算出する
+	m_fLength = sqrtf(fWidth * fWidth + fHeight * fHeight) * 0.5f;
+
+	//対角線の角度を算出する
+	m_fAngle = atan2f(fWidth, fHeight);
+
+	//頂点座標の設定
+	pVtx[0].pos.x = m_pos.x + sinf(m_rot.z + (-D3DX_PI + m_fAngle)) * m_fLength;
+	pVtx[0].pos.y = m_pos.y + cosf(m_rot.z + (-D3DX_PI + m_fAngle)) * m_fLength;
+	pVtx[0].pos.z = 0.0f;
+	pVtx[1].pos.x = m_pos.x + sinf(m_rot.z + (D3DX_PI - m_fAngle)) * m_fLength;
+	pVtx[1].pos.y = m_pos.y + cosf(m_rot.z + (D3DX_PI - m_fAngle)) * m_fLength;
+	pVtx[1].pos.z = 0.0f;
+	pVtx[2].pos.x = m_pos.x + sinf(m_rot.z + -m_fAngle) * m_fLength;
+	pVtx[2].pos.y = m_pos.y + cosf(m_rot.z + -m_fAngle) * m_fLength;
+	pVtx[2].pos.z = 0.0f;
+	pVtx[3].pos.x = m_pos.x + sinf(m_rot.z + m_fAngle) * m_fLength;
+	pVtx[3].pos.y = m_pos.y + cosf(m_rot.z + m_fAngle) * m_fLength;
+	pVtx[3].pos.z = 0.0f;
+
+	// rhwの設定
+	pVtx[0].rhw = 1.0f;
+	pVtx[1].rhw = 1.0f;
+	pVtx[2].rhw = 1.0f;
+	pVtx[3].rhw = 1.0f;
+
+	// 頂点カラーの設定
+	pVtx[0].col = m_col;
+	pVtx[1].col = m_col;
+	pVtx[2].col = m_col;
+	pVtx[3].col = m_col;
+
+	// テクスチャ座標の設定
+	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
+	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
+	pVtx[2].tex = D3DXVECTOR2(0.0f, 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(1.0f, 1.0f);
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}
+
+//===============================================
 // 頂点情報設定(パターンアニメーション)
 //===============================================
 void CObject2D::SetVtx(const int nPatternAnim, const int nTexWidth, const int nTexHeight)

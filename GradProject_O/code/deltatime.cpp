@@ -87,6 +87,7 @@ void CDeltaTime::Update(void)
 	Slow();
 	
 	CManager::GetInstance()->GetDebugProc()->Print("[ DeltaTime : %f ]\n", m_Timer.DeltaTime.count() * m_fAdd);
+	CManager::GetInstance()->GetDebugProc()->Print("[ ·•ª : %f ]\n", m_Timer.DeltaTime.count());
 }
 
 //==========================================================
