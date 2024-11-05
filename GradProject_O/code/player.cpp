@@ -39,7 +39,7 @@
 #include "road_manager.h"
 #include "collision.h"
 #include "deltatime.h"
-
+#include "bridge.h"
 //===============================================
 // ƒ}ƒNƒ’è‹`
 //===============================================
@@ -154,6 +154,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
+	CBridge::Create(D3DXVECTOR3(10000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
 	return S_OK;
 }
 
