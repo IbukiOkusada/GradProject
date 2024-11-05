@@ -160,6 +160,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="code\billboard.cpp" />
+    <ClCompile Include="code\bridge.cpp" />
     <ClCompile Include="code\camera.cpp" />
     <ClCompile Include="code\camera_manager.cpp" />
     <ClCompile Include="code\car.cpp" />
@@ -179,6 +180,7 @@
     <ClCompile Include="code\effekseerControl.cpp" />
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\game.cpp" />
+    <ClCompile Include="code\gimmick.cpp" />
     <ClCompile Include="code\goal.cpp" />
     <ClCompile Include="code\input.cpp" />
     <ClCompile Include="code\input_gamepad.cpp" />
@@ -237,6 +239,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\billboard.h" />
+    <ClInclude Include="code\bridge.h" />
     <ClInclude Include="code\camera.h" />
     <ClInclude Include="code\camera_manager.h" />
     <ClInclude Include="code\car.h" />
@@ -249,6 +252,7 @@
     <ClInclude Include="code\edit_manager.h" />
     <ClInclude Include="code\edit_object.h" />
     <ClInclude Include="code\edit_road.h" />
+    <ClInclude Include="code\gimmick.h" />
     <ClInclude Include="code\goal.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\convenience.h" />
