@@ -149,6 +149,7 @@ HRESULT CPlayer::Init(void)
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
+	m_pObj->SetType(CObject::TYPE_PLAYER);
 	SetMatrix();
 	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
@@ -460,9 +461,9 @@ void CPlayer::Adjust(void)
 void CPlayer::SearchRoad()
 {
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
-
-	CRoad* pRoad = pRoadManager->GetTop();
-	CRoad* pRoadClose = pRoadManager->GetTop();
+	auto list = pRoadManager->GetList();
+	CRoad* pRoad = list->Get(0);
+	CRoad* pRoadClose = list->Get(0);
 	
 
 	if (pRoad == nullptr) 
@@ -473,10 +474,9 @@ void CPlayer::SearchRoad()
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
-	while (pRoad != nullptr)
-	{// 使用されていない状態まで
-
-		CRoad* pRoadNext = pRoad->GetNext();	// 次のオブジェクトへのポインタを取得
+	for (int i = 0; i < list->GetNum() - 1; i++)
+	{
+		CRoad* pRoad = list->Get(i);
 
 		// 距離判定処理
 		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
@@ -486,8 +486,6 @@ void CPlayer::SearchRoad()
 			length = lengthClose;
 			pRoadClose = pRoad;
 		}
-
-		pRoad = pRoadNext;	// 次のオブジェクトに移動
 	}
 
 	m_Info.pRoad = pRoadClose;

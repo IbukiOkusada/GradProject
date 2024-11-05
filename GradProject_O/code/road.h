@@ -67,8 +67,6 @@ public:	// 誰でもアクセス可能
 	void BindTexture();
 
 	// メンバ関数(取得)
-	CRoad* GetNext(void) { return m_pNext; }	// 次
-	CRoad* GetPrev(void) { return m_pPrev; }	// 前回
 	CObject3D* GetObj(void) { return m_pObj; }	// 描画オブジェ
 	SInfo* GetInfo(void) { return &m_Info; }		// 基本情報
 	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }	// 座標
@@ -81,8 +79,6 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
-	void SetNext(CRoad* pNext) { m_pNext = pNext; }
-	void SetPrev(CRoad* pPrev) { m_pPrev = pPrev; }
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetSize(const D3DXVECTOR2& size);
 
@@ -92,8 +88,6 @@ private:	// 自分だけがアクセス可能
 	void Rotation(TYPE type);
 
 	// メンバ変数
-	CRoad* m_pPrev;			// 前のオブジェクトへのポインタ
-	CRoad* m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;	// 基本情報
 	CObject3D* m_pObj;
 	int m_nIdx;

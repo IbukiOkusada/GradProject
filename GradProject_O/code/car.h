@@ -63,8 +63,6 @@ public:	// 誰でもアクセス可能
 	float GetSpeedDest(void) { return m_Info.fSpeedDest; }
 	CRoad* GetRoadStart(void) { return m_Info.pRoadStart; }
 	CRoad* GetRoadTarget(void) { return m_Info.pRoadTarget; }
-	CCar* GetNext(void) { return m_pNext; }
-	CCar* GetPrev(void) { return m_pPrev; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 
 	// メンバ関数(設定)
@@ -76,8 +74,6 @@ public:	// 誰でもアクセス可能
 	void SetSpeedDest(const float speedDest) { m_Info.fSpeedDest = speedDest; }
 	void SetRoadStart(CRoad* RoadStart) { m_Info.pRoadStart = RoadStart; }
 	void SetRoadTarget(CRoad* RoadTarget) { m_Info.pRoadTarget = RoadTarget; }
-	void SetNext(CCar* pNext) { m_pNext = pNext; }
-	void SetPrev(CCar* pPrev) { m_pPrev = pPrev; }
 
 protected:	// 派生クラスからもアクセス可能
 
@@ -98,8 +94,6 @@ private:	// 自分だけがアクセス可能
 	bool Collision();
 
 	// メンバ変数
-	CCar* m_pPrev;			// 前のオブジェクトへのポインタ
-	CCar* m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;				// 自分自身の情報
 	CEffekseer::CEffectData* m_pTailLamp;
 };

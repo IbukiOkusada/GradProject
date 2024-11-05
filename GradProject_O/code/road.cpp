@@ -30,8 +30,6 @@ CRoad::CRoad(const SInfo& info)
 	m_Info = info;
 	m_pObj = nullptr;
 	m_nIdx = -1;
-	m_pNext = nullptr;
-	m_pPrev = nullptr;
 	m_Type = TYPE_MAX;
 
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)

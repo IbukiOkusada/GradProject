@@ -272,14 +272,11 @@ void CPolice::SearchPlayer()
 void CPolice::ChasePlayer()
 {
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
-	CRoad* pRoad = pRoadManager->GetTop();
-
-	while (pRoad != nullptr)
-	{// 使用されていない状態まで
-
-		CRoad* pRoadNext = pRoad->GetNext();	// 次のオブジェクトへのポインタを取得
-
-		pRoad = pRoadNext;	// 次のオブジェクトに移動
+	auto list = pRoadManager->GetList();
+	
+	for (int i = 0; i < list->GetNum() - 1; i++)
+	{
+		CRoad* pRoad = list->Get(i);
 	}
 }
 

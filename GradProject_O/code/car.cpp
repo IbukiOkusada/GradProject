@@ -53,8 +53,8 @@ CCar::CCar()
 	m_Info.bBreak = false;
 	m_Info.bBack = false;
 
-	m_pNext = nullptr;
-	m_pPrev = nullptr;
+	// リストに入れる
+	CCarManager::GetInstance()->ListIn(this);
 }
 
 //==========================================================
@@ -291,9 +291,10 @@ void CCar::MoveRoad()
 void CCar::SearchRoad()
 {
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
+	auto list = pRoadManager->GetList();
 
-	CRoad* pRoad = pRoadManager->GetTop();
-	CRoad* pRoadClose = pRoadManager->GetTop();
+	CRoad* pRoad = pRoadManager->GetList()->Get(0);
+	CRoad* pRoadClose = pRoadManager->GetList()->Get(0);
 
 	if (pRoad == nullptr)
 	{
@@ -303,10 +304,9 @@ void CCar::SearchRoad()
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
-	while (pRoad != nullptr)
-	{// 使用されていない状態まで
-
-		CRoad* pRoadNext = pRoad->GetNext();	// 次のオブジェクトへのポインタを取得
+	for (int i = 0; i < pRoadManager->GetList()->GetNum() - 1; i++)
+	{
+		CRoad* pRoad = list->Get(i);
 
 		// 距離判定処理
 		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
@@ -316,8 +316,6 @@ void CCar::SearchRoad()
 			length = lengthClose;
 			pRoadClose = pRoad;
 		}
-
-		pRoad = pRoadNext;	// 次のオブジェクトに移動
 	}
 
 	m_Info.pRoadTarget = pRoadClose;
@@ -387,8 +385,7 @@ bool CCar::Collision()
 				m_Info.nBackTime = TIME_BACK;
 			}
 
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
-			if (pPlayer->GetModelIndex() == pObjectX->GetIdx())
+			if (pObjectX->GetType() == TYPE_PLAYER)
 			{
 				m_Info.bBreak = true;
 			}
