@@ -15,7 +15,7 @@
 template <typename T> class Clist
 {
 public:
-	Clist() { list = new std::list<T>; }
+	Clist() { list = DEBUG_NEW std::list<T>; }
 	~Clist() { delete list; list = nullptr; };
 	void Regist(T data) { list->push_back(data); }																			// 要素登録	
 	void Delete(T data) { if (!list->empty()) { list->erase(std::find(list->begin(), list->end(), data)); } }				// 要素削除	
@@ -26,7 +26,7 @@ public:
 	std::list<T> * GetList() { return list; }																				// リスト本体の取得
 	int GetNum() {return (int)list->size(); }																				// 要素数の取得
 	T Get(int nID) { return *std::next(list->begin(), nID); }																// 番号を指定した要素の取得
-	static Clist<T> * Create() { Clist<T>* pList = new  Clist<T>; return pList; }											// 動的確保
+	static Clist<T> * Create() { Clist<T>* pList = DEBUG_NEW  Clist<T>; return pList; }											// 動的確保
 private:
 	std::list<T> * list;																									// 本体
 };

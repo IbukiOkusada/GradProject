@@ -38,10 +38,6 @@ public:
 	virtual HRESULT Init(void) = 0; 
 	virtual void Uninit(void) = 0;
 	virtual void Update(void) = 0;
-	CTask *GetNext(void) { return m_pNext; }
-	CTask *GetPrev(void) { return m_pPrev; }
-	void SetNext(CTask *pNext) { m_pNext = pNext; }
-	void SetPrev(CTask *pPrev) { m_pPrev = pPrev; }
 	TYPE GetType(void) { return m_type; }
 	bool GetDeath(void) { return m_bDeath; }
 
@@ -55,10 +51,6 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 
 	// メンバ変数
-	static CTask *m_pTop;	// 先頭のオブジェクトへのポインタ
-	static CTask *m_pCur;	// 最後尾のオブジェクトへのポインタ
-	CTask *m_pPrev;	// 前のオブジェクトへのポインタ
-	CTask *m_pNext;	// 次のオブジェクトへのポインタ
 	bool m_bDeath;	// 死亡フラグ
 	TYPE m_type;	// 種類
 };

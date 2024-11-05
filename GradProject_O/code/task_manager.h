@@ -8,6 +8,7 @@
 #define _TASK_MANAGER_H_	// 二重インクルード防止用マクロを定義
 
 #include "list_manager.h"
+#include "list.h"
 
 // 前方宣言
 class CTask;
@@ -35,13 +36,14 @@ public:
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	Clist<CTask*>* GetList() { if (m_plist == nullptr) { m_plist = m_plist->Create(); }return m_plist; }	// リスト取得
+	void ListRelease() { if (m_plist != nullptr) { delete m_plist; m_plist = nullptr; } }			// リスト解放
 	void ReleaseAll(void);
 	void UpdateAll(void);
 	void DeathCheck(void);
 
 	// メンバ変数
-	CTask *m_pTop;	// 先頭のオブジェクトへのポインタ
-	CTask *m_pCur;	// 最後尾のオブジェクトへのポインタ
+	Clist<CTask*>* m_plist;
 	static CTaskManager *m_pInstance;
 };
 

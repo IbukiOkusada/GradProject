@@ -4,7 +4,7 @@
 // Author : Ibuki Okusada
 //
 //===============================================
-#include "particle.h"
+#include "particle3D.h"
 #include "manager.h"
 #include "renderer.h"
 #include "input.h"
@@ -20,7 +20,7 @@
 //===============================================
 // コンストラクタ
 //===============================================
-CParticle::CParticle()
+CParticle3D::CParticle3D()
 {
 
 }
@@ -28,7 +28,7 @@ CParticle::CParticle()
 //===============================================
 // デストラクタ
 //===============================================
-CParticle::~CParticle()
+CParticle3D::~CParticle3D()
 {
 
 }
@@ -36,7 +36,7 @@ CParticle::~CParticle()
 //===============================================
 // 生成
 //===============================================
-void CParticle::Create(const D3DXVECTOR3& pos, CEffect::TYPE type)
+void CParticle3D::Create(const D3DXVECTOR3& pos, CEffect3D::TYPE type)
 {
 	// オブジェクトの種類の設定
 	Set(pos, D3DXVECTOR3(0.0f, 0.0f, 0.0f), type);
@@ -45,7 +45,7 @@ void CParticle::Create(const D3DXVECTOR3& pos, CEffect::TYPE type)
 //===============================================
 // 頂点情報設定
 //===============================================
-void CParticle::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, CEffect::TYPE type)
+void CParticle3D::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, CEffect3D::TYPE type)
 {
 	// オブジェクトの種類の設定
 	Set(pos, move, type);
@@ -54,12 +54,12 @@ void CParticle::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& move, CEffect:
 //===============================================
 // 設定
 //===============================================
-void CParticle::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEffect::TYPE type)
+void CParticle3D::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEffect3D::TYPE type)
 {
 	D3DXVECTOR3 pos = {};
 	D3DXVECTOR3 move = {};	// 移動量
 	D3DXCOLOR col = {};	// 色
-	CEffect::TYPE ParType = type;
+	CEffect3D::TYPE ParType = type;
 	float fRadius = 0.0f;
 	float fLife = 0;
 	D3DXVECTOR3 nor;
@@ -70,11 +70,11 @@ void CParticle::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEffe
 
 	switch (type)
 	{
-	case CEffect::TYPE_NONE:	// 何もない
+	case CEffect3D::TYPE_NONE:	// 何もない
 
 		break;
 
-	case CEffect::TYPE_SMAKE:	// 煙
+	case CEffect3D::TYPE_SMAKE:	// 煙
 
 		for (int nCnt = 0; nCnt < 2; nCnt++)
 		{
@@ -95,7 +95,7 @@ void CParticle::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEffe
 			//寿命の設定
 			fLife = 100.0f;
 
-			CEffect::Create(Defpos + move, move, col, fRadius, fLife, type);
+			CEffect3D::Create(Defpos + move, move, col, fRadius, fLife, type);
 		}
 
 		break;
