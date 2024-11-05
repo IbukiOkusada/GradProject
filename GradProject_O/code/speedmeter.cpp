@@ -30,12 +30,12 @@ namespace FRAME
 namespace NEEDLE
 {
 	const float HEIGHT = 70.0f;  // ‚‚³
-	const float WIDTH = 20.0f;   // ‰¡•
+	const float WIDTH = 10.0f;   // ‰¡•
 	const float START = -D3DX_PI * 0.7f;
 	const float LIMIT = D3DX_PI * 0.7f;
 	const float DEST = (LIMIT - START);
 	const D3DXVECTOR3 POS = D3DXVECTOR3(SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.8f, 0.0f);
-	const D3DXVECTOR3 ROT = D3DXVECTOR3(0.0f, 0.0f, D3DX_PI * 0.7f);
+	const D3DXVECTOR3 ROT = D3DXVECTOR3(0.0f, 0.0f, D3DX_PI/* * 0.7f*/);
 	const char* TEX_PATH = "data\\TEXTURE\\bill_wall.jpg";
 }
 
@@ -79,7 +79,7 @@ HRESULT CSpeedMeter::Init(void)
 {
 	if (m_pFrame == nullptr)
 	{
-		m_pFrame = CObject2D::Create();
+		m_pFrame = CObject2D::Create(7);
 		m_pFrame->SetPosition(FRAME::POS);
 		m_pFrame->SetSize(FRAME::WIDTH, FRAME::HEIGHT);
 		m_pFrame->BindTexture(CManager::GetInstance()->GetTexture()->Regist(FRAME::TEX_PATH));
@@ -88,11 +88,11 @@ HRESULT CSpeedMeter::Init(void)
 
 	if (m_pNeedle == nullptr)
 	{
-		m_pNeedle = CObject2D::Create();
+		m_pNeedle = CObject2D::Create(7);
 		m_pNeedle->SetPosition(NEEDLE::POS);
 		m_pNeedle->SetRotation(NEEDLE::ROT);
-		m_pNeedle->SetSize(NEEDLE::WIDTH, NEEDLE::HEIGHT);
-		m_pNeedle->SetVtx(NEEDLE::WIDTH, NEEDLE::HEIGHT);
+		m_pNeedle->SetSize(NEEDLE::WIDTH, 0.0f);
+		m_pNeedle->SetVtx(NEEDLE::WIDTH, 0.0f);
 		m_pNeedle->BindTexture(CManager::GetInstance()->GetTexture()->Regist(NEEDLE::TEX_PATH));
 		m_pNeedle->SetDraw();
 	}
@@ -136,9 +136,6 @@ void CSpeedMeter::Update(void)
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
 
 	float fEngineRate = (pPlayer->GetEngine() / 1.0f);
-
-	/*if (NEEDLE::ROT.z <= fEngineRate)
-		fEngineRate = NEEDLE::ROT.z;*/
 
 	if (m_pNeedle != nullptr)
 	{
