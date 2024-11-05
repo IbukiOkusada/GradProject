@@ -321,6 +321,9 @@
     <ClCompile Include="code\edit_scale.cpp">
       <Filter>edit\handle</Filter>
     </ClCompile>
+    <ClCompile Include="code\speedmeter.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -544,6 +547,9 @@
     </ClInclude>
     <ClInclude Include="code\edit_scale.h">
       <Filter>edit\handle</Filter>
+    </ClInclude>
+    <ClInclude Include="code\speedmeter.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
