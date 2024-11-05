@@ -103,6 +103,12 @@
     <Filter Include="edit\handle">
       <UniqueIdentifier>{2f005cd0-15d3-4503-8614-a37e4163ebf5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gimmick">
+      <UniqueIdentifier>{49609b29-e042-4362-a16f-adf786827a3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gimmick\bridge">
+      <UniqueIdentifier>{8b4b0966-d6e9-4094-99fe-c0f3b93f3d0d}</UniqueIdentifier>
+    </Filter>
     <Filter Include="effect\2D">
       <UniqueIdentifier>{faf3f3b8-212f-476f-a7c9-b459ab3f16ee}</UniqueIdentifier>
     </Filter>
@@ -323,6 +329,12 @@
     </ClCompile>
     <ClCompile Include="code\edit_scale.cpp">
       <Filter>edit\handle</Filter>
+    </ClCompile>
+    <ClCompile Include="code\gimmick.cpp">
+      <Filter>gimmick</Filter>
+    </ClCompile>
+    <ClCompile Include="code\bridge.cpp">
+      <Filter>gimmick\bridge</Filter>
     </ClCompile>
     <ClCompile Include="code\effect2D.cpp">
       <Filter>effect\2D</Filter>
@@ -553,6 +565,12 @@
     </ClInclude>
     <ClInclude Include="code\edit_scale.h">
       <Filter>edit\handle</Filter>
+    </ClInclude>
+    <ClInclude Include="code\gimmick.h">
+      <Filter>gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="code\bridge.h">
+      <Filter>gimmick\bridge</Filter>
     </ClInclude>
     <ClInclude Include="code\effect2D.h">
       <Filter>effect\2D</Filter>

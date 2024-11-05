@@ -21,6 +21,8 @@ float GetDistance(D3DXVECTOR3 vec1, D3DXVECTOR3 vec2);
 
 #define SAFE_UNINIT_DELETE(p)		if ((p) != nullptr) { (p)->Uninit();	 delete (p);	(p) = nullptr; }	// Uninitを使用した破棄
 
+#define VECTOR3_ZERO (D3DXVECTOR3(0.0f,0.0f,0.0))
+#define VECTOR3_ONE (D3DXVECTOR3(1.0f,1.0f,1.0f))
 
 //汎用テンプレート
 template <typename T> class CMaster
