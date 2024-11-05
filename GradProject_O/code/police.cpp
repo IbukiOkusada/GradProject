@@ -100,7 +100,7 @@ CPolice *CPolice::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 {
 	CPolice *pCar = nullptr;
 
-	pCar = new CPolice;
+	pCar = DEBUG_NEW CPolice;
 
 	if (pCar != nullptr)
 	{

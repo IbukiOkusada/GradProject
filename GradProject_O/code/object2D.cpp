@@ -366,7 +366,7 @@ CObject2D *CObject2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const
 	CObject2D *pObject2D = NULL;
 
 	// オブジェクト2Dの生成
-	pObject2D = new CObject2D(pos, rot, nPriority);
+	pObject2D = DEBUG_NEW CObject2D(pos, rot, nPriority);
 
 	if (pObject2D != NULL)
 	{// 生成できた場合
@@ -392,7 +392,7 @@ CObject2D *CObject2D::Create(const int nPriority)
 	CObject2D *pObject2D = NULL;
 
 	// オブジェクト2Dの生成
-	pObject2D = new CObject2D(nPriority);
+	pObject2D = DEBUG_NEW CObject2D(nPriority);
 
 	if (pObject2D != NULL)
 	{// 生成できた場合

@@ -176,7 +176,8 @@
     <ClCompile Include="code\edit_object.cpp" />
     <ClCompile Include="code\edit_road.cpp" />
     <ClCompile Include="code\edit_scale.cpp" />
-    <ClCompile Include="code\effect.cpp" />
+    <ClCompile Include="code\effect2D.cpp" />
+    <ClCompile Include="code\effect3D.cpp" />
     <ClCompile Include="code\effekseerControl.cpp" />
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\game.cpp" />
@@ -207,7 +208,7 @@
     <ClCompile Include="code\objectX.cpp" />
     <ClCompile Include="code\object_manager.cpp" />
     <ClCompile Include="code\map_obstacle.cpp" />
-    <ClCompile Include="code\particle.cpp" />
+    <ClCompile Include="code\particle3D.cpp" />
     <ClCompile Include="code\player.cpp" />
     <ClCompile Include="code\player_manager.cpp" />
     <ClCompile Include="code\police.cpp" />
@@ -247,6 +248,7 @@
     <ClInclude Include="code\character.h" />
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\edit_scale.h" />
+    <ClInclude Include="code\effect2D.h" />
     <ClInclude Include="code\effekseerControl.h" />
     <ClInclude Include="code\edit.h" />
     <ClInclude Include="code\edit_manager.h" />
@@ -257,7 +259,7 @@
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\convenience.h" />
     <ClInclude Include="code\debugproc.h" />
-    <ClInclude Include="code\effect.h" />
+    <ClInclude Include="code\effect3D.h" />
     <ClInclude Include="code\fade.h" />
     <ClInclude Include="code\game.h" />
     <ClInclude Include="code\input.h" />
@@ -286,7 +288,7 @@
     <ClInclude Include="code\objectX.h" />
     <ClInclude Include="code\object_manager.h" />
     <ClInclude Include="code\map_obstacle.h" />
-    <ClInclude Include="code\particle.h" />
+    <ClInclude Include="code\particle3D.h" />
     <ClInclude Include="code\player.h" />
     <ClInclude Include="code\player_manager.h" />
     <ClInclude Include="code\police.h" />

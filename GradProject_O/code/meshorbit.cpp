@@ -130,7 +130,7 @@ CMeshOrbit *CMeshOrbit::Create(D3DXMATRIX *pMtx, D3DXVECTOR3 UpSet, D3DXVECTOR3 
 	CMeshOrbit *pMeshOrbit = NULL;	// メッシュフィールドのポインタ
 
 	// メモリの確保
-	pMeshOrbit = new CMeshOrbit;
+	pMeshOrbit = DEBUG_NEW CMeshOrbit;
 
 	if (pMeshOrbit != NULL)
 	{// 確保できた場合
@@ -154,10 +154,10 @@ CMeshOrbit *CMeshOrbit::Create(D3DXMATRIX *pMtx, D3DXVECTOR3 UpSet, D3DXVECTOR3 
 		pMeshOrbit->BindTexture(-1);
 
 		// 保持用頂点生成
-		pMeshOrbit->m_pPos = new D3DXVECTOR3[pMeshOrbit->GetVertex()];
+		pMeshOrbit->m_pPos = DEBUG_NEW D3DXVECTOR3[pMeshOrbit->GetVertex()];
 
 		// 保持用カラー生成
-		pMeshOrbit->m_pCol= new D3DXCOLOR[pMeshOrbit->GetVertex()];
+		pMeshOrbit->m_pCol= DEBUG_NEW D3DXCOLOR[pMeshOrbit->GetVertex()];
 
 		// 頂点情報初期化
 		pMeshOrbit->Reset();

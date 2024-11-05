@@ -28,8 +28,6 @@
 #include "motion.h"
 #include "sound.h"
 #include "model.h"
-#include "particle.h"
-#include "effect.h"
 #include <math.h>
 #include "meshwall.h"
 #include "player_manager.h"
@@ -668,9 +666,6 @@ void CPlayer::StateSet(void)
 		{
 			m_Info.fStateCounter = SPAWN_INTERVAL;
 			m_Info.state = STATE_APPEAR;
-
-			// 煙のパーティクル生成
-			CParticle::Create(m_Info.pos, CEffect::TYPE_SMAKE);
 		}
 	}
 		break;

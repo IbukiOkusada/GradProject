@@ -183,7 +183,7 @@ CMeshWall *CMeshWall::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, float
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// メモリの確保
-	pMeshWall = new CMeshWall;
+	pMeshWall = DEBUG_NEW CMeshWall;
 
 	if (pMeshWall != NULL)
 	{// 確保できた場合
