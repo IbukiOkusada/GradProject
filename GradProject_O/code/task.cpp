@@ -13,8 +13,6 @@
 CTask::CTask()
 {
 	// 値のクリア
-	m_pNext = NULL;
-	m_pPrev = NULL;
 	m_bDeath = false;
 
 	// リストに追加

@@ -16,7 +16,7 @@ class CObjectBillboard;
 //===============================================
 //クラスの定義
 //===============================================
-class CEffect : public CTask
+class CEffect3D : public CTask
 {
 public:	// 誰でもアクセス可能な定義
 
@@ -43,15 +43,15 @@ private:	// 自分だけアクセス可能な定義
 
 public:	// 誰でもアクセス可能
 
-	CEffect();	// コンストラクタ
-	~CEffect();	// デストラクタ
+	CEffect3D();	// コンストラクタ
+	~CEffect3D();	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	static CEffect *Create(D3DXVECTOR3 pos, TYPE type);
-	static CEffect *Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, float fLife, TYPE type);
+	static CEffect3D *Create(D3DXVECTOR3 pos, TYPE type);
+	static CEffect3D *Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, float fLife, TYPE type);
 	void SetMove(D3DXVECTOR3 move);
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
 	void SetPosition(const D3DXVECTOR3& pos) { m_Info.pos = pos; }

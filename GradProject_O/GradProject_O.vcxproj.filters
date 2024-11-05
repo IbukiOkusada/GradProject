@@ -103,6 +103,9 @@
     <Filter Include="edit\handle">
       <UniqueIdentifier>{2f005cd0-15d3-4503-8614-a37e4163ebf5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="effect\2D">
+      <UniqueIdentifier>{faf3f3b8-212f-476f-a7c9-b459ab3f16ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -231,10 +234,10 @@
     <ClCompile Include="code\player_manager.cpp">
       <Filter>player</Filter>
     </ClCompile>
-    <ClCompile Include="code\particle.cpp">
+    <ClCompile Include="code\particle3D.cpp">
       <Filter>effect\3D</Filter>
     </ClCompile>
-    <ClCompile Include="code\effect.cpp">
+    <ClCompile Include="code\effect3D.cpp">
       <Filter>effect\3D</Filter>
     </ClCompile>
     <ClCompile Include="code\input.cpp">
@@ -320,6 +323,9 @@
     </ClCompile>
     <ClCompile Include="code\edit_scale.cpp">
       <Filter>edit\handle</Filter>
+    </ClCompile>
+    <ClCompile Include="code\effect2D.cpp">
+      <Filter>effect\2D</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -452,10 +458,10 @@
     <ClInclude Include="code\player.h">
       <Filter>player</Filter>
     </ClInclude>
-    <ClInclude Include="code\effect.h">
+    <ClInclude Include="code\effect3D.h">
       <Filter>effect\3D</Filter>
     </ClInclude>
-    <ClInclude Include="code\particle.h">
+    <ClInclude Include="code\particle3D.h">
       <Filter>effect\3D</Filter>
     </ClInclude>
     <ClInclude Include="code\input.h">
@@ -544,6 +550,9 @@
     </ClInclude>
     <ClInclude Include="code\edit_scale.h">
       <Filter>edit\handle</Filter>
+    </ClInclude>
+    <ClInclude Include="code\effect2D.h">
+      <Filter>effect\2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

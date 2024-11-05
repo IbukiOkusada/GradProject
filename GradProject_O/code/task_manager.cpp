@@ -15,8 +15,7 @@ CTaskManager *CTaskManager::m_pInstance = nullptr;
 //==========================================================
 CTaskManager::CTaskManager()
 {
-	m_pTop = nullptr;
-	m_pCur = nullptr;
+	m_plist = nullptr;
 }
 
 //==========================================================
@@ -46,6 +45,8 @@ void CTaskManager::Uninit(void)
 	// リストの全廃棄
 	ReleaseAll();
 
+	ListRelease();
+
 	// インスタンスの廃棄
 	if (m_pInstance != nullptr)
 	{
@@ -68,20 +69,16 @@ void CTaskManager::Update(void)
 //===============================================
 void CTaskManager::ReleaseAll(void)
 {
-	CTask *pTask = m_pTop;	// 先頭を取得
-
-	while (pTask != nullptr)
+	for (int i = 0; i < GetList()->GetNum(); i++)
 	{// 使用されていない状態まで
 
-		CTask *pTaskNext = pTask->GetNext();	// 次のオブジェクトへのポインタを取得
+		CTask* pTask = GetList()->Get(i);	// 先頭を取得
 
 		if (!pTask->GetDeath())
 		{
 			// 終了処理
 			pTask->Uninit();
 		}
-
-		pTask = pTaskNext;	// 次のオブジェクトに移動
 	}
 
 	// 死亡フラグをチェック
@@ -93,17 +90,15 @@ void CTaskManager::ReleaseAll(void)
 //===============================================
 void CTaskManager::UpdateAll(void)
 {
-	CTask *pTask = m_pTop;	// 先頭を取得
 	CEditManager* pEdit = CEditManager::GetInstance();
 
-	while (pTask != nullptr)
+	for (int i = 0; i < GetList()->GetNum(); i++)
 	{// 使用されていない状態まで
 
-		CTask *pTaskNext = pTask->GetNext();	// 次のオブジェクトへのポインタを取得
+		CTask* pTask = GetList()->Get(i);	// 先頭を取得
 
 		// エディット中
 		if (pEdit != nullptr && pTask->GetType() != CTask::TYPE_MODEL) { 
-			pTask = pTaskNext;	// 次のオブジェクトに移動
 			continue;
 		}
 
@@ -112,8 +107,6 @@ void CTaskManager::UpdateAll(void)
 			// 更新処理
 			pTask->Update();
 		}
-
-		pTask = pTaskNext;	// 次のオブジェクトに移動
 	}
 
 	// 死亡フラグをチェック
@@ -125,58 +118,22 @@ void CTaskManager::UpdateAll(void)
 //===============================================
 void CTaskManager::DeathCheck(void)
 {
-	CTask *pTask = m_pTop;	// 先頭を取得
-
-	while (pTask != nullptr)
+	for (int i = 0; i < GetList()->GetNum(); i++)
 	{// 使用されていない状態まで
-		CTask *pTaskNext = pTask->GetNext();	// 次のオブジェクトへのポインタを取得
+		CTask* pTask = GetList()->Get(i);	// 先頭を取得
 
-		if (pTask->GetDeath() == true)
+		if (pTask->GetDeath())
 		{
-			// リストから自分自身を削除する
-			if (m_pTop == pTask)
-			{// 自身が先頭
-				if (pTask->GetNext() != nullptr)
-				{// 次が存在している
-					m_pTop = pTask->GetNext();	// 次を先頭にする
-					m_pTop->SetPrev(nullptr);	// 次の前のポインタを覚えていないようにする
-				}
-				else
-				{// 存在していない
-					m_pTop = nullptr;	// 先頭がない状態にする
-					m_pCur = nullptr;	// 最後尾がない状態にする
-				}
-			}
-			else if (m_pCur == pTask)
-			{// 自身が最後尾
-				if (pTask->GetPrev() != nullptr)
-				{// 次が存在している
-					m_pCur = pTask->GetPrev();		// 前を最後尾にする
-					m_pCur->SetNext(nullptr);			// 前の次のポインタを覚えていないようにする
-				}
-				else
-				{// 存在していない
-					m_pTop = nullptr;	// 先頭がない状態にする
-					m_pCur = nullptr;	// 最後尾がない状態にする
-				}
-			}
-			else
-			{
-				if (pTask->GetNext() != nullptr)
-				{
-					pTask->GetNext()->SetPrev(pTask->GetPrev());	// 自身の次に前のポインタを覚えさせる
-				}
-				if (pTask->GetPrev() != nullptr)
-				{
-					pTask->GetPrev()->SetNext(pTask->GetNext());	// 自身の前に次のポインタを覚えさせる
-				}
-			}
-
+			i--;
+			GetList()->Delete(pTask);
 			delete pTask;	// メモリの開放
 			pTask = nullptr;
-		}
 
-		pTask = pTaskNext;	// 次のオブジェクトに移動
+			if (GetList()->Empty())
+			{
+				ListRelease();
+			}
+		}
 	}
 }
 
@@ -185,17 +142,8 @@ void CTaskManager::DeathCheck(void)
 //===============================================
 void CTaskManager::ListIn(CTask *pTask)
 {
-	if (m_pTop != nullptr)
-	{// 先頭が存在している場合
-		m_pCur->SetNext(pTask);	// 現在最後尾のオブジェクトのポインタにつなげる
-		pTask->SetPrev(m_pCur);
-		m_pCur = pTask;	// 自分自身が最後尾になる
-	}
-	else
-	{// 存在しない場合
-		m_pTop = pTask;	// 自分自身が先頭になる
-		m_pCur = pTask;	// 自分自身が最後尾になる
-	}
+	//自身をリストに登録
+	GetList()->Regist(pTask);
 }
 
 //===============================================

@@ -272,14 +272,14 @@ void CMotion::LoadMotionData(FILE *pFile)
 			fscanf(pFile, "%d", &m_aInfo[m_nNumMotion].nNumKey);	//キー数読み込み
 
 																					// キー数分のメモリの確保
-			m_aInfo[m_nNumMotion].pKeyInfo = new KEY_INFO[m_aInfo[m_nNumMotion].nNumKey];
+			m_aInfo[m_nNumMotion].pKeyInfo = DEBUG_NEW KEY_INFO[m_aInfo[m_nNumMotion].nNumKey];
 
 			// パーツ数分キーを確保
 			for (int nCnt = 0; nCnt < m_aInfo[m_nNumMotion].nNumKey; nCnt++)
 			{
 				memset(&m_aInfo[m_nNumMotion].pKeyInfo[nCnt], NULL, sizeof(KEY_INFO));
 
-				m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey = new KEY[m_FileData.nNumParts];
+				m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey = DEBUG_NEW KEY[m_FileData.nNumParts];
 
 				for (int i = 0; i < m_FileData.nNumParts; i++)
 				{

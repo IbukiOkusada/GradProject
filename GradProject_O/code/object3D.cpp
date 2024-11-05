@@ -12,7 +12,6 @@
 #include "texture.h"
 #include "debugproc.h"
 #include "player.h"
-#include "particle.h"
 #include "sound.h"
 
 //==========================================================

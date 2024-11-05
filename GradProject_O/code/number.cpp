@@ -130,7 +130,7 @@ CNumber *CNumber::Create(void)
 
 	if (pNum != NULL)
 	{// 使用されていない場合
-		pNum = new CNumber;
+		pNum = DEBUG_NEW CNumber;
 
 		if (pNum != NULL)
 		{// 使用されている場合
@@ -152,7 +152,7 @@ CNumber *CNumber::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
 
 	if (pNum == NULL)
 	{// 使用されていない場合
-		pNum = new CNumber;
+		pNum = DEBUG_NEW CNumber;
 
 		if(pNum != NULL)
 		{// 使用されている場合

@@ -155,7 +155,7 @@ CMeshDome *CMeshDome::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 													// メモリの確保
-	pMeshWall = new CMeshDome;
+	pMeshWall = DEBUG_NEW CMeshDome;
 
 	if (pMeshWall != NULL)
 	{// 確保できた場合
