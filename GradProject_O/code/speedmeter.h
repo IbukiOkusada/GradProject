@@ -35,7 +35,7 @@ public:		// 誰でもアクセス可能
 
 private:	// 自分だけがアクセス可能
 
-	CObject2D* m_pFrame;   // メーターの枠のポインタ
+	CObject2D* m_pMeter;   // メーターのポインタ
 	CObject2D* m_pNeedle;  // メーターの針ポインタ
 
 	static CSpeedMeter* m_pInstance;  // スローのポインタ
