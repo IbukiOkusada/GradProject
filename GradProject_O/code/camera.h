@@ -13,6 +13,8 @@
 #define MAX_CAMERA_ROTZ (D3DX_PI * 0.999f)	// カメラ最大角度
 #define MIN_CAMERA_ROTZ (D3DX_PI * 0.01f)	// カメラ最大角度
 
+class CCameraAction;
+
 //**********************************************************
 // カメラクラスの定義
 //**********************************************************
@@ -44,6 +46,8 @@ public:	// 誰でもアクセス可能
 	void SetMode(MODE mode) { m_mode = mode; }
 	void SetOldRot(D3DXVECTOR3 rot) { m_SlowOldRot = rot; }
 	void MoveV(void);
+	void SetV(void);
+	void SetR(void);
 	void MouseCamera(void);
 	void MoveVR(void);
 	void SetPositionR(D3DXVECTOR3 pos);
@@ -76,6 +80,7 @@ public:	// 誰でもアクセス可能
 	MODE GetMode(void) { return m_mode; }
 	bool GetDraw(void) const { return m_bDraw; }
 	float GetLength(void) { return m_fLength; }
+	CCameraAction* GetAction() { return m_pAction; }
 
 	// メンバ関数(設定)
 	void SetMtxView(D3DXMATRIX mtxView) { m_mtxView = mtxView; }
@@ -90,8 +95,6 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	void MoveR(void);
-	void SetV(void);
-	void SetR(void);
 	void Slow(void);
 	void Zoom(void);
 
@@ -108,6 +111,7 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_Oldrot;   // 前の向き
 	D3DXVECTOR3 m_SlowOldRot;	// スロー前の向き
 	D3DXVECTOR3 m_GoalPos;  // ゴールの位置
+	CCameraAction* m_pAction;	// アクション用ポインタ
 	MODE m_mode;				// モード
 	float m_fMulScore;		// スコア倍率
 	float m_fLength;			// 視点と注視点の距離

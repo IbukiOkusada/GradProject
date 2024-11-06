@@ -37,7 +37,7 @@ CRoad::CRoad(const SInfo& info)
 		m_apConnectRoad[i] = nullptr;
 	}
 
-	m_nIdx = CRoadManager::GetInstance()->GetNum();
+	m_nIdx = CRoadManager::GetInstance()->GetList()->GetNum();
 	CRoadManager::GetInstance()->ListIn(this);
 }
 

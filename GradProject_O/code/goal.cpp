@@ -15,6 +15,7 @@
 #include "renderer.h"
 #include "manager.h"
 #include "debugproc.h"
+#include "camera_action.h"
 
 // マクロ定義
 Clist<CGole*> * CGole::pList = nullptr;
@@ -72,6 +73,10 @@ void CGole::Update(void)
 
 	if (CheckRange() && CheckSpeed())
 	{
+		// カメラアクション入れる
+		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+		pCamera->GetAction()->Set(pCamera, D3DXVECTOR3(0.0f, pPlayer->GetRotation().y + D3DX_PI, D3DX_PI* 0.4f), 500.0f, 2.0f, 2.0f, CCameraAction::MOVE_POSV);
 		Uninit();
 	}
 }

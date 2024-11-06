@@ -112,6 +112,9 @@
     <Filter Include="effect\2D">
       <UniqueIdentifier>{faf3f3b8-212f-476f-a7c9-b459ab3f16ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="camera\action">
+      <UniqueIdentifier>{ada2ff51-e975-444f-9b52-4d8a8a215880}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -344,6 +347,9 @@
     </ClCompile>
     <ClCompile Include="code\speedmeter.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\camera_action.cpp">
+      <Filter>camera\action</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -583,6 +589,9 @@
     </ClInclude>
     <ClInclude Include="code\speedmeter.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\camera_action.h">
+      <Filter>camera\action</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

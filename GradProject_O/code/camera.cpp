@@ -17,6 +17,7 @@
 #include "camera_manager.h"
 #include "slow.h"
 #include "edit_manager.h"
+#include "camera_action.h"
 
 //無名名前空間
 namespace
@@ -58,6 +59,7 @@ CCamera::CCamera()
 	m_nId = 0;
 	m_bActive = true;
 	m_fZoom = 1.0f;
+	m_pAction = nullptr;
 	m_fDestZoom = m_fZoom;
 
 	// リストに挿入
@@ -90,6 +92,7 @@ HRESULT CCamera::Init(void)
 	m_nZoomCount = 0;
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_GoalPos = D3DXVECTOR3(-660.0f, 100.0f, 1300.0f);
+	m_pAction = DEBUG_NEW CCameraAction;
 
 	//視点設定
 	SetV();
@@ -102,6 +105,12 @@ HRESULT CCamera::Init(void)
 //==========================================================
 void CCamera::Uninit(void)
 {
+	if (m_pAction != nullptr)
+	{
+		m_pAction->Uninit();
+		m_pAction = nullptr;
+	}
+
 	// リストから外す
 	CCameraManager::GetInstance()->ListOut(this);
 }
@@ -132,6 +141,11 @@ void CCamera::Update(void)
 		MoveV();
 		MoveR();
 		MouseCamera();
+	}
+
+	if (m_pAction != nullptr)
+	{
+		m_pAction->Update(this);
 	}
 
 	//ズーム
@@ -602,6 +616,7 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 	m_posV.y += VDiff.y * 0.9f;
 	m_posV.z += VDiff.z * 0.9f;
 
+	if(m_pAction->IsFinish())
 	//if (CManager::GetInstance()->GetSlow()->Get() == 1.0f)
 	{
 		float fRotDiff;
