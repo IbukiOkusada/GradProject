@@ -7,7 +7,7 @@
 #ifndef _SPEEDMETER_H_		// このマクロが定義されていない場合
 #define _SPEEDMETER_H_		// 二重インクルード防止用マクロを定義
 
-#include "task.h"
+#include "object.h"
 
 // 前方宣言
 class CObject2D;
@@ -15,7 +15,7 @@ class CObject2D;
 //**********************************************************
 // スピードメータークラスの定義
 //**********************************************************
-class CSpeedMeter : CTask
+class CSpeedMeter : CObject
 {
 public:		// 誰でもアクセス可能
 

@@ -170,6 +170,7 @@
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\convenience.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
+    <ClCompile Include="code\deliverystatus.cpp" />
     <ClCompile Include="code\deltatime.cpp" />
     <ClCompile Include="code\edit.cpp" />
     <ClCompile Include="code\edit_handle.cpp" />
@@ -250,6 +251,7 @@
     <ClInclude Include="code\car.h" />
     <ClInclude Include="code\car_manager.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\deliverystatus.h" />
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\edit_scale.h" />
     <ClInclude Include="code\effect2D.h" />
