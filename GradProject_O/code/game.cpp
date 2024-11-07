@@ -37,6 +37,7 @@
 #include "map_obstacle.h"
 #include "map_manager.h"
 #include "speedmeter.h"
+#include "timer.h"
 
 // 無名名前空間を定義
 namespace {
@@ -64,6 +65,7 @@ CGame::CGame()
     m_pClient = nullptr;
     m_pTimer = nullptr;
     m_pSpeedMeter = nullptr;
+    m_pGameTimer = nullptr;
     m_nSledCnt = 0;
     m_bEnd = false;
 	m_fOpenDoorUISin = 0.0f;
@@ -84,6 +86,7 @@ CGame::CGame(int nNumPlayer)
     m_pClient = nullptr;
     m_pTimer = nullptr;
     m_pSpeedMeter = nullptr;
+    m_pGameTimer = nullptr;
     m_nSledCnt = 0;
     m_bEnd = false;
 	m_fOpenDoorUISin = 0.0f;
@@ -178,6 +181,11 @@ HRESULT CGame::Init(void)
         m_pSpeedMeter = CSpeedMeter::Create();
     }
 
+    if (m_pGameTimer == nullptr)
+    {
+        m_pGameTimer = CTimer::Create();
+    }
+
     return S_OK;
 }
 
@@ -214,6 +222,12 @@ void CGame::Uninit(void)
         m_pSpeedMeter = nullptr;
     }
 
+    if (m_pGameTimer != nullptr)
+    {
+        m_pGameTimer->Uninit();
+        m_pGameTimer = nullptr;
+    }
+
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
 
@@ -243,6 +257,11 @@ void CGame::Update(void)
     if (m_pSpeedMeter != nullptr)
     {
         m_pSpeedMeter->Update();
+    }
+
+    if (m_pGameTimer != nullptr)
+    {
+        m_pGameTimer->Update();
     }
 
     // エディター関連
