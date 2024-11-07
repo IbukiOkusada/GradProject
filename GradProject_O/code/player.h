@@ -95,6 +95,7 @@ public:	// 誰でもアクセス可能
 	void SetNext(CPlayer* pNext) { m_pNext = pNext; }
 	void SetPrev(CPlayer* pPrev) { m_pPrev = pPrev; }
 	void SetRotDiff(float fDiff) { m_fRotDest = fDiff; }
+	void ThrowBaggage(D3DXVECTOR3* pTarget);
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }

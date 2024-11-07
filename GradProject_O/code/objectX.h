@@ -19,13 +19,15 @@
 class CObjectX : public CObject
 {
 public:	// 自分だけがアクセス可能
-	enum COLLISION_AXIS
+
+	enum TYPE
 	{
-		TYPE_X = 0,
-		TYPE_Y,
-		TYPE_Z,
+		TYPE_NORMAL = 0,	// 回転
+		TYPE_QUATERNION,	// クォータニオン
 		TYPE_MAX
 	};
+
+	
 public:	// 誰でもアクセス可能
 
 	CObjectX(int nPriority = 0);	// コンストラクタ
@@ -40,11 +42,6 @@ public:	// 誰でもアクセス可能
 	void BindFile(const char* file);
 
 	static CObjectX *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char *pFileName, const int nPriority = 4);
-	static bool Collision(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, COLLISION_AXIS& Axis);
-	static D3DXVECTOR3 Collision(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax, D3DXVECTOR3 vtxMinOld, D3DXVECTOR3 vtxMaxOld, COLLISION_AXIS& Axis);
-	static bool Touch(D3DXVECTOR3& pos, D3DXVECTOR3& posOld, D3DXVECTOR3& move, D3DXVECTOR3 vtxMin, D3DXVECTOR3 vtxMax);
-	static bool CollisionCloss(D3DXVECTOR3 &pos, D3DXVECTOR3 &posOld,D3DXVECTOR3* posCollisioned = nullptr);
-	static void CollisionLand(D3DXVECTOR3 &pos);
 	void SetRotSize(D3DXVECTOR3 &SetMax, D3DXVECTOR3 &SetMin, D3DXVECTOR3 vtxMax, D3DXVECTOR3 vtxMin, float fRot);
 
 	// メンバ関数(設定)
@@ -52,9 +49,11 @@ public:	// 誰でもアクセス可能
 	void SetRotation(const D3DXVECTOR3& rot);
 	void SetScale(const D3DXVECTOR3& scale);
 	void SetEnableCollision(const bool bEnable) { m_bEnableCollision = bEnable; }
+	void SetRotateType(const TYPE& type) { m_Type = type; }
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
+	D3DXVECTOR3* GetPos(void) { return &m_pos; }
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
 	D3DXVECTOR3 GetScale(void) { return m_scale; }
 	CObject2D *GetObject2D(void) { return NULL; }
@@ -91,6 +90,7 @@ private:	// 自分だけがアクセス可能
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 	D3DXCOLOR m_ColMulti;
 	D3DXCOLOR m_AddCol;
+	TYPE m_Type;			// 回転種類
 	int m_nIdxModel;		// モデル番号
 	bool m_bEnableCollision;	//当たり判定の有効・無効
 };

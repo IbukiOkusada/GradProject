@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="code\baggage.cpp" />
     <ClCompile Include="code\billboard.cpp" />
     <ClCompile Include="code\bridge.cpp" />
     <ClCompile Include="code\camera.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\convenience.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
+    <ClCompile Include="code\deliverystatus.cpp" />
     <ClCompile Include="code\deltatime.cpp" />
     <ClCompile Include="code\edit.cpp" />
     <ClCompile Include="code\edit_handle.cpp" />
@@ -243,6 +245,7 @@
     <ClCompile Include="code\timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="code\baggage.h" />
     <ClInclude Include="code\camera_action.h" />
     <ClInclude Include="code\billboard.h" />
     <ClInclude Include="code\bridge.h" />
@@ -251,6 +254,7 @@
     <ClInclude Include="code\car.h" />
     <ClInclude Include="code\car_manager.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\deliverystatus.h" />
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\edit_scale.h" />
     <ClInclude Include="code\effect2D.h" />

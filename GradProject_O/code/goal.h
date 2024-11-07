@@ -13,6 +13,8 @@
 //#include "task.h"	// これでファイルインクルードできます
 //前方宣言
 class CMeshCylinder;
+class CObjectX;
+
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
@@ -39,10 +41,13 @@ private:	// 自分だけがアクセス可能
 	bool CheckRange();
 	bool CheckSpeed();
 	void ScreenEffect();
+
 	// メンバ変数
 	D3DXVECTOR3 m_pos;				// 座標
 	float m_fRange;					// ゴールの範囲
 	float m_fLimit;					// 速度制限
+	bool m_bEnd;					// 終了地点
+	CObjectX* m_pPeople;			// 人
 
 	CEffekseer::CEffectData* pEffect;
 	static Clist<CGole*>* pList;	// 自分のリスト*GetInstance()経由でアクセスする事*

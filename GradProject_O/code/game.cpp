@@ -37,6 +37,7 @@
 #include "map_obstacle.h"
 #include "map_manager.h"
 #include "speedmeter.h"
+#include "camera_manager.h"
 #include "timer.h"
 
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
@@ -163,7 +164,7 @@ HRESULT CGame::Init(void)
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
-    for (int i = 0; i < 5; i++)
+    /*for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     }
@@ -171,10 +172,13 @@ HRESULT CGame::Init(void)
     for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-    }
+    }*/
 
-    CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 15.0f);
-    CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 15.0f);
+    CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
+    CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
+    CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
+
+    CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
     if (m_pSpeedMeter == nullptr)
     {

@@ -61,6 +61,7 @@ HRESULT CObjectX::Init(void)
 {
 
 	//各種変数の初期化
+	m_Type = TYPE_NORMAL;
 	m_scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -96,8 +97,15 @@ void CObjectX::Draw(void)
 	//Update();
 
 	// マトリックス計算
-	//CalWorldMtx();
-	Quaternion();
+	if (m_Type == TYPE_NORMAL)
+	{
+		CalWorldMtx();
+	}
+	else
+	{
+		Quaternion();
+	}
+
 	// 描画
 	DrawOnry();
 }
@@ -190,14 +198,14 @@ void CObjectX::DrawOnry()
 	for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
 	{
 		D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
-		mat.Diffuse.r = mat.Diffuse.r * m_ColMulti.r + m_AddCol.r;
+		/*mat.Diffuse.r = mat.Diffuse.r * m_ColMulti.r + m_AddCol.r;
 		mat.Diffuse.g = mat.Diffuse.g * m_ColMulti.g + m_AddCol.g;
 		mat.Diffuse.b = mat.Diffuse.b * m_ColMulti.b + m_AddCol.b;
 		mat.Diffuse.a = mat.Diffuse.a * m_ColMulti.a + m_AddCol.a;
 		mat.Ambient.r = mat.Ambient.r * m_ColMulti.r + m_AddCol.r;
 		mat.Ambient.g = mat.Ambient.g * m_ColMulti.g + m_AddCol.g;
 		mat.Ambient.b = mat.Ambient.b * m_ColMulti.b + m_AddCol.b;
-		mat.Ambient.a = mat.Ambient.a * m_ColMulti.a + m_AddCol.a;
+		mat.Ambient.a = mat.Ambient.a * m_ColMulti.a + m_AddCol.a;*/
 
 		//マテリアルの設定
 		pDevice->SetMaterial(&mat);
@@ -286,31 +294,52 @@ void CObjectX::SetRotation(const D3DXVECTOR3& rot)
 { 
 	m_rot = rot;
 
-	if (m_rot.z < -D3DX_PI)
-	{// z座標角度限界
-		m_rot.z += D3DX_PI * 2;
-	}
-	else if (m_rot.z > D3DX_PI)
-	{// z座標角度限界
-		m_rot.z += -D3DX_PI * 2;
-	}
-
-	if (m_rot.x < -D3DX_PI)
-	{// x座標角度限界
-		m_rot.x += D3DX_PI * 2;
-	}
-	else if (m_rot.x > D3DX_PI)
-	{// x座標角度限界
-		m_rot.x += -D3DX_PI * 2;
+	while (1)
+	{
+		if (m_rot.z < -D3DX_PI)
+		{// z座標角度限界
+			m_rot.z += D3DX_PI * 2;
+		}
+		else if (m_rot.z > D3DX_PI)
+		{// z座標角度限界
+			m_rot.z += -D3DX_PI * 2;
+		}
+		else
+		{
+			break;
+		}
 	}
 
-	if (m_rot.y < -D3DX_PI)
-	{// x座標角度限界
-		m_rot.y += D3DX_PI * 2;
+	while (1)
+	{
+		if (m_rot.x < -D3DX_PI)
+		{// x座標角度限界
+			m_rot.x += D3DX_PI * 2;
+		}
+		else if (m_rot.x > D3DX_PI)
+		{// x座標角度限界
+			m_rot.x += -D3DX_PI * 2;
+		}
+		else
+		{
+			break;
+		}
 	}
-	else if (m_rot.y > D3DX_PI)
-	{// x座標角度限界
-		m_rot.y += -D3DX_PI * 2;
+
+	while (1)
+	{
+		if (m_rot.y < -D3DX_PI)
+		{// x座標角度限界
+			m_rot.y += D3DX_PI * 2;
+		}
+		else if (m_rot.y > D3DX_PI)
+		{// x座標角度限界
+			m_rot.y += -D3DX_PI * 2;
+		}
+		else
+		{
+			break;
+		}
 	}
 }
 
@@ -416,42 +445,6 @@ void CObjectX::ListOut(void)
 		{
 			m_pPrev->m_pNext = m_pNext;	// 自身の前に次のポインタを覚えさせる
 		}
-	}
-}
-
-void CObjectX::CollisionLand(D3DXVECTOR3 &pos)
-{
-	CObjectX *pObj = m_pTop;	// 先頭取得
-	CXFile *pFile = CManager::GetInstance()->GetModelFile();
-
-	while (pObj != NULL)
-	{
-		CObjectX *pObjNext = pObj->m_pNext;
-		D3DXVECTOR3 vtxObjMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		D3DXVECTOR3 vtxObjMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-		// 向きを反映
-		int nIdx = pObj->GetIdx();
-		pObj->SetRotSize(vtxObjMax,
-			vtxObjMin,
-			pFile->GetMax(nIdx),
-			pFile->GetMin(nIdx),
-			pObj->m_rot.y);
-
-		if (pos.x >= pObj->m_pos.x + vtxObjMin.x
-			&& pos.x <= pObj->m_pos.x + vtxObjMax.x
-			&& pos.z >= pObj->m_pos.z + vtxObjMin.z
-			&& pos.z <= pObj->m_pos.z + vtxObjMax.z)
-		{//範囲内にある
-			//上からの判定
-			if (pos.y >= pObj->m_pos.y + vtxObjMax.y)
-			{//上からめり込んだ
-				//上にのせる
-				pos.y = pObj->m_pos.y + vtxObjMax.y + 4.0f;
-			}
-		}
-
-		pObj = pObjNext;
 	}
 }
 
