@@ -37,6 +37,7 @@
 #include "map_obstacle.h"
 #include "map_manager.h"
 #include "speedmeter.h"
+#include "meter.h"
 #include "camera_manager.h"
 #include "deliverystatus.h"
 #include "player_manager.h"
@@ -174,6 +175,7 @@ HRESULT CGame::Init(void)
 
     CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
+    CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
     /*for (int i = 0; i < 5; i++)

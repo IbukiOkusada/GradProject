@@ -40,6 +40,7 @@
 #include "collision.h"
 #include "deltatime.h"
 #include "bridge.h"
+#include "meter.h"
 #include "baggage.h"
 #include "camera_action.h"
 
@@ -161,6 +162,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
+	
 	CBridge::Create(D3DXVECTOR3(10000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
 	return S_OK;
 }
@@ -576,12 +578,12 @@ void CPlayer::Nitro()
 	{
  		Damage(LIFE * 0.1f);
 		m_Info.state = STATE::STATE_NITRO;
-		m_Info.fStateCounter = 60.0f;
+		m_Info.fStateCounter = 6.0f;
 		m_fNitroCool = 120.0f;
 	}
 	if (m_Info.state == STATE::STATE_NITRO)
 	{
-		m_fEngine = 2.0f;
+		m_fEngine = 1.5f;
 	}
 	else
 	{

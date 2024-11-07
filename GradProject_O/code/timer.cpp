@@ -55,16 +55,22 @@ HRESULT CTimer::Init(void)
 	for (int Cnt = 0; Cnt < 5; Cnt++)
 	{
 		// ƒ|ƒŠƒSƒ“‚Ì¶¬
-		if (Cnt >= 3)
+		switch (Cnt)
 		{
+		case 3:
 			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * 60.0f, NUMBER::POS.y + NUMBER::HEIGHT * (1 - NUMBER::MAG) * 0.5f, 0.0f),
 				NUMBER::WIDTH * NUMBER::MAG, NUMBER::HEIGHT * NUMBER::MAG);
-		}
+			break;
 
-		else
-		{
-			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + (Cnt - 2) * 60.0f, 50.0f, 0.0f),
+		case 4:
+			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * 60.0f * 0.8f, NUMBER::POS.y + NUMBER::HEIGHT * (1 - NUMBER::MAG) * 0.5f, 0.0f),
+				NUMBER::WIDTH * NUMBER::MAG, NUMBER::HEIGHT * NUMBER::MAG);
+			break;
+
+		default:
+			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * 60.0f, NUMBER::POS.y, 0.0f),
 				NUMBER::WIDTH, NUMBER::HEIGHT);
+			break;
 		}
 
 		m_Time[Cnt] = 0;
