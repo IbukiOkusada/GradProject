@@ -42,6 +42,7 @@
 #include "player_manager.h"
 #include "camera_action.h"
 #include "camera_manager.h"
+#include "timer.h"
 
 // 無名名前空間を定義
 namespace {
@@ -71,6 +72,7 @@ CGame::CGame()
     m_pTimer = nullptr;
     m_pSpeedMeter = nullptr;
     m_pDeliveryStatus = nullptr;
+    m_pGameTimer = nullptr;
     m_nSledCnt = 0;
     m_bEnd = false;
 	m_fOpenDoorUISin = 0.0f;
@@ -93,6 +95,7 @@ CGame::CGame(int nNumPlayer)
     m_pTimer = nullptr;
     m_pSpeedMeter = nullptr;
     m_pDeliveryStatus = nullptr;
+    m_pGameTimer = nullptr;
     m_nSledCnt = 0;
     m_bEnd = false;
 	m_fOpenDoorUISin = 0.0f;
@@ -199,6 +202,11 @@ HRESULT CGame::Init(void)
         m_pDeliveryStatus = CDeliveryStatus::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.6f, 0.0f), m_nTotalDeliveryStatus);
     }
 
+    if (m_pGameTimer == nullptr)
+    {
+        m_pGameTimer = CTimer::Create();
+    }
+
     return S_OK;
 }
 
@@ -241,6 +249,12 @@ void CGame::Uninit(void)
         m_pDeliveryStatus = nullptr;
     }
 
+    if (m_pGameTimer != nullptr)
+    {
+        m_pGameTimer->Uninit();
+        m_pGameTimer = nullptr;
+    }
+
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
 
@@ -266,6 +280,11 @@ void CGame::Update(void)
 	{//ポーズキー(Pキー)が押された
 		m_bPause = m_bPause ? false : true;
 	}
+
+    if (m_pGameTimer != nullptr)
+    {
+        m_pGameTimer->Update();
+    }
 
     // エディター関連
 #if _DEBUG

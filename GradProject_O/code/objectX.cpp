@@ -179,6 +179,9 @@ void CObjectX::DrawOnry()
 	D3DMATERIAL9 matDef;					//現在のマテリアル保存用
 	D3DXMATERIAL* pMat;						//マテリアルデータへのポインタ
 
+	// 正規化を有効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+
 	// モデル使用されていない
 	if (pFileData == nullptr) { return; }
 
@@ -198,14 +201,14 @@ void CObjectX::DrawOnry()
 	for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
 	{
 		D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
-		/*mat.Diffuse.r = mat.Diffuse.r * m_ColMulti.r + m_AddCol.r;
+		mat.Diffuse.r = mat.Diffuse.r * m_ColMulti.r + m_AddCol.r;
 		mat.Diffuse.g = mat.Diffuse.g * m_ColMulti.g + m_AddCol.g;
 		mat.Diffuse.b = mat.Diffuse.b * m_ColMulti.b + m_AddCol.b;
 		mat.Diffuse.a = mat.Diffuse.a * m_ColMulti.a + m_AddCol.a;
 		mat.Ambient.r = mat.Ambient.r * m_ColMulti.r + m_AddCol.r;
 		mat.Ambient.g = mat.Ambient.g * m_ColMulti.g + m_AddCol.g;
 		mat.Ambient.b = mat.Ambient.b * m_ColMulti.b + m_AddCol.b;
-		mat.Ambient.a = mat.Ambient.a * m_ColMulti.a + m_AddCol.a;*/
+		mat.Ambient.a = mat.Ambient.a * m_ColMulti.a + m_AddCol.a;
 
 		//マテリアルの設定
 		pDevice->SetMaterial(&mat);
@@ -224,6 +227,9 @@ void CObjectX::DrawOnry()
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+
+	// 正規化を無効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
 }
 
 //==========================================================

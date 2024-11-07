@@ -242,6 +242,7 @@
     <ClCompile Include="code\road.cpp" />
     <ClCompile Include="code\edit_arrow.cpp" />
     <ClCompile Include="code\map_manager.cpp" />
+    <ClCompile Include="code\timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\baggage.h" />
@@ -326,6 +327,7 @@
     <ClInclude Include="code\edit_arrow.h" />
     <ClInclude Include="code\map_manager.h" />
     <ClInclude Include="code\edit_handle.h" />
+    <ClInclude Include="code\timer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
