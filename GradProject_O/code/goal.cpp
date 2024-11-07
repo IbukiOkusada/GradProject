@@ -89,6 +89,7 @@ void CGole::Update(void)
 		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
 		m_bEnd = true;
 		pPlayer->ThrowBaggage(m_pPeople->GetPos());
+		pPlayer->AddDeliveryCount();
 		SAFE_DELETE(pEffect);
 	}
 

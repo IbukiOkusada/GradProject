@@ -19,6 +19,7 @@ class CClient;
 class CMeshDome;
 class CPause;
 class CSpeedMeter;
+class CDeliveryStatus;
 class CTimer;
 
 // マクロ定義
@@ -62,7 +63,7 @@ public:
 	CTime* GetTime(void)override { return m_pTimer; }
 	static void SetNumPlayer(int nNum) { m_nNumPlayer = nNum; }
 	static int GetNumPlayer(void) { return m_nNumPlayer; }
-
+	
 	// メンバ関数(ポインタ)
 	CPlayer *GetPlayer(void);
 	CFileLoad *GetFileLoad(void);
@@ -84,6 +85,7 @@ private:
 	CTime *m_pTimer;			// タイマー
 	CClient *m_pClient;			// クライアントのポインタ
 	CSpeedMeter* m_pSpeedMeter; // スピードメーターのポインタ
+	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ
 	CTimer* m_pGameTimer;		// タイマーのポインタ
 	char m_aAddress[30];		// 接続先サーバーのアドレス
 	static STATE m_state;		// 状態
@@ -95,6 +97,8 @@ private:
 	bool m_bEnd;
 	float m_fOpenDoorUISin;
 	bool m_bPause;              // ポーズ
+	int m_nTotalDeliveryStatus;  // プレイヤーが配達する数
+	
 };
 
 #endif
