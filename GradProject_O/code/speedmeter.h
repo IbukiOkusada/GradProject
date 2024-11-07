@@ -35,10 +35,12 @@ public:		// 誰でもアクセス可能
 
 private:	// 自分だけがアクセス可能
 
+	void Needle(void);     // 針の制御処理
+
 	CObject2D* m_pMeter;   // メーターのポインタ
 	CObject2D* m_pNeedle;  // メーターの針ポインタ
 
-	static CSpeedMeter* m_pInstance;  // スローのポインタ
+	static CSpeedMeter* m_pInstance;  // 自身ののポインタ
 };
 
 #endif
