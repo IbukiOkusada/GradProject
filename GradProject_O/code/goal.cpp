@@ -89,6 +89,7 @@ void CGole::Update(void)
 		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
 		m_bEnd = true;
 		pPlayer->ThrowBaggage(m_pPeople->GetPos());
+		pPlayer->AddDeliveryCount();
 		SAFE_DELETE(pEffect);
 	}
 
@@ -96,7 +97,6 @@ void CGole::Update(void)
 	{
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 		pCamera->GetAction()->SetFinish(true);
-		pPlayer->AddDeliveryCount();
 		Uninit();
 	}
 }
