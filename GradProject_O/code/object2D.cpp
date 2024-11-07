@@ -175,7 +175,7 @@ HRESULT CObject2D::Init(const char *pFileName)
 	}
 
 	//‘ÎŠpü‚Ì’·‚³‚ğZo‚·‚é
-	m_fLength = sqrtf(m_fWidth * m_fWidth + m_fHeight * m_fHeight) * 0.5f;
+	m_fLength = sqrtf(m_fWidth * m_fWidth + m_fHeight * m_fHeight) * 1.5f;
 
 	//‘ÎŠpü‚ÌŠp“x‚ğZo‚·‚é
 	m_fAngle = atan2f(m_fWidth, m_fHeight);
