@@ -16,6 +16,7 @@ namespace
 {
 	const int NUMBER_NUM = (5);
 	const int METER_NUM = (29);
+	const int ANIM_COUNT = (180);
 	const float ONE_METRE = (160.0f);
 	D3DXVECTOR3 OFFSET_NUMBER = (D3DXVECTOR3(-60.0f, -14.0f, 0.0f));
 	D3DXVECTOR3 INTERVAL_NUMBER = (D3DXVECTOR3(30.0f, 0.0f, 0.0f));
@@ -38,8 +39,8 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Update(void);
 	static CMeter* Create(void);
-
-	void Measure();
+	void BootAnimation();
+	void Measure();;
 	// メンバ関数(取得)
 
 	// メンバ関数(設定)
@@ -47,7 +48,13 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-
+	enum STATE
+	{
+		STATE_NONE = 0,
+		STATE_BOOT,
+		STATE_NORMAL,
+		STATE_MAX
+	};
 	// メンバ変数
 	D3DXVECTOR3 m_pos;
 
@@ -58,7 +65,8 @@ private:	// 自分だけがアクセス可能
 	CObject2D* m_pNitroGage;
 	CObject2D* m_pCircle;
 	CObject2D* m_pInnerCircle;
-
+	STATE m_state;
+	int m_nStateCount;
 };
 
 #endif

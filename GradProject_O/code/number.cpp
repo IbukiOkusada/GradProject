@@ -97,7 +97,7 @@ void CNumber::Uninit(void)
 		m_pObject2D->Uninit();
 		m_pObject2D = NULL;
 	}
-
+	
 	delete this;
 }
 

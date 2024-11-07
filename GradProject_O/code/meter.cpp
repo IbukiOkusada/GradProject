@@ -17,7 +17,7 @@
 //==========================================================
 CMeter::CMeter()
 {
-
+	m_state = STATE_NONE;
 	// 値のクリア
 }
 
@@ -37,6 +37,8 @@ HRESULT CMeter::Init(void)
 	m_pos = D3DXVECTOR3(200.0f, 550.0f, 0.0f);
 	D3DXVECTOR3 offset = VECTOR3_ZERO;
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();
+	m_state = STATE_BOOT;
+	m_nStateCount = ANIM_COUNT;
 	for (int i = 0; i < NUMBER_NUM; i++)
 	{
 		float Scale = 1.0f;
@@ -66,13 +68,13 @@ HRESULT CMeter::Init(void)
 
 
 	m_pFrame = CObject2D::Create(m_pos, VECTOR3_ZERO,7);
-	m_pFrame->SetSize(100.0f, 100.0f);
+	m_pFrame->SetSize(0.0f, 0.0f);
 	m_pFrame->BindTexture(pTexture->Regist("data\\TEXTURE\\UI\\frame.png"));
 	m_pCircle = CObject2D::Create(m_pos, VECTOR3_ZERO, 7);
-	m_pCircle->SetLength(210.0f);
+	m_pCircle->SetLength(0);
 	m_pCircle->BindTexture(pTexture->Regist("data\\TEXTURE\\UI\\circle.png"));
 	m_pInnerCircle = CObject2D::Create(m_pos, VECTOR3_ZERO, 7);
-	m_pInnerCircle->SetLength(150.0f);
+	m_pInnerCircle->SetLength(500.0f);
 	m_pInnerCircle->BindTexture(pTexture->Regist("data\\TEXTURE\\UI\\inner_circle.png"));
 	return S_OK;
 }
@@ -82,6 +84,11 @@ HRESULT CMeter::Init(void)
 //==========================================================
 void CMeter::Uninit(void)
 {
+	for (int i = 0; i < NUMBER_NUM; i++)
+	{
+		SAFE_DELETE(m_pNumber[i]);
+	}
+	
 	Release();
 }
 
@@ -94,7 +101,59 @@ void CMeter::Update(void)
 	m_pCircle->SetVtx();
 	m_pInnerCircle->SetRotation(D3DXVECTOR3(0.0f, 0.0f, m_pInnerCircle->GetRotation().z + 0.005f));
 	m_pInnerCircle->SetVtx();
-	Measure();
+	switch (m_state)
+	{
+	case CMeter::STATE_NONE:
+		break;
+	case CMeter::STATE_BOOT:
+		BootAnimation();
+		break;
+	case CMeter::STATE_NORMAL:
+		Measure();
+		break;
+	case CMeter::STATE_MAX:
+		break;
+	default:
+		break;
+	}
+	m_nStateCount--;
+	if (m_nStateCount <= 0)
+	{
+		m_state = STATE_NORMAL;
+	}
+	
+}
+//==========================================================
+// 更新処理
+//==========================================================
+void CMeter::BootAnimation(void)
+{
+	m_pFrame->SetSize(m_pFrame->GetHeight()+((100.0f- m_pFrame->GetHeight())*0.1f), m_pFrame->GetWidth() + ((100.0f - m_pFrame->GetWidth()) * 0.1f));
+	m_pCircle->SetLength(m_pCircle->GetLength() + ((210.0f - m_pCircle->GetLength()) * 0.05f));
+	m_pCircle->SetRotation(D3DXVECTOR3(0.0f, 0.0f, m_pCircle->GetRotation().z - ((210.0f - m_pCircle->GetLength())/210.0f*2)));
+	m_pInnerCircle->SetLength(m_pInnerCircle->GetLength() + ((190.0f - m_pInnerCircle->GetLength()) * 0.05f));
+	for (int i = 0; i < NUMBER_NUM; i++)
+	{
+		if ((ANIM_COUNT / NUMBER_NUM) * i <= (ANIM_COUNT - m_nStateCount))
+		{
+			m_pNumber[i]->GetObject2D()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		else
+		{
+			m_pNumber[i]->GetObject2D()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		}
+	}
+	for (int i = 0; i < METER_NUM; i++)
+	{
+		if ((3* METER_NUM) - (3*i) >m_nStateCount)
+		{
+			m_pMeter[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
+		}
+		else
+		{
+			m_pMeter[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		}
+	}
 }
 //==========================================================
 // 計測処理
@@ -104,7 +163,7 @@ void CMeter::Measure(void)
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
 	float fDelta = CManager::GetInstance()->GetDeltaTime()->GetDeltaTime();
 	float fSpeed = GetDistance(pPlayer->GetMove(), VECTOR3_ZERO);
-	fSpeed = fSpeed * 60.0f * 60.0f * fDelta / ONE_METRE * 3;
+	fSpeed = fSpeed * 60.0f * 60.0f *6.0f* fDelta / ONE_METRE;
 	int nSpeed = (int)(fSpeed * 100.0f);
 	CManager::GetInstance()->GetDebugProc()->Print("Speed:%f", fSpeed);
 	m_pNumber[0]->SetIdx(nSpeed % 100000 / 10000);
