@@ -38,10 +38,18 @@
 #include "map_manager.h"
 #include "speedmeter.h"
 #include "meter.h"
+#include "camera_manager.h"
+#include "deliverystatus.h"
+#include "player_manager.h"
+#include "camera_action.h"
+#include "camera_manager.h"
+#include "timer.h"
+
 // 無名名前空間を定義
 namespace {
     const int MAX_STRING = (2048);
     const int DEF_PORT = (22333);
+    const int TOTAL_POINT = 3;  // 配達する総数
     const char* ADDRESSFILE	= "data\\TXT\\address.txt";
 }
 
@@ -64,11 +72,14 @@ CGame::CGame()
     m_pClient = nullptr;
     m_pTimer = nullptr;
     m_pSpeedMeter = nullptr;
+    m_pDeliveryStatus = nullptr;
+    m_pGameTimer = nullptr;
     m_nSledCnt = 0;
     m_bEnd = false;
 	m_fOpenDoorUISin = 0.0f;
     m_bPause = false;
     m_pPause = nullptr;
+    m_nTotalDeliveryStatus = 0;
 }
 
 //===============================================
@@ -84,11 +95,14 @@ CGame::CGame(int nNumPlayer)
     m_pClient = nullptr;
     m_pTimer = nullptr;
     m_pSpeedMeter = nullptr;
+    m_pDeliveryStatus = nullptr;
+    m_pGameTimer = nullptr;
     m_nSledCnt = 0;
     m_bEnd = false;
 	m_fOpenDoorUISin = 0.0f;
     m_bPause = false;
     m_pPause = nullptr;
+    m_nTotalDeliveryStatus = 0;
 
     // 人数設定
     m_nNumPlayer = nNumPlayer;
@@ -151,6 +165,9 @@ HRESULT CGame::Init(void)
         break;
     }
 
+    // 配達する総数
+    m_nTotalDeliveryStatus = TOTAL_POINT;
+
     CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 
     // マップ読み込み
@@ -161,7 +178,7 @@ HRESULT CGame::Init(void)
     CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
-    for (int i = 0; i < 5; i++)
+    /*for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     }
@@ -169,14 +186,27 @@ HRESULT CGame::Init(void)
     for (int i = 0; i < 5; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-    }
+    }*/
 
-    CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 15.0f);
-    CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 15.0f);
+    CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
+    CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
+    CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
+
+    CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
     if (m_pSpeedMeter == nullptr)
     {
         m_pSpeedMeter = CSpeedMeter::Create();
+    }
+
+    if (m_pDeliveryStatus == nullptr)
+    {
+        m_pDeliveryStatus = CDeliveryStatus::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.6f, 0.0f), m_nTotalDeliveryStatus);
+    }
+
+    if (m_pGameTimer == nullptr)
+    {
+        m_pGameTimer = CTimer::Create();
     }
 
     return S_OK;
@@ -215,6 +245,18 @@ void CGame::Uninit(void)
         m_pSpeedMeter = nullptr;
     }
 
+    if (m_pDeliveryStatus != nullptr)
+    {
+        m_pDeliveryStatus->Uninit();
+        m_pDeliveryStatus = nullptr;
+    }
+
+    if (m_pGameTimer != nullptr)
+    {
+        m_pGameTimer->Uninit();
+        m_pGameTimer = nullptr;
+    }
+
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
 
@@ -241,9 +283,9 @@ void CGame::Update(void)
 		m_bPause = m_bPause ? false : true;
 	}
 
-    if (m_pSpeedMeter != nullptr)
+    if (m_pGameTimer != nullptr)
     {
-        m_pSpeedMeter->Update();
+        m_pGameTimer->Update();
     }
 
     // エディター関連
@@ -261,8 +303,12 @@ void CGame::Update(void)
 
 #endif
 
-    if (CGole::GetInstance()->GetNum() == 0)
-    {
+    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+    int nNum = pPlayer->GetNumDeliverStatus();
+    CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+    if (m_nTotalDeliveryStatus <= nNum && pCamera->GetAction()->IsFinish())
+    {// 配達する総数以上かつカメラの演出が終了している
+
         CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
     }
 

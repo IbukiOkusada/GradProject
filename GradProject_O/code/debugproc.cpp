@@ -146,7 +146,7 @@ void CDebugProc::Update(void)
 	}
 
 	{
-		Print("       ƒJƒƒ‰” : [%d]\n", CCameraManager::GetInstance()->GetNum());
+		Print("       ƒJƒƒ‰” : [%d] : ‹——£ [%f]\n", CCameraManager::GetInstance()->GetNum(), CManager::GetInstance()->GetCamera()->GetLength());
 	}
 
 	{

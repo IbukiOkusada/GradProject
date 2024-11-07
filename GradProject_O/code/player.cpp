@@ -41,6 +41,9 @@
 #include "deltatime.h"
 #include "bridge.h"
 #include "meter.h"
+#include "baggage.h"
+#include "camera_action.h"
+
 //===============================================
 // マクロ定義
 //===============================================
@@ -73,6 +76,7 @@ namespace
 	const float JUMP = (16.0f);
 	const float REF_INER = (1.2f);	// 壁で反射する時の倍率
 	const float FRAME_RATE_SCALER = 60.0f;  // フレームレートを考慮した速度の調整
+	const float BAGGAGE_LENGTH = 200.0f;
 }
 
 // 前方宣言
@@ -118,6 +122,7 @@ CPlayer::CPlayer()
 	m_pSound = nullptr;
 	m_fbrakePitch = 0.0f;
 	m_fbrakeVolume = 0.0f;
+	m_nNumDeliveryStatus = 0;
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -151,6 +156,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
+	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
 	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
@@ -244,6 +250,7 @@ void CPlayer::Update(void)
 		}
 	}
 
+	if(CBaggage::GetList()->GetNum() == 0)
 	{
 		D3DXVECTOR3 rot = GetRotation();
 		rot.y -= D3DX_PI * 0.5f;
@@ -404,20 +411,26 @@ void  CPlayer::Engine(float fThrottle)
 //===============================================
 void CPlayer::Rotate(void)
 {
+	float slowmulti = CManager::GetInstance()->GetDeltaTime()->GetSlow();
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad* pInputPad = CInputPad::GetInstance();
+	float diff = 0.0f;
+
 	if (pInputKey->GetPress(DIK_D))
 	{
-		m_fHandle = 1.0f;
+		diff = 1.0f;
 	}
 	else if (pInputKey->GetPress(DIK_A))
 	{
-		m_fHandle = -1.0f;
+		diff = -1.0f;
 	}
 	else
 	{
-		m_fHandle = pInputPad->GetLStick(0, 0.1f).x;
+		diff = pInputPad->GetLStick(0, 0.1f).x;
 	}
+
+	float dest = (diff - m_fHandle) * slowmulti;
+	m_fHandle += dest * slowmulti;
 	
 	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT);
 	m_fTurnSpeed*= TUURN_INER;
@@ -720,4 +733,23 @@ void CPlayer::SetMotion(int nMotion)
 void CPlayer::SetDraw(bool bDraw)
 {
 	
+}
+
+//===============================================
+// 荷物を投げる
+//===============================================
+void CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
+{
+	if (pTarget == nullptr) { return; }
+
+	/*CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+	float rotY = atan2f(m_Info.pos.z - pTarget->z, m_Info.pos.x - pTarget->x);
+	pCamera->GetAction()->Set(pCamera, D3DXVECTOR3(0.0f, rotY, D3DX_PI * 0.35f), 600.0f, 0.5f, 1.0f, CCameraAction::MOVE_POSV, true);*/
+
+	D3DXVECTOR3 pos = GetPosition();
+
+	pos.y += 100.0f;
+
+	// 荷物の生成
+	CBaggage::Create(pos, pTarget, 0.75f, this);
 }

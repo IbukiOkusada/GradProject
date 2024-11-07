@@ -121,6 +121,9 @@
     <Filter Include="UI\meter">
       <UniqueIdentifier>{caba457e-046f-4fb6-9253-9fe4251aa6fb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="baggage">
+      <UniqueIdentifier>{2065a550-8ad1-4ce6-b3fd-ffd39181a65b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -362,6 +365,12 @@
     </ClCompile>
     <ClCompile Include="code\meter.cpp">
       <Filter>UI\meter</Filter>
+    </ClCompile>
+    <ClCompile Include="code\baggage.cpp">
+      <Filter>baggage</Filter>
+    </ClCompile>
+    <ClCompile Include="code\timer.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -610,6 +619,12 @@
     </ClInclude>
     <ClInclude Include="code\gimmick.h">
       <Filter>gimmick</Filter>
+    </ClInclude>
+    <ClInclude Include="code\baggage.h">
+      <Filter>baggage</Filter>
+    </ClInclude>
+    <ClInclude Include="code\timer.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

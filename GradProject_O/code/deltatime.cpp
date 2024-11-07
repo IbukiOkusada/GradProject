@@ -119,34 +119,34 @@ float CDeltaTime::GetDeltaTime(void)
 //==========================================================
 void CDeltaTime::Slow(void)
 {
-	// フラグが立っていないとき処理を抜ける
-	if (!m_bSlow)
-		return;
+	//// フラグが立っていないとき処理を抜ける
+	//if (!m_bSlow)
+	//	return;
 
-	if (m_nSlowTime > 0)
-	{// スローにする
+	//if (m_nSlowTime > 0)
+	//{// スローにする
 
-		m_SlowTimeCount++;	// カウントアップ
+	//	m_SlowTimeCount++;	// カウントアップ
 
-		if (m_SlowTimeCount % m_nSlowTime == 0)
-		{// スローの規定値を超えた場合
+	//	if (m_SlowTimeCount % m_nSlowTime == 0)
+	//	{// スローの規定値を超えた場合
 
-			m_SlowTimeCount = 0;
+	//		m_SlowTimeCount = 0;
 
-			m_nSlowTime--;
-		}
-	}
+	//		m_nSlowTime--;
+	//	}
+	//}
 
-	if (m_nSlowTime > 0)
-	{
-		m_fAdd = (SLOW_RATE / (float)(m_nSlowTime)) * m_Timer.DeltaTime.count();	// 位置フレーム辺りの倍率
-	}
-	else
-	{
-		m_fAdd = SLOW_RATE * m_Timer.DeltaTime.count();
+	//if (m_nSlowTime > 0)
+	//{
+	//	m_fAdd = (SLOW_RATE / (float)(m_nSlowTime)) * m_Timer.DeltaTime.count();	// 位置フレーム辺りの倍率
+	//}
+	//else
+	//{
+	//	m_fAdd = SLOW_RATE * m_Timer.DeltaTime.count();
 
-		m_bSlow = false;
-	}
+	//	m_bSlow = false;
+	//}
 
 	CManager::GetInstance()->GetDebugProc()->Print("[ スロー中 ]\n");
 }

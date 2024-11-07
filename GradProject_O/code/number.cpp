@@ -94,8 +94,11 @@ void CNumber::Uninit(void)
 {
 	if (m_pObject2D != NULL)
 	{// Žg—p‚³‚ê‚Ä‚¢‚éê‡
+		m_pObject2D->Uninit();
 		m_pObject2D = NULL;
 	}
+
+	delete this;
 }
 
 //===============================================
