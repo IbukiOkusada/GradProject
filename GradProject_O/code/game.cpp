@@ -48,7 +48,7 @@
 namespace {
     const int MAX_STRING = (2048);
     const int DEF_PORT = (22333);
-    const int TOTAL_POINT = 2;  // 配達する総数
+    const int TOTAL_POINT = 3;  // 配達する総数
     const char* ADDRESSFILE	= "data\\TXT\\address.txt";
 }
 
