@@ -95,7 +95,9 @@ public:	// 誰でもアクセス可能
 	void SetNext(CPlayer* pNext) { m_pNext = pNext; }
 	void SetPrev(CPlayer* pPrev) { m_pPrev = pPrev; }
 	void SetRotDiff(float fDiff) { m_fRotDest = fDiff; }
-
+	void SetNumDeliveryStatus(int nNum) { m_nNumDeliveryStatus = nNum; }
+	void AddDeliveryCount(void) { m_nNumDeliveryStatus++; }
+	
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
@@ -106,6 +108,7 @@ public:	// 誰でもアクセス可能
 	CPlayer* GetPrev(void) { return m_pPrev; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 	float GetEngine(void) { return m_fEngine; }
+	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 
 private:	// 自分だけがアクセス可能
 
@@ -150,6 +153,7 @@ private:	// 自分だけがアクセス可能
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
 	CRadio* pRadio;
+	int m_nNumDeliveryStatus;  // 配達した数
 };
 
 

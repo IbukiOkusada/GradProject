@@ -77,6 +77,7 @@ void CGole::Update(void)
 		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 		pCamera->GetAction()->Set(pCamera, D3DXVECTOR3(0.0f, pPlayer->GetRotation().y + D3DX_PI, D3DX_PI* 0.4f), 500.0f, 2.0f, 2.0f, CCameraAction::MOVE_POSV);
+		pPlayer->AddDeliveryCount();
 		Uninit();
 	}
 }
