@@ -35,8 +35,8 @@ public:
 	// 操作種類列挙型
 	enum TYPE
 	{
-		TYPE_NONE,	// 操作不可能
-		TYPE_SEND,	// データ送信
+		TYPE_NONE,		// 操作不可能
+		TYPE_SEND,		// データ送信
 		TYPE_ACTIVE,	// 操作可能
 		TYPE_MAX
 	};

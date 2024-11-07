@@ -19,20 +19,29 @@
 //==========================================================
 // 定数定義
 //==========================================================
+namespace FRAME
+{
+	const float HEIGHT = 30.0f;  // 高さ
+	const float WIDTH = 100.0f;  // 横幅
+	const D3DXVECTOR3 POS = D3DXVECTOR3(5.0f, 0.0f, 0.0f);  // 位置
+	const char* TEX_PATH = "data\\TEXTURE\\frame.png";       // テクスチャパス
+	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f); // 色
+}
+
 namespace GAGE
 {
 	const float HEIGHT = 20.0f;  // 高さ
-	const float WIDTH = 8.0f;   // 横幅
-	const D3DXVECTOR3 POS = D3DXVECTOR3(50.0f, 0.0f, 0.0f);  // 位置
-	const char* TEX_PATH = "data\\TEXTURE\\meter00.png";     // テクスチャパス
-	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f); // 色
+	const float WIDTH = 15.0f;   // 横幅
+	const D3DXVECTOR3 POS = D3DXVECTOR3(30.0f, 0.0f, 0.0f);  // 位置
+	const char* TEX_PATH = "data\\TEXTURE\\delivery_gage.png";     // テクスチャパス
+	const D3DXCOLOR COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f); // 色
 }
 
 namespace NUM_NUMBER
 {
 	const float HEIGHT = 30.0f;  // 高さ
 	const float WIDTH = 15.0f;   // 横幅
-	const D3DXVECTOR3 POS = D3DXVECTOR3(10.0f, 5.0f, 0.0f);  // 位置
+	const D3DXVECTOR3 POS = D3DXVECTOR3(0.0f, 7.0f, 0.0f);  // 位置
 	const char* TEX_PATH = "data\\TEXTURE\\number000.png";   // テクスチャパス
 }
 
@@ -40,7 +49,7 @@ namespace COUNT_NUMBER
 {
 	const float HEIGHT = 40.0f;  // 高さ
 	const float WIDTH = 20.0f;   // 横幅
-	const D3DXVECTOR3 POS = D3DXVECTOR3(30.0f, 0.0f, 0.0f);  // 位置
+	const D3DXVECTOR3 POS = D3DXVECTOR3(-50.0f, 0.0f, 0.0f);  // 位置
 	const char* TEX_PATH = "data\\TEXTURE\\number000.png";   // テクスチャパス
 }
 
@@ -48,7 +57,7 @@ namespace LINE
 {
 	const float HEIGHT = 20.0f;  // 高さ
 	const float WIDTH = 20.0f;   // 横幅
-	const D3DXVECTOR3 POS = D3DXVECTOR3(6.0f, 5.0f, 0.0f);  // 位置
+	const D3DXVECTOR3 POS = D3DXVECTOR3(-22.0f, 7.0f, 0.0f);  // 位置
 	const char* TEX_PATH = "data\\TEXTURE\\line-2.png";     // テクスチャパス
 }
 
@@ -109,6 +118,16 @@ CDeliveryStatus* CDeliveryStatus::Create(D3DXVECTOR3 pos, int nNumPoint)
 //==========================================================
 HRESULT CDeliveryStatus::Init(void)
 {
+	CObject2D* pFrame = CObject2D::Create(6);
+
+	if (pFrame != nullptr)
+	{
+		pFrame->SetPosition(D3DXVECTOR3(m_pos.x + FRAME::POS.x, m_pos.y + FRAME::POS.y, m_pos.z));
+		pFrame->SetSize(FRAME::WIDTH, FRAME::HEIGHT);
+		pFrame->BindTexture(CManager::GetInstance()->GetTexture()->Regist(FRAME::TEX_PATH));
+		pFrame->SetCol(FRAME::COL);
+	}
+
 	// ゲージ生成
 	if (m_pGage == nullptr)
 	{
@@ -117,8 +136,9 @@ HRESULT CDeliveryStatus::Init(void)
 		for (int i = 0; i < m_nNumDeliveryPoint; i++)
 		{
 			m_pGage[i] = CObject2D::Create(7);
-			m_pGage[i]->SetPosition(D3DXVECTOR3(m_pos.x + GAGE::POS.x + (i * 20.0f), m_pos.y, m_pos.z));
+			m_pGage[i]->SetPosition(D3DXVECTOR3(m_pos.x + GAGE::POS.x + (i * 20.0f), m_pos.y + GAGE::POS.y, m_pos.z));
 			m_pGage[i]->SetSize(GAGE::WIDTH, GAGE::HEIGHT);
+			m_pGage[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(GAGE::TEX_PATH));
 			m_pGage[i]->SetCol(GAGE::COL);
 		}
 	}
@@ -127,7 +147,7 @@ HRESULT CDeliveryStatus::Init(void)
 	if (m_pLine == nullptr)
 	{
 		m_pLine = CObject2D::Create(7);
-		m_pLine->SetPosition(D3DXVECTOR3(m_pos.x - LINE::POS.x, m_pos.y + LINE::POS.y, m_pos.z));
+		m_pLine->SetPosition(D3DXVECTOR3(m_pos.x + LINE::POS.x, m_pos.y + LINE::POS.y, m_pos.z));
 		m_pLine->SetSize(LINE::WIDTH, LINE::HEIGHT);
 		m_pLine->BindTexture(CManager::GetInstance()->GetTexture()->Regist(LINE::TEX_PATH));
 	}
@@ -142,7 +162,7 @@ HRESULT CDeliveryStatus::Init(void)
 	// 現在の配達数
 	if (m_pCountDeliveryPointNumber == nullptr)
 	{
-		m_pCountDeliveryPointNumber = CNumber::Create(D3DXVECTOR3(m_pos.x - COUNT_NUMBER::POS.x, m_pos.y, m_pos.z), COUNT_NUMBER::WIDTH, COUNT_NUMBER::HEIGHT);
+		m_pCountDeliveryPointNumber = CNumber::Create(D3DXVECTOR3(m_pos.x + COUNT_NUMBER::POS.x, m_pos.y, m_pos.z), COUNT_NUMBER::WIDTH, COUNT_NUMBER::HEIGHT);
 		m_pCountDeliveryPointNumber->SetIdx(0);
 	}
 

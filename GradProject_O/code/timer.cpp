@@ -10,7 +10,7 @@
 #include "texture.h"
 #include "manager.h"
 #include "object2D.h"
-
+#include "edit_manager.h"
 
 //==========================================================
 // íËêîíËã`
@@ -102,6 +102,8 @@ void CTimer::Uninit(void)
 			m_pObject[Cnt] = NULL;
 		}
 	}
+
+	delete this;
 }
 
 //===============================================
@@ -109,6 +111,10 @@ void CTimer::Uninit(void)
 //===============================================
 void CTimer::Update(void)
 {
+#if _DEBUG
+	if (CEditManager::GetInstance() != nullptr) { return; }
+#endif // _DEBUG
+
 	CalTime();
 }
 
