@@ -45,7 +45,6 @@ public:		// 誰でもアクセス可能
 	// メンバ関数(設定)
 	void SetSize(float fWidth, float fHeight);
 	void SetType(const int type);
-	static D3DXVECTOR3 Collision(D3DXVECTOR3 &pos, D3DXVECTOR3 &posOld, D3DXVECTOR3& move, const D3DXVECTOR3& vtxMax, const D3DXVECTOR3& vtxMin, CObjectX::COLLISION_AXIS &axis, int &nType);
 
 private:	// 自分だけがアクセス可能
 

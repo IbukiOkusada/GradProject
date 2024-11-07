@@ -115,6 +115,9 @@
     <Filter Include="camera\action">
       <UniqueIdentifier>{ada2ff51-e975-444f-9b52-4d8a8a215880}</UniqueIdentifier>
     </Filter>
+    <Filter Include="baggage">
+      <UniqueIdentifier>{2065a550-8ad1-4ce6-b3fd-ffd39181a65b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -353,6 +356,9 @@
     </ClCompile>
     <ClCompile Include="code\deliverystatus.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\baggage.cpp">
+      <Filter>baggage</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -598,6 +604,9 @@
     </ClInclude>
     <ClInclude Include="code\deliverystatus.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\baggage.h">
+      <Filter>baggage</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

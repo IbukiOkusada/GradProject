@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="code\baggage.cpp" />
     <ClCompile Include="code\billboard.cpp" />
     <ClCompile Include="code\bridge.cpp" />
     <ClCompile Include="code\camera.cpp" />
@@ -243,6 +244,7 @@
     <ClCompile Include="code\map_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="code\baggage.h" />
     <ClInclude Include="code\camera_action.h" />
     <ClInclude Include="code\billboard.h" />
     <ClInclude Include="code\bridge.h" />

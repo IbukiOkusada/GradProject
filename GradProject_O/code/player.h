@@ -95,6 +95,8 @@ public:	// 誰でもアクセス可能
 	void SetNext(CPlayer* pNext) { m_pNext = pNext; }
 	void SetPrev(CPlayer* pPrev) { m_pPrev = pPrev; }
 	void SetRotDiff(float fDiff) { m_fRotDest = fDiff; }
+	void ThrowBaggage(D3DXVECTOR3* pTarget);
+
 	void SetNumDeliveryStatus(int nNum) { m_nNumDeliveryStatus = nNum; }
 	void AddDeliveryCount(void) { m_nNumDeliveryStatus++; }
 	

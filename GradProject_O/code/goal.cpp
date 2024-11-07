@@ -16,6 +16,8 @@
 #include "manager.h"
 #include "debugproc.h"
 #include "camera_action.h"
+#include "deltatime.h"
+#include "baggage.h"
 
 // マクロ定義
 Clist<CGole*> * CGole::pList = nullptr;
@@ -27,6 +29,8 @@ CGole::CGole()
 	pEffect = nullptr;
 	m_fRange = 0.0f;
 	m_fLimit = 0.0f;
+	m_bEnd = false;
+	m_pPeople = nullptr;
 	//自身をリストに登録
 	GetInstance()->Regist(this);
 }
@@ -50,7 +54,14 @@ CGole::~CGole()
 HRESULT CGole::Init(void)
 {
 	pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\goal_radius.efkefc", m_pos, VECTOR3_ZERO, VECTOR3_ZERO, m_fRange, false, false);
-	
+	float range = static_cast<float>(rand() % 629 - 314) * 0.01f;
+	D3DXVECTOR3 pos = m_pos;
+	pos.x += sinf(range) * 800.0f;
+	pos.z += cosf(range) * 800.0f;
+	m_pPeople = CObjectX::Create(pos, VECTOR3_ZERO, "data\\MODEL\\cube.x");
+	m_pPeople->SetScale(D3DXVECTOR3(10.0f, 20.0f, 10.0f));
+	m_pPeople->SetColAdd(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+
 	return S_OK;
 }
 
@@ -59,6 +70,7 @@ HRESULT CGole::Init(void)
 //==========================================================
 void CGole::Uninit(void)
 {
+	SAFE_UNINIT(m_pPeople);
 	SAFE_DELETE(pEffect);
 	Release();
 }
@@ -71,12 +83,19 @@ void CGole::Update(void)
 	// エフェクト表示
 	ScreenEffect();
 
-	if (CheckRange() && CheckSpeed())
+	if (CheckRange() && CheckSpeed() && !m_bEnd)
 	{
 		// カメラアクション入れる
 		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+		m_bEnd = true;
+		pPlayer->ThrowBaggage(m_pPeople->GetPos());
+		SAFE_DELETE(pEffect);
+	}
+
+	if (m_bEnd && CBaggage::GetList()->GetNum() == 0)
+	{
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-		pCamera->GetAction()->Set(pCamera, D3DXVECTOR3(0.0f, pPlayer->GetRotation().y + D3DX_PI, D3DX_PI* 0.4f), 500.0f, 2.0f, 2.0f, CCameraAction::MOVE_POSV);
+		pCamera->GetAction()->SetFinish(true);
 		pPlayer->AddDeliveryCount();
 		Uninit();
 	}
@@ -133,6 +152,7 @@ CGole* CGole::Create(D3DXVECTOR3 pos, float fRange, float fLimit)
 //==========================================================
 void CGole::ScreenEffect()
 {
+	if (CDeltaTime::GetInstance()->GetSlow() < 1.0f) { return; }
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	D3DXMATRIX mtxProjection, mtxView, mtxWorld;

@@ -33,6 +33,8 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(設定)
 	float GetDestTime(void) { return m_Timer.DeltaTime.count(); }
+	float GetSlow() { return m_fAdd; }
+	void SetSlow(float fMulti) { m_fAdd = fMulti; }
 
 private:	// 自分だけがアクセス可能
 
