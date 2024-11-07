@@ -200,6 +200,7 @@
     <ClCompile Include="code\meshfield.cpp" />
     <ClCompile Include="code\meshorbit.cpp" />
     <ClCompile Include="code\meshwall.cpp" />
+    <ClCompile Include="code\meter.cpp" />
     <ClCompile Include="code\model.cpp" />
     <ClCompile Include="code\motion.cpp" />
     <ClCompile Include="code\number.cpp" />
@@ -284,6 +285,7 @@
     <ClInclude Include="code\meshfield.h" />
     <ClInclude Include="code\meshorbit.h" />
     <ClInclude Include="code\meshwall.h" />
+    <ClInclude Include="code\meter.h" />
     <ClInclude Include="code\model.h" />
     <ClInclude Include="code\motion.h" />
     <ClInclude Include="code\number.h" />

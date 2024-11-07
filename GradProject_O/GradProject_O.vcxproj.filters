@@ -115,6 +115,12 @@
     <Filter Include="camera\action">
       <UniqueIdentifier>{ada2ff51-e975-444f-9b52-4d8a8a215880}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{85a1b952-73b5-481f-9f7e-88fdd76d9fb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI\meter">
+      <UniqueIdentifier>{caba457e-046f-4fb6-9253-9fe4251aa6fb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -354,6 +360,9 @@
     <ClCompile Include="code\deliverystatus.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\meter.cpp">
+      <Filter>UI\meter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -578,9 +587,6 @@
     <ClInclude Include="code\edit_scale.h">
       <Filter>edit\handle</Filter>
     </ClInclude>
-    <ClInclude Include="code\gimmick.h">
-      <Filter>gimmick</Filter>
-    </ClInclude>
     <ClInclude Include="code\bridge.h">
       <Filter>gimmick\bridge</Filter>
     </ClInclude>
@@ -598,6 +604,12 @@
     </ClInclude>
     <ClInclude Include="code\deliverystatus.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\meter.h">
+      <Filter>UI\meter</Filter>
+    </ClInclude>
+    <ClInclude Include="code\gimmick.h">
+      <Filter>gimmick</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
