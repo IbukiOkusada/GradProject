@@ -164,7 +164,7 @@ void CDeliveryStatus::Uninit(void)
 			m_pGage[i]->Uninit();
 		}
 		
-		delete m_pGage;
+		delete[] m_pGage;
 		m_pGage = nullptr;
 	}
 
@@ -179,7 +179,6 @@ void CDeliveryStatus::Uninit(void)
 	if (m_pNumDeliveryPointNumber != nullptr)
 	{
 		m_pNumDeliveryPointNumber->Uninit();
-		delete m_pNumDeliveryPointNumber;
 		m_pNumDeliveryPointNumber = nullptr;
 	}
 
@@ -187,7 +186,6 @@ void CDeliveryStatus::Uninit(void)
 	if (m_pCountDeliveryPointNumber != nullptr)
 	{
 		m_pCountDeliveryPointNumber->Uninit();
-		delete m_pCountDeliveryPointNumber;
 		m_pCountDeliveryPointNumber = nullptr;
 	}
 
