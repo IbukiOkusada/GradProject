@@ -11,6 +11,8 @@
 #include "camera_manager.h"
 #include "camera_action.h"
 #include "player.h"
+#include "manager.h"
+#include "renderer.h"
 
 namespace
 {
@@ -31,9 +33,10 @@ CBaggage::CBaggage()
 	m_pos = VECTOR3_ZERO;
 	m_rot = VECTOR3_ZERO;
 	m_pObj = nullptr;
-	m_pPlayer = nullptr;
 	m_bFinish = false;
+	m_bFirst = false;
 	m_List.Regist(this);
+	m_state = STATE_NONE;
 }
 
 //==========================================================
@@ -47,15 +50,14 @@ CBaggage::~CBaggage()
 //==========================================================
 // ¶¬
 //==========================================================
-CBaggage* CBaggage::Create(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime, CPlayer* pPlayer)
+CBaggage* CBaggage::Create(const D3DXVECTOR3& pos)
 {
 	CBaggage* pBaggage = DEBUG_NEW CBaggage;
 
 	if (pBaggage != nullptr)
 	{
 		pBaggage->Init();
-		pBaggage->Set(pos, pTarget, fTime);
-		pBaggage->m_pPlayer = pPlayer;
+		pBaggage->m_pos = pos;
 	}
 
 	return pBaggage;
@@ -71,6 +73,7 @@ void CBaggage::Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime)
 	m_pTarget = pTarget;
 	m_time.fEnd = fTime;
 	m_rot.y = atan2f(m_pTarget->x - pos.x, m_pTarget->z - pos.z);
+	m_state = STATE_THROW;
 
 	if (m_pObj == nullptr) { return; }
 
@@ -109,7 +112,15 @@ void CBaggage::Uninit(void)
 //==========================================================
 void CBaggage::Update(void)
 {
-	// ƒiƒQ
+	if (m_pObj == nullptr) { return; }
+
+	// “Š‚°‚Ä‚¢‚È‚¢
+	if (m_state != STATE_THROW) { 
+		m_pObj->SetPosition(m_pos); 
+		return; 
+	}
+
+	// “Š‚°’†‹““®
 	Throw();
 }
 
@@ -159,6 +170,8 @@ void CBaggage::Throw()
 
 		if (multi >= 0.4f)
 		{
+			if(!m_bFirst){ CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.0f, 1.0f, 20.0f); }
+			m_bFirst = true;
 			CDeltaTime::GetInstance()->SetSlow(0.2f);
 		}
 	}
@@ -173,6 +186,8 @@ void CBaggage::Throw()
 	// ŽžŠÔI—¹
 	if (m_time.fNow >= m_time.fEnd) {
 		CDeltaTime::GetInstance()->SetSlow(1.0f);
+		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+		pCamera->GetAction()->SetFinish(true);
 		m_bFinish = true;
 		Uninit();
 	}
@@ -183,7 +198,6 @@ void CBaggage::Throw()
 //==========================================================
 void CBaggage::SetCamera()
 {
-	if (m_pPlayer == nullptr) { return; }
 	if (m_pTarget == nullptr) { return; }
 
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();

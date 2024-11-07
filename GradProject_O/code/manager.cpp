@@ -496,6 +496,15 @@ void CManager::DataReset(void)
 		m_pModelFile = nullptr;	// 使用していない状態にする
 	}
 
+	if (GetRenderer() != nullptr)
+	{
+		// フィードバックエフェクトリセット
+		CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(
+			0.0f,
+			1.0f,
+			0.01f);
+	}
+
 	// ポイントライトを無効にする
 	m_pLight->EnablePointLight(false);
 

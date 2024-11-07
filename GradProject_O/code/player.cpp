@@ -43,6 +43,7 @@
 #include "meter.h"
 #include "baggage.h"
 #include "camera_action.h"
+#include "baggage.h"
 
 //===============================================
 // マクロ定義
@@ -120,6 +121,7 @@ CPlayer::CPlayer()
 	m_pNext = nullptr;
 	m_pDamageEffect = nullptr;
 	m_pSound = nullptr;
+	m_pBaggage = nullptr;
 	m_fbrakePitch = 0.0f;
 	m_fbrakeVolume = 0.0f;
 	m_nNumDeliveryStatus = 0;
@@ -172,7 +174,8 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 //===============================================
 void CPlayer::Uninit(void)
 {	
-	SAFE_UNINIT(m_pObj)
+	SAFE_UNINIT(m_pObj);
+	SAFE_UNINIT(m_pBaggage);
 	SAFE_DELETE(m_pTailLamp);
 	SAFE_DELETE(m_pBackdust);
 	SAFE_DELETE(m_pAfterburner);
@@ -250,7 +253,7 @@ void CPlayer::Update(void)
 		}
 	}
 
-	if(CBaggage::GetList()->GetNum() == 0)
+	if (m_pBaggage != nullptr)
 	{
 		D3DXVECTOR3 rot = GetRotation();
 		rot.y -= D3DX_PI * 0.5f;
@@ -261,6 +264,19 @@ void CPlayer::Update(void)
 	{
 		m_Info.move *= 0.7f;
 		m_fCamera += (CAMERA_DETAH - m_fCamera) * 0.02f;
+	}
+
+	if (CBaggage::GetList()->GetNum() == 0)
+	{
+		m_pBaggage = CBaggage::Create(GetPosition());
+	}
+
+	if (m_pBaggage != nullptr)
+	{
+		D3DXVECTOR3 pos = GetPosition();
+
+		pos.y += 100.0f;
+		m_pBaggage->SetPosition(pos);
 	}
 
 	// デバッグ表示
@@ -750,6 +766,15 @@ void CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 
 	pos.y += 100.0f;
 
-	// 荷物の生成
-	CBaggage::Create(pos, pTarget, 0.75f, this);
+	// 使用されていない
+	if (CBaggage::GetList()->GetNum() == 0 || m_pBaggage == nullptr)
+	{
+		m_pBaggage = CBaggage::Create(pos);
+	}
+
+	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.35f, 1.1f, 20.0f);
+
+	// 荷物を投げる
+	m_pBaggage->Set(pos, pTarget, 0.75f);
+	m_pBaggage = nullptr;
 }

@@ -21,6 +21,7 @@ class CWaist;
 class CCharacter;
 class CObjectX;
 class CRoad;
+class CBaggage;
 
 // マクロ定義
 #define MAX_ITEM  (1280)  // 所持できるアイテムの最大数
@@ -144,8 +145,9 @@ private:	// 自分だけがアクセス可能
 	float m_fSlowRate = 1.0f;
 	float m_fNitroCool;
 	int m_nId;					// ID
-	TYPE m_type;
-	CObjectX* m_pObj;
+	TYPE m_type;			// 種類
+	CObjectX* m_pObj;		// 描画オブジェクト
+	CBaggage* m_pBaggage;	// 荷物
 	CEffekseer::CEffectData * m_pTailLamp;
 	CEffekseer::CEffectData* m_pBackdust;
 	CEffekseer::CEffectData* m_pAfterburner;

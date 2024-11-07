@@ -95,8 +95,6 @@ void CGole::Update(void)
 
 	if (m_bEnd && CBaggage::GetList()->GetNum() == 0)
 	{
-		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-		pCamera->GetAction()->SetFinish(true);
 		Uninit();
 	}
 }
@@ -152,6 +150,7 @@ CGole* CGole::Create(D3DXVECTOR3 pos, float fRange, float fLimit)
 //==========================================================
 void CGole::ScreenEffect()
 {
+	if (m_bEnd) { return; }
 	if (CDeltaTime::GetInstance()->GetSlow() < 1.0f) { return; }
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
