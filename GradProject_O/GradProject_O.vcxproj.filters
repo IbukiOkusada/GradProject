@@ -354,6 +354,9 @@
     <ClCompile Include="code\camera_action.cpp">
       <Filter>camera\action</Filter>
     </ClCompile>
+    <ClCompile Include="code\deliverystatus.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="code\baggage.cpp">
       <Filter>baggage</Filter>
     </ClCompile>
@@ -598,6 +601,9 @@
     </ClInclude>
     <ClInclude Include="code\camera_action.h">
       <Filter>camera\action</Filter>
+    </ClInclude>
+    <ClInclude Include="code\deliverystatus.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\baggage.h">
       <Filter>baggage</Filter>
