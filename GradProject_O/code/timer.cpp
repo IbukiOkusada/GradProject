@@ -17,9 +17,10 @@
 //==========================================================
 namespace NUMBER
 {
-	const float HEIGHT = 60.0f;	// çÇÇ≥
-	const float WIDTH = 30.0f;	// â°ïù
-	const float MAG = 0.7f;		// î{ó¶
+	const float HEIGHT = 60.0f;		// çÇÇ≥
+	const float WIDTH = 30.0f;		// â°ïù
+	const float MAG = 0.7f;			// î{ó¶
+	const float INTERVAL = 60.0f;	// î{ó¶
 	const D3DXVECTOR3 POS = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 50.0f, 0.0f);
 }
 
@@ -58,17 +59,17 @@ HRESULT CTimer::Init(void)
 		switch (Cnt)
 		{
 		case 3:
-			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * 60.0f, NUMBER::POS.y + NUMBER::HEIGHT * (1 - NUMBER::MAG) * 0.5f, 0.0f),
+			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * NUMBER::INTERVAL, NUMBER::POS.y + NUMBER::HEIGHT * (1 - NUMBER::MAG) * 0.5f, 0.0f),
 				NUMBER::WIDTH * NUMBER::MAG, NUMBER::HEIGHT * NUMBER::MAG);
 			break;
 
 		case 4:
-			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * 60.0f * 0.8f, NUMBER::POS.y + NUMBER::HEIGHT * (1 - NUMBER::MAG) * 0.5f, 0.0f),
+			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * NUMBER::INTERVAL * 0.8f, NUMBER::POS.y + NUMBER::HEIGHT * (1 - NUMBER::MAG) * 0.5f, 0.0f),
 				NUMBER::WIDTH * NUMBER::MAG, NUMBER::HEIGHT * NUMBER::MAG);
 			break;
 
 		default:
-			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * 60.0f, NUMBER::POS.y, 0.0f),
+			m_pObject[Cnt] = CNumber::Create(D3DXVECTOR3(NUMBER::POS.x + (Cnt - 2) * NUMBER::INTERVAL, NUMBER::POS.y, 0.0f),
 				NUMBER::WIDTH, NUMBER::HEIGHT);
 			break;
 		}
