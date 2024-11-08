@@ -85,7 +85,7 @@ void CObjectManager::Draw(void)
 
 	while (pCamera != nullptr) {
 
-		CCamera *pCameraNext = pCamera->GetPrev();
+		CCamera *pCameraNext = pCamera->GetNext();
 
 		// Ý’è
 		pCamera->SetCamera();

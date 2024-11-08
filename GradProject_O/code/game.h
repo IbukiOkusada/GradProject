@@ -21,6 +21,7 @@ class CPause;
 class CSpeedMeter;
 class CDeliveryStatus;
 class CTimer;
+class CMultiCamera;
 
 // ƒ}ƒNƒ’è‹`
 #define NUM_FILTER	(2)
