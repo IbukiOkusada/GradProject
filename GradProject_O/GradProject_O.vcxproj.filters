@@ -127,6 +127,9 @@
     <Filter Include="UI\navi">
       <UniqueIdentifier>{ba9fb66b-c259-43fe-b162-b89f75d289c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gimmick\firehydrant">
+      <UniqueIdentifier>{463af0bd-fb26-4529-a447-352e773ce34d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -377,6 +380,9 @@
     </ClCompile>
     <ClCompile Include="code\navi.cpp">
       <Filter>UI\navi</Filter>
+    </ClCompile>
+    <ClCompile Include="code\gimmick_firehydrant.cpp">
+      <Filter>gimmick\firehydrant</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -634,6 +640,9 @@
     </ClInclude>
     <ClInclude Include="code\navi.h">
       <Filter>UI\navi</Filter>
+    </ClInclude>
+    <ClInclude Include="code\gimmick_firehydrant.h">
+      <Filter>gimmick\firehydrant</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

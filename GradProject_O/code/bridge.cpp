@@ -1,7 +1,7 @@
 //==========================================================
 //
-// サンプルタスク(リスト管理) [Bridge.cpp]
-// Author : Ibuki Okusada
+// 跳ね橋 [Bridge.cpp]
+// Author : 丹野竜之介
 //
 //==========================================================
 #include "manager.h"
@@ -60,8 +60,15 @@ HRESULT CBridge::Init(void)
 //==========================================================
 void CBridge::Uninit(void)
 {
-//	SAFE_DELETEARRAY(m_pBridge[0]);
-	Release();
+	for (int i = 0; i < BRIDGE_NUM; i++)
+	{
+		if (m_pBridge[i] == nullptr) { continue; }
+		m_pBridge[i]->Uninit();
+		m_pBridge[i] = nullptr;
+	}
+
+	// 終了
+	CGimmick::Uninit();
 }
 
 //==========================================================
