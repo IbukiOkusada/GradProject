@@ -45,8 +45,8 @@
 #include "camera_manager.h"
 #include "timer.h"
 #include "gimmick_firehydrant.h"
+#include "navi.h"
 #include "bridge.h"
-
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
     const int MAX_STRING = (2048);

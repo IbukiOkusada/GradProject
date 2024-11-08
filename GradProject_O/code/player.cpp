@@ -164,7 +164,6 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
-
 	return S_OK;
 }
 
