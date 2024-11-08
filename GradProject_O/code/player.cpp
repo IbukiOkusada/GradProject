@@ -71,7 +71,7 @@ namespace
 	const float ENGINE_INER = (0.01f);		// 慣性
 	const float ENGINE_BRAKE = (0.006f);		// 慣性
 	const float TUURN_INER = (0.9f);		// 慣性
-	const float DRIFT_INER = (0.98f);		// ドリフト慣性
+	const float DRIFT_INER = (0.97f);		// ドリフト慣性
 	const float BRAKE_INER = (0.05f);
 	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
@@ -122,6 +122,7 @@ CPlayer::CPlayer()
 	m_pDamageEffect = nullptr;
 	m_pSound = nullptr;
 	m_pBaggage = nullptr;
+	
 	m_fbrakePitch = 0.0f;
 	m_fbrakeVolume = 0.0f;
 	m_nNumDeliveryStatus = 0;
@@ -147,6 +148,8 @@ HRESULT CPlayer::Init(void)
 	// 腰の生成
 	m_Info.state = STATE_APPEAR;
 	m_type = TYPE_NONE;
+
+
 	
 	return S_OK;
 }
@@ -164,8 +167,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
+
 	
-	CBridge::Create(D3DXVECTOR3(10000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
+
 	return S_OK;
 }
 
@@ -185,6 +189,8 @@ void CPlayer::Uninit(void)
 
 	SAFE_UNINIT_DELETE(pRadio);
 	CPlayerManager::GetInstance()->ListOut(this);
+
+
 
 	// 廃棄
 	Release();
@@ -253,6 +259,7 @@ void CPlayer::Update(void)
 		}
 	}
 
+	// 荷物を所持
 	if (m_pBaggage != nullptr)
 	{
 		D3DXVECTOR3 rot = GetRotation();
@@ -260,6 +267,9 @@ void CPlayer::Update(void)
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 		pCamera->Pursue(GetPosition(), rot, m_fCamera);
 	}
+
+
+
 	if (m_fLife<=0)
 	{
 		m_Info.move *= 0.7f;
@@ -282,6 +292,7 @@ void CPlayer::Update(void)
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー :");
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
 }
 
 //===============================================
@@ -772,7 +783,7 @@ void CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 		m_pBaggage = CBaggage::Create(pos);
 	}
 
-	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.35f, 1.1f, 20.0f);
+	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.65f, 0.95f, 1.0f);
 
 	// 荷物を投げる
 	m_pBaggage->Set(pos, pTarget, 0.75f);

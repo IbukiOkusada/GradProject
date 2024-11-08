@@ -81,11 +81,11 @@ void CObjectManager::Uninit(void)
 //==========================================================
 void CObjectManager::Draw(void)
 {
-	CCamera *pCamera = CCameraManager::GetInstance()->GetCur();
+	CCamera *pCamera = CCameraManager::GetInstance()->GetTop();
 
 	while (pCamera != nullptr) {
 
-		CCamera *pCameraNext = pCamera->GetPrev();
+		CCamera *pCameraNext = pCamera->GetNext();
 
 		// Ý’è
 		pCamera->SetCamera();

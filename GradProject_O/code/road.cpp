@@ -13,11 +13,11 @@
 namespace
 {
 	const char* FILENAME[CRoad::TYPE_MAX] =	{
-		"data\\TEXTURE\\road\\road004.jpg",
-		"data\\TEXTURE\\road\\road000.jpg",
-		"data\\TEXTURE\\road\\road001.jpg",
-		"data\\TEXTURE\\road\\road002.jpg",
-		"data\\TEXTURE\\road\\road003.jpg",
+		"data\\TEXTURE\\road\\road009.jpg",
+		"data\\TEXTURE\\road\\road005.jpg",
+		"data\\TEXTURE\\road\\road006.jpg",
+		"data\\TEXTURE\\road\\road007.jpg",
+		"data\\TEXTURE\\road\\road008.jpg",
 	};
 }
 

@@ -22,6 +22,7 @@ class CCharacter;
 class CObjectX;
 class CRoad;
 class CBaggage;
+class CMultiCamera;
 
 // マクロ定義
 #define MAX_ITEM  (1280)  // 所持できるアイテムの最大数
@@ -154,6 +155,7 @@ private:	// 自分だけがアクセス可能
 	CEffekseer::CEffectData* m_pDamageEffect;
 	CMasterSound::CObjectSound* m_pSound;
 	CMasterSound::CObjectSound* m_pSoundBrake;
+
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
 	CRadio* pRadio;

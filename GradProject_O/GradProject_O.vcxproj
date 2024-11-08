@@ -185,6 +185,7 @@
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\gimmick.cpp" />
+    <ClCompile Include="code\gimmick_firehydrant.cpp" />
     <ClCompile Include="code\goal.cpp" />
     <ClCompile Include="code\input.cpp" />
     <ClCompile Include="code\input_gamepad.cpp" />
@@ -204,6 +205,7 @@
     <ClCompile Include="code\meter.cpp" />
     <ClCompile Include="code\model.cpp" />
     <ClCompile Include="code\motion.cpp" />
+    <ClCompile Include="code\navi.cpp" />
     <ClCompile Include="code\number.cpp" />
     <ClCompile Include="code\object.cpp" />
     <ClCompile Include="code\object2D.cpp" />
@@ -265,6 +267,7 @@
     <ClInclude Include="code\edit_object.h" />
     <ClInclude Include="code\edit_road.h" />
     <ClInclude Include="code\gimmick.h" />
+    <ClInclude Include="code\gimmick_firehydrant.h" />
     <ClInclude Include="code\goal.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\convenience.h" />
@@ -291,6 +294,7 @@
     <ClInclude Include="code\meter.h" />
     <ClInclude Include="code\model.h" />
     <ClInclude Include="code\motion.h" />
+    <ClInclude Include="code\navi.h" />
     <ClInclude Include="code\number.h" />
     <ClInclude Include="code\object.h" />
     <ClInclude Include="code\object2D.h" />

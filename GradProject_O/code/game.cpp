@@ -44,7 +44,9 @@
 #include "camera_action.h"
 #include "camera_manager.h"
 #include "timer.h"
-
+#include "gimmick_firehydrant.h"
+#include "navi.h"
+#include "bridge.h"
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
     const int MAX_STRING = (2048);
@@ -71,7 +73,7 @@ CGame::CGame()
     m_pMeshDome = nullptr;
     m_pClient = nullptr;
     m_pTimer = nullptr;
-    m_pSpeedMeter = nullptr;
+
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
     m_nSledCnt = 0;
@@ -94,7 +96,7 @@ CGame::CGame(int nNumPlayer)
     m_pMeshDome = nullptr;
     m_pClient = nullptr;
     m_pTimer = nullptr;
-    m_pSpeedMeter = nullptr;
+  
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
     m_nSledCnt = 0;
@@ -192,12 +194,12 @@ HRESULT CGame::Init(void)
     CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
     CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
 
+    CBridge::Create(D3DXVECTOR3(13000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
+    CGimmickFireHydrant::Create(D3DXVECTOR3(10000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), VECTOR3_ONE);
+
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
-    if (m_pSpeedMeter == nullptr)
-    {
-        m_pSpeedMeter = CSpeedMeter::Create();
-    }
+
 
     if (m_pDeliveryStatus == nullptr)
     {
@@ -238,12 +240,7 @@ void CGame::Uninit(void)
         m_pClient = nullptr;
     }
 
-    if (m_pSpeedMeter != nullptr)
-    {
-        m_pSpeedMeter->Uninit();
-        //delete m_pSpeedMeter;
-        m_pSpeedMeter = nullptr;
-    }
+   
 
     if (m_pDeliveryStatus != nullptr)
     {

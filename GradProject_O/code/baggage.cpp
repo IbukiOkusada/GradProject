@@ -170,7 +170,7 @@ void CBaggage::Throw()
 
 		if (multi >= 0.4f)
 		{
-			if(!m_bFirst){ CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.0f, 1.0f, 20.0f); }
+			if(!m_bFirst){ CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.0f, 1.0f, 120.0f); }
 			m_bFirst = true;
 			CDeltaTime::GetInstance()->SetSlow(0.2f);
 		}

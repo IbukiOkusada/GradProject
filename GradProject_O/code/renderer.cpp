@@ -289,6 +289,8 @@ void CRenderer::Draw(void)
 
 		// オブジェクトの描画
 		CObjectManager::GetInstance()->Draw();
+
+		pCamera->SetCamera();
 		CEffekseer::GetInstance()->Draw();
 
 		// フィードバックエフェクトにテクスチャ[1]を貼り付けて描画
