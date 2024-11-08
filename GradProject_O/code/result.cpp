@@ -95,7 +95,8 @@ void CResult::Update(void)
 	CInputPad* pPad = CInputPad::GetInstance();
 
 	if (pPad->GetTrigger(CInputPad::BUTTON_A, 0) ||
-		pPad->GetTrigger(CInputPad::BUTTON_START, 0))
+		pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
+		pKey->GetTrigger(DIK_RETURN))
 	{
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING);
 	}
