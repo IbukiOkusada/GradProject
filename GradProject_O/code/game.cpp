@@ -44,7 +44,7 @@
 #include "camera_action.h"
 #include "camera_manager.h"
 #include "timer.h"
-
+#include "navi.h"
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
     const int MAX_STRING = (2048);

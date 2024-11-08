@@ -61,8 +61,7 @@ void CNavi::Update(void)
 	m_pCamera->SetPositionR(pos);
 	pos.y += 1000.0f;
 	m_pCamera->SetPositionV(pos);
-	m_pCamera->SetCamera();
-	CObjectManager::GetInstance()->DrawAll();
+
 }
 
 //==========================================================
