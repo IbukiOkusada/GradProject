@@ -292,6 +292,7 @@ void CPlayer::Update(void)
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー :");
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
 }
 
 //===============================================
@@ -782,7 +783,7 @@ void CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 		m_pBaggage = CBaggage::Create(pos);
 	}
 
-	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.35f, 1.1f, 20.0f);
+	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.65f, 0.95f, 1.0f);
 
 	// 荷物を投げる
 	m_pBaggage->Set(pos, pTarget, 0.75f);
