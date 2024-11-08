@@ -15,33 +15,42 @@
 //==========================================================
 class CGimmick : public CTask
 {
+private:
+
+	// 基本情報
+	struct SInfo
+	{
+		D3DXVECTOR3 pos;	// 位置
+		D3DXVECTOR3 rot;	// 向き
+		D3DXVECTOR3 scale;	// スケール
+
+		// コンストラクタ
+		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), scale(VECTOR3_ONE){}
+	};
 
 public:	// 誰でもアクセス可能
 
 	CGimmick();	// コンストラクタ(オーバーロード)
-	~CGimmick();	// デストラクタ
+	virtual ~CGimmick();	// デストラクタ
 
 	// メンバ関数
 	virtual HRESULT Init(void) = 0;
-	virtual void Uninit(void)= 0;
+	virtual void Uninit(void);
 	virtual void Update(void)= 0;
 	// メンバ関数
-	D3DXVECTOR3 GetPos(){ return m_pos; }
-	D3DXVECTOR3 GetRot() { return m_rot; }
-	D3DXVECTOR3 GetScale() { return m_scale; }
-	void SetPos(D3DXVECTOR3 pos) { m_pos = pos; }
-	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
-	void SetScale(D3DXVECTOR3 scale) { m_scale = scale; }
+	D3DXVECTOR3 GetPos(){ return m_Info.pos; }
+	D3DXVECTOR3 GetRot() { return m_Info.rot; }
+	D3DXVECTOR3 GetScale() { return m_Info.scale; }
+	void SetPos(D3DXVECTOR3 pos) { m_Info.pos = pos; }
+	void SetRot(D3DXVECTOR3 rot) { m_Info.rot = rot; }
+	void SetScale(D3DXVECTOR3 scale) { m_Info.scale = scale; }
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 
 	// メンバ変数
-	D3DXVECTOR3 m_pos;
-	D3DXVECTOR3 m_rot;
-	D3DXVECTOR3 m_scale;
-
+	SInfo m_Info;
 };
 
 #endif
