@@ -71,7 +71,7 @@ namespace
 	const float ENGINE_INER = (0.01f);		// 慣性
 	const float ENGINE_BRAKE = (0.006f);		// 慣性
 	const float TUURN_INER = (0.9f);		// 慣性
-	const float DRIFT_INER = (0.97f);		// ドリフト慣性
+	const float DRIFT_INER = (0.975f);		// ドリフト慣性
 	const float BRAKE_INER = (0.05f);
 	const float RES = (1.98f);		// 減速
 	const float JUMP = (16.0f);
