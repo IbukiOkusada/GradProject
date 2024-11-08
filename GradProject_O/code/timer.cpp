@@ -79,7 +79,7 @@ HRESULT CTimer::Init(void)
 
 	m_pDecPoint = CObject2D::Create(7);
 	m_pDecPoint->SetPosition(D3DXVECTOR3(m_pObject[2]->GetObject2D()->GetPosition().x + (m_pObject[3]->GetObject2D()->GetPosition().x - m_pObject[2]->GetObject2D()->GetPosition().x) * 0.55f,
-		m_pObject[2]->GetObject2D()->GetPosition().y + (NUMBER::HEIGHT - DECPOINT::HEIGHT) * 0.4f,
+		m_pObject[2]->GetObject2D()->GetPosition().y + (NUMBER::HEIGHT - DECPOINT::HEIGHT) * 0.45f,
 		0.0f));
 	m_pDecPoint->SetSize(DECPOINT::WIDTH, DECPOINT::HEIGHT);
 	m_pDecPoint->BindTexture(CManager::GetInstance()->GetTexture()->Regist(DECPOINT::TEX_PATH));
