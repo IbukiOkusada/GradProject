@@ -73,7 +73,7 @@ CGame::CGame()
     m_pMeshDome = nullptr;
     m_pClient = nullptr;
     m_pTimer = nullptr;
-    m_pSpeedMeter = nullptr;
+
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
     m_nSledCnt = 0;
@@ -96,7 +96,7 @@ CGame::CGame(int nNumPlayer)
     m_pMeshDome = nullptr;
     m_pClient = nullptr;
     m_pTimer = nullptr;
-    m_pSpeedMeter = nullptr;
+  
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
     m_nSledCnt = 0;
@@ -199,10 +199,7 @@ HRESULT CGame::Init(void)
 
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
-    if (m_pSpeedMeter == nullptr)
-    {
-        m_pSpeedMeter = CSpeedMeter::Create();
-    }
+
 
     if (m_pDeliveryStatus == nullptr)
     {
@@ -243,12 +240,7 @@ void CGame::Uninit(void)
         m_pClient = nullptr;
     }
 
-    if (m_pSpeedMeter != nullptr)
-    {
-        m_pSpeedMeter->Uninit();
-        //delete m_pSpeedMeter;
-        m_pSpeedMeter = nullptr;
-    }
+   
 
     if (m_pDeliveryStatus != nullptr)
     {

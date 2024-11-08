@@ -122,7 +122,7 @@ CPlayer::CPlayer()
 	m_pDamageEffect = nullptr;
 	m_pSound = nullptr;
 	m_pBaggage = nullptr;
-	m_pMultiCamera = nullptr;
+	
 	m_fbrakePitch = 0.0f;
 	m_fbrakeVolume = 0.0f;
 	m_nNumDeliveryStatus = 0;
@@ -149,28 +149,7 @@ HRESULT CPlayer::Init(void)
 	m_Info.state = STATE_APPEAR;
 	m_type = TYPE_NONE;
 
-	// ミニマップ用カメラを生成
-	if (m_pMultiCamera == NULL)
-	{// 使用していない場合
-		m_pMultiCamera = new CMultiCamera;
 
-		// 初期化
-		if (m_pMultiCamera != NULL)
-		{
-			D3DVIEWPORT9 viewport;
-			//プレイヤー追従カメラの画面位置設定
-			viewport.X = 0;
-			viewport.Y = 0;
-			viewport.Width = 200;
-			viewport.Height = 200;
-			viewport.MinZ = 0.0f;
-			viewport.MaxZ = 0.1f;
-			m_pMultiCamera->Init();
-			m_pMultiCamera->SetLength(11500.0f);
-			m_pMultiCamera->SetRotation(D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.00001f));
-			m_pMultiCamera->SetViewPort(viewport);
-		}
-	}
 	
 	return S_OK;
 }
@@ -189,28 +168,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
 
-	// ミニマップ用カメラを生成
-	if (m_pMultiCamera == NULL)
-	{// 使用していない場合
-		m_pMultiCamera = new CMultiCamera;
-
-		// 初期化
-		if (m_pMultiCamera != NULL)
-		{
-			D3DVIEWPORT9 viewport;
-			//プレイヤー追従カメラの画面位置設定
-			viewport.X = 0;
-			viewport.Y = 0;
-			viewport.Width = 200;
-			viewport.Height = 200;
-			viewport.MinZ = 0.0f;
-			viewport.MaxZ = 0.1f;
-			m_pMultiCamera->Init();
-			m_pMultiCamera->SetLength(11500.0f);
-			m_pMultiCamera->SetRotation(D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.00001f));
-			m_pMultiCamera->SetViewPort(viewport);
-		}
-	}
+	
 
 	return S_OK;
 }
@@ -232,7 +190,6 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT_DELETE(pRadio);
 	CPlayerManager::GetInstance()->ListOut(this);
 
-	SAFE_UNINIT_DELETE(m_pMultiCamera);
 
 
 	// 廃棄
@@ -311,13 +268,6 @@ void CPlayer::Update(void)
 		pCamera->Pursue(GetPosition(), rot, m_fCamera);
 	}
 
-	if (m_pMultiCamera != nullptr)
-	{
-		D3DXVECTOR3 rot = GetRotation();
-		rot.y -= D3DX_PI * 0.5f;
-		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-		m_pMultiCamera->Pursue(GetPosition(), rot, 11500.0f);
-	}
 
 
 	if (m_fLife<=0)

@@ -85,7 +85,7 @@ private:
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
 	CTime *m_pTimer;			// タイマー
 	CClient *m_pClient;			// クライアントのポインタ
-	CSpeedMeter* m_pSpeedMeter; // スピードメーターのポインタ
+
 	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ
 	CTimer* m_pGameTimer;		// タイマーのポインタ
 	char m_aAddress[30];		// 接続先サーバーのアドレス

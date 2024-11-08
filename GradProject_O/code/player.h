@@ -155,7 +155,7 @@ private:	// 自分だけがアクセス可能
 	CEffekseer::CEffectData* m_pDamageEffect;
 	CMasterSound::CObjectSound* m_pSound;
 	CMasterSound::CObjectSound* m_pSoundBrake;
-	CMultiCamera* m_pMultiCamera;
+
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
 	CRadio* pRadio;
