@@ -204,6 +204,7 @@
     <ClCompile Include="code\meter.cpp" />
     <ClCompile Include="code\model.cpp" />
     <ClCompile Include="code\motion.cpp" />
+    <ClCompile Include="code\navi.cpp" />
     <ClCompile Include="code\number.cpp" />
     <ClCompile Include="code\object.cpp" />
     <ClCompile Include="code\object2D.cpp" />
@@ -291,6 +292,7 @@
     <ClInclude Include="code\meter.h" />
     <ClInclude Include="code\model.h" />
     <ClInclude Include="code\motion.h" />
+    <ClInclude Include="code\navi.h" />
     <ClInclude Include="code\number.h" />
     <ClInclude Include="code\object.h" />
     <ClInclude Include="code\object2D.h" />
