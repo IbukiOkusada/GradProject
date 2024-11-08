@@ -15,25 +15,31 @@ class CObjectX;
 //==========================================================
 // 消火栓のクラス定義
 //==========================================================
-class CFireHydrant : public CGimmick
+class CGimmickFireHydrant : public CGimmick
 {
 private:
 
 public:	// 誰でもアクセス可能
 
-	CFireHydrant();	// コンストラクタ(オーバーロード)
-	~CFireHydrant() override;	// デストラクタ
+	CGimmickFireHydrant();	// コンストラクタ(オーバーロード)
+	~CGimmickFireHydrant() override;	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init(void) override;
 	void Uninit(void) override;
 	void Update(void) override;
-	static CFireHydrant* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale);
+	static CGimmickFireHydrant* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale);
+	
+	// 衝突時の判定
+	virtual void Hit(const D3DXVECTOR3& HitPos) {}
 
 private:	// 自分だけがアクセス可能
 
+	void SetEffect();
+
 	// メンバ変数
-	CObjectX* m_pObj;
+	CObjectX* m_pObj;	// 描画オブジェクト
+	bool m_bHit;		// 衝突した
 };
 
 #endif

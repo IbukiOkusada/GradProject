@@ -45,6 +45,9 @@ public:	// 誰でもアクセス可能
 	void SetRot(D3DXVECTOR3 rot) { m_Info.rot = rot; }
 	void SetScale(D3DXVECTOR3 scale) { m_Info.scale = scale; }
 
+	// 衝突時の判定
+	virtual void Hit(const D3DXVECTOR3& HitPos) {}
+
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数

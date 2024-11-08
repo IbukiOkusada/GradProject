@@ -44,6 +44,8 @@
 #include "camera_action.h"
 #include "camera_manager.h"
 #include "timer.h"
+#include "gimmick_firehydrant.h"
+#include "bridge.h"
 
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
@@ -191,6 +193,9 @@ HRESULT CGame::Init(void)
     CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
     CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
     CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
+
+    CBridge::Create(D3DXVECTOR3(10000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
+    CGimmickFireHydrant::Create(D3DXVECTOR3(10000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), VECTOR3_ONE);
 
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
