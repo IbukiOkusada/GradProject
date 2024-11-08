@@ -5,11 +5,15 @@
 //
 //==========================================================
 #include "navi.h"
-
+#include "player.h"
+#include "player_manager.h"
+#include "manager.h"
+#include "object.h"
+#include "object_manager.h"
 // マクロ定義
 namespace
 {
-	D3DVIEWPORT9 VIEWPORT = (D3DVIEWPORT9());
+ 	const D3DVIEWPORT9 VIEWPORT = (D3DVIEWPORT9{ (DWORD)(SCREEN_WIDTH * 0.7f), (DWORD)(SCREEN_WIDTH * 0.7f), 100,100,1.0,1000});
 }
 //==========================================================
 // コンストラクタ
@@ -34,6 +38,7 @@ HRESULT CNavi::Init(void)
 {
 	m_pCamera = DEBUG_NEW CMultiCamera;
 	m_pCamera->Init();
+	m_pCamera->SetViewPort(VIEWPORT);
 	return S_OK;
 }
 
@@ -51,7 +56,13 @@ void CNavi::Uninit(void)
 //==========================================================
 void CNavi::Update(void)
 {
-
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	D3DXVECTOR3 pos = pPlayer->GetPosition();
+	m_pCamera->SetPositionR(pos);
+	pos.y += 1000.0f;
+	m_pCamera->SetPositionV(pos);
+	m_pCamera->SetCamera();
+	CObjectManager::GetInstance()->DrawAll();
 }
 
 //==========================================================
