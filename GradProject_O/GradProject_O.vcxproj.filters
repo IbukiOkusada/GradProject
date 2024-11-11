@@ -130,6 +130,9 @@
     <Filter Include="gimmick\firehydrant">
       <UniqueIdentifier>{463af0bd-fb26-4529-a447-352e773ce34d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="map\search">
+      <UniqueIdentifier>{ac14b7ff-dfb1-4101-b942-4c1030d6efcb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -383,6 +386,9 @@
     </ClCompile>
     <ClCompile Include="code\gimmick_firehydrant.cpp">
       <Filter>gimmick\firehydrant</Filter>
+    </ClCompile>
+    <ClCompile Include="code\a_star.cpp">
+      <Filter>map\search</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -643,6 +649,9 @@
     </ClInclude>
     <ClInclude Include="code\gimmick_firehydrant.h">
       <Filter>gimmick\firehydrant</Filter>
+    </ClInclude>
+    <ClInclude Include="code\a_star.h">
+      <Filter>map\search</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -59,9 +59,12 @@ public:	// 誰でもアクセス可能な定義
 		D3DXVECTOR3 pos;	// 座標
 		CRoad* pRoad;		// 確認する道
 		bool bActive;		// 使用されている情報かどうか
-
+		float fFCost;		//最終コスト
+		float fGCost;		//移動コスト
+		float fHCost;		//予想コスト
+		SSearch* pParent;
 		// コンストラクタ
-		SSearch() : pos(VECTOR3_ZERO), pRoad(nullptr), bActive(false) {}
+		SSearch() : pos(VECTOR3_ZERO), fFCost(0.0f), fGCost(0.0f), fHCost(0.0f), pRoad(nullptr), pParent(nullptr), bActive(false) {}
 	};
 
 public:	// 誰でもアクセス可能
