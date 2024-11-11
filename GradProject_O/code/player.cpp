@@ -57,7 +57,8 @@ namespace
 	const float CAMROT_INER = (0.2f);			// カメラ慣性
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
 	const float LIFE = (100.0f);
-	const float CAMERA_NORMAL = (3000.0f);
+	const float CAMERA_NORMAL = (2600.0f);
+	const float ENGINE_ADDCAMERA = (800.0f);
 	const float CAMERA_DETAH = (6000.0f);
 	const float MOVE = (6.2f * 0.7f);		// 移動量
 	const float BRAKE = (0.7f);		// ブレーキ
@@ -78,6 +79,7 @@ namespace
 	const float REF_INER = (1.2f);	// 壁で反射する時の倍率
 	const float FRAME_RATE_SCALER = 60.0f;  // フレームレートを考慮した速度の調整
 	const float BAGGAGE_LENGTH = 200.0f;
+	const float CAMERA_ENGINEMULTI = 0.15f;
 }
 
 // 前方宣言
@@ -223,11 +225,8 @@ void CPlayer::Update(void)
 		CManager::GetInstance()->GetScene()->SendPosition(m_Info.pos);
 		CManager::GetInstance()->GetScene()->SendRotation(m_Info.rot);
 	}
-	else 
-	{
-
-	}
 	
+	// マトリックス
 	SetMatrix();
 
 	if (m_pObj != nullptr)
@@ -268,12 +267,21 @@ void CPlayer::Update(void)
 		pCamera->Pursue(GetPosition(), rot, m_fCamera);
 	}
 
-
-
+	// カメラの距離設定
 	if (m_fLife<=0)
 	{
+		// 死亡カメラ
 		m_Info.move *= 0.7f;
 		m_fCamera += (CAMERA_DETAH - m_fCamera) * 0.02f;
+	}
+	else
+	{
+		// 速度によって補正カメラ
+		float engine = m_fEngine;
+		if (engine < CAMERA_ENGINEMULTI) { engine = 0.0f; }
+		else { engine -= CAMERA_ENGINEMULTI; }
+		CDebugProc::GetInstance()->Print("engine [ %f ]", engine);
+		m_fCamera = CAMERA_NORMAL + ENGINE_ADDCAMERA * engine;
 	}
 
 	if (CBaggage::GetList()->GetNum() == 0)
@@ -546,6 +554,12 @@ bool CPlayer::Collision(void)
 
 		CObjectX* pObjectXNext = pObjectX->GetNext();	// 次のオブジェクトへのポインタを取得
 
+		// 衝突判定を取らない
+		if(!pObjectX->GetEnableCollision()){
+			pObjectX = pObjectXNext;	// 次のオブジェクトに移動
+			continue;
+		}
+
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
 		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
@@ -556,6 +570,7 @@ bool CPlayer::Collision(void)
 
 		if (bCollision)
 		{
+			pObjectX->SetHit(true);
 			D3DXVECTOR3 vecMoveNor = m_Info.move;
 			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
 			D3DXVec3Normalize(&pVecCollision, &pVecCollision);

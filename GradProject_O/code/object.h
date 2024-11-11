@@ -35,6 +35,7 @@ public:	// 誰でもアクセス可能
 		TYPE_BLOCK,	// ブロック
 		TYPE_MODEL,	// 3Dモデル
 		TYPE_EDIT,	// エディター
+		TYPE_GIMMICK,	// ギミック
 		TYPE_MAX
 	};
 
@@ -87,7 +88,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	CObject *m_pPrev;	// 前のオブジェクトへのポインタ
 	CObject *m_pNext;	// 次のオブジェクトへのポインタ
-	bool m_bDeath;	// 死亡フラグ
+	bool m_bDeath;		// 死亡フラグ
 	bool m_bDraw;		// 描画フラグ
 	int m_nPriority;	// 優先順位の位置
 	TYPE m_type;		// 種類
