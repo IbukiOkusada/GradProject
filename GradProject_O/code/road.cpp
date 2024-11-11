@@ -9,7 +9,7 @@
 #include "road_manager.h"
 #include "manager.h"
 #include "texture.h"
-
+#include "effect3D.h"
 namespace
 {
 	const char* FILENAME[CRoad::TYPE_MAX] =	{
@@ -35,6 +35,7 @@ CRoad::CRoad(const SInfo& info)
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)
 	{
 		m_apConnectRoad[i] = nullptr;
+		m_aSearchRoad[i] = SSearch();
 	}
 
 	m_nIdx = CRoadManager::GetInstance()->GetList()->GetNum();
@@ -72,6 +73,7 @@ void CRoad::Uninit(void)
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)
 	{
 		m_apConnectRoad[i] = nullptr;
+		m_aSearchRoad[i] = SSearch();
 	}
 
 	// 描画オブジェクトを廃棄
@@ -128,6 +130,27 @@ void CRoad::Connect(CRoad* pRoad, const DIRECTION dic)
 	{
 		m_apConnectLength[dic] = D3DXVec3Length(&(m_Info.pos - pRoad->GetPosition()));
 	}
+}
+
+//==========================================================
+// 経路探索用連結
+//==========================================================
+void CRoad::SearchConnect(CRoad* pRoad, const DIRECTION dic)
+{
+	// 範囲外確認
+	if (dic < DIRECTION::DIC_UP || dic >= DIRECTION::DIC_MAX) { return; }
+
+	m_aSearchRoad[dic].pRoad = pRoad;
+
+	if (pRoad != nullptr)
+	{
+		m_aSearchRoad[dic].pos = pRoad->GetPosition();
+		m_aSearchRoad[dic].bActive = true;
+		return;
+	}
+
+	// 使用されていない状態にする
+	m_aSearchRoad[dic] = SSearch();
 }
 
 //==========================================================

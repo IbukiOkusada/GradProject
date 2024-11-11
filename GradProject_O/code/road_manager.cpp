@@ -6,6 +6,7 @@
 //==========================================================
 #include "road_manager.h"
 #include "road.h"
+#include "gimmick_firehydrant.h"
 
 // 静的メンバ変数宣言
 CRoadManager* CRoadManager::m_pInstance = nullptr;	// インスタンス
@@ -144,7 +145,7 @@ void CRoadManager::AllConnect(void)
 	}
 
 	// 全て確認
-	for (int i = 0; i < GetList()->GetNum() - 1; i++)
+	for (int i = 0; i < GetList()->GetNum(); i++)
 	{
 		CRoad* pRoad = GetList()->Get(i);
 		D3DXVECTOR3 pos = pRoad->GetPosition();	// 座標
@@ -171,6 +172,9 @@ void CRoadManager::AllConnect(void)
 		// テクスチャ設定
 		pRoad->BindTexture();
 	}
+
+	// 経路探索用情報も設定
+	SearchRoadConnect();
 }
 
 //==========================================================
@@ -234,5 +238,52 @@ void CRoadManager::VerticalConnectCheck(CRoad* pRoad, CRoad* pCheckRoad)
 	{// 小さい
 		pRoad->Connect(pCheckRoad, CRoad::DIC_UP);
 		pCheckRoad->Connect(pRoad, CRoad::DIC_DOWN);
+	}
+}
+
+//==========================================================
+// 経路探索用連結
+//==========================================================
+void CRoadManager::SearchRoadConnect(void)
+{
+	for (int i = 0; i < GetList()->GetNum() - 1; i++)
+	{
+		CRoad* pRoad = GetList()->Get(i);
+		D3DXVECTOR3 pos = pRoad->GetPosition();	// 座標
+
+		// まっすぐは除外
+		if (pRoad->GetType() == CRoad::TYPE::TYPE_NONE)
+		{
+			continue;
+		}
+
+		// 全部確認
+		for (int dic = 0; dic < CRoad::DIRECTION::DIC_MAX; dic++)
+		{
+			CRoad::DIRECTION direction = static_cast<CRoad::DIRECTION>(dic);
+			CRoad* pConnect = pRoad->GetConnectRoad(direction);
+
+			// 道が連結していない
+			if(pConnect == nullptr)
+			{
+				continue;
+			}
+
+			// 連結している場合交差点もしくは行き止まりまで確認
+			while (pConnect != nullptr)
+			{
+				// 連結しているところで分岐する
+				if (pConnect->GetType() != CRoad::TYPE::TYPE_NONE)
+				{
+					pRoad->SearchConnect(pConnect, direction);
+					break;
+				}
+
+				// 更に先
+				CRoad* pConnectNext = pConnect->GetConnectRoad(direction);
+				pConnect = pConnectNext;
+			}
+		}
+		
 	}
 }
