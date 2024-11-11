@@ -8,6 +8,8 @@ using namespace std;
 #ifndef CONVENIENCE
 #define CONVENIENCE		// 二重インクルード防止用マクロを定義
 float GetDistance(D3DXVECTOR3 vec1, D3DXVECTOR3 vec2);
+void Adjust(D3DXVECTOR3& rot);
+void Adjust(float& rot);
 
 #define my_max(a,b)            (((a) > (b)) ? (a) : (b))// 大きい数値を返す
 

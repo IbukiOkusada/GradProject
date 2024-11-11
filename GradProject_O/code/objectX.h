@@ -50,6 +50,7 @@ public:	// 誰でもアクセス可能
 	void SetScale(const D3DXVECTOR3& scale);
 	void SetEnableCollision(const bool bEnable) { m_bEnableCollision = bEnable; }
 	void SetRotateType(const TYPE& type) { m_Type = type; }
+	void SetHit(bool bHit) { m_bHit = bHit; }
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
@@ -69,6 +70,9 @@ public:	// 誰でもアクセス可能
 	void SetColMulti(const D3DXCOLOR& col) { m_ColMulti = col; }
 	D3DXCOLOR& GetColAdd() { return m_AddCol; }
 	void SetColAdd(const D3DXCOLOR& col) { m_AddCol = col; }
+	bool GetHit() { return m_bHit; }
+	bool GetHitOld() { return m_bHitOld; }
+	bool GetEnableCollision() { return m_bEnableCollision; }
 
 protected:
 	void Quaternion();
@@ -90,9 +94,11 @@ private:	// 自分だけがアクセス可能
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
 	D3DXCOLOR m_ColMulti;
 	D3DXCOLOR m_AddCol;
-	TYPE m_Type;			// 回転種類
-	int m_nIdxModel;		// モデル番号
+	TYPE m_Type;		// 回転種類
+	int m_nIdxModel;	// モデル番号
 	bool m_bEnableCollision;	//当たり判定の有効・無効
+	bool m_bHit;		// 衝突した
+	bool m_bHitOld;		// 前回の衝突判定
 };
 
 #endif

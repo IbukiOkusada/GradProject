@@ -19,3 +19,37 @@ float GetDistance(D3DXVECTOR3 vec1, D3DXVECTOR3 vec2)
 	float fDis = Dis.x + Dis.y + Dis.z;
 	return fDis;
 }
+
+//=============================================
+// Œü‚«•â³(‘S‘Ì)
+//=============================================
+void Adjust(D3DXVECTOR3& rot)
+{
+	// ˆê‚Â‚¸‚Â•â³
+	Adjust(rot.x);
+	Adjust(rot.y);
+	Adjust(rot.z);
+}
+
+//=============================================
+// Œü‚«•â³(’P‘Ì)
+//=============================================
+void Adjust(float& rot)
+{
+	// -3.14‚©‚ç3.14‚ÌŠÔ‚É•â³
+	while (1)
+	{
+		if (rot > D3DX_PI)
+		{
+			rot += -D3DX_PI * 2;
+		}
+		else if (rot < -D3DX_PI)
+		{
+			rot += D3DX_PI * 2;
+		}
+		else
+		{
+			break;
+		}
+	}
+}

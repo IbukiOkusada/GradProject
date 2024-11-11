@@ -187,6 +187,7 @@
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\gimmick.cpp" />
     <ClCompile Include="code\gimmick_firehydrant.cpp" />
+    <ClCompile Include="code\gimmick_policestation.cpp" />
     <ClCompile Include="code\goal.cpp" />
     <ClCompile Include="code\input.cpp" />
     <ClCompile Include="code\input_gamepad.cpp" />
@@ -270,6 +271,7 @@
     <ClInclude Include="code\edit_road.h" />
     <ClInclude Include="code\gimmick.h" />
     <ClInclude Include="code\gimmick_firehydrant.h" />
+    <ClInclude Include="code\gimmick_policestation.h" />
     <ClInclude Include="code\goal.h" />
     <ClInclude Include="code\collision.h" />
     <ClInclude Include="code\convenience.h" />

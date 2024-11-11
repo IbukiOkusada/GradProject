@@ -24,6 +24,7 @@ public:	// 誰でもアクセス可能な定義
 	enum TYPE
 	{
 		TYPE_EFFECT = 0,		// エフェクト
+		TYPE_WATER,				// しずく
 		TYPE_MAX				   
 	};
 

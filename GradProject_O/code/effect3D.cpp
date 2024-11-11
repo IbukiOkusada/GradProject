@@ -14,11 +14,13 @@
 #include "game.h"
 #include "meshfield.h"
 #include "billboard.h"
+#include "deltatime.h"
 
 //===============================================
 // –³–¼–¼‘O‹óŠÔ
 //===============================================
 namespace {
+	const float DELTATIME_MULTI = (100.0f);
 	const float LIFE = (30.0f); // Žõ–½
 	const float GUNCHARGE = (0.1f);
 
@@ -30,6 +32,12 @@ namespace {
 	const float RADIUSINFO[CEffect3D::TYPE_MAX] = {	// Ží—Þ•Ê”¼Œa‚ÌÝ’è
 		100.0f,
 		100.0f,
+	};
+
+	const CTexture::TYPE TEXIDX[CEffect3D::TYPE::TYPE_MAX] = {
+		CTexture::TYPE_EFFECT,
+		CTexture::TYPE_EFFECT,
+		CTexture::TYPE_WATER,
 	};
 }
 
@@ -122,6 +130,13 @@ void CEffect3D::Update(void)
 
 		m_Info.col.a -= 0.05f * CManager::GetInstance()->GetSlow()->Get();
 		m_Info.fRadius += 0.1f * CManager::GetInstance()->GetSlow()->Get();
+
+		break;
+
+	case TYPE_SPLASH:	// ‰Œ
+
+		m_Info.col.a -= 0.01f * CManager::GetInstance()->GetSlow()->Get();
+		m_Info.move.y += -0.5f;
 
 		break;
 	}
@@ -287,23 +302,7 @@ void CEffect3D::InfoSet(void)
 //===============================================
 CTexture::TYPE CEffect3D::SetTex(TYPE type)
 {
-	switch (type)
-	{
-	case TYPE_NONE:
-	{
-
-	}
-	break;
-
-	case TYPE_SMAKE:
-	{
-		return CTexture::TYPE_EFFECT;
-
-	}
-	break;
-	}
-
-	return CTexture::TYPE();
+	return TEXIDX[type];
 }
 
 //===============================================
@@ -327,6 +326,15 @@ void CEffect3D::DrawSet(void)
 	{
 		m_pObjectBilBoard->SetAlphaText(true);
 		m_pObjectBilBoard->SetZTest(true);
+		m_pObjectBilBoard->SetLighting(true);
+		m_pObjectBilBoard->SetFusion(CObjectBillboard::FUSION_ADD);
+	}
+	break;
+
+	case TYPE_SPLASH:
+	{
+		m_pObjectBilBoard->SetAlphaText(true);
+		m_pObjectBilBoard->SetZTest(false);
 		m_pObjectBilBoard->SetLighting(true);
 		m_pObjectBilBoard->SetFusion(CObjectBillboard::FUSION_ADD);
 	}

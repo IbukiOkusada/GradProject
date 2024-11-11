@@ -1,11 +1,11 @@
 //==========================================================
 //
-// 消火栓ギミック [gimmick_firehydrant.h]
+// 警察署ギミック [gimmick_policestation.h]
 // Author : Ibuki Okusada
 // 
 //==========================================================
-#ifndef _FIREHYDRANT_H_		// このマクロが定義されていない場合
-#define _FIREHYDRANT_H_		// 二重インクルード防止用マクロを定義
+#ifndef _POLICESTATION_H_		// このマクロが定義されていない場合
+#define _POLICESTATION_H_		// 二重インクルード防止用マクロを定義
 
 #include "gimmick.h"
 
@@ -29,7 +29,7 @@ public:	// 誰でもアクセス可能
 	void Uninit(void) override;
 	void Update(void) override;
 	static CGimmickFireHydrant* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale);
-	
+
 	// 衝突時の判定
 	virtual void Hit(const D3DXVECTOR3& HitPos) {}
 
@@ -47,4 +47,3 @@ private:	// 自分だけがアクセス可能
 };
 
 #endif
-

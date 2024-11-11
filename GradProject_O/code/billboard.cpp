@@ -24,6 +24,7 @@ CObjectBillboard::CObjectBillboard(int nPriority) : CObject(nPriority)
 	m_bAlphatest = true;
 	m_bZtest = true;
 	m_pCurrent = nullptr;
+	m_rot = VECTOR3_ZERO;
 }
 
 //==========================================================

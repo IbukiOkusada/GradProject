@@ -161,7 +161,7 @@ void CEdit_Road::ClickCheck()
 	m_pSelect = nullptr;
 
 	// “¹‚ð‘S‚ÄŠm”F
-	for (int i = 0; i < list->GetNum() - 1; i++)
+	for (int i = 0; i < list->GetNum(); i++)
 	{
 		CRoad* pRoad = list->Get(i);
 

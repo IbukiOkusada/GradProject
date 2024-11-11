@@ -133,6 +133,9 @@
     <Filter Include="map\search">
       <UniqueIdentifier>{ac14b7ff-dfb1-4101-b942-4c1030d6efcb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gimmick\policestation">
+      <UniqueIdentifier>{802b699a-8cef-4992-a66a-a169b3607e2b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -389,6 +392,9 @@
     </ClCompile>
     <ClCompile Include="code\a_star.cpp">
       <Filter>map\search</Filter>
+    </ClCompile>
+    <ClCompile Include="code\gimmick_policestation.cpp">
+      <Filter>gimmick\policestation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -652,6 +658,9 @@
     </ClInclude>
     <ClInclude Include="code\a_star.h">
       <Filter>map\search</Filter>
+    </ClInclude>
+    <ClInclude Include="code\gimmick_policestation.h">
+      <Filter>gimmick\policestation</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
