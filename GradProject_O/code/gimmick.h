@@ -46,7 +46,6 @@ public:	// 誰でもアクセス可能
 	void SetScale(D3DXVECTOR3 scale) { m_Info.scale = scale; }
 
 	// 衝突時の判定
-	virtual void Hit(const D3DXVECTOR3& HitPos) {}
 
 private:	// 自分だけがアクセス可能
 

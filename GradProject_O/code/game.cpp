@@ -47,6 +47,7 @@
 #include "gimmick_firehydrant.h"
 #include "navi.h"
 #include "bridge.h"
+#include "gimmick_policestation.h"
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
     const int MAX_STRING = (2048);
@@ -196,10 +197,8 @@ HRESULT CGame::Init(void)
 
     CBridge::Create(D3DXVECTOR3(13000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
     CGimmickFireHydrant::Create(D3DXVECTOR3(10000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(3.0f, 3.0f, 3.0f));
-
+    CGimmickPoliceStation::Create(D3DXVECTOR3(-6000.0f, 0.0f, 1000.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), VECTOR3_ONE);
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
-
-
 
     if (m_pDeliveryStatus == nullptr)
     {
