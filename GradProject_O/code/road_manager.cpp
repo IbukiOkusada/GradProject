@@ -145,7 +145,7 @@ void CRoadManager::AllConnect(void)
 	}
 
 	// 全て確認
-	for (int i = 0; i < GetList()->GetNum() - 1; i++)
+	for (int i = 0; i < GetList()->GetNum(); i++)
 	{
 		CRoad* pRoad = GetList()->Get(i);
 		D3DXVECTOR3 pos = pRoad->GetPosition();	// 座標

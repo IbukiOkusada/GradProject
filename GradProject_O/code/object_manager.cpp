@@ -83,6 +83,7 @@ void CObjectManager::Uninit(void)
 void CObjectManager::Draw(void)
 {
 	CCamera *pCamera = CCameraManager::GetInstance()->GetTop();
+	CDebugProc::GetInstance()->Print("オブジェクト数 [ %d ]\n", m_nNumAll);
 
 	while (pCamera != nullptr) {
 
