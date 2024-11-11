@@ -53,6 +53,17 @@ public:	// 誰でもアクセス可能な定義
 		SInfo(const D3DXVECTOR3& _pos, const D3DXVECTOR3& _rot, const D3DXVECTOR2& _size) : pos(_pos), rot(_rot), size(_size), sizeOrigin(size) {}
 	};
 
+	// 経路探索用
+	struct SSearch
+	{
+		D3DXVECTOR3 pos;	// 座標
+		CRoad* pRoad;		// 確認する道
+		bool bActive;		// 使用されている情報かどうか
+
+		// コンストラクタ
+		SSearch() : pos(VECTOR3_ZERO), pRoad(nullptr), bActive(false) {}
+	};
+
 public:	// 誰でもアクセス可能
 
 	//CRoad();	// コンストラクタ(オーバーロード)
@@ -76,9 +87,12 @@ public:	// 誰でもアクセス可能
 	float GetConnectLength(const DIRECTION& dic) // 連結道路への距離
 	{ return m_apConnectLength[dic]; }
 	TYPE GetType(void) { return m_Type; }
+	SSearch* GetSearchRoad(const DIRECTION& dic)
+	{ return &m_aSearchRoad[dic]; }
 
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
+	void SearchConnect(CRoad* pRoad, const DIRECTION dic);
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetSize(const D3DXVECTOR2& size);
 
@@ -91,8 +105,9 @@ private:	// 自分だけがアクセス可能
 	SInfo m_Info;	// 基本情報
 	CObject3D* m_pObj;
 	int m_nIdx;
-	CRoad* m_apConnectRoad[DIRECTION::DIC_MAX];	// 連結した道
+	CRoad* m_apConnectRoad[DIRECTION::DIC_MAX];		// 連結した道
 	float m_apConnectLength[DIRECTION::DIC_MAX];	// 連結した道への距離
+	SSearch m_aSearchRoad[DIRECTION::DIC_MAX];		// 経路探索用情報
 	TYPE m_Type;
 };
 

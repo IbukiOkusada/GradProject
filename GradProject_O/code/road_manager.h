@@ -40,6 +40,7 @@ public:	// 誰でもアクセス可能
 
 	// 道連結関数
 	void AllConnect(void);
+	void SearchRoadConnect(void);
 
 private:	// 自分だけがアクセス可能
 

@@ -10,6 +10,7 @@
 #include "object.h"
 #include "manager.h"
 #include <assert.h>
+#include "debugproc.h"
 
 CObjectManager *CObjectManager::m_pInstance = nullptr;
 
