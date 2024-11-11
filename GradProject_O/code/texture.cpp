@@ -15,7 +15,8 @@ int CTexture::m_nNumAll = 0;	// ì«Ç›çûÇ›ëçêî
 // ÉtÉ@ÉCÉãñº
 const char *CTexture::m_apDefFileName[TYPE_MAX] =
 {
-	"data\\TEXTURE\\effect000.jpg",
+	"data\\TEXTURE\\effect\\effect000.jpg",
+	"data\\TEXTURE\\effect\\water.png",
 };
 
 //===============================================

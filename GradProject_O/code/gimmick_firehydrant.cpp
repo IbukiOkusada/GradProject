@@ -12,6 +12,8 @@
 #include "camera_manager.h"
 #include "renderer.h"
 #include "particle3D.h"
+#include "player.h"
+#include "player_manager.h"
 
 // 定数定義
 namespace
@@ -28,6 +30,8 @@ CGimmickFireHydrant::CGimmickFireHydrant()
 	// 値のクリア
 	m_pObj = nullptr;
 	m_bHit = false;
+	m_TargetPos = VECTOR3_ZERO;
+	m_TargetRot = VECTOR3_ZERO;
 }
 
 //==========================================================
@@ -71,6 +75,31 @@ void CGimmickFireHydrant::Update(void)
 {
 	if (m_pObj == nullptr) { return; }
 
+	// 衝突した
+	if (m_pObj->GetHit() || m_pObj->GetHitOld())
+	{
+		m_bHit = true;
+		m_pObj->SetEnableCollision(false);
+		D3DXVECTOR3 pos = CPlayerManager::GetInstance()->GetTop()->GetPosition();
+		float rot = atan2f(GetPos().x - pos.x, GetPos().z - pos.z);
+
+		// 座標設定
+		m_TargetPos = {
+			GetPos().x + sinf(rot) * 500.0f,
+			GetPos().y,
+			GetPos().z + cosf(rot) * 500.0f,
+		};
+
+		m_TargetRot = {
+			0.0f,
+			rot,
+			D3DX_PI * 0.5f
+		};
+	}
+
+	// 吹っ飛び
+	Away();
+
 	// エフェクト設定
 	SetEffect();
 }
@@ -98,13 +127,35 @@ CGimmickFireHydrant* CGimmickFireHydrant::Create(D3DXVECTOR3 pos, D3DXVECTOR3 ro
 }
 
 //==========================================================
+// 吹っ飛び
+//==========================================================
+void CGimmickFireHydrant::Away()
+{
+	// 消火栓が移動した
+	if (m_pObj == nullptr) { return; }
+	if (!m_bHit) { return; }
+
+	// 位置更新
+	D3DXVECTOR3 posdiff = m_TargetPos - m_pObj->GetPosition();
+	D3DXVECTOR3 setpos = m_pObj->GetPosition() + posdiff * 0.1f;
+	m_pObj->SetPosition(setpos);
+
+	// 向き更新
+	D3DXVECTOR3 rotdiff = m_TargetRot - m_pObj->GetRotation();
+	Adjust(rotdiff);
+	D3DXVECTOR3 setrot = m_pObj->GetRotation() + rotdiff * 0.1f;
+	Adjust(setrot);
+	m_pObj->SetRotation(setrot);
+}
+
+//==========================================================
 // エフェクト生成
 //==========================================================
 void CGimmickFireHydrant::SetEffect()
 {
 	// 消火栓が移動した
 	if (m_pObj == nullptr) { return; }
-	if (m_bHit) { return; }
+	if (!m_bHit) { return; }
 
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 	D3DXMATRIX mtxProjection, mtxView, mtxWorld;
@@ -129,5 +180,6 @@ void CGimmickFireHydrant::SetEffect()
 		return;
 	}
 
-	CParticle3D::Create(GetPos(), CEffect3D::TYPE_SMAKE);
+	D3DXVECTOR3 objpos = GetPos();
+	CParticle3D::Create(objpos, CEffect3D::TYPE_SPLASH);
 }

@@ -44,6 +44,8 @@ CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 	m_scale = VECTOR3_ZERO;
 	m_pos = VECTOR3_ZERO;
 	m_rot = VECTOR3_ZERO;
+	m_bHit = false;
+	m_bHitOld = false;
 }
 
 //==========================================================
@@ -95,6 +97,9 @@ void CObjectX::Update(void)
 void CObjectX::Draw(void)
 {
 	//Update();
+
+	m_bHitOld = m_bHit;
+	m_bHit = false;
 
 	// マトリックス計算
 	if (m_Type == TYPE_NORMAL)

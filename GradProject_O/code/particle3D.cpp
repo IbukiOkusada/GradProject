@@ -99,5 +99,36 @@ void CParticle3D::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEf
 		}
 
 		break;
+
+	case CEffect3D::TYPE_SPLASH:	// エフェクト
+
+		for (int nCnt = 0; nCnt < 1; nCnt++)
+		{
+			// 座標の設定
+			pos = Defpos;
+
+			float angle = static_cast<float>(rand() % 629 - 314) * 0.01f;
+			float speed = static_cast<float>(rand() % 100) * 0.12f;
+
+			//移動量の設定
+			move.x = sinf(angle) * speed;
+			move.y = static_cast<float>(rand() % 10) + 15.0f;
+			move.z = cosf(angle) * speed;
+
+			float colrand = static_cast<float>(rand() % 40) * 0.01f;
+
+			//色の設定
+			col = D3DXCOLOR(colrand, colrand, 0.7f, 1.0f);
+
+			//半径の設定
+			fRadius = 30.0f;
+
+			//寿命の設定
+			fLife = 90.0f;
+
+			CEffect3D::Create(Defpos + move, move, col, fRadius, fLife, type);
+		}
+
+		break;
 	}
 }
