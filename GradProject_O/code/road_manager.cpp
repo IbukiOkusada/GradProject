@@ -248,10 +248,6 @@ void CRoadManager::SearchRoadConnect(void)
 {
 	for (int i = 0; i < GetList()->GetNum(); i++)
 	{
-		if (i == 66)
-		{
-			int a = 0;
-		}
 
 		CRoad* pRoad = GetList()->Get(i);
 		D3DXVECTOR3 pos = pRoad->GetPosition();	// ç¿ïW
@@ -284,6 +280,4 @@ void CRoadManager::SearchRoadConnect(void)
 			}
 		}
 	}
-
-	int a = 0;
 }
