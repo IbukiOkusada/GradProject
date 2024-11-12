@@ -65,7 +65,7 @@ namespace
 	const float BRAKE = (0.7f);		// ブレーキ
 	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量
-	const float GRAVITY = (-0.6f);		//プレイヤー重力
+	const float GRAVITY = (-6.0f);		//プレイヤー重力
 	const float ROT_MULTI = (1.0f);	// 向き補正倍率
 	const float WIDTH = (20.0f);	// 幅
 	const float HEIGHT = (80.0f);	// 高さ
@@ -81,6 +81,8 @@ namespace
 	const float FRAME_RATE_SCALER = 60.0f;  // フレームレートを考慮した速度の調整
 	const float BAGGAGE_LENGTH = 200.0f;
 	const float CAMERA_ENGINEMULTI = 0.15f;
+	const float NITRO_COUNTER = 6.0f;
+	const float NITRO_COOL = 120.0f;
 }
 
 // 前方宣言
@@ -114,6 +116,7 @@ CPlayer::CPlayer()
 	m_fTurnSpeed = 0.0f;
 	m_fHandle = 0.0f;
 	m_fLife = LIFE;
+	m_fLifeOrigin = m_fLife;
 	m_fCamera = CAMERA_NORMAL;
 	m_type = TYPE_NONE;
 	m_nId = -1;
@@ -414,7 +417,11 @@ void CPlayer::Move(void)
 	m_fbrakePitch -= m_fbrakePitch *BRAKE_INER;
 	m_pSoundBrake->SetVolume(m_fbrakeVolume * 0.8f);
 	m_pSoundBrake->SetPitch(0.5f + m_fbrakePitch);
+	float moveY = m_Info.move.y;
 	m_Info.move *= fIner;//移動量の減衰
+	m_Info.move.y = moveY;
+	m_Info.move.y += GRAVITY * deltatime;
+
 }
 //===============================================
 //簡易エンジンシミュ
@@ -583,6 +590,41 @@ bool CPlayer::Collision(void)
 		}
 	}
 
+	// 道との判定
+	auto list = CRoadManager::GetInstance()->GetList();
+	for (int i = 0; i < list->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		// 道確認
+		CRoad* pRoad = list->Get(i);	// 先頭を取得
+		if (pRoad == nullptr) { continue; }
+
+		CObject3D* pObj = pRoad->GetObj();
+		D3DXVECTOR3* pVtx = pRoad->GetVtxPos();
+		D3DXVECTOR3 pos = pRoad->GetPosition();
+		float height = m_Info.pos.y - 0.1f;;
+		D3DXVECTOR3 vec1 = pVtx[1] - pVtx[0], vec2 = pVtx[2] - pVtx[0];
+		D3DXVECTOR3 nor0, nor1;
+
+		D3DXVec3Cross(&nor0, &vec1, &vec2);
+		D3DXVec3Normalize(&nor0, &nor0);	// ベクトルを正規化する
+
+		vec1 = pVtx[2] - pVtx[3];
+		vec2 = pVtx[1] - pVtx[3];
+		D3DXVec3Cross(&nor1, &vec1, &vec2);
+		D3DXVec3Normalize(&nor1, &nor1);	// ベクトルを正規化する
+
+		// 判定
+		collision::IsOnSquarePolygon(pos + pVtx[0], pos + pVtx[1], pos + pVtx[2], pos + pVtx[3],
+			nor0, nor1, m_Info.pos, m_Info.posOld, height);
+
+		if (height >= m_Info.pos.y)
+		{
+			m_Info.pos.y = height;
+			m_Info.move.y = 0.0f;
+		}
+	}
+
 	return false;
 }
 
@@ -618,9 +660,13 @@ void CPlayer::Nitro()
 	if (m_fNitroCool==0.0f&& (pInputKey->GetTrigger(DIK_SPACE)|| pInputPad->GetTrigger(CInputPad::BUTTON_B,0)))
 	{
  		Damage(LIFE * 0.1f);
+		if (m_fLife > 0.0f)
+		{
+			CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.3f, 1.035f, 2.0f);
+		}
 		m_Info.state = STATE::STATE_NITRO;
-		m_Info.fStateCounter = 6.0f;
-		m_fNitroCool = 120.0f;
+		m_Info.fStateCounter = NITRO_COUNTER;
+		m_fNitroCool = NITRO_COOL;
 	}
 	if (m_Info.state == STATE::STATE_NITRO)
 	{
@@ -628,7 +674,11 @@ void CPlayer::Nitro()
 	}
 	else
 	{
-		m_fNitroCool--;;
+		m_fNitroCool--;
+		if (m_fNitroCool == NITRO_COOL - 1.0f)
+		{
+			CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.0f, 1.0f, 320.0f);
+		}
 		if (m_fNitroCool < 0.0f)
 		{
 			m_fNitroCool = 0.0f;
@@ -676,7 +726,7 @@ void CPlayer::DEBUGKEY(void){}
 //===============================================
 void CPlayer::StateSet(void)
 {
-	float fSlawMul = CManager::GetInstance()->GetSlow()->Get();
+	float fSlawMul = CDeltaTime::GetInstance()->GetSlow();
 	switch (m_Info.state)
 	{
 	case STATE_APPEAR:
@@ -698,6 +748,11 @@ void CPlayer::StateSet(void)
 		break;
 	case STATE_NITRO:
 	{
+		/*if (m_Info.fStateCounter == NITRO_COUNTER - fSlawMul)
+		{
+			CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.0f, 1.0f, 180.0f);
+		}*/
+
 		m_Info.fStateCounter -= fSlawMul;
 
 		if (m_Info.fStateCounter <= 0.0f)

@@ -18,6 +18,7 @@ public:	// 誰でもアクセス可能な定義
 	{
 		TYPE_OBJ = 0,	// 障害物
 		TYPE_ROAD,		// 道
+		TYPE_GIMMICK,
 		TYPE_MAX
 	};
 

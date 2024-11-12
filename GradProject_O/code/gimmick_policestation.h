@@ -40,8 +40,14 @@ public:	// 誰でもアクセス可能
 	void Uninit(void) override;
 	void Update(void) override;
 	static CGimmickPoliceStation* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale);
+	void SetColMulti(const D3DXCOLOR& col) override;
 
 private:	// 自分だけがアクセス可能
+
+	// メンバ関数
+	virtual void SetObjPos(const D3DXVECTOR3& pos) override;
+	virtual void SetObjRot(const D3DXVECTOR3& rot) override;
+	virtual void SetObjScale(const D3DXVECTOR3& scale) override;
 
 	// メンバ変数
 	CObjectX* m_pObj;			// 描画オブジェクト

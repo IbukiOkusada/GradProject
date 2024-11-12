@@ -163,7 +163,6 @@ void CPolice::ReachRoad()
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
-	CRoadManager* pRoadManager = CRoadManager::GetInstance();
 	CRoad* pRoadNext = nullptr;
 
 	while (1)
@@ -286,4 +285,13 @@ void CPolice::ChasePlayer()
 void CPolice::Collision()
 {
 	
+}
+
+//==========================================================
+// ”j‰ó
+//==========================================================
+void CPolice::Break()
+{
+	CPlayer* p = CPlayerManager::GetInstance()->GetTop();
+	p->Damage(p->GetLifeOrigin() * 0.1f);
 }

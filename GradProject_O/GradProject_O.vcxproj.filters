@@ -402,6 +402,9 @@
     <ClCompile Include="code\gimmick_guardrail.cpp">
       <Filter>gimmick\guardrail</Filter>
     </ClCompile>
+    <ClCompile Include="code\edit_gimmick.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\character.h">
@@ -670,6 +673,9 @@
     </ClInclude>
     <ClInclude Include="code\gimmick_guardrail.h">
       <Filter>gimmick\guardrail</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_gimmick.h">
+      <Filter>edit</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

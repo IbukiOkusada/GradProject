@@ -19,6 +19,11 @@ CBridge::CBridge()
 	m_fDownTime = 0.0f;
 	m_fUpTime = 300.0f;
 	m_fTimeCount = 300.0f;
+
+	for (int i = 0; i < 2; i++)
+	{
+		m_pBridge[i] = nullptr;
+	}
 }
 
 //==========================================================
@@ -51,6 +56,8 @@ HRESULT CBridge::Init(void)
 		scale.z *= 0.5f;
 		m_pBridge[i]->SetScale(scale);
 	}
+
+	SetType(TYPE::TYPE_BRIDGE);
 
 	return S_OK;
 }
@@ -140,4 +147,52 @@ CBridge* CBridge::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale, fl
 	}
 
 	return pBridge;
+}
+
+//==========================================================
+// êFî{ó¶ïœçX
+//==========================================================
+void CBridge::SetColMulti(const D3DXCOLOR& col)
+{
+	for (int i = 0; i < BRIDGE_NUM; i++)
+	{
+		if (m_pBridge[i] == nullptr) { continue; }
+		m_pBridge[i]->SetColMulti(col);
+	}
+}
+
+//==========================================================
+// ç¿ïWîΩâf
+//==========================================================
+void CBridge::SetObjPos(const D3DXVECTOR3& pos)
+{
+	for (int i = 0; i < BRIDGE_NUM; i++)
+	{
+		if (m_pBridge[i] == nullptr) { continue; }
+		m_pBridge[i]->SetPosition(pos);
+	}
+}
+
+//==========================================================
+// å¸Ç´îΩâf
+//==========================================================
+void CBridge::SetObjRot(const D3DXVECTOR3& rot)
+{
+	for (int i = 0; i < BRIDGE_NUM; i++)
+	{
+		if (m_pBridge[i] == nullptr) { continue; }
+		m_pBridge[i]->SetRotation(rot);
+	}
+}
+
+//==========================================================
+// ÉXÉPÅ[ÉãîΩâf
+//==========================================================
+void CBridge::SetObjScale(const D3DXVECTOR3& scale)
+{
+	for (int i = 0; i < BRIDGE_NUM; i++)
+	{
+		if (m_pBridge[i] == nullptr) { continue; }
+		m_pBridge[i]->SetScale(scale);
+	}
 }

@@ -385,7 +385,7 @@ bool CCar::Collision()
 
 			if (pObjectX->GetType() == TYPE_PLAYER)
 			{
-				m_Info.bBreak = true;
+				Break();
 			}
 
 			return true;
@@ -393,4 +393,12 @@ bool CCar::Collision()
 	}
 
 	return false;
+}
+
+//==========================================================
+// ”j‰ó
+//==========================================================
+void CCar::Break()
+{
+	m_Info.bBreak = true;
 }

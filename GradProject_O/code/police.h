@@ -56,6 +56,7 @@ private:	// 自分だけがアクセス可能
 	void ChasePlayer();
 	void SearchPlayer();
 	void Collision();
+	void Break() override;
 
 	// メンバ変数
 	SInfo m_Info;					// 自分自身の情報

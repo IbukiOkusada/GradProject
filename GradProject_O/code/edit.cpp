@@ -7,7 +7,7 @@
 #include "edit.h"
 #include "edit_object.h"
 #include "edit_road.h"
-
+#include "edit_gimmick.h"
 
 //==========================================================
 // コンストラクタ
@@ -68,6 +68,10 @@ CEdit* CEdit::Create(const TYPE& type)
 
 	case TYPE_ROAD:
 		pEdit = DEBUG_NEW CEdit_Road;
+		break;
+
+	case TYPE_GIMMICK:
+		pEdit = DEBUG_NEW CEdit_Gimmick;
 		break;
 
 	default:

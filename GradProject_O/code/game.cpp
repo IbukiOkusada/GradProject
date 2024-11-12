@@ -177,7 +177,7 @@ HRESULT CGame::Init(void)
     // ƒ}ƒbƒv“Ç‚Ýž‚Ý
     CMapManager::GetInstance()->Load();
 
-    CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
+    CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(34.65f, 1.0f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
     CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
@@ -185,9 +185,9 @@ HRESULT CGame::Init(void)
     /*for (int i = 0; i < 8; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-    }
+    }*/
 
-    for (int i = 0; i < 8; i++)
+   /* for (int i = 0; i < 8; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     }*/
@@ -195,11 +195,6 @@ HRESULT CGame::Init(void)
     CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
     CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
     CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
-
-    CBridge::Create(D3DXVECTOR3(13000.0f, 100.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
-    CGimmickFireHydrant::Create(D3DXVECTOR3(10000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(3.0f, 3.0f, 3.0f));
-    CGimmickPoliceStation::Create(D3DXVECTOR3(-6000.0f, 0.0f, 1000.0f), D3DXVECTOR3(0.0f, D3DX_PI, 0.0f), VECTOR3_ONE);
-    CGimmickGuardRail::Create(D3DXVECTOR3(1000.0f, 0.0f, 100.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), VECTOR3_ONE);
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
     if (m_pDeliveryStatus == nullptr)

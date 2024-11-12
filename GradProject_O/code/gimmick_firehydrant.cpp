@@ -50,7 +50,11 @@ CGimmickFireHydrant::~CGimmickFireHydrant()
 HRESULT CGimmickFireHydrant::Init(void)
 {
 	m_pObj = CObjectX::Create(GetPos(), GetRot(), FILENAME);
+	m_pObj->SetScale(VECTOR3_ONE);
+	SetVtxMax(m_pObj->GetVtxMax());
+	SetVtxMin(m_pObj->GetVtxMin());
 	m_pObj->SetScale(GetScale());
+	SetType(TYPE::TYPE_FIREHYDRANT);
 
 	return S_OK;
 }
@@ -185,4 +189,44 @@ void CGimmickFireHydrant::SetEffect()
 
 	D3DXVECTOR3 objpos = GetPos();
 	CParticle3D::Create(objpos, CEffect3D::TYPE_SPLASH);
+}
+
+//==========================================================
+// F”{—¦•ÏX
+//==========================================================
+void CGimmickFireHydrant::SetColMulti(const D3DXCOLOR& col)
+{
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetColMulti(col);
+}
+
+//==========================================================
+// À•W”½‰f
+//==========================================================
+void CGimmickFireHydrant::SetObjPos(const D3DXVECTOR3& pos)
+{
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetPosition(pos);
+}
+
+//==========================================================
+// Œü‚«”½‰f
+//==========================================================
+void CGimmickFireHydrant::SetObjRot(const D3DXVECTOR3& rot)
+{
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetRotation(rot);
+}
+
+//==========================================================
+// ƒXƒP[ƒ‹”½‰f
+//==========================================================
+void CGimmickFireHydrant::SetObjScale(const D3DXVECTOR3& scale)
+{
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetScale(scale);
 }
