@@ -15,6 +15,7 @@
 #include "convenience.h"
 #include "objectsound.h"
 #include "radio.h"
+#include "navi.h"
 #include "road.h"
 using namespace std;
 // 前方宣言
@@ -153,6 +154,7 @@ private:	// 自分だけがアクセス可能
 	TYPE m_type;			// 種類
 	CObjectX* m_pObj;		// 描画オブジェクト
 	CBaggage* m_pBaggage;	// 荷物
+	CNavi* m_pNavi;
 	CEffekseer::CEffectData * m_pTailLamp;
 	CEffekseer::CEffectData* m_pBackdust;
 	CEffekseer::CEffectData* m_pAfterburner;
