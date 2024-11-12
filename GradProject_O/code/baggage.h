@@ -52,6 +52,7 @@ public:	// 誰でもアクセス可能
 	static Clist<CBaggage*>* GetList() { return &m_List; }
 	void Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime);
 	void SetPosition(const D3DXVECTOR3& pos) { m_pos = pos; }
+	CObjectX* GetObj() { return m_pObj; }
 
 private:	// 自分だけがアクセス可能
 

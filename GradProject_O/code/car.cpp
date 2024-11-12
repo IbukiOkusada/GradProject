@@ -306,7 +306,7 @@ void CCar::SearchRoad()
 
 	for (int i = 0; i < pRoadManager->GetList()->GetNum() - 1; i++)
 	{
-		CRoad* pRoad = list->Get(i);
+		pRoad = list->Get(i);
 
 		// 距離判定処理
 		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
@@ -326,7 +326,6 @@ void CCar::SearchRoad()
 //==========================================================
 void CCar::ReachRoad()
 {
-	CRoadManager* pRoadManager = CRoadManager::GetInstance();
 	CRoad* pRoadNext = nullptr;
 
 	while (1)
@@ -360,12 +359,11 @@ void CCar::ReachRoad()
 //==========================================================
 bool CCar::Collision()
 {
-	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
-
-	while (pObjectX != nullptr)
+	auto mgr = CObjectX::GetList();
+	for(int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
 
-		CObjectX* pObjectXNext = pObjectX->GetNext();	// 次のオブジェクトへのポインタを取得
+		CObjectX* pObjectX = mgr->Get(i);	// 先頭を取得
 
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
@@ -392,8 +390,6 @@ bool CCar::Collision()
 
 			return true;
 		}
-
-		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
 	}
 
 	return false;

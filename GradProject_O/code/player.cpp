@@ -239,6 +239,7 @@ void CPlayer::Update(void)
 		rot.z += m_fTurnSpeed * 15.0f;
 		m_pObj->SetPosition(pos);
 		m_pObj->SetRotation(rot);
+		m_pObj->SetShadowHeight(GetPosition().y);
 		// エフェクト
 		{
 			m_pTailLamp->m_pos = pos;
@@ -296,6 +297,7 @@ void CPlayer::Update(void)
 
 		pos.y += 100.0f;
 		m_pBaggage->SetPosition(pos);
+		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
 	}
 
 	// デバッグ表示
@@ -431,7 +433,7 @@ void  CPlayer::Engine(float fThrottle)
 	}
 	//回転数から音量とピッチを操作
 	m_pSound->SetPitch(0.5f + m_fEngine*1.5f);
-	m_pSound->SetVolume(0.5 + fAccel*100.0f + m_fEngine);
+	m_pSound->SetVolume(0.5f + fAccel*100.0f + m_fEngine);
 
 	m_pSoundBrake->SetVolume(m_fBrake * m_fEngine * 0.3f);
 	//加速
@@ -528,7 +530,7 @@ void CPlayer::SearchRoad()
 
 	for (int i = 0; i < list->GetNum() - 1; i++)
 	{
-		CRoad* pRoad = list->Get(i);
+		pRoad = list->Get(i);
 
 		// 距離判定処理
 		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
@@ -548,16 +550,14 @@ void CPlayer::SearchRoad()
 //===============================================
 bool CPlayer::Collision(void)
 {
-	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
-
-	while (pObjectX != nullptr)
+	auto mgr = CObjectX::GetList();
+	for (int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
 
-		CObjectX* pObjectXNext = pObjectX->GetNext();	// 次のオブジェクトへのポインタを取得
+		CObjectX* pObjectX = mgr->Get(i);	// 先頭を取得
 
 		// 衝突判定を取らない
 		if(!pObjectX->GetEnableCollision()){
-			pObjectX = pObjectXNext;	// 次のオブジェクトに移動
 			continue;
 		}
 
@@ -581,8 +581,6 @@ bool CPlayer::Collision(void)
 
 			return true;
 		}
-
-		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
 	}
 
 	return false;
@@ -661,7 +659,6 @@ void CPlayer::GetBestPath()
 void CPlayer::DEBUGKEY(void)
 {
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
-	CInputPad* pInputPad = CInputPad::GetInstance();
 	if (pInputKey->GetTrigger(DIK_K))
 	{
 		Damage(40.0f);
