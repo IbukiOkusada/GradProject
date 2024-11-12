@@ -92,7 +92,8 @@ public:	// 誰でもアクセス可能
 	TYPE GetType(void) { return m_Type; }
 	SSearch* GetSearchRoad(const DIRECTION& dic)
 	{ return &m_aSearchRoad[dic]; }
-
+	SSearch* GetSearchSelf()
+	{ return &m_Searchself; }
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
 	void SearchConnect(CRoad* pRoad, const DIRECTION dic);
@@ -111,6 +112,7 @@ private:	// 自分だけがアクセス可能
 	CRoad* m_apConnectRoad[DIRECTION::DIC_MAX];		// 連結した道
 	float m_apConnectLength[DIRECTION::DIC_MAX];	// 連結した道への距離
 	SSearch m_aSearchRoad[DIRECTION::DIC_MAX];		// 経路探索用情報
+	SSearch m_Searchself;
 	TYPE m_Type;
 };
 

@@ -44,7 +44,8 @@
 #include "baggage.h"
 #include "camera_action.h"
 #include "baggage.h"
-
+#include "goal.h"
+#include "a_star.h"
 //===============================================
 // マクロ定義
 //===============================================
@@ -637,6 +638,22 @@ void CPlayer::Nitro()
 	}
 	
 }
+void CPlayer::GetBestPath()
+{
+	Clist<CRoad*>* List = CRoadManager::GetInstance()->GetList();
+	float fDis = FLT_MAX;
+	CRoad* pStart = nullptr;
+	for (int i = 0; i < List->GetNum(); i++)
+	{
+		float F = GetDistance(List->Get(i)->GetPosition(), GetPosition());
+		if (F<fDis)
+		{
+			fDis = F;
+			pStart = List->Get(i);
+		}
+	}
+	m_pPath = AStar(pStart->GetSearchSelf(), List->Get(0)->GetSearchSelf());
+}
 //===============================================
 // デバッグキー
 //===============================================
@@ -648,6 +665,10 @@ void CPlayer::DEBUGKEY(void)
 	if (pInputKey->GetTrigger(DIK_K))
 	{
 		Damage(40.0f);
+	}
+	if (pInputKey->GetTrigger(DIK_B))
+	{
+		GetBestPath();
 	}
 }
 #else

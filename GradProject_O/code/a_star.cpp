@@ -14,7 +14,7 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 		Current = *std::min_element(OpenList.begin(), OpenList.end(),
 			[](CRoad::SSearch* a, CRoad::SSearch* b) { return a->fFCost < b->fFCost; });//総計コストが最少のノードを選ぶ
 
-		if (Current == Gole)//ゴール到達時
+		if (Current->pRoad == Gole->pRoad)//ゴール到達時
 		{//親ノードを辿って順序を入れ替えたのち返す
 			std::vector<CRoad::SSearch*> path;
 			while (Current != nullptr) {

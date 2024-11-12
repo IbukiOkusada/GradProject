@@ -15,6 +15,7 @@
 #include "convenience.h"
 #include "objectsound.h"
 #include "radio.h"
+#include "road.h"
 using namespace std;
 // 前方宣言
 class CWaist;
@@ -128,6 +129,7 @@ private:	// 自分だけがアクセス可能
 	void SearchRoad(void);
 	void Damage(float fDamage);
 	void Nitro();
+	void GetBestPath();
 	void DEBUGKEY();
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
@@ -155,7 +157,7 @@ private:	// 自分だけがアクセス可能
 	CEffekseer::CEffectData* m_pDamageEffect;
 	CMasterSound::CObjectSound* m_pSound;
 	CMasterSound::CObjectSound* m_pSoundBrake;
-
+	std::vector<CRoad::SSearch*> m_pPath;
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
 	CRadio* pRadio;
