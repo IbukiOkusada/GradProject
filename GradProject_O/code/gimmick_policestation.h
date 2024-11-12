@@ -11,39 +11,41 @@
 
 // 前方宣言
 class CObjectX;
+class CRoad;
 
 //==========================================================
-// 消火栓のクラス定義
+// 警察署のクラス定義
 //==========================================================
-class CGimmickFireHydrant : public CGimmick
+class CGimmickPoliceStation : public CGimmick
 {
 private:
 
+	struct SInfo
+	{
+		float fInterVal;	// インターバル
+		float fSpawnTime;	// 生成タイミング
+		CRoad* pRoad;		// 正面の道
+
+		// コンストラクタ
+		SInfo() : fInterVal(0.0f), fSpawnTime(0.0f), pRoad(nullptr) {}
+	};
+
 public:	// 誰でもアクセス可能
 
-	CGimmickFireHydrant();	// コンストラクタ(オーバーロード)
-	~CGimmickFireHydrant() override;	// デストラクタ
+	CGimmickPoliceStation(); // コンストラクタ(オーバーロード)
+	~CGimmickPoliceStation() override;	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init(void) override;
 	void Uninit(void) override;
 	void Update(void) override;
-	static CGimmickFireHydrant* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale);
-
-	// 衝突時の判定
-	virtual void Hit(const D3DXVECTOR3& HitPos) {}
+	static CGimmickPoliceStation* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale);
 
 private:	// 自分だけがアクセス可能
 
-	// メンバ関数
-	void SetEffect();
-	void Away();
-
 	// メンバ変数
-	D3DXVECTOR3 m_TargetRot;	// 吹っ飛び後向き
-	D3DXVECTOR3 m_TargetPos;	// 吹っ飛び後座標
 	CObjectX* m_pObj;			// 描画オブジェクト
-	bool m_bHit;				// 衝突した
+	SInfo m_Info;
 };
 
 #endif

@@ -136,7 +136,7 @@ void CEffect3D::Update(void)
 	case TYPE_SPLASH:	// ‰Œ
 
 		m_Info.col.a -= 0.01f * CManager::GetInstance()->GetSlow()->Get();
-		m_Info.move.y += -0.5f;
+		m_Info.move.y += -1.0f;
 
 		break;
 	}

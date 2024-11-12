@@ -251,12 +251,6 @@ void CRoadManager::SearchRoadConnect(void)
 		CRoad* pRoad = GetList()->Get(i);
 		D3DXVECTOR3 pos = pRoad->GetPosition();	// 座標
 
-		// まっすぐは除外
-		if (pRoad->GetType() == CRoad::TYPE::TYPE_NONE)
-		{
-			continue;
-		}
-
 		// 全部確認
 		for (int dic = 0; dic < CRoad::DIRECTION::DIC_MAX; dic++)
 		{

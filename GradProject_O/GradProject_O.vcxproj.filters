@@ -136,6 +136,9 @@
     <Filter Include="gimmick\policestation">
       <UniqueIdentifier>{802b699a-8cef-4992-a66a-a169b3607e2b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gimmick\guardrail">
+      <UniqueIdentifier>{904050ee-6643-4a7a-b863-64e512eccab1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\character.cpp">
@@ -395,6 +398,9 @@
     </ClCompile>
     <ClCompile Include="code\gimmick_policestation.cpp">
       <Filter>gimmick\policestation</Filter>
+    </ClCompile>
+    <ClCompile Include="code\gimmick_guardrail.cpp">
+      <Filter>gimmick\guardrail</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -661,6 +667,9 @@
     </ClInclude>
     <ClInclude Include="code\gimmick_policestation.h">
       <Filter>gimmick\policestation</Filter>
+    </ClInclude>
+    <ClInclude Include="code\gimmick_guardrail.h">
+      <Filter>gimmick\guardrail</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

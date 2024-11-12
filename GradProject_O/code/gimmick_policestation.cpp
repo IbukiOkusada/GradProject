@@ -1,0 +1,139 @@
+//==========================================================
+//
+// 消火栓ギミック処理 [gimmick_firehydrant.cpp]
+// Author : Ibuki Okusada
+//
+//==========================================================
+#include "manager.h"
+#include "gimmick_policestation.h"
+#include "deltatime.h"
+#include "objectX.h"
+#include "camera.h"
+#include "camera_manager.h"
+#include "renderer.h"
+#include "particle3D.h"
+#include "player.h"
+#include "player_manager.h"
+#include "police.h"
+#include "debugproc.h"
+
+// 定数定義
+namespace
+{
+	// ファイル名
+	const char* FILENAME = "data\\MODEL\\map\\policestation.x";
+	const float OUT_ENGINE = 0.6f;
+	const float INTERVAL = 10.0f;
+	const float SEARCH_DISTANCE = 3000.0f;
+	const float SEARCH_RANGE = D3DX_PI * 0.3f;
+}
+
+//==========================================================
+// コンストラクタ
+//==========================================================
+CGimmickPoliceStation::CGimmickPoliceStation()
+{
+	// 値のクリア
+	m_pObj = nullptr;
+	m_Info = SInfo();
+}
+
+//==========================================================
+// デストラクタ
+//==========================================================
+CGimmickPoliceStation::~CGimmickPoliceStation()
+{
+
+}
+
+//==========================================================
+// 初期化処理
+//==========================================================
+HRESULT CGimmickPoliceStation::Init(void)
+{
+	m_pObj = CObjectX::Create(GetPos(), GetRot(), FILENAME);
+	m_pObj->SetScale(GetScale());
+	m_Info.fInterVal = INTERVAL;
+
+	return S_OK;
+}
+
+//==========================================================
+// 終了処理
+//==========================================================
+void CGimmickPoliceStation::Uninit(void)
+{
+	// オブジェクト廃棄
+	if (m_pObj != nullptr)
+	{
+		m_pObj->Uninit();
+		m_pObj = nullptr;
+	}
+
+	CGimmick::Uninit();
+}
+
+//==========================================================
+// 更新処理
+//==========================================================
+void CGimmickPoliceStation::Update(void)
+{
+	if (m_pObj == nullptr) { return; }
+
+	// インターバルが終わっていない
+	if (m_Info.fSpawnTime < m_Info.fInterVal) {
+		m_Info.fSpawnTime += CDeltaTime::GetInstance()->GetDeltaTime();
+
+		if (m_Info.fSpawnTime > m_Info.fInterVal)
+		{
+			m_Info.fSpawnTime = m_Info.fInterVal;
+		}
+
+		return;
+	}
+
+	// プレイヤーを確認
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// セーフ
+
+	// 距離判定
+	D3DXVECTOR3 pos = pPlayer->GetPosition() - GetPos();
+	float distance = D3DXVec3Length(&pos);
+	CDebugProc::GetInstance()->Print("距離 [ %f ]", distance);
+	if (distance > SEARCH_DISTANCE) { return; }
+
+	// 向き判定
+	float rot = atan2f(pos.x, pos.z);
+	Adjust(rot);
+	float dest = rot - GetRot().y;
+	Adjust(dest);
+	dest = fabsf(dest);
+	CDebugProc::GetInstance()->Print("向き [ %f ], 差分 [ %f ]\n", rot, dest);
+
+	// 範囲内のみ警察生成
+	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
+	m_Info.fSpawnTime = 0.0f;
+	CPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
+}
+
+//==========================================================
+// 生成
+//==========================================================
+CGimmickPoliceStation* CGimmickPoliceStation::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale)
+{
+	CGimmickPoliceStation* pPoliceStation = nullptr;
+
+	pPoliceStation = DEBUG_NEW CGimmickPoliceStation;
+
+	if (pPoliceStation != nullptr)
+	{
+		pPoliceStation->SetPos(pos);
+		pPoliceStation->SetRot(rot);
+		pPoliceStation->SetScale(scale);
+
+		// 初期化処理
+		pPoliceStation->Init();
+	}
+
+	return pPoliceStation;
+}

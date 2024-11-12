@@ -5,7 +5,7 @@
 //
 //==========================================================
 #include "manager.h"
-#include "gimmick_firehydrant.h"
+#include "gimmick_guardrail.h"
 #include "deltatime.h"
 #include "objectX.h"
 #include "camera.h"
@@ -27,7 +27,7 @@ namespace
 //==========================================================
 // コンストラクタ
 //==========================================================
-CGimmickFireHydrant::CGimmickFireHydrant()
+CGimmickGuardRail::CGimmickGuardRail()
 {
 	// 値のクリア
 	m_pObj = nullptr;
@@ -39,7 +39,7 @@ CGimmickFireHydrant::CGimmickFireHydrant()
 //==========================================================
 // デストラクタ
 //==========================================================
-CGimmickFireHydrant::~CGimmickFireHydrant()
+CGimmickGuardRail::~CGimmickGuardRail()
 {
 
 }
@@ -47,7 +47,7 @@ CGimmickFireHydrant::~CGimmickFireHydrant()
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CGimmickFireHydrant::Init(void)
+HRESULT CGimmickGuardRail::Init(void)
 {
 	m_pObj = CObjectX::Create(GetPos(), GetRot(), FILENAME);
 	m_pObj->SetScale(GetScale());
@@ -58,7 +58,7 @@ HRESULT CGimmickFireHydrant::Init(void)
 //==========================================================
 // 終了処理
 //==========================================================
-void CGimmickFireHydrant::Uninit(void)
+void CGimmickGuardRail::Uninit(void)
 {
 	// オブジェクト廃棄
 	if (m_pObj != nullptr)
@@ -73,7 +73,7 @@ void CGimmickFireHydrant::Uninit(void)
 //==========================================================
 // 更新処理
 //==========================================================
-void CGimmickFireHydrant::Update(void)
+void CGimmickGuardRail::Update(void)
 {
 	if (m_pObj == nullptr) { return; }
 
@@ -110,29 +110,29 @@ void CGimmickFireHydrant::Update(void)
 //==========================================================
 // 生成
 //==========================================================
-CGimmickFireHydrant* CGimmickFireHydrant::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale)
+CGimmickGuardRail* CGimmickGuardRail::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale)
 {
-	CGimmickFireHydrant* pFireHydrant = nullptr;
+	CGimmickGuardRail* pGuardRail = nullptr;
 
-	pFireHydrant = DEBUG_NEW CGimmickFireHydrant;
+	pGuardRail = DEBUG_NEW CGimmickGuardRail;
 
-	if (pFireHydrant != nullptr)
+	if (pGuardRail != nullptr)
 	{
-		pFireHydrant->SetPos(pos);
-		pFireHydrant->SetRot(rot);
-		pFireHydrant->SetScale(scale);
+		pGuardRail->SetPos(pos);
+		pGuardRail->SetRot(rot);
+		pGuardRail->SetScale(scale);
 
 		// 初期化処理
-		pFireHydrant->Init();
+		pGuardRail->Init();
 	}
 
-	return pFireHydrant;
+	return pGuardRail;
 }
 
 //==========================================================
 // 吹っ飛び
 //==========================================================
-void CGimmickFireHydrant::Away()
+void CGimmickGuardRail::Away()
 {
 	// 消火栓が移動した
 	if (m_pObj == nullptr) { return; }
@@ -154,7 +154,7 @@ void CGimmickFireHydrant::Away()
 //==========================================================
 // エフェクト生成
 //==========================================================
-void CGimmickFireHydrant::SetEffect()
+void CGimmickGuardRail::SetEffect()
 {
 	// 消火栓が移動した
 	if (m_pObj == nullptr) { return; }
