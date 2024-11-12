@@ -9,6 +9,10 @@
 
 #include "task.h"
 #include "camera.h"
+#include "road.h"
+#include "effekseerControl.h"
+#include "list.h"
+#include "goal.h"
 //#include "task.h"	// これでファイルインクルードできます
 
 //==========================================================
@@ -31,13 +35,23 @@ public:	// 誰でもアクセス可能
 	// メンバ関数(取得)
 
 	// メンバ関数(設定)
-
+	struct SEffect
+	{
+		CRoad::SSearch* pTarget;
+		CEffekseer::CEffectData* pLine;
+		CEffekseer::CEffectData* pPin;
+		SEffect():pTarget(nullptr), pLine(nullptr), pPin(nullptr){}
+	};
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	
+	void StartNavigation();
+	void UpdateNavigation();
+	void CreateEffect();
 	// メンバ変数
-	CMultiCamera* m_pCamera;
+	CGole* m_pGole;
+	std::vector<CRoad::SSearch*> m_Path;
+	Clist<SEffect*> m_Effects;
 };
 
 #endif

@@ -8,6 +8,8 @@ using namespace std;
 #ifndef CONVENIENCE
 #define CONVENIENCE		// 二重インクルード防止用マクロを定義
 float GetDistance(D3DXVECTOR3 vec1, D3DXVECTOR3 vec2);
+D3DXVECTOR3 VectorToAngles(const D3DXVECTOR3& vector);
+D3DXVECTOR3 AnglesToVector(const D3DXVECTOR3& angles);
 void Adjust(D3DXVECTOR3& rot);
 void Adjust(float& rot);
 

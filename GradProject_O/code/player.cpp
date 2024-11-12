@@ -170,7 +170,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
-
+	m_pNavi = CNavi::Create();
 	
 
 	return S_OK;
@@ -246,11 +246,11 @@ void CPlayer::Update(void)
 			m_pTailLamp->m_rot = rot;
 			m_pBackdust->m_pos = GetPosition();
 			m_pBackdust->m_rot = m_pObj->GetRotation();
-			m_pBackdust->m_fScale = m_fEngine * 300.0f;
+			m_pBackdust->m_Scale =VECTOR3_ONE* m_fEngine * 300.0f;
 			
 			m_pAfterburner->m_pos = GetPosition();;
 		
-			m_pAfterburner->m_fScale = m_fEngine * m_fBrake * 150.0f;
+			m_pAfterburner->m_Scale = VECTOR3_ONE * m_fEngine * m_fBrake * 150.0f;
 		
 		}
 		if (m_pDamageEffect != nullptr)
@@ -650,7 +650,7 @@ void CPlayer::GetBestPath()
 			pStart = List->Get(i);
 		}
 	}
-	m_pPath = AStar(pStart->GetSearchSelf(), List->Get(0)->GetSearchSelf());
+	
 }
 //===============================================
 // デバッグキー

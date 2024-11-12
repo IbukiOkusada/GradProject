@@ -67,12 +67,6 @@
     <Filter Include="effect\3D">
       <UniqueIdentifier>{c6eb6302-80b5-45c8-a724-cd8c4dc8423f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="input">
-      <UniqueIdentifier>{86e13586-acb9-4d12-b3fe-222e6463b362}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="input\keyconfig">
-      <UniqueIdentifier>{12a8d1e3-b458-4e40-a21d-2f571de8b3d4}</UniqueIdentifier>
-    </Filter>
     <Filter Include="car">
       <UniqueIdentifier>{0a8c99d7-edcf-4a8e-bd6b-e7e245bf06c3}</UniqueIdentifier>
     </Filter>
@@ -138,6 +132,12 @@
     </Filter>
     <Filter Include="gimmick\guardrail">
       <UniqueIdentifier>{904050ee-6643-4a7a-b863-64e512eccab1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="manager\input">
+      <UniqueIdentifier>{86e13586-acb9-4d12-b3fe-222e6463b362}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="manager\input\keyconfig">
+      <UniqueIdentifier>{12a8d1e3-b458-4e40-a21d-2f571de8b3d4}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -274,16 +274,16 @@
       <Filter>effect\3D</Filter>
     </ClCompile>
     <ClCompile Include="code\input.cpp">
-      <Filter>input</Filter>
+      <Filter>manager\input</Filter>
     </ClCompile>
     <ClCompile Include="code\input_gamepad.cpp">
-      <Filter>input</Filter>
+      <Filter>manager\input</Filter>
     </ClCompile>
     <ClCompile Include="code\input_mouse.cpp">
-      <Filter>input</Filter>
+      <Filter>manager\input</Filter>
     </ClCompile>
     <ClCompile Include="code\input_keyboard.cpp">
-      <Filter>input</Filter>
+      <Filter>manager\input</Filter>
     </ClCompile>
     <ClCompile Include="code\road.cpp">
       <Filter>map\road</Filter>
@@ -540,16 +540,16 @@
       <Filter>effect\3D</Filter>
     </ClInclude>
     <ClInclude Include="code\input.h">
-      <Filter>input</Filter>
+      <Filter>manager\input</Filter>
     </ClInclude>
     <ClInclude Include="code\input_gamepad.h">
-      <Filter>input</Filter>
+      <Filter>manager\input</Filter>
     </ClInclude>
     <ClInclude Include="code\input_mouse.h">
-      <Filter>input</Filter>
+      <Filter>manager\input</Filter>
     </ClInclude>
     <ClInclude Include="code\input_keyboard.h">
-      <Filter>input</Filter>
+      <Filter>manager\input</Filter>
     </ClInclude>
     <ClInclude Include="code\road.h">
       <Filter>map\road</Filter>
@@ -656,9 +656,6 @@
     <ClInclude Include="code\timer.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="code\navi.h">
-      <Filter>UI\navi</Filter>
-    </ClInclude>
     <ClInclude Include="code\gimmick_firehydrant.h">
       <Filter>gimmick\firehydrant</Filter>
     </ClInclude>
@@ -670,6 +667,9 @@
     </ClInclude>
     <ClInclude Include="code\gimmick_guardrail.h">
       <Filter>gimmick\guardrail</Filter>
+    </ClInclude>
+    <ClInclude Include="code\navi.h">
+      <Filter>UI\navi</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
