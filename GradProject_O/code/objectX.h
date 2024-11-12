@@ -9,9 +9,7 @@
 
 #include "main.h"
 #include "object.h"
-
-// マクロ定義
-#define NUM_TEXTURE	(64)	// テクスチャ最大数
+#include "list.h"
 
 //**********************************************************
 // Xファイルモデルクラスの定義
@@ -51,6 +49,7 @@ public:	// 誰でもアクセス可能
 	void SetEnableCollision(const bool bEnable) { m_bEnableCollision = bEnable; }
 	void SetRotateType(const TYPE& type) { m_Type = type; }
 	void SetHit(bool bHit) { m_bHit = bHit; }
+	void SetShadowHeight(const float fHeight) { m_fShadowHeight = fHeight; }
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
@@ -58,8 +57,6 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
 	D3DXVECTOR3 GetScale(void) { return m_scale; }
 	CObject2D *GetObject2D(void) { return NULL; }
-	static CObjectX *GetTop(void) { return m_pTop; }
-	CObjectX *GetNext(void) { return m_pNext; }
 	virtual D3DXMATRIX *GetMtx(void) { return &m_mtxWorld; }
 	int GetIdx(void) { return m_nIdxModel; }
 	void ListOut(void);
@@ -73,21 +70,21 @@ public:	// 誰でもアクセス可能
 	bool GetHit() { return m_bHit; }
 	bool GetHitOld() { return m_bHitOld; }
 	bool GetEnableCollision() { return m_bEnableCollision; }
+	float GetShadowHeight() { return m_fShadowHeight; }
+	static Clist<CObjectX*>* GetList() { return &m_List; }
 
 protected:
 	void Quaternion();
 	void DrawOnry();
+	void DrawShadow();
 	void CalWorldMtx();
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 
-	// メンバ変数c
-	static CObjectX *m_pTop;	// 先頭のオブジェクトへのポインタ
-	static CObjectX *m_pCur;	// 最後尾のオブジェクトへのポインタ
-	CObjectX *m_pPrev;	// 前のオブジェクトへのポインタ
-	CObjectX *m_pNext;	// 次のオブジェクトへのポインタ
+	// メンバ変数
+	static Clist<CObjectX*> m_List;	// リスト
 	D3DXVECTOR3 m_pos;	// 位置
 	D3DXVECTOR3 m_rot;	// 向き
 	D3DXVECTOR3 m_scale;	// 拡大縮小
@@ -96,9 +93,11 @@ private:	// 自分だけがアクセス可能
 	D3DXCOLOR m_AddCol;
 	TYPE m_Type;		// 回転種類
 	int m_nIdxModel;	// モデル番号
+	float m_fShadowHeight;	// 影の高さ
 	bool m_bEnableCollision;	//当たり判定の有効・無効
 	bool m_bHit;		// 衝突した
 	bool m_bHitOld;		// 前回の衝突判定
+	bool m_bShadow;
 };
 
 #endif

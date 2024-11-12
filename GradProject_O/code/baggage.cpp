@@ -17,7 +17,7 @@
 namespace
 {
 	const float ROTATE = (D3DX_PI * 2.0f) * 5.0f;	// ‰ñ“]—Ê
-	const float HEIGHT = 600.0f;
+	const float HEIGHT = 1200.0f;
 }
 
 // Ã“Iƒƒ“ƒo•Ï”
@@ -182,6 +182,7 @@ void CBaggage::Throw()
 	// Ý’è
 	m_pObj->SetPosition(pos);
 	m_pObj->SetRotation(rot);
+	m_pObj->SetShadowHeight(m_pTarget->y);
 
 	// ŽžŠÔI—¹
 	if (m_time.fNow >= m_time.fEnd) {
