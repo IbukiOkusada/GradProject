@@ -47,6 +47,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 	void StartNavigation();
 	void UpdateNavigation();
+	void Reach();
 	void CreateEffect();
 	// メンバ変数
 	CGole* m_pGole;

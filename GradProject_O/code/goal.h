@@ -39,6 +39,7 @@ public:	// 誰でもアクセス可能
 	static Clist<CGole*>* GetInstance() { if (pList == nullptr) { pList = pList->Create(); }return pList; }		// リスト取得
 	static void ListRelease() { if (pList != nullptr) { delete pList; pList = nullptr; } }					// リスト解放
 	
+	bool GetEnd() { return m_bEnd; }
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数

@@ -22,6 +22,7 @@ class CSpeedMeter;
 class CDeliveryStatus;
 class CTimer;
 class CMultiCamera;
+class CGoalManager;
 
 // マクロ定義
 #define NUM_FILTER	(2)
@@ -85,6 +86,7 @@ private:
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
 	CTime *m_pTimer;			// タイマー
 	CClient *m_pClient;			// クライアントのポインタ
+	CGoalManager *m_pGoalManager;  // ゴールマネージャーのポインタ
 
 	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ
 	CTimer* m_pGameTimer;		// タイマーのポインタ

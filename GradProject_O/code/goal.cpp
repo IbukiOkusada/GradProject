@@ -117,6 +117,7 @@ void CGole::Update(void)
 		pPlayer->ThrowBaggage(m_pPeople->GetPos());
 		pPlayer->AddDeliveryCount();
 		SAFE_DELETE(pEffect);
+
 	}
 
 	if (m_bEnd && CBaggage::GetList()->GetNum() == 0)

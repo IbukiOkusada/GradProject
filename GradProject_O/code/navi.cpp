@@ -50,7 +50,16 @@ HRESULT CNavi::Init(void)
 //==========================================================
 void CNavi::Uninit(void)
 {
-	
+	for (int i = m_Effects.GetNum() - 1; i >= 0; i--)
+	{
+		SEffect* pEffect = m_Effects.Get(i);
+		SAFE_DELETE(pEffect->pLine);
+		SAFE_DELETE(pEffect->pPin);
+		pEffect->pTarget = nullptr;
+		m_Effects.Delete(m_Effects.Get(i));
+		SAFE_DELETE(pEffect);
+	}
+
 	Release();
 }
 
@@ -67,6 +76,7 @@ void CNavi::Update(void)
 	else
 	{
 		UpdateNavigation();
+		Reach();
 	}
 }
 //==========================================================
@@ -77,16 +87,21 @@ void CNavi::StartNavigation(void)
 	//ãﬂÇ¢ÉSÅ[ÉãÇíTçı
 	Clist<CGole*>* List = CGole::GetInstance();
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
-	float fDis = 0;
+	float fDis = FLT_MAX;
 	m_pGole = nullptr;
 	for (int i = 0; i < List->GetNum(); i++)
 	{
-		float F = GetDistance(List->Get(i)->GetPos(), pPlayer->GetPosition());
-		if (F > fDis)
+		if (!List->Get(i)->GetEnd())
 		{
-			fDis = F;
-			m_pGole = List->Get(i);
+			float F = GetDistance(List->Get(i)->GetPos(), pPlayer->GetPosition());
+			if (F < fDis)
+			{
+				fDis = F;
+				m_pGole = List->Get(i);
+			}
 		}
+		
+		
 	}
 	//ãﬂÇ¢ìπòHÇíTçı
 	Clist<CRoad*>* ListRoad = CRoadManager::GetInstance()->GetList();
@@ -118,14 +133,15 @@ void CNavi::CreateEffect(void)
 		SEffect* pEffect = DEBUG_NEW SEffect;
 		pEffect->pPin = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\marker_pin.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
 
-		if (i > 0)
-		{
-			pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\marker_laser.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
-			D3DXVECTOR3 vec = m_Path[i - 1]->pos - m_Path[i]->pos;
-			pEffect->pLine->m_Scale = D3DXVECTOR3(20.0f, 20.0f, D3DXVec3Length(&vec));
-			D3DXVec3Normalize(&vec, &vec);
-			pEffect->pLine->m_rot = VectorToAngles(-vec);
-		}
+	
+			pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\marker_laser.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO,0.0f, true, false);
+			if (i > 0)
+			{
+				D3DXVECTOR3 vec = m_Path[i - 1]->pos - m_Path[i]->pos;
+				pEffect->pLine->m_Scale = D3DXVECTOR3(20.0f, 20.0f, D3DXVec3Length(&vec));
+				D3DXVec3Normalize(&vec, &vec);
+				pEffect->pLine->m_rot = VectorToAngles(-vec);
+			}
 		
 
 		m_Effects.Regist(pEffect);
@@ -136,11 +152,74 @@ void CNavi::CreateEffect(void)
 //==========================================================
 void CNavi::UpdateNavigation(void)
 {
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	float fDis = FLT_MAX;
+	int nID = 0;
 	for (int i = 0; i < m_Path.size(); i++)
 	{
-
+		float F = GetDistance(m_Path[i]->pos, pPlayer->GetPosition());
+		if (F < fDis)
+		{
+			fDis = F;
+			nID = i;
+		}
 	}
-	
+	if (nID != 0)
+	{
+		for (int i = nID - 1; i >= 0; i--)
+		{
+			m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[i]));
+			SAFE_DELETE(m_Effects.Get(i)->pLine);
+			SAFE_DELETE(m_Effects.Get(i)->pPin);
+			m_Effects.Get(i)->pTarget = nullptr;
+			SEffect* pEffect = m_Effects.Get(i);
+			m_Effects.Delete(m_Effects.Get(i));
+			SAFE_DELETE(pEffect);
+		}
+		m_Path.shrink_to_fit();
+	}
+	else
+	{
+		if (fDis < 1500.0f && m_Path.size()>1)
+		{
+			m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[0]));
+			SAFE_DELETE(m_Effects.Get(0)->pLine);
+			SAFE_DELETE(m_Effects.Get(0)->pPin);
+			m_Effects.Get(0)->pTarget = nullptr;
+
+			SEffect* pEffect = m_Effects.Get(0);
+			m_Effects.Delete(m_Effects.Get(0));
+			SAFE_DELETE(pEffect);
+		}
+	}
+	if (!m_Effects.Empty())
+	{
+		SEffect* pEffect = m_Effects.Get(0);
+		D3DXVECTOR3 vec = pPlayer->GetPosition() - m_Path[0]->pos;
+		pEffect->pLine->m_Scale = D3DXVECTOR3(20.0f, 20.0f, D3DXVec3Length(&vec));
+		D3DXVec3Normalize(&vec, &vec);
+		pEffect->pLine->m_rot = VectorToAngles(-vec);
+	}
+
+}
+void CNavi::Reach(void)
+{
+	if (m_pGole != nullptr)
+	{
+		if (m_pGole->GetEnd())
+		{
+			for (int i = m_Effects.GetNum() - 1; i >= 0; i--)
+			{
+				m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[i]));
+				SEffect* pEffect = m_Effects.Get(i);
+				SAFE_DELETE(pEffect->pLine);
+				SAFE_DELETE(pEffect->pPin);
+				pEffect->pTarget = nullptr;
+				m_Effects.Delete(m_Effects.Get(i));
+				SAFE_DELETE(pEffect);
+			}
+		}
+	}
 }
 //==========================================================
 // ê∂ê¨

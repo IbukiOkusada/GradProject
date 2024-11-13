@@ -402,6 +402,9 @@
     <ClCompile Include="code\edit_gimmick.cpp">
       <Filter>edit</Filter>
     </ClCompile>
+    <ClCompile Include="code\goal_manager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
     <ClCompile Include="code\motion.cpp">
       <Filter>motion</Filter>
     </ClCompile>
@@ -673,6 +676,9 @@
     </ClInclude>
     <ClInclude Include="code\edit_gimmick.h">
       <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="code\goal_manager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\motion.h">
       <Filter>motion</Filter>
