@@ -10,7 +10,7 @@
 //==========================================================
 // 静的メンバ変数
 //==========================================================
-CGoalManager *CGoalManager::m_Instance = nullptr;
+CGoalManager *CGoalManager::m_pInstance = nullptr;
 
 //==========================================================
 // コンストラクタ
@@ -19,7 +19,7 @@ CGoalManager::CGoalManager()
 {
 	m_pGoal = nullptr;
 
-	m_Instance = this;
+	m_pInstance = this;
 }
 
 //==========================================================
@@ -31,12 +31,26 @@ CGoalManager::~CGoalManager()
 }
 
 //==========================================================
+// 生成処理
+//==========================================================
+CGoalManager* CGoalManager::Create(void)
+{
+	CGoalManager* pGoalManager = DEBUG_NEW CGoalManager;
+
+	if (pGoalManager != nullptr)
+	{
+		pGoalManager->Init();
+	}
+
+	return pGoalManager;
+}
+
+//==========================================================
 // 初期化処理
 //==========================================================
 HRESULT CGoalManager::Init(void)
 {
-
-
+	//m_pGoal = CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
 
 	return S_OK;
 }
@@ -46,7 +60,18 @@ HRESULT CGoalManager::Init(void)
 //==========================================================
 void CGoalManager::Uninit(void)
 {
+	// ゴールの破棄
+	if (m_pGoal != nullptr)
+	{
+		m_pGoal->Uninit();
+		m_pGoal = nullptr;
+	}
 
+	// 自身の破棄
+	if (m_pInstance != nullptr)
+	{
+		m_pInstance = nullptr;
+	}
 }
 
 //==========================================================
