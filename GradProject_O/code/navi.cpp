@@ -101,7 +101,11 @@ void CNavi::StartNavigation(void)
 			pStart = ListRoad->Get(i);
 		}
 	}
-	m_Path = AStar(pStart->GetSearchSelf(), m_pGole->GetRoad()->GetSearchSelf());
+	if (m_pGole != nullptr && pStart != nullptr)
+	{
+		m_Path = AStar(pStart->GetSearchSelf(), m_pGole->GetRoad()->GetSearchSelf());
+	}
+
 }
 //==========================================================
 // エフェクト生成処理
@@ -132,7 +136,10 @@ void CNavi::CreateEffect(void)
 //==========================================================
 void CNavi::UpdateNavigation(void)
 {
-	
+	for (int i = 0; i < m_Path.size(); i++)
+	{
+
+	}
 	
 }
 //==========================================================
