@@ -49,6 +49,7 @@
 #include "bridge.h"
 #include "gimmick_policestation.h"
 #include "gimmick_guardrail.h"
+#include "goal_manager.h"
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
     const int MAX_STRING = (2048);
@@ -75,6 +76,7 @@ CGame::CGame()
     m_pMeshDome = nullptr;
     m_pClient = nullptr;
     m_pTimer = nullptr;
+    m_pGoalManager = nullptr;
 
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
@@ -98,6 +100,7 @@ CGame::CGame(int nNumPlayer)
     m_pMeshDome = nullptr;
     m_pClient = nullptr;
     m_pTimer = nullptr;
+    m_pGoalManager = nullptr;
   
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
@@ -191,6 +194,11 @@ HRESULT CGame::Init(void)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     }*/
+
+    if (m_pGoalManager == nullptr)
+    {
+        m_pGoalManager = new CGoalManager;
+    }
 
     CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
     CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
