@@ -8,7 +8,7 @@
 #define _GOAL_MANAGER_H_		// 二重インクルード防止用マクロを定義
 
 // 前方宣言
-class CGoal;
+class CGole;
 
 //==========================================================
 // ゴール管理のクラス定義
@@ -16,20 +16,22 @@ class CGoal;
 class CGoalManager
 {
 public:
-	CGoalManager();
-	~CGoalManager();
+	CGoalManager();      // コンストラクタ
+	~CGoalManager();     // デストラクタ
 
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
+	HRESULT Init(void);  // 初期化処理
+	void Uninit(void);   // 終了処理
+	void Update(void);   // 更新処理
+
+	static CGoalManager *Create(void);  // 生成処理
 
 	// 取得系
-	static CGoalManager *GetInstance(void) { return m_Instance; }
+	static CGoalManager *GetInstance(void) { return m_pInstance; }
 
 private:
 
-	CGoal *m_pGoal;  // ゴールのポインタ
-	static CGoalManager *m_Instance;  // 自身のポインタ
+	CGole*m_pGoal;  // ゴールのポインタ
+	static CGoalManager *m_pInstance;  // 自身のポインタ
 };
 
 #endif

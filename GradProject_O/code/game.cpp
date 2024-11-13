@@ -197,7 +197,7 @@ HRESULT CGame::Init(void)
 
     if (m_pGoalManager == nullptr)
     {
-        //m_pGoalManager = new CGoalManager;
+        m_pGoalManager = new CGoalManager;
     }
 
     CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
@@ -258,6 +258,13 @@ void CGame::Uninit(void)
         m_pGameTimer = nullptr;
     }
 
+    if (m_pGoalManager != nullptr)
+    {
+        m_pGoalManager->Uninit();
+        delete m_pGoalManager;
+        m_pGoalManager = nullptr;
+    }
+
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
 
@@ -287,6 +294,12 @@ void CGame::Update(void)
     if (m_pGameTimer != nullptr)
     {
         m_pGameTimer->Update();
+    }
+
+    // ゴールマネージャーの更新
+    if (m_pGoalManager != nullptr)
+    {
+        m_pGoalManager->Update();
     }
 
     // エディター関連

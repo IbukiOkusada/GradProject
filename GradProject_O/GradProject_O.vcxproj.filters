@@ -403,7 +403,7 @@
       <Filter>edit</Filter>
     </ClCompile>
     <ClCompile Include="code\goal_manager.cpp">
-      <Filter>ソース ファイル</Filter>
+      <Filter>goal</Filter>
     </ClCompile>
     <ClCompile Include="code\motion.cpp">
       <Filter>motion</Filter>
@@ -678,7 +678,7 @@
       <Filter>edit</Filter>
     </ClInclude>
     <ClInclude Include="code\goal_manager.h">
-      <Filter>ヘッダー ファイル</Filter>
+      <Filter>goal</Filter>
     </ClInclude>
     <ClInclude Include="code\motion.h">
       <Filter>motion</Filter>
