@@ -30,6 +30,9 @@ public: // 誰でもアクセス可能な定義
 		float fRotX;
 		float fRotY;
 		float fRotZ;
+
+		// コンストラクタ
+		KEY() : fPosX(0.0f), fPosY(0.0f), fPosZ(0.0f), fRotX(0.0f), fRotY(0.0f), fRotZ(0.0f) {}
 	};
 
 private:	// 自分だけがアクセス可能な定義
@@ -39,14 +42,20 @@ private:	// 自分だけがアクセス可能な定義
 	{
 		int nFrame;			// 再生フレーム
 		KEY *aKey;			// パーツの総数
+
+		// コンストラクタ
+		KEY_INFO() : nFrame(0), aKey(nullptr) {}
 	};
 
 	// モーション情報
 	struct INFO
 	{
 		bool bLoop;			// ループするかどうか
-		int nNumKey;			// キー数
+		int nNumKey;		// キー数
 		KEY_INFO *pKeyInfo;	// キーの総数
+
+		// コンストラクタ
+		INFO() : bLoop(false), nNumKey(0), pKeyInfo(nullptr) {}
 	};
 
 	//胴体ファイル情報
@@ -54,6 +63,9 @@ private:	// 自分だけがアクセス可能な定義
 	{
 		CModel **ppParts;		// パーツの情報
 		int nNumParts;			// パーツ数
+
+		// コンストラクタ
+		BodyFileData() : ppParts(nullptr), nNumParts(0) {}
 	};
 
 public:		// 誰でもアクセス可能
@@ -79,6 +91,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	KEY m_OldKey[64];		// 前回のキー情報
+	std::vector<INFO> m_Info;	// モーション情報
 	INFO m_aInfo[MAX_MOTION];	// モーション情報
 	int m_nNumMotion;		// モーション数
 	int m_nNowFrame;		// 現在のフレーム数

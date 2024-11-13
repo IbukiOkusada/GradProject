@@ -599,7 +599,6 @@ bool CPlayer::Collision(void)
 		CRoad* pRoad = list->Get(i);	// æ“ª‚ðŽæ“¾
 		if (pRoad == nullptr) { continue; }
 
-		CObject3D* pObj = pRoad->GetObj();
 		D3DXVECTOR3* pVtx = pRoad->GetVtxPos();
 		D3DXVECTOR3 pos = pRoad->GetPosition();
 		float height = m_Info.pos.y - 0.1f;;

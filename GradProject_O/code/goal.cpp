@@ -19,7 +19,14 @@
 #include "deltatime.h"
 #include "baggage.h"
 #include "road_manager.h"
-// マクロ定義
+#include "character.h"
+
+namespace
+{
+	const D3DXVECTOR3 SCALE = D3DXVECTOR3(4.0f, 4.0f, 4.0f);
+}
+
+// 静的メンバ変数
 Clist<CGole*> * CGole::pList = nullptr;
 //==========================================================
 // コンストラクタ
@@ -58,10 +65,8 @@ HRESULT CGole::Init(void)
 	D3DXVECTOR3 pos = m_pos;
 	pos.x += sinf(range) * 800.0f;
 	pos.z += cosf(range) * 800.0f;
-	m_pPeople = CObjectX::Create(pos, VECTOR3_ZERO, "data\\MODEL\\cube.x");
-	m_pPeople->SetScale(D3DXVECTOR3(10.0f, 20.0f, 10.0f));
-	m_pPeople->SetColAdd(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
-
+	m_pPeople = CCharacter::Create(pos, VECTOR3_ZERO, "data\\TXT\\motion_kidsboy.txt");
+	m_pPeople->SetScale(SCALE);
 
 	Clist<CRoad*>* List = CRoadManager::GetInstance()->GetList();
 	float fDis = FLT_MAX;
@@ -97,7 +102,12 @@ void CGole::Uninit(void)
 void CGole::Update(void)
 {
 	// エフェクト表示
-	ScreenEffect();
+	//ScreenEffect();
+
+	if (m_pPeople != nullptr)
+	{
+		m_pPeople->Update();
+	}
 
 	if (CheckRange() && CheckSpeed() && !m_bEnd)
 	{

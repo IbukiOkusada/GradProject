@@ -15,7 +15,7 @@
 //#include "task.h"	// これでファイルインクルードできます
 //前方宣言
 class CMeshCylinder;
-class CObjectX;
+class CCharacter;
 
 //==========================================================
 // サンプルのクラス定義
@@ -51,7 +51,7 @@ private:	// 自分だけがアクセス可能
 	float m_fRange;					// ゴールの範囲
 	float m_fLimit;					// 速度制限
 	bool m_bEnd;					// 終了地点
-	CObjectX* m_pPeople;			// 人
+	CCharacter* m_pPeople;			// 人
 	CRoad * m_pRoad;
 	CEffekseer::CEffectData* pEffect;
 	static Clist<CGole*>* pList;	// 自分のリスト*GetInstance()経由でアクセスする事*
