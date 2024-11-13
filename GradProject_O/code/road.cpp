@@ -60,7 +60,12 @@ HRESULT CRoad::Init(void)
 	m_pObj = CObject3D::Create(m_Info.pos, m_Info.rot);
 	m_pObj->SetpVtx(m_Info.size.x, m_Info.size.y);
 	m_pObj->BindTexture(pTex->Regist(FILENAME[TYPE_CROSSING]));
-
+	m_Searchself.pos = m_Info.pos;
+	m_Searchself.pRoad = this;
+	for (int i = 0; i < 4; i++)
+	{
+		m_aVtxPos[i] = VECTOR3_ZERO;
+	}
 	return S_OK;
 }
 
@@ -285,6 +290,13 @@ void CRoad::Rotation(TYPE type)
 	}
 
 	m_pObj->SetRotation(m_Info.rot);
+
+	// À•WŽæ“¾
+	VERTEX_3D* pVtx = m_pObj->GetVertex();
+	for (int i = 0; i < 4; i++)
+	{
+		m_aVtxPos[i] = pVtx[i].pos;
+	}
 }
 
 //==========================================================

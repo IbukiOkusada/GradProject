@@ -10,6 +10,9 @@
 #include "manager.h"
 #include "object.h"
 #include "object_manager.h"
+#include "a_star.h"
+#include "goal.h"
+#include "road_manager.h"
 // マクロ定義
 namespace
 {
@@ -36,9 +39,9 @@ CNavi::~CNavi()
 //==========================================================
 HRESULT CNavi::Init(void)
 {
-	m_pCamera = DEBUG_NEW CMultiCamera;
-	m_pCamera->Init();
-	m_pCamera->SetViewPort(VIEWPORT);
+	m_pGole = nullptr;
+	m_Effects.Clear();
+	m_Path.clear();
 	return S_OK;
 }
 
@@ -47,7 +50,7 @@ HRESULT CNavi::Init(void)
 //==========================================================
 void CNavi::Uninit(void)
 {
-	SAFE_UNINIT_DELETE(m_pCamera);
+	
 	Release();
 }
 
@@ -56,14 +59,82 @@ void CNavi::Uninit(void)
 //==========================================================
 void CNavi::Update(void)
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
-	D3DXVECTOR3 pos = pPlayer->GetPosition();
-	m_pCamera->SetPositionR(pos);
-	pos.y += 1000.0f;
-	m_pCamera->SetPositionV(pos);
-
+	if (m_Path.empty())
+	{
+		StartNavigation();
+		CreateEffect();
+	}
+	else
+	{
+		UpdateNavigation();
+	}
 }
+//==========================================================
+// 開始処理
+//==========================================================
+void CNavi::StartNavigation(void)
+{
+	//近いゴールを探索
+	Clist<CGole*>* List = CGole::GetInstance();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	float fDis = 0;
+	m_pGole = nullptr;
+	for (int i = 0; i < List->GetNum(); i++)
+	{
+		float F = GetDistance(List->Get(i)->GetPos(), pPlayer->GetPosition());
+		if (F > fDis)
+		{
+			fDis = F;
+			m_pGole = List->Get(i);
+		}
+	}
+	//近い道路を探索
+	Clist<CRoad*>* ListRoad = CRoadManager::GetInstance()->GetList();
+	float fDis2 = FLT_MAX;
+	CRoad* pStart = nullptr;
+	for (int i = 0; i < ListRoad->GetNum(); i++)
+	{
+		float F = GetDistance(ListRoad->Get(i)->GetPosition(), pPlayer->GetPosition());
+		if (F < fDis2)
+		{
+			fDis2 = F;
+			pStart = ListRoad->Get(i);
+		}
+	}
+	m_Path = AStar(pStart->GetSearchSelf(), m_pGole->GetRoad()->GetSearchSelf());
+}
+//==========================================================
+// エフェクト生成処理
+//==========================================================
+void CNavi::CreateEffect(void)
+{
+	
+	for (int i = 0; i < m_Path.size(); i++)
+	{
+		SEffect* pEffect = DEBUG_NEW SEffect;
+		pEffect->pPin = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\marker_pin.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
 
+		if (i > 0)
+		{
+			pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\marker_laser.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
+			D3DXVECTOR3 vec = m_Path[i - 1]->pos - m_Path[i]->pos;
+			pEffect->pLine->m_Scale = D3DXVECTOR3(20.0f, 20.0f, D3DXVec3Length(&vec));
+			D3DXVec3Normalize(&vec, &vec);
+			pEffect->pLine->m_rot = VectorToAngles(-vec);
+		}
+		
+
+		m_Effects.Regist(pEffect);
+	}
+}
+//==========================================================
+// 更新処理
+//==========================================================
+void CNavi::UpdateNavigation(void)
+{
+	
+	
+}
 //==========================================================
 // 生成
 //==========================================================

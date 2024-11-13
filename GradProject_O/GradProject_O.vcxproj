@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="code\a_star.cpp" />
     <ClCompile Include="code\baggage.cpp" />
     <ClCompile Include="code\billboard.cpp" />
     <ClCompile Include="code\bridge.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="code\deliverystatus.cpp" />
     <ClCompile Include="code\deltatime.cpp" />
     <ClCompile Include="code\edit.cpp" />
+    <ClCompile Include="code\edit_gimmick.cpp" />
     <ClCompile Include="code\edit_handle.cpp" />
     <ClCompile Include="code\edit_manager.cpp" />
     <ClCompile Include="code\edit_object.cpp" />
@@ -186,6 +188,7 @@
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\gimmick.cpp" />
     <ClCompile Include="code\gimmick_firehydrant.cpp" />
+    <ClCompile Include="code\gimmick_guardrail.cpp" />
     <ClCompile Include="code\gimmick_policestation.cpp" />
     <ClCompile Include="code\goal.cpp" />
     <ClCompile Include="code\input.cpp" />
@@ -249,6 +252,7 @@
     <ClCompile Include="code\timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="code\a_star.h" />
     <ClInclude Include="code\baggage.h" />
     <ClInclude Include="code\camera_action.h" />
     <ClInclude Include="code\billboard.h" />
@@ -260,6 +264,7 @@
     <ClInclude Include="code\character.h" />
     <ClInclude Include="code\deliverystatus.h" />
     <ClInclude Include="code\deltatime.h" />
+    <ClInclude Include="code\edit_gimmick.h" />
     <ClInclude Include="code\edit_scale.h" />
     <ClInclude Include="code\effect2D.h" />
     <ClInclude Include="code\effekseerControl.h" />
@@ -269,6 +274,7 @@
     <ClInclude Include="code\edit_road.h" />
     <ClInclude Include="code\gimmick.h" />
     <ClInclude Include="code\gimmick_firehydrant.h" />
+    <ClInclude Include="code\gimmick_guardrail.h" />
     <ClInclude Include="code\gimmick_policestation.h" />
     <ClInclude Include="code\goal.h" />
     <ClInclude Include="code\collision.h" />

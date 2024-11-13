@@ -172,6 +172,8 @@ void CEdit_Handle::Update(void)
 			m_aObj[i].pObj->SetColMulti(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f));
 			m_aObj[i].pObj->SetColAdd(D3DXCOLOR(0.3f, 0.3f, 1.0f, 1.0f));
 		}
+
+		m_aObj[i].pObj->SetEnableShadow(false);
 	}
 }
 

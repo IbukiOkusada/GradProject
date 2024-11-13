@@ -28,7 +28,7 @@ public:
 		Effekseer::Handle handle;		//本体
 		Effekseer::EffectRef efcRef;	//参照情報
 		std::string Path;				//パス
-		float m_fScale;					//スケール
+		::Effekseer::Vector3D m_Scale;	//スケール
 		bool m_bLoop;					//ループ
 		bool m_bAutoDelete;				//自動削除の可否
 	};

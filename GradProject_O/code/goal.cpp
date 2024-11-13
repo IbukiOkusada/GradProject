@@ -18,7 +18,7 @@
 #include "camera_action.h"
 #include "deltatime.h"
 #include "baggage.h"
-
+#include "road_manager.h"
 // É}ÉNÉçíËã`
 Clist<CGole*> * CGole::pList = nullptr;
 //==========================================================
@@ -61,6 +61,22 @@ HRESULT CGole::Init(void)
 	m_pPeople = CObjectX::Create(pos, VECTOR3_ZERO, "data\\MODEL\\cube.x");
 	m_pPeople->SetScale(D3DXVECTOR3(10.0f, 20.0f, 10.0f));
 	m_pPeople->SetColAdd(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+
+
+	Clist<CRoad*>* List = CRoadManager::GetInstance()->GetList();
+	float fDis = FLT_MAX;
+	m_pRoad = nullptr;
+	for (int i = 0; i < List->GetNum(); i++)
+	{
+		float F = GetDistance(List->Get(i)->GetPosition(), m_pos);
+		if (F < fDis && List->Get(i)->GetType() !=CRoad::TYPE_NONE)
+		{
+			fDis = F;
+			m_pRoad = List->Get(i);
+		}
+	}
+
+
 
 	return S_OK;
 }

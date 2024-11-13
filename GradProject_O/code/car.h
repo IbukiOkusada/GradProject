@@ -66,10 +66,10 @@ public:	// 誰でもアクセス可能
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 
 	// メンバ関数(設定)
-	void SetMove(const D3DXVECTOR3 move) { m_Info.move = move; }
-	void SetPosition(const D3DXVECTOR3 pos) { m_Info.pos = pos; }
-	void SetRotation(const D3DXVECTOR3 rot) { m_Info.rot = rot; }
-	void SetPosTarget(const D3DXVECTOR3 pos) { m_Info.posTarget = pos; }
+	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }
+	void SetPosition(const D3DXVECTOR3& pos) { m_Info.pos = pos; }
+	void SetRotation(const D3DXVECTOR3& rot) { m_Info.rot = rot; }
+	void SetPosTarget(const D3DXVECTOR3& pos) { m_Info.posTarget = pos; }
 	void SetSpeed(const float speed) { m_Info.fSpeed = speed; }
 	void SetSpeedDest(const float speedDest) { m_Info.fSpeedDest = speedDest; }
 	void SetRoadStart(CRoad* RoadStart) { m_Info.pRoadStart = RoadStart; }
@@ -82,6 +82,7 @@ protected:	// 派生クラスからもアクセス可能
 	void SearchRoad();
 	virtual void ReachRoad();
 	void TailLamp();
+	virtual void Break();
 
 	// メンバ変数
 	CObjectX* m_pObj;

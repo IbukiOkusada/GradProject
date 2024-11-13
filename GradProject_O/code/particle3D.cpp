@@ -108,11 +108,11 @@ void CParticle3D::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEf
 			pos = Defpos;
 
 			float angle = static_cast<float>(rand() % 629 - 314) * 0.01f;
-			float speed = static_cast<float>(rand() % 100) * 0.12f;
+			float speed = static_cast<float>(rand() % 100) * 0.11f;
 
 			//ˆÚ“®—Ê‚Ìİ’è
 			move.x = sinf(angle) * speed;
-			move.y = static_cast<float>(rand() % 10) + 15.0f;
+			move.y = static_cast<float>(rand() % 20) + 25.0f;
 			move.z = cosf(angle) * speed;
 
 			float colrand = static_cast<float>(rand() % 40) * 0.01f;

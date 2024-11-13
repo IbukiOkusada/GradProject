@@ -59,9 +59,12 @@ public:	// 誰でもアクセス可能な定義
 		D3DXVECTOR3 pos;	// 座標
 		CRoad* pRoad;		// 確認する道
 		bool bActive;		// 使用されている情報かどうか
-
+		float fFCost;		//最終コスト
+		float fGCost;		//移動コスト
+		float fHCost;		//予想コスト
+		SSearch* pParent;
 		// コンストラクタ
-		SSearch() : pos(VECTOR3_ZERO), pRoad(nullptr), bActive(false) {}
+		SSearch() : pos(VECTOR3_ZERO), fFCost(0.0f), fGCost(0.0f), fHCost(0.0f), pRoad(nullptr), pParent(nullptr), bActive(false) {}
 	};
 
 public:	// 誰でもアクセス可能
@@ -89,7 +92,9 @@ public:	// 誰でもアクセス可能
 	TYPE GetType(void) { return m_Type; }
 	SSearch* GetSearchRoad(const DIRECTION& dic)
 	{ return &m_aSearchRoad[dic]; }
-
+	SSearch* GetSearchSelf()
+	{ return &m_Searchself; }
+	D3DXVECTOR3* GetVtxPos() { return &m_aVtxPos[0]; }
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
 	void SearchConnect(CRoad* pRoad, const DIRECTION dic);
@@ -103,11 +108,13 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	SInfo m_Info;	// 基本情報
+	D3DXVECTOR3 m_aVtxPos[4];
 	CObject3D* m_pObj;
 	int m_nIdx;
 	CRoad* m_apConnectRoad[DIRECTION::DIC_MAX];		// 連結した道
 	float m_apConnectLength[DIRECTION::DIC_MAX];	// 連結した道への距離
 	SSearch m_aSearchRoad[DIRECTION::DIC_MAX];		// 経路探索用情報
+	SSearch m_Searchself;
 	TYPE m_Type;
 };
 
