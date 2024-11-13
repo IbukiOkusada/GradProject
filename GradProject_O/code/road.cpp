@@ -88,6 +88,7 @@ void CRoad::Uninit(void)
 		m_pObj = nullptr;
 	}
 
+	// リストから開放
 	CRoadManager::GetInstance()->ListOut(this);
 
 	// 開放

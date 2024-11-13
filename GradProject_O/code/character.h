@@ -37,6 +37,7 @@ public:	// 誰でもアクセス可能
 	// 設定
 	void SetPosition(const D3DXVECTOR3 pos) { m_pos = pos; }
 	void SetRotation(const D3DXVECTOR3 rot);
+	void SetScale(const D3DXVECTOR3& scale);
 	void SetParent(D3DXMATRIX *pMtx) { m_ParentMtx = pMtx; }
 	void SetDraw(bool bDraw = true);
 	void SetShadow(bool bShadow = false);
@@ -47,6 +48,7 @@ public:	// 誰でもアクセス可能
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
+	D3DXVECTOR3* GetPos(void) { return &m_pos; }
 	D3DXMATRIX *GetMtxWorld(void) { return &m_mtxWorld; }
 	CModel *GetParts(int nIdx);
 	int GetNumParts(void) { return m_nNumParts; }
@@ -67,6 +69,7 @@ private:	// 自分だけがアクセス可能
 	D3DXMATRIX *m_ParentMtx;	// 親のマトリックス
 	D3DXVECTOR3 m_pos;		// 座標
 	D3DXVECTOR3 m_rot;		// 向き
+	D3DXVECTOR3 m_scale;	// スケール
 };
 
 #endif

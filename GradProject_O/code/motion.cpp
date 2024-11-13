@@ -26,9 +26,11 @@ CMotion::CMotion()
 	m_nNumMotion = 0;
 	m_nNowKey = 0;
 	m_nNowMotion = 0;
+	m_fNowFrame = 0.0f;
 	m_FileData.nNumParts = 0;
 	m_FileData.ppParts = NULL;
 	m_nOldType = m_nNowMotion;
+	m_Info.clear();
 
 	for (int nCnt = 0; nCnt < MAX_MOTION; nCnt++)
 	{
@@ -277,18 +279,12 @@ void CMotion::LoadMotionData(FILE *pFile)
 			// パーツ数分キーを確保
 			for (int nCnt = 0; nCnt < m_aInfo[m_nNumMotion].nNumKey; nCnt++)
 			{
-				memset(&m_aInfo[m_nNumMotion].pKeyInfo[nCnt], NULL, sizeof(KEY_INFO));
-
+				m_aInfo[m_nNumMotion].pKeyInfo[nCnt] = KEY_INFO();
 				m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey = DEBUG_NEW KEY[m_FileData.nNumParts];
 
 				for (int i = 0; i < m_FileData.nNumParts; i++)
 				{
-					m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey[i].fPosX = 0.0f;
-					m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey[i].fPosY = 0.0f;
-					m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey[i].fPosZ = 0.0f;
-					m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey[i].fRotX = 0.0f;
-					m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey[i].fRotY = 0.0f;
-					m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey[i].fRotZ = 0.0f;
+					m_aInfo[m_nNumMotion].pKeyInfo[nCnt].aKey[i] = KEY();
 				}
 			}
 
