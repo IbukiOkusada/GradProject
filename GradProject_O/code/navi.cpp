@@ -54,7 +54,6 @@ void CNavi::Uninit(void)
 	{
 		SEffect* pEffect = m_Effects.Get(i);
 		SAFE_DELETE(pEffect->pLine);
-		SAFE_DELETE(pEffect->pPin);
 		pEffect->pTarget = nullptr;
 		m_Effects.Delete(m_Effects.Get(i));
 		SAFE_DELETE(pEffect);
@@ -127,23 +126,20 @@ void CNavi::StartNavigation(void)
 //==========================================================
 void CNavi::CreateEffect(void)
 {
-	
+
 	for (int i = 0; i < m_Path.size(); i++)
 	{
 		SEffect* pEffect = DEBUG_NEW SEffect;
-		pEffect->pPin = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\marker_pin.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
 
-	
-			pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\marker_laser.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO,0.0f, true, false);
-			if (i > 0)
-			{
-				D3DXVECTOR3 vec = m_Path[i - 1]->pos - m_Path[i]->pos;
-				pEffect->pLine->m_Scale = D3DXVECTOR3(20.0f, 20.0f, D3DXVec3Length(&vec));
-				D3DXVec3Normalize(&vec, &vec);
-				pEffect->pLine->m_rot = VectorToAngles(-vec);
-			}
-		
 
+		pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\guide.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 250.0f, true, false);
+		if (i < m_Path.size()-1)
+		{
+			D3DXVECTOR3 vec = m_Path[i]->pos - m_Path[i + 1]->pos;
+
+			D3DXVec3Normalize(&vec, &vec);
+			pEffect->pLine->m_rot = VectorToAngles(vec);
+		}
 		m_Effects.Regist(pEffect);
 	}
 }
@@ -170,7 +166,6 @@ void CNavi::UpdateNavigation(void)
 		{
 			m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[i]));
 			SAFE_DELETE(m_Effects.Get(i)->pLine);
-			SAFE_DELETE(m_Effects.Get(i)->pPin);
 			m_Effects.Get(i)->pTarget = nullptr;
 			SEffect* pEffect = m_Effects.Get(i);
 			m_Effects.Delete(m_Effects.Get(i));
@@ -180,11 +175,10 @@ void CNavi::UpdateNavigation(void)
 	}
 	else
 	{
-		if (fDis < 1500.0f && m_Path.size()>1)
+		if (fDis < 1000.0f && m_Path.size()>1)
 		{
 			m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[0]));
 			SAFE_DELETE(m_Effects.Get(0)->pLine);
-			SAFE_DELETE(m_Effects.Get(0)->pPin);
 			m_Effects.Get(0)->pTarget = nullptr;
 
 			SEffect* pEffect = m_Effects.Get(0);
@@ -194,11 +188,11 @@ void CNavi::UpdateNavigation(void)
 	}
 	if (!m_Effects.Empty())
 	{
-		SEffect* pEffect = m_Effects.Get(0);
+		SEffect* pEffect = m_Effects.Get(m_Effects.GetNum()-1);
 		D3DXVECTOR3 vec = pPlayer->GetPosition() - m_Path[0]->pos;
-		pEffect->pLine->m_Scale = D3DXVECTOR3(20.0f, 20.0f, D3DXVec3Length(&vec));
+		pEffect->pLine->m_pos = pPlayer->GetPosition();
 		D3DXVec3Normalize(&vec, &vec);
-		pEffect->pLine->m_rot = VectorToAngles(-vec);
+		pEffect->pLine->m_rot = VectorToAngles(vec);
 	}
 
 }
@@ -210,13 +204,16 @@ void CNavi::Reach(void)
 		{
 			for (int i = m_Effects.GetNum() - 1; i >= 0; i--)
 			{
-				m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[i]));
+				
 				SEffect* pEffect = m_Effects.Get(i);
 				SAFE_DELETE(pEffect->pLine);
-				SAFE_DELETE(pEffect->pPin);
 				pEffect->pTarget = nullptr;
 				m_Effects.Delete(m_Effects.Get(i));
 				SAFE_DELETE(pEffect);
+			}
+			for (int i = m_Path.size() - 1; i >= 0; i--)
+			{
+				m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[i]));
 			}
 		}
 	}
