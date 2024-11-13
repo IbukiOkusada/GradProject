@@ -94,6 +94,7 @@ public:	// 誰でもアクセス可能
 	{ return &m_aSearchRoad[dic]; }
 	SSearch* GetSearchSelf()
 	{ return &m_Searchself; }
+	D3DXVECTOR3* GetVtxPos() { return &m_aVtxPos[0]; }
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
 	void SearchConnect(CRoad* pRoad, const DIRECTION dic);
@@ -107,6 +108,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	SInfo m_Info;	// 基本情報
+	D3DXVECTOR3 m_aVtxPos[4];
 	CObject3D* m_pObj;
 	int m_nIdx;
 	CRoad* m_apConnectRoad[DIRECTION::DIC_MAX];		// 連結した道

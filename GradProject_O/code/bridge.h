@@ -32,15 +32,21 @@ public:	// 誰でもアクセス可能
 	void	Update(void)	override;
 	void MoveBridge();
 	static CBridge* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale, float fdown,float fup);
+	void SetColMulti(const D3DXCOLOR& col) override;
+
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	virtual void SetObjPos(const D3DXVECTOR3& pos) override;
+	virtual void SetObjRot(const D3DXVECTOR3& rot) override;
+	virtual void SetObjScale(const D3DXVECTOR3& scale) override;
+
+	// メンバ変数
+	CObjectX* m_pBridge[BRIDGE_NUM];
 	float m_fUpTime;//閉じてる時間
 	float m_fDownTime;//空いてる時間
 	float m_fTimeCount;//経過時間
 	bool m_bPass;//通行可能か
-	// メンバ変数
-	CObjectX* m_pBridge[BRIDGE_NUM];
 };
 
 #endif

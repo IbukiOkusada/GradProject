@@ -32,10 +32,14 @@ public:	// 誰でもアクセス可能
 	
 	// 衝突時の判定
 	virtual void Hit(const D3DXVECTOR3& HitPos) {}
+	void SetColMulti(const D3DXCOLOR& col) override;
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	virtual void SetObjPos(const D3DXVECTOR3& pos) override;
+	virtual void SetObjRot(const D3DXVECTOR3& rot) override;
+	virtual void SetObjScale(const D3DXVECTOR3& scale) override;
 	void SetEffect();
 	void Away();
 

@@ -100,6 +100,7 @@ public:	// 誰でもアクセス可能
 	void SetPrev(CPlayer* pPrev) { m_pPrev = pPrev; }
 	void SetRotDiff(float fDiff) { m_fRotDest = fDiff; }
 	void ThrowBaggage(D3DXVECTOR3* pTarget);
+	void Damage(float fDamage);
 
 	void SetNumDeliveryStatus(int nNum) { m_nNumDeliveryStatus = nNum; }
 	void AddDeliveryCount(void) { m_nNumDeliveryStatus++; }
@@ -115,6 +116,7 @@ public:	// 誰でもアクセス可能
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 	float GetEngine(void) { return m_fEngine; }
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
+	float GetLifeOrigin() { return m_fLifeOrigin; }
 
 private:	// 自分だけがアクセス可能
 
@@ -128,7 +130,6 @@ private:	// 自分だけがアクセス可能
 	bool Collision(void);
 	void Engine(float fThrottle);
 	void SearchRoad(void);
-	void Damage(float fDamage);
 	void Nitro();
 	void GetBestPath();
 	void DEBUGKEY();
@@ -145,6 +146,7 @@ private:	// 自分だけがアクセス可能
 	float m_fTurnSpeed;
 	float m_fHandle;
 	float m_fLife;
+	float m_fLifeOrigin;
 	float m_fCamera;
 	float m_fSlowRate = 1.0f;
 	float m_fNitroCool;

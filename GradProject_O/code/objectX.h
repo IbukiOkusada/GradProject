@@ -50,6 +50,7 @@ public:	// 誰でもアクセス可能
 	void SetRotateType(const TYPE& type) { m_Type = type; }
 	void SetHit(bool bHit) { m_bHit = bHit; }
 	void SetShadowHeight(const float fHeight) { m_fShadowHeight = fHeight; }
+	void SetEnableShadow(const bool bUse) { m_bShadow = bUse; }
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }

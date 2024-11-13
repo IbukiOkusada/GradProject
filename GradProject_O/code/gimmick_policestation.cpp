@@ -52,8 +52,12 @@ CGimmickPoliceStation::~CGimmickPoliceStation()
 HRESULT CGimmickPoliceStation::Init(void)
 {
 	m_pObj = CObjectX::Create(GetPos(), GetRot(), FILENAME);
+	m_pObj->SetScale(VECTOR3_ONE);
+	SetVtxMax(m_pObj->GetVtxMax());
+	SetVtxMin(m_pObj->GetVtxMin());
 	m_pObj->SetScale(GetScale());
 	m_Info.fInterVal = INTERVAL;
+	SetType(TYPE::TYPE_POLICESTATION);
 
 	return S_OK;
 }
@@ -136,4 +140,44 @@ CGimmickPoliceStation* CGimmickPoliceStation::Create(D3DXVECTOR3 pos, D3DXVECTOR
 	}
 
 	return pPoliceStation;
+}
+
+//==========================================================
+// F”{—¦•ÏX
+//==========================================================
+void CGimmickPoliceStation::SetColMulti(const D3DXCOLOR& col)
+{
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetColMulti(col);
+}
+
+//==========================================================
+// À•W”½‰f
+//==========================================================
+void CGimmickPoliceStation::SetObjPos(const D3DXVECTOR3& pos)
+{
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetPosition(pos);
+}
+
+//==========================================================
+// Œü‚«”½‰f
+//==========================================================
+void CGimmickPoliceStation::SetObjRot(const D3DXVECTOR3& rot)
+{
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetRotation(rot);
+}
+
+//==========================================================
+// ƒXƒP[ƒ‹”½‰f
+//==========================================================
+void CGimmickPoliceStation::SetObjScale(const D3DXVECTOR3& scale)
+{
+	if (m_pObj == nullptr) { return; }
+
+	m_pObj->SetScale(scale);
 }
