@@ -25,7 +25,7 @@
 
 namespace
 {
-	const D3DXVECTOR3 SCALE = D3DXVECTOR3(4.0f, 4.0f, 4.0f);
+	const D3DXVECTOR3 SCALE = D3DXVECTOR3(2.0f, 2.0f, 2.0f);
 }
 
 // Ã“Iƒƒ“ƒo•Ï”
