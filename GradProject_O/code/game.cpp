@@ -197,7 +197,7 @@ HRESULT CGame::Init(void)
 
     if (m_pGoalManager == nullptr)
     {
-        m_pGoalManager = new CGoalManager;
+        //m_pGoalManager = new CGoalManager;
     }
 
     CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);

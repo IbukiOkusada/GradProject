@@ -40,9 +40,11 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetCurrentRotation(void) { return m_CurRot; }
 	D3DXVECTOR3 GetScaleOrigin() { return m_scaleOrigin; }
 	D3DXVECTOR3 GetOldPosition(void) { return m_OldPos; }
+	D3DXVECTOR3* GetMtxPos() { return &m_mtxpos; }
 	D3DXMATRIX *GetMtx(void) { return &m_mtxWorld; }
 	D3DXMATRIX *GetMtxParent(void) { return m_pParentMtx; }
 	int GetId(void) { return m_nIdxModel; }
+	void SetShadowHeight(const float fHeight) { m_fShadowHeight = fHeight; }
 
 	// メンバ関数(設定)
 	void SetPosition(const D3DXVECTOR3 pos);
@@ -56,6 +58,7 @@ public:	// 誰でもアクセス可能
 	void SetShadow(bool bShadow = false) { m_bShadow = bShadow; }
 	void SetMaterial(const D3DMATERIAL9& Material) { m_ChangeMat = Material; }
 	void ChangeCol(bool bValue = false) { m_bChangeCol = bValue; }
+	float GetShadowHeight() { return m_fShadowHeight; }
 
 private:	// 自分だけがアクセス可能
 
@@ -72,10 +75,12 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_OldPos;		// 前回の位置
 	D3DXVECTOR3 m_CurPos;		// 現在の位置
 	D3DXVECTOR3 m_CurRot;		// 現在の向き
+	D3DXVECTOR3 m_mtxpos;		// マトリックス座標
 	D3DXMATRIX m_mtxWorld;		// ワールドマトリックス
 	D3DXMATRIX *m_pParentMtx;	// 親のワールドマトリックス
 	D3DXMATRIX *m_pCharacterMtx;	// まとめている親のマトリックス
 	bool m_bShadow;		// 影も描画するか否か
+	float m_fShadowHeight;	// 影の高さ
 };
 
 #endif

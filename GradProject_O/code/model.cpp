@@ -25,6 +25,7 @@ CModel::CModel() : CObject(1)
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_scale = VECTOR3_ONE;
 	m_scaleOrigin = VECTOR3_ONE;
+	m_mtxpos = VECTOR3_ONE;
 	m_OldPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_ChangeMat.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_ChangeMat.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -178,6 +179,8 @@ void CModel::Draw(void)
 
 	// ³‹K‰»‚ð–³Œø‚É‚·‚é
 	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+
+	m_mtxpos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
 
 	//if(m_bShadow == true)
 	//{

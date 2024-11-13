@@ -289,7 +289,7 @@ void CPlayer::Update(void)
 		m_fCamera = CAMERA_NORMAL + ENGINE_ADDCAMERA * engine;
 	}
 
-	if (CBaggage::GetList()->GetNum() == 0)
+	if (CBaggage::GetThrowList()->GetNum() == 0 && m_pBaggage == nullptr)
 	{
 		m_pBaggage = CBaggage::Create(GetPosition());
 	}
@@ -852,9 +852,9 @@ void CPlayer::SetDraw(bool bDraw)
 //===============================================
 // ‰×•¨‚ð“Š‚°‚é
 //===============================================
-void CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
+CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 {
-	if (pTarget == nullptr) { return; }
+	if (pTarget == nullptr) { return nullptr; }
 
 	/*CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	float rotY = atan2f(m_Info.pos.z - pTarget->z, m_Info.pos.x - pTarget->x);
@@ -873,6 +873,9 @@ void CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.65f, 0.95f, 1.0f);
 
 	// ‰×•¨‚ð“Š‚°‚é
+	CBaggage* pBag = m_pBaggage;
 	m_pBaggage->Set(pos, pTarget, 0.75f);
 	m_pBaggage = nullptr;
+
+	return pBag;
 }

@@ -49,6 +49,7 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
 	D3DXVECTOR3 GetPosition(void) { return m_pos; }
 	D3DXVECTOR3* GetPos(void) { return &m_pos; }
+	D3DXVECTOR3& GetScale(void) { return m_scale; }
 	D3DXMATRIX *GetMtxWorld(void) { return &m_mtxWorld; }
 	CModel *GetParts(int nIdx);
 	int GetNumParts(void) { return m_nNumParts; }

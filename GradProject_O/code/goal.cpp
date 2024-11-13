@@ -20,6 +20,8 @@
 #include "baggage.h"
 #include "road_manager.h"
 #include "character.h"
+#include "motion.h"
+#include "model.h"
 
 namespace
 {
@@ -38,6 +40,7 @@ CGole::CGole()
 	m_fLimit = 0.0f;
 	m_bEnd = false;
 	m_pPeople = nullptr;
+	m_pBaggage = nullptr;
 	//自身をリストに登録
 	GetInstance()->Regist(this);
 }
@@ -67,6 +70,9 @@ HRESULT CGole::Init(void)
 	pos.z += cosf(range) * 800.0f;
 	m_pPeople = CCharacter::Create(pos, VECTOR3_ZERO, "data\\TXT\\motion_kidsboy.txt");
 	m_pPeople->SetScale(SCALE);
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	rot.y = atan2f(pos.x - m_pos.x, pos.z - m_pos.z);
+	m_pPeople->SetRotation(rot);
 
 	Clist<CRoad*>* List = CRoadManager::GetInstance()->GetList();
 	float fDis = FLT_MAX;
@@ -91,6 +97,7 @@ HRESULT CGole::Init(void)
 //==========================================================
 void CGole::Uninit(void)
 {
+	SAFE_UNINIT(m_pBaggage);
 	SAFE_UNINIT(m_pPeople);
 	SAFE_DELETE(pEffect);
 	Release();
@@ -114,16 +121,17 @@ void CGole::Update(void)
 		// カメラアクション入れる
 		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
 		m_bEnd = true;
-		pPlayer->ThrowBaggage(m_pPeople->GetPos());
+		m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
 		pPlayer->AddDeliveryCount();
+		m_pPeople->GetMotion()->BlendSet(1);
 		SAFE_DELETE(pEffect);
-
 	}
 
-	if (m_bEnd && CBaggage::GetList()->GetNum() == 0)
-	{
-		Uninit();
-	}
+	if (m_pBaggage == nullptr) { return; }
+	if (m_pBaggage->GetState() == CBaggage::STATE::STATE_THROW) { return; }
+	m_pBaggage->GetObj()->SetParent(m_pPeople->GetParts(6)->GetMtx());
+	m_pPeople->GetMotion()->BlendSet(2);
+	m_pBaggage->SetThrowScale(m_pPeople->GetScale());
 }
 //==========================================================
 // 距離のチェック
