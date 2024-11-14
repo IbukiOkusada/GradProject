@@ -14,7 +14,7 @@
 #include "particle3D.h"
 #include "player.h"
 #include "player_manager.h"
-#include "police.h"
+#include "add_police.h"
 #include "debugproc.h"
 
 // 定数定義
@@ -23,7 +23,7 @@ namespace
 	// ファイル名
 	const char* FILENAME = "data\\MODEL\\map\\policestation.x";
 	const float OUT_ENGINE = 0.6f;
-	const float INTERVAL = 10.0f;
+	const float INTERVAL = 5.0f;
 	const float SEARCH_DISTANCE = 3000.0f;
 	const float SEARCH_RANGE = D3DX_PI * 0.3f;
 }
@@ -117,7 +117,7 @@ void CGimmickPoliceStation::Update(void)
 	// 範囲内のみ警察生成
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	CPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
+	CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
 }
 
 //==========================================================

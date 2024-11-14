@@ -96,6 +96,7 @@ void CRoadManager::Release(void)
 void CRoadManager::ListIn(CRoad* pRoad)
 {
 	GetList()->Regist(pRoad);
+	m_InfoList.Regist(pRoad->GetInfo());
 }
 
 //==========================================================
