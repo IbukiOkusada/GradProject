@@ -145,6 +145,9 @@
     <Filter Include="object\character">
       <UniqueIdentifier>{8c6b79e5-5371-43a5-9b4c-1b7c94df1565}</UniqueIdentifier>
     </Filter>
+    <Filter Include="car\police">
+      <UniqueIdentifier>{8c3d030b-345d-4791-a984-b2002a45db9d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -312,9 +315,6 @@
     <ClCompile Include="code\goal.cpp">
       <Filter>goal</Filter>
     </ClCompile>
-    <ClCompile Include="code\police.cpp">
-      <Filter>car</Filter>
-    </ClCompile>
     <ClCompile Include="code\effekseerControl.cpp">
       <Filter>effekseer</Filter>
     </ClCompile>
@@ -416,6 +416,12 @@
     </ClCompile>
     <ClCompile Include="code\police_manager.cpp">
       <Filter>car</Filter>
+    </ClCompile>
+    <ClCompile Include="code\add_police.cpp">
+      <Filter>car\police</Filter>
+    </ClCompile>
+    <ClCompile Include="code\police.cpp">
+      <Filter>car\police</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -590,9 +596,6 @@
     <ClInclude Include="code\goal.h">
       <Filter>goal</Filter>
     </ClInclude>
-    <ClInclude Include="code\police.h">
-      <Filter>car</Filter>
-    </ClInclude>
     <ClInclude Include="code\effekseerControl.h">
       <Filter>effekseer</Filter>
     </ClInclude>
@@ -694,6 +697,12 @@
     </ClInclude>
     <ClInclude Include="code\police_manager.h">
       <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\add_police.h">
+      <Filter>car\police</Filter>
+    </ClInclude>
+    <ClInclude Include="code\police.h">
+      <Filter>car\police</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
