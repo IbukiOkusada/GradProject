@@ -16,6 +16,7 @@
 //前方宣言
 class CMeshCylinder;
 class CCharacter;
+class CBaggage;
 
 //==========================================================
 // サンプルのクラス定義
@@ -54,6 +55,7 @@ private:	// 自分だけがアクセス可能
 	bool m_bEnd;					// 終了地点
 	CCharacter* m_pPeople;			// 人
 	CRoad * m_pRoad;
+	CBaggage* m_pBaggage;
 	CEffekseer::CEffectData* pEffect;
 	static Clist<CGole*>* pList;	// 自分のリスト*GetInstance()経由でアクセスする事*
 };

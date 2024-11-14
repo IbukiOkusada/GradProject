@@ -12,7 +12,7 @@
 #include "Xfile.h"
 #include "model.h"
 #include <string.h>
-#include "slow.h"
+#include "deltatime.h"
 
 // マクロ定義
 #define DEST_MAG	(0.1f)	// 差分補正倍率
@@ -195,7 +195,7 @@ void CMotion::Update(void)
 		m_FileData.ppParts[nCntParts]->SetCurrentRotation(D3DXVECTOR3(fRotDestX, fRotDestY, fRotDestZ));
 	}
 
-	m_fNowFrame += CManager::GetInstance()->GetSlow()->Get();
+	m_fNowFrame += CDeltaTime::GetInstance()->GetSlow();
 
 	if (m_aInfo[nNowMotion].pKeyInfo[nNowKey].nFrame == 0)
 	{//フレームが0ではない場合

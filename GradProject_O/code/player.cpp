@@ -65,7 +65,7 @@ namespace
 	const float BRAKE = (0.7f);		// ブレーキ
 	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量
-	const float GRAVITY = (-6.0f);		//プレイヤー重力
+	const float GRAVITY = (-12.0f);		//プレイヤー重力
 	const float ROT_MULTI = (1.0f);	// 向き補正倍率
 	const float WIDTH = (20.0f);	// 幅
 	const float HEIGHT = (80.0f);	// 高さ
@@ -289,7 +289,7 @@ void CPlayer::Update(void)
 		m_fCamera = CAMERA_NORMAL + ENGINE_ADDCAMERA * engine;
 	}
 
-	if (CBaggage::GetList()->GetNum() == 0)
+	if (CBaggage::GetThrowList()->GetNum() == 0 && m_pBaggage == nullptr)
 	{
 		m_pBaggage = CBaggage::Create(GetPosition());
 	}
@@ -852,9 +852,9 @@ void CPlayer::SetDraw(bool bDraw)
 //===============================================
 // 荷物を投げる
 //===============================================
-void CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
+CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 {
-	if (pTarget == nullptr) { return; }
+	if (pTarget == nullptr) { return nullptr; }
 
 	/*CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	float rotY = atan2f(m_Info.pos.z - pTarget->z, m_Info.pos.x - pTarget->x);
@@ -873,6 +873,9 @@ void CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.65f, 0.95f, 1.0f);
 
 	// 荷物を投げる
+	CBaggage* pBag = m_pBaggage;
 	m_pBaggage->Set(pos, pTarget, 0.75f);
 	m_pBaggage = nullptr;
+
+	return pBag;
 }

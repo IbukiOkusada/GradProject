@@ -15,6 +15,7 @@
 #include "player.h"
 #include "player_manager.h"
 #include "debugproc.h"
+#include "police_manager.h"
 
 // マクロ定義
 
@@ -27,7 +28,12 @@ namespace
 	const float SECURE_SPEED = (0.8f);			// 確保時の加速倍率
 	const int CHASE_TIME = (300);				// 追跡時間
 	const float CHASE_SECURE = (400.0f);		// 追跡確保距離
-	const float CHASE_BEGIN = (700.0f);			// 追跡開始距離
+	const float CHASE_BEGIN[CPolice::STATE::STATE_MAX] = {
+		(700.0f),
+		(700.0f),
+		(2000.0f),
+		(400.0f),
+	};			// 追跡開始距離
 	const float CHASE_CONTINUE = (2000.0f);		// 追跡継続距離
 	const float CHASE_END = (3000.0f);			// 追跡終了距離
 }
@@ -42,6 +48,9 @@ CPolice::CPolice()
 	m_Info.nChaseCount = 0;
 	m_Info.bChase = false;
 	m_pPatrolLamp = nullptr;
+	m_state = STATE_NORMAL;
+
+	CPoliceManager::GetInstance()->GetList()->Regist(this);
 }
 
 //==========================================================
@@ -68,6 +77,7 @@ HRESULT CPolice::Init(void)
 void CPolice::Uninit(void)
 {
 	CCar::Uninit();
+	CPoliceManager::GetInstance()->GetList()->Delete(this);
 	SAFE_DELETE(m_pPatrolLamp);
 	Release();
 }
@@ -219,7 +229,7 @@ void CPolice::SearchPlayer()
 			SetSpeedDest(SECURE_SPEEDDEST);
 			SetSpeed(GetSpeed() * SECURE_SPEED);
 		}
-		else if (length < CHASE_BEGIN)
+		else if (length < CHASE_BEGIN[m_state])
 		{// 追跡開始
 
 			m_Info.bChase = true;
@@ -251,6 +261,8 @@ void CPolice::SearchPlayer()
 
 				if (m_Info.nChaseCount < 0)
 				{
+					// 全員を警戒状態に
+					CPoliceManager::GetInstance()->Warning(this);
 					m_Info.bChase = false;
 					m_Info.nChaseCount = 0;
 				}
@@ -258,6 +270,12 @@ void CPolice::SearchPlayer()
 		}
 		else
 		{// 追跡強制終了
+
+			// 追跡してた
+			if (m_Info.bChase)
+			{
+				CPoliceManager::GetInstance()->Warning(this);
+			}
 
 			m_Info.bChase = false;
 			m_Info.nChaseCount = 0;
