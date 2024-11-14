@@ -21,6 +21,7 @@ CCharacter::CCharacter()
 {
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_scale = VECTOR3_ONE;
 	m_ParentMtx = NULL;
 	m_pMotion = NULL;
 	m_ppParts = NULL;
@@ -56,6 +57,11 @@ HRESULT CCharacter::Init(const char* pFileName)
 	// ファイルを開く
 	OpenFile(pFileName);
 
+	if (m_pMotion != nullptr)
+	{
+		m_pMotion->InitSet(0);
+	}
+
 	return S_OK;
 }
 
@@ -85,6 +91,8 @@ void CCharacter::Uninit(void)
 		delete[] m_ppParts;	// ポインタの開放
 		m_ppParts = NULL;	// 使用していない状態にする
 	}
+
+	delete this;
 }
 
 //===================================================
@@ -92,13 +100,17 @@ void CCharacter::Uninit(void)
 //===================================================
 void CCharacter::Update(void)
 {
-	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	//計算用マトリックス
 	D3DXMATRIX mtxParent;			// 親のマトリックス情報
 
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
 	SetRotation(m_rot);
+
+	// スケールの反映
+	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
@@ -285,7 +297,7 @@ void CCharacter::LoadSetData(FILE *pFile)
 		if (strcmp(&aStr[0], "PARTSSET") == 0)
 		{//パーツ情報確認文字あった場合
 
-			CMotion::KEY Key = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };	// 情報
+			CMotion::KEY Key = CMotion::KEY();	// 情報
 
 			while (1)
 			{
@@ -306,7 +318,7 @@ void CCharacter::LoadSetData(FILE *pFile)
 					// 初期情報を設定
 					if (m_ppParts[nCntParts] != NULL)
 					{// 使用されている場合
-						m_ppParts[nCntParts]->SetPosition(D3DXVECTOR3(Key.fPosX, Key.fPosY, Key.fPosZ));
+						m_ppParts[nCntParts]->SetPosOrigin(D3DXVECTOR3(Key.fPosX, Key.fPosY, Key.fPosZ));
 					}
 				}
 				else if (strcmp(&aStr[0], "ROT") == 0)
@@ -540,6 +552,33 @@ void CCharacter::SetChangeMat(const bool bChange)
 		{
 			// マテリアル設定
 			m_ppParts[nCnt]->ChangeCol(bChange);
+		}
+	}
+}
+
+//==========================================================
+// スケール
+//==========================================================
+void CCharacter::SetScale(const D3DXVECTOR3& scale)
+{
+	m_scale = scale;
+	
+	if (m_ppParts != NULL)
+	{// 使用していた場合
+		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
+		{
+			// マテリアル設定
+			/*D3DXVECTOR3 pos = m_ppParts[nCnt]->GetPosOrigin();
+			pos.x *= m_scale.x;
+			pos.y *= m_scale.y;
+			pos.z *= m_scale.z;
+			m_ppParts[nCnt]->SetPosition(pos);*/
+
+			/*D3DXVECTOR3 partsscale = m_ppParts[nCnt]->GetScaleOrigin();
+			partsscale.x *= m_scale.x;
+			partsscale.y *= m_scale.y;
+			partsscale.z *= m_scale.z;
+			m_ppParts[nCnt]->SetScale(partsscale);*/
 		}
 	}
 }

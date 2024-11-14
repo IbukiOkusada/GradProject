@@ -39,14 +39,15 @@ public:	// 誰でもアクセス可能
 	{
 		CRoad::SSearch* pTarget;
 		CEffekseer::CEffectData* pLine;
-		CEffekseer::CEffectData* pPin;
-		SEffect():pTarget(nullptr), pLine(nullptr), pPin(nullptr){}
+	
+		SEffect():pTarget(nullptr), pLine(nullptr){}
 	};
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	void StartNavigation();
 	void UpdateNavigation();
+	void Reach();
 	void CreateEffect();
 	// メンバ変数
 	CGole* m_pGole;

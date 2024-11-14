@@ -11,7 +11,7 @@
 #include "list.h"
 
 //前方宣言
-class CObjectX;
+class CModel;
 class CPlayer;
 
 //==========================================================
@@ -19,7 +19,7 @@ class CPlayer;
 //==========================================================
 class CBaggage : public CTask
 {
-private:
+public:
 
 	// 状態列挙型
 	enum STATE
@@ -28,6 +28,8 @@ private:
 		STATE_THROW,
 		STATE_MAX
 	};
+
+private:
 
 	// 時間管理構造体
 	struct STime
@@ -50,9 +52,12 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 	static CBaggage* Create(const D3DXVECTOR3& pos);
 	static Clist<CBaggage*>* GetList() { return &m_List; }
+	static Clist<CBaggage*>* GetThrowList() { return &m_ThrowList; }
 	void Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime);
 	void SetPosition(const D3DXVECTOR3& pos) { m_pos = pos; }
-	CObjectX* GetObj() { return m_pObj; }
+	STATE GetState(void) { return m_state; }
+	CModel* GetObj() { return m_pObj; }
+	void SetThrowScale(const D3DXVECTOR3& scale);
 
 private:	// 自分だけがアクセス可能
 
@@ -65,10 +70,11 @@ private:	// 自分だけがアクセス可能
 	bool m_bFirst;		// 初回だけ
 	D3DXVECTOR3 m_pos;	// 座標
 	D3DXVECTOR3 m_rot;	// 向き
-	CObjectX* m_pObj;	// オブジェクト
+	CModel* m_pObj;	// オブジェクト
 	D3DXVECTOR3* m_pTarget;	// 目標
 	STime m_time;
-	static Clist<CBaggage*> m_List;	// リスト
+	static Clist<CBaggage*> m_List;			// リスト
+	static Clist<CBaggage*> m_ThrowList;	// リスト
 	STATE m_state;		// 状態
 };
 

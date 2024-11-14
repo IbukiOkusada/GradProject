@@ -23,6 +23,9 @@ CModel::CModel() : CObject(1)
 	m_bChangeCol = false;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_scale = VECTOR3_ONE;
+	m_scaleOrigin = VECTOR3_ONE;
+	m_mtxpos = VECTOR3_ONE;
 	m_OldPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_ChangeMat.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_ChangeMat.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -96,7 +99,7 @@ void CModel::Draw(void)
 
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスへのポインタを取得
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	// 計算用マトリックス
 	CXFile *pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	D3DMATERIAL9 matDef;	// 現在のマテリアル保存用
 	D3DMATERIAL9 changemat;
@@ -104,8 +107,15 @@ void CModel::Draw(void)
 	D3DXMATRIX mtxParent;	// 親のマトリックス情報
 	CSlow *pSlow = CManager::GetInstance()->GetSlow();
 
+	// 正規化を有効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
+
+	// スケールの反映
+	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_CurRot.y, m_CurRot.x, m_CurRot.z);
@@ -166,6 +176,11 @@ void CModel::Draw(void)
 
 	// 保存していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
+
+	// 正規化を無効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+
+	m_mtxpos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
 
 	//if(m_bShadow == true)
 	//{

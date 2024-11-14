@@ -19,7 +19,16 @@
 #include "deltatime.h"
 #include "baggage.h"
 #include "road_manager.h"
-// マクロ定義
+#include "character.h"
+#include "motion.h"
+#include "model.h"
+
+namespace
+{
+	const D3DXVECTOR3 SCALE = D3DXVECTOR3(2.0f, 2.0f, 2.0f);
+}
+
+// 静的メンバ変数
 Clist<CGole*> * CGole::pList = nullptr;
 //==========================================================
 // コンストラクタ
@@ -31,6 +40,7 @@ CGole::CGole()
 	m_fLimit = 0.0f;
 	m_bEnd = false;
 	m_pPeople = nullptr;
+	m_pBaggage = nullptr;
 	//自身をリストに登録
 	GetInstance()->Regist(this);
 }
@@ -58,10 +68,11 @@ HRESULT CGole::Init(void)
 	D3DXVECTOR3 pos = m_pos;
 	pos.x += sinf(range) * 800.0f;
 	pos.z += cosf(range) * 800.0f;
-	m_pPeople = CObjectX::Create(pos, VECTOR3_ZERO, "data\\MODEL\\cube.x");
-	m_pPeople->SetScale(D3DXVECTOR3(10.0f, 20.0f, 10.0f));
-	m_pPeople->SetColAdd(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
-
+	m_pPeople = CCharacter::Create(pos, VECTOR3_ZERO, "data\\TXT\\motion_kidsboy.txt");
+	m_pPeople->SetScale(SCALE);
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	rot.y = atan2f(pos.x - m_pos.x, pos.z - m_pos.z);
+	m_pPeople->SetRotation(rot);
 
 	Clist<CRoad*>* List = CRoadManager::GetInstance()->GetList();
 	float fDis = FLT_MAX;
@@ -76,8 +87,6 @@ HRESULT CGole::Init(void)
 		}
 	}
 
-
-
 	return S_OK;
 }
 
@@ -86,6 +95,7 @@ HRESULT CGole::Init(void)
 //==========================================================
 void CGole::Uninit(void)
 {
+	SAFE_UNINIT(m_pBaggage);
 	SAFE_UNINIT(m_pPeople);
 	SAFE_DELETE(pEffect);
 	Release();
@@ -97,22 +107,29 @@ void CGole::Uninit(void)
 void CGole::Update(void)
 {
 	// エフェクト表示
-	ScreenEffect();
+	//ScreenEffect();
+
+	if (m_pPeople != nullptr)
+	{
+		m_pPeople->Update();
+	}
 
 	if (CheckRange() && CheckSpeed() && !m_bEnd)
 	{
 		// カメラアクション入れる
 		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
 		m_bEnd = true;
-		pPlayer->ThrowBaggage(m_pPeople->GetPos());
+		m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
 		pPlayer->AddDeliveryCount();
+		m_pPeople->GetMotion()->BlendSet(3);
 		SAFE_DELETE(pEffect);
 	}
 
-	if (m_bEnd && CBaggage::GetList()->GetNum() == 0)
-	{
-		Uninit();
-	}
+	if (m_pBaggage == nullptr) { return; }
+	if (m_pBaggage->GetState() == CBaggage::STATE::STATE_THROW) { return; }
+	m_pBaggage->GetObj()->SetParent(m_pPeople->GetParts(6)->GetMtx());
+	m_pPeople->GetMotion()->BlendSet(4);
+	m_pBaggage->SetThrowScale(m_pPeople->GetScale());
 }
 //==========================================================
 // 距離のチェック

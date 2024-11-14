@@ -5,7 +5,7 @@
 //
 //==========================================================
 #include "baggage.h"
-#include "objectX.h"
+#include "model.h"
 #include "deltatime.h"
 #include "camera.h"
 #include "camera_manager.h"
@@ -17,11 +17,13 @@
 namespace
 {
 	const float ROTATE = (D3DX_PI * 2.0f) * 5.0f;	// 回転量
+	const D3DXVECTOR3 THROW_SCALE = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	const float HEIGHT = 1200.0f;
 }
 
 // 静的メンバ変数
 Clist<CBaggage*> CBaggage::m_List = {};
+Clist<CBaggage*> CBaggage::m_ThrowList = {};
 
 //==========================================================
 // コンストラクタ
@@ -75,6 +77,9 @@ void CBaggage::Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime)
 	m_rot.y = atan2f(m_pTarget->x - pos.x, m_pTarget->z - pos.z);
 	m_state = STATE_THROW;
 
+	// 投げリストに入れる
+	m_ThrowList.Regist(this);
+
 	if (m_pObj == nullptr) { return; }
 
 	m_pObj->SetPosition(pos);
@@ -85,8 +90,12 @@ void CBaggage::Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime)
 //==========================================================
 HRESULT CBaggage::Init(void)
 {
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\ice\\softcream.x");
-	m_pObj->SetScale(D3DXVECTOR3(10.0f, 10.0f, 10.0f));
+	m_pObj = CModel::Create("data\\MODEL\\ice\\softcream.x");
+	m_pObj->SetPosOrigin(VECTOR3_ZERO);
+	m_pObj->SetCurrentPosition(VECTOR3_ZERO);
+	m_pObj->SetRotation(VECTOR3_ZERO);
+	m_pObj->SetCurrentRotation(VECTOR3_ZERO);
+	m_pObj->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
 	return S_OK;
 }
 
@@ -103,6 +112,7 @@ void CBaggage::Uninit(void)
 	}
 
 	m_List.Delete(this);
+	m_ThrowList.Delete(this);
 
 	Release();
 }
@@ -186,11 +196,14 @@ void CBaggage::Throw()
 
 	// 時間終了
 	if (m_time.fNow >= m_time.fEnd) {
+		m_ThrowList.Delete(this);
+		m_pos = VECTOR3_ZERO;
 		CDeltaTime::GetInstance()->SetSlow(1.0f);
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 		pCamera->GetAction()->SetFinish(true);
 		m_bFinish = true;
-		Uninit();
+		m_state = STATE_NONE;
+		//Uninit();
 	}
 }
 
@@ -207,4 +220,16 @@ void CBaggage::SetCamera()
 	D3DXVECTOR3 pos = *m_pTarget;
 	pos.y += 200.0f;
 	pCamera->Pursue(pos, VECTOR3_ZERO, 0.0f);
+}
+
+//==========================================================
+// スケール設定
+//==========================================================
+void CBaggage::SetThrowScale(const D3DXVECTOR3& scale)
+{
+	D3DXVECTOR3 setscale = scale;
+	setscale.x *= THROW_SCALE.x;
+	setscale.y *= THROW_SCALE.y;
+	setscale.z *= THROW_SCALE.z;
+	m_pObj->SetScale(setscale);
 }

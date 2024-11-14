@@ -139,21 +139,18 @@
     <Filter Include="manager\input\keyconfig">
       <UniqueIdentifier>{12a8d1e3-b458-4e40-a21d-2f571de8b3d4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="motion">
+      <UniqueIdentifier>{9d94552c-2956-4e90-8aa3-3f0a340002e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object\character">
+      <UniqueIdentifier>{8c6b79e5-5371-43a5-9b4c-1b7c94df1565}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="code\character.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="code\fade.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="code\light.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="code\model.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="code\motion.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="code\precompile.cpp">
@@ -405,21 +402,27 @@
     <ClCompile Include="code\edit_gimmick.cpp">
       <Filter>edit</Filter>
     </ClCompile>
+    <ClCompile Include="code\goal_manager.cpp">
+      <Filter>goal</Filter>
+    </ClCompile>
+    <ClCompile Include="code\motion.cpp">
+      <Filter>motion</Filter>
+    </ClCompile>
+    <ClCompile Include="code\model.cpp">
+      <Filter>object\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="code\character.cpp">
+      <Filter>object\character</Filter>
+    </ClCompile>
+    <ClCompile Include="code\police_manager.cpp">
+      <Filter>car</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="code\character.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="code\fade.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\light.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="code\model.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="code\motion.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\precompile.h">
@@ -676,6 +679,21 @@
     </ClInclude>
     <ClInclude Include="code\edit_gimmick.h">
       <Filter>edit</Filter>
+    </ClInclude>
+    <ClInclude Include="code\goal_manager.h">
+      <Filter>goal</Filter>
+    </ClInclude>
+    <ClInclude Include="code\motion.h">
+      <Filter>motion</Filter>
+    </ClInclude>
+    <ClInclude Include="code\model.h">
+      <Filter>object\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="code\character.h">
+      <Filter>object\character</Filter>
+    </ClInclude>
+    <ClInclude Include="code\police_manager.h">
+      <Filter>car</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
