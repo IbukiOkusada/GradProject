@@ -22,6 +22,7 @@ public:
 		~CEffectData();
 		void Erase();
 		bool GetExist();
+		void Trigger(int nValue);
 		::Effekseer::Vector3D m_pos;	//À•W
 		::Effekseer::Vector3D m_rot;	//Œü‚«
 		::Effekseer::Vector3D m_move;	//ˆÚ“®—Ê

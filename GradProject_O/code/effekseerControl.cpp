@@ -317,3 +317,10 @@ bool CEffekseer::CEffectData::GetExist()
 {
 	return CEffekseer::GetInstance()->GetManager()->Exists(handle);
 }
+//======================================================
+//エフェクトインスタンスへのトリガー送信
+//======================================================	
+void CEffekseer::CEffectData::Trigger(int nValue)
+{
+	return CEffekseer::GetInstance()->GetManager()->SendTrigger(handle, nValue);
+}

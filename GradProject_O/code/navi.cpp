@@ -74,7 +74,7 @@ void CNavi::Update(void)
 	}
 	else
 	{
-		UpdateNavigation();
+		//UpdateNavigation();
 		Reach();
 	}
 }
@@ -126,21 +126,24 @@ void CNavi::StartNavigation(void)
 //==========================================================
 void CNavi::CreateEffect(void)
 {
-
-	for (int i = 0; i < m_Path.size(); i++)
+	if (!m_Path.empty())
 	{
-		SEffect* pEffect = DEBUG_NEW SEffect;
-
-
-		pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\guide.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 250.0f, true, false);
-		if (i < m_Path.size()-1)
+		for (int i = 0; i < m_Path.size() - 1; i++)
 		{
-			D3DXVECTOR3 vec = m_Path[i]->pos - m_Path[i + 1]->pos;
+			SEffect* pEffect = DEBUG_NEW SEffect;
 
-			D3DXVec3Normalize(&vec, &vec);
-			pEffect->pLine->m_rot = VectorToAngles(vec);
+
+			pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\straight.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
+			if (i < m_Path.size() - 1)
+			{
+				D3DXVECTOR3 vec = m_Path[i]->pos - m_Path[i + 1]->pos;
+
+				D3DXVec3Normalize(&vec, &vec);
+				pEffect->pLine->m_rot = VectorToAngles(vec);
+			}
+
+			m_Effects.Regist(pEffect);
 		}
-		m_Effects.Regist(pEffect);
 	}
 }
 //==========================================================
