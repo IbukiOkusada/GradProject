@@ -32,6 +32,7 @@ public:
 		STATE_CHASE,
 		STATE_SEARCH,
 		STATE_FADEOUT,
+		STATE_STOP,
 		STATE_MAX
 	};
 
@@ -89,12 +90,14 @@ protected:
 	virtual void StateChase();		// 追跡
 	virtual void StateSearch();		// 警戒
 	virtual void StateFadeOut();	// フェードアウト
+	virtual void StateStop();		// 停止
 
 	// 状態設定関数
 	virtual void SetStateNormal();		// なし
 	virtual void SetStateChase();		// 追跡
 	virtual void SetStateSearch();		// 警戒
 	virtual void SetStateFadeOut();		// フェードアウト
+	virtual void SetStateStop();		// 停止
 	
 	// メンバ関数
 	void SetStateTimer(const float fTimer) { // 状態タイマー設定

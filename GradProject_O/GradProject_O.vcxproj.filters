@@ -148,6 +148,9 @@
     <Filter Include="car\police">
       <UniqueIdentifier>{8c3d030b-345d-4791-a984-b2002a45db9d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="obstacle">
+      <UniqueIdentifier>{2b8cf6e0-fd54-4616-a0e0-93ac90f57578}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -425,6 +428,9 @@
     </ClCompile>
     <ClCompile Include="code\PlayerTitle.cpp">
       <Filter>player</Filter>
+    </ClCompile>
+    <ClCompile Include="code\inspection.cpp">
+      <Filter>obstacle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -709,6 +715,9 @@
     </ClInclude>
     <ClInclude Include="code\PlayerTitle.h">
       <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="code\inspection.h">
+      <Filter>obstacle</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

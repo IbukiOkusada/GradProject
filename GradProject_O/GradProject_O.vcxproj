@@ -197,6 +197,7 @@
     <ClCompile Include="code\input_gamepad.cpp" />
     <ClCompile Include="code\input_keyboard.cpp" />
     <ClCompile Include="code\input_mouse.cpp" />
+    <ClCompile Include="code\inspection.cpp" />
     <ClCompile Include="code\light.cpp" />
     <ClCompile Include="code\list_manager.cpp" />
     <ClCompile Include="code\main.cpp" />
@@ -335,6 +336,7 @@
     <ClInclude Include="code\sample\sample_manager.h" />
     <ClInclude Include="code\sample\sample_object.h" />
     <ClInclude Include="code\sample\sample_task.h" />
+    <ClInclude Include="code\inspection.h" />
     <ClInclude Include="code\slow.h" />
     <ClInclude Include="code\sound.h" />
     <ClInclude Include="code\speedmeter.h" />
