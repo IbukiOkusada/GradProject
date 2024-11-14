@@ -23,6 +23,18 @@ class CRoad;
 //==========================================================
 class CPolice : public CCar
 {
+public:
+
+	// 状態
+	enum STATE
+	{
+		STATE_NORMAL = 0,
+		STATE_CHASE,
+		STATE_SEARCH,
+		STATE_FADEOUT,
+		STATE_MAX
+	};
+
 private:	// 自分だけがアクセス可能
 
 	// 情報構造体
@@ -45,8 +57,14 @@ public:	// 誰でもアクセス可能
 	static CPolice*Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move);
 
 	// メンバ関数(取得)
+	STATE GetState() { return m_state; }
 
 	// メンバ関数(設定)
+	void SetState(const STATE state) { m_state = state; }
+
+protected:
+
+	STATE m_state;
 
 private:	// 自分だけがアクセス可能
 
