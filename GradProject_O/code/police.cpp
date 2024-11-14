@@ -15,6 +15,8 @@
 #include "player.h"
 #include "player_manager.h"
 #include "debugproc.h"
+#include "police_manager.h"
+#include "deltatime.h"
 
 // マクロ定義
 
@@ -27,10 +29,36 @@ namespace
 	const float SECURE_SPEED = (0.8f);			// 確保時の加速倍率
 	const int CHASE_TIME = (300);				// 追跡時間
 	const float CHASE_SECURE = (400.0f);		// 追跡確保距離
-	const float CHASE_BEGIN = (700.0f);			// 追跡開始距離
+	const float CHASE_BEGIN[CPolice::STATE::STATE_MAX] = {
+		(700.0f),
+		(700.0f),
+		(2000.0f),
+		(400.0f),
+	};			// 追跡開始距離
 	const float CHASE_CONTINUE = (2000.0f);		// 追跡継続距離
 	const float CHASE_END = (3000.0f);			// 追跡終了距離
 }
+
+//==========================================================================
+// 関数ポインタ
+//==========================================================================
+// 状態管理
+CPolice::STATE_FUNC CPolice::m_StateFunc[] =
+{
+	&CPolice::StateNormal,		// 通常
+	&CPolice::StateChase,		// 追跡
+	&CPolice::StateSearch,		// 警戒
+	&CPolice::StateFadeOut,		// フェードアウト
+};
+
+// 状態設定
+CPolice::SETSTATE_FUNC CPolice::m_SetStateFunc[] =
+{
+	&CPolice::SetStateNormal,		// 通常
+	&CPolice::SetStateChase,		// 追跡
+	&CPolice::SetStateSearch,		// 警戒
+	&CPolice::SetStateFadeOut,		// フェードアウト
+};
 
 //==========================================================
 // コンストラクタ
@@ -38,10 +66,11 @@ namespace
 CPolice::CPolice()
 {
 	// 値のクリア
-	m_Info.pPlayer = nullptr;
-	m_Info.nChaseCount = 0;
-	m_Info.bChase = false;
+	m_Info = SInfo();
 	m_pPatrolLamp = nullptr;
+	m_stateInfo = SState();
+
+	CPoliceManager::GetInstance()->GetList()->Regist(this);
 }
 
 //==========================================================
@@ -68,6 +97,7 @@ HRESULT CPolice::Init(void)
 void CPolice::Uninit(void)
 {
 	CCar::Uninit();
+	CPoliceManager::GetInstance()->GetList()->Delete(this);
 	SAFE_DELETE(m_pPatrolLamp);
 	Release();
 }
@@ -91,6 +121,8 @@ void CPolice::Update(void)
 	{
 		SAFE_DELETE(m_pPatrolLamp);
 	}
+
+	UpdateState();
 }
 
 //==========================================================
@@ -218,8 +250,11 @@ void CPolice::SearchPlayer()
 
 			SetSpeedDest(SECURE_SPEEDDEST);
 			SetSpeed(GetSpeed() * SECURE_SPEED);
+
+			// 状態設定
+			SetState(STATE::STATE_CHASE);
 		}
-		else if (length < CHASE_BEGIN)
+		else if (length < CHASE_BEGIN[m_stateInfo.state])
 		{// 追跡開始
 
 			m_Info.bChase = true;
@@ -227,6 +262,9 @@ void CPolice::SearchPlayer()
 
 			SetRoadStart(nullptr);
 			SetRoadTarget(nullptr);
+
+			// 状態設定
+			SetState(STATE::STATE_CHASE);
 		}
 		else if (length < CHASE_CONTINUE)
 		{// 追跡継続
@@ -238,6 +276,9 @@ void CPolice::SearchPlayer()
 				SetRoadStart(nullptr);
 				SetRoadTarget(nullptr);
 			}
+
+			// 状態設定
+			SetState(STATE::STATE_CHASE);
 		}
 		else if (length < CHASE_END)
 		{// 追跡終了
@@ -251,6 +292,9 @@ void CPolice::SearchPlayer()
 
 				if (m_Info.nChaseCount < 0)
 				{
+					// 全員を警戒状態に
+					SetState(STATE::STATE_SEARCH);
+					CPoliceManager::GetInstance()->Warning(this);
 					m_Info.bChase = false;
 					m_Info.nChaseCount = 0;
 				}
@@ -258,6 +302,13 @@ void CPolice::SearchPlayer()
 		}
 		else
 		{// 追跡強制終了
+
+			// 追跡してた
+			if (m_Info.bChase)
+			{
+				SetState(STATE::STATE_SEARCH);
+				CPoliceManager::GetInstance()->Warning(this);
+			}
 
 			m_Info.bChase = false;
 			m_Info.nChaseCount = 0;
@@ -294,4 +345,102 @@ void CPolice::Break()
 {
 	CPlayer* p = CPlayerManager::GetInstance()->GetTop();
 	p->Damage(p->GetLifeOrigin() * 0.1f);
+}
+
+//==========================================================
+// 状態設定
+//==========================================================
+void CPolice::UpdateState(void)
+{
+	// タイマー減少
+	m_stateInfo.fTimer -= CDeltaTime::GetInstance()->GetDeltaTime();
+	if(m_stateInfo.fTimer < 0.0f)
+	{ 
+		m_stateInfo.fTimer = 0.0f;
+	}
+
+	// 状態ごとの関数を呼ぶ
+	(this->*(m_StateFunc[m_stateInfo.state]))();
+}
+
+//==========================================================
+// 状態設定
+//==========================================================
+void CPolice::SetState(const STATE state)
+{ 
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = state; 
+
+	// 状態ごとの関数を呼ぶ
+	(this->*(m_SetStateFunc[m_stateInfo.state]))();
+}
+
+//==========================================================
+// 通常状態
+//==========================================================
+void CPolice::StateNormal(void)
+{
+	
+}
+
+//==========================================================
+// 追跡状態
+//==========================================================
+void CPolice::StateChase(void)
+{
+	if (m_pObj == nullptr) { return; }
+}
+
+//==========================================================
+// 警戒状態
+//==========================================================
+void CPolice::StateSearch(void)
+{
+	// カウントなくなるまで
+	if (m_stateInfo.fTimer > 0.0f) { return; }
+
+	SetState(STATE::STATE_NORMAL);
+}
+
+//==========================================================
+// フェードアウト状態
+//==========================================================
+void CPolice::StateFadeOut(void)
+{
+
+}
+
+//==========================================================
+// 通常状態設定
+//==========================================================
+void CPolice::SetStateNormal(void)
+{
+
+}
+
+//==========================================================
+// 追跡状態設定
+//==========================================================
+void CPolice::SetStateChase(void)
+{
+
+}
+
+//==========================================================
+// 警戒状態設定
+//==========================================================
+void CPolice::SetStateSearch(void)
+{
+	SetStateTimer(5.0f);
+}
+
+//==========================================================
+// フェードアウト状態設定
+//==========================================================
+void CPolice::SetStateFadeOut(void)
+{
+
 }

@@ -87,8 +87,6 @@ HRESULT CGole::Init(void)
 		}
 	}
 
-
-
 	return S_OK;
 }
 
@@ -123,14 +121,14 @@ void CGole::Update(void)
 		m_bEnd = true;
 		m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
 		pPlayer->AddDeliveryCount();
-		m_pPeople->GetMotion()->BlendSet(1);
+		m_pPeople->GetMotion()->BlendSet(3);
 		SAFE_DELETE(pEffect);
 	}
 
 	if (m_pBaggage == nullptr) { return; }
 	if (m_pBaggage->GetState() == CBaggage::STATE::STATE_THROW) { return; }
 	m_pBaggage->GetObj()->SetParent(m_pPeople->GetParts(6)->GetMtx());
-	m_pPeople->GetMotion()->BlendSet(2);
+	m_pPeople->GetMotion()->BlendSet(4);
 	m_pBaggage->SetThrowScale(m_pPeople->GetScale());
 }
 //==========================================================

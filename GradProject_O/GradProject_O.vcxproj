@@ -159,6 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="code\add_police.cpp" />
     <ClCompile Include="code\a_star.cpp" />
     <ClCompile Include="code\baggage.cpp" />
     <ClCompile Include="code\billboard.cpp" />
@@ -225,6 +226,7 @@
     <ClCompile Include="code\PlayerTitle.cpp" />
     <ClCompile Include="code\player_manager.cpp" />
     <ClCompile Include="code\police.cpp" />
+    <ClCompile Include="code\police_manager.cpp" />
     <ClCompile Include="code\precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -254,6 +256,7 @@
     <ClCompile Include="code\timer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="code\add_police.h" />
     <ClInclude Include="code\a_star.h" />
     <ClInclude Include="code\baggage.h" />
     <ClInclude Include="code\camera_action.h" />
@@ -320,6 +323,7 @@
     <ClInclude Include="code\PlayerTitle.h" />
     <ClInclude Include="code\player_manager.h" />
     <ClInclude Include="code\police.h" />
+    <ClInclude Include="code\police_manager.h" />
     <ClInclude Include="code\precompile.h" />
     <ClInclude Include="code\protocol_online.h" />
     <ClInclude Include="code\radio.h" />

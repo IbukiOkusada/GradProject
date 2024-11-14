@@ -17,7 +17,7 @@
 namespace
 {
 	const float ROTATE = (D3DX_PI * 2.0f) * 5.0f;	// ‰ñ“]—Ê
-	const D3DXVECTOR3 THROW_SCALE = D3DXVECTOR3(0.75f, 0.75f, 0.75f);
+	const D3DXVECTOR3 THROW_SCALE = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	const float HEIGHT = 1200.0f;
 }
 
@@ -95,7 +95,7 @@ HRESULT CBaggage::Init(void)
 	m_pObj->SetCurrentPosition(VECTOR3_ZERO);
 	m_pObj->SetRotation(VECTOR3_ZERO);
 	m_pObj->SetCurrentRotation(VECTOR3_ZERO);
-	m_pObj->SetScale(D3DXVECTOR3(10.0f, 10.0f, 10.0f));
+	m_pObj->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
 	return S_OK;
 }
 
