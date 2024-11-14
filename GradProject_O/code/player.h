@@ -118,7 +118,7 @@ public:	// 誰でもアクセス可能
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 	float GetLifeOrigin() { return m_fLifeOrigin; }
 
-private:	// 自分だけがアクセス可能
+protected:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	void SetMatrix(void);

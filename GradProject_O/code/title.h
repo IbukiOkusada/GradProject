@@ -11,8 +11,10 @@
 
 class CFileLoad;
 class CTitleEnter;
-class CPlayer;
 class CObject2D;
+
+class CPlayerTitle;
+class CCamera;
 
 //===============================================
 // タイトルクラスの定義(派生クラス)
@@ -55,14 +57,14 @@ private:
 	void StateLogo(void);
 	void StateP_E(void);
 	void InitingP_E(void);
-	void ColChange(void);
 
 
 	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
-	CTitleEnter *m_pEnter;
-	CPlayer* m_pPlayer;						// プレイヤーのポインタ
+	CPlayerTitle* m_pPlayer;						// プレイヤーのポインタ
 	CObject2D* m_pObject2D[OBJ2D_MAX];		// チームロゴのポインタ
 	STATE m_eState;							// ステート
+	CCamera* m_pCam;
+
 	int m_nCounterTutorial;					// チュートリアル及び人数選択画面遷移タイマー
 	int m_nCounterRanking;					// ランキング自動遷移タイマー
 

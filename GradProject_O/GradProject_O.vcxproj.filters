@@ -414,6 +414,9 @@
     <ClCompile Include="code\character.cpp">
       <Filter>object\character</Filter>
     </ClCompile>
+    <ClCompile Include="code\PlayerTitle.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -688,6 +691,9 @@
     </ClInclude>
     <ClInclude Include="code\character.h">
       <Filter>object\character</Filter>
+    </ClInclude>
+    <ClInclude Include="code\PlayerTitle.h">
+      <Filter>player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

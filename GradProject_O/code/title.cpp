@@ -16,7 +16,7 @@
 #include "object2D.h"
 #include "map_manager.h"
 #include "meshfield.h"
-#include "player.h"
+#include "PlayerTitle.h"
 #include "goal.h"
 
 //===============================================
@@ -45,10 +45,11 @@ CTitle::CTitle()
 	m_nCounter = 0;
 	m_bPush = false;
 	m_pFileLoad = nullptr;
-	m_pEnter = nullptr;
 	m_bDisplay = false;
 	m_eState = STATE::STATE_TEAMLOGO;
 	m_bCol = false;
+	m_pPlayer = nullptr;
+	m_pCam = nullptr;
 
 	for (int nCnt = 0; nCnt < OBJ2D_MAX; nCnt++)
 	{//配列の初期化
@@ -72,23 +73,6 @@ CTitle::~CTitle()
 //===============================================
 HRESULT CTitle::Init(void)
 {
-
-	// カメラの初期位置設定
-	//CCamera* pCamera = CManager::GetInstance()->GetCamera();
-	//pCamera->SetPositionV(D3DXVECTOR3(-874.3f, 0.0f, 1717.2f));
-	//pCamera->SetPositionR(D3DXVECTOR3(80.0f, 95.0f, 220.0f));
-	//pCamera->SetLength(350.0f);
-	//pCamera->SetRotation(D3DXVECTOR3(0.0f, -2.1f, 1.79f));
-	//pCamera->SetActive(false);
-
-	//カメラ初期状態
-	CCamera* pCam = CManager::GetInstance()->GetCamera();
-	pCam->SetPositionV(D3DXVECTOR3(-874.3f, 0.0f, 1717.2f));
-	pCam->SetPositionR(D3DXVECTOR3(80.0f, 95.0f, 220.0f));
-	pCam->SetLength(350.0f);
-	pCam->SetRotation(D3DXVECTOR3(0.0f, -2.1f, 1.79f));
-	pCam->SetActive(false);
-
 	// 遷移タイマー設定
 	m_nCounterTutorial = MOVE_TUTORIAL;
 	m_nCounterRanking = AUTOMOVE_RANKING;
@@ -180,32 +164,6 @@ void CTitle::Draw(void)
 	CScene::Draw();
 }
 //===============================================
-// 描画処理
-//===============================================
-void CTitle::ColChange(void)
-{
-	// 表示されていなければ
-	if (!m_bDisplay)
-	{
-
-		// チームロゴの色情報を取得
-		D3DXCOLOR TeamCol = m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->GetCol();
-
-		TeamCol.a -= 1.0f / 30;	//透明に近づけていく
-
-		if (TeamCol.a <= 0.0f)
-		{//完全に透明になった場合
-			TeamCol.a = 0.0f;	//透明度を透明に
-
-			if (m_pObject2D[OBJ2D::OBJ2D_TeamLogo] != NULL)
-			{
-				m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetDraw(false);
-			}
-		}
-		m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetCol(TeamCol);
-	}
-}
-//===============================================
 // チームロゴステートでの動き
 //===============================================
 void CTitle::StateLogo(void)
@@ -264,17 +222,17 @@ void CTitle::StateP_E(void)
 	pCam->SetActive(true);
 
 
-	//キーボード入力かパッド入力があれば
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) || 
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) || 
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0)) {
-		m_bPush = true;
-	}
+	////キーボード入力かパッド入力があれば
+	//if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) || 
+	//	CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) || 
+	//	CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0)) {
+	//	m_bPush = true;
+	//}
 
-	if (m_bPush)
-	{
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
-	}
+	//if (m_bPush)
+	//{
+	//	CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+	//}
 }
 //===============================================
 //プレスエンターステートでの動き
@@ -287,6 +245,14 @@ void CTitle::InitingP_E(void)
 		//押下情報を初期化
 		m_bPush = false;
 
+		//カメラ初期状態
+		m_pCam = CManager::GetInstance()->GetCamera();
+		m_pCam->SetPositionR(D3DXVECTOR3(-4000.0f, 95.0f, 260.0f));
+		m_pCam->SetLength(100.0f);
+		m_pCam->SetRotation(D3DXVECTOR3(0.0f, -0.0f, 1.79f));
+		//m_pCam->SetRotation(D3DXVECTOR3(0.0f, -2.1f, 1.79f));
+		m_pCam->SetActive(false);
+
 		//プレスエンター文字
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO,5);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(640.0f, 320.0f);
@@ -298,6 +264,7 @@ void CTitle::InitingP_E(void)
 		CMapManager::GetInstance()->Load();
 		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 
+		m_pPlayer = CPlayerTitle::Create(D3DXVECTOR3(-4734.0f, 50.0f, -1988.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),nullptr,nullptr);
 
 		m_bIniting = true;
 	}
