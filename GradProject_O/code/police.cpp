@@ -112,7 +112,7 @@ void CPolice::Uninit(void)
 void CPolice::Update(void)
 {
 	// í‚é~èÛë‘Ç»ÇÁìÆÇ©Ç»Ç¢
-	if (m_stateInfo.state == STATE::STATE_STOP) { return; }
+	if (m_stateInfo.state == STATE::STATE_STOP) { Set(); return; }
 
 	CCar::Update();
 	if (m_Info.bChase)

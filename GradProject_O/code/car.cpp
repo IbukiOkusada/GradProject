@@ -105,19 +105,8 @@ void CCar::Update(void)
 	// “–‚½‚è”»’èˆ—
 	Collision();
 
-	if (m_pObj != nullptr)
-	{
-		m_Info.rot.y += D3DX_PI;
-		m_pObj->SetPosition(m_Info.pos);
-		m_pObj->SetRotation(m_Info.rot);
-		m_Info.rot.y -= D3DX_PI;
-	}
-
-	if (m_pTailLamp != nullptr)
-	{
-		m_pTailLamp->m_pos = m_Info.pos;
-		m_pTailLamp->m_rot = m_Info.rot;
-	}
+	// À•WŒnÝ’è
+	Set();
 }
 
 //==========================================================
@@ -401,4 +390,24 @@ bool CCar::Collision()
 void CCar::Break()
 {
 	m_Info.bBreak = true;
+}
+
+//==========================================================
+// Ý’è
+//==========================================================
+void CCar::Set()
+{
+	if (m_pObj != nullptr)
+	{
+		m_Info.rot.y += D3DX_PI;
+		m_pObj->SetPosition(m_Info.pos);
+		m_pObj->SetRotation(m_Info.rot);
+		m_Info.rot.y -= D3DX_PI;
+	}
+
+	if (m_pTailLamp != nullptr)
+	{
+		m_pTailLamp->m_pos = m_Info.pos;
+		m_pTailLamp->m_rot = m_Info.rot;
+	}
 }
