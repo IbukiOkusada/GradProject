@@ -36,6 +36,7 @@ public:	// 誰でもアクセス可能
 	void ListIn(CPolice* pPolice);
 	void ListOut(CPolice* pPolice);
 	void Warning(CPolice* pPolice);
+	void SetInspection();
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
 
 private:	// 自分だけがアクセス可能

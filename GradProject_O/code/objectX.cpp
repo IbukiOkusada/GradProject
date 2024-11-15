@@ -62,11 +62,14 @@ HRESULT CObjectX::Init(void)
 //==========================================================
 void CObjectX::Uninit(void)
 {
-	// リストから外す
-	ListOut();
+	if (!GetDeath())
+	{
+		// リストから外す
+		ListOut();
 
-	// 廃棄
-	Release();
+		// 廃棄
+		Release();
+	}
 }
 
 //==========================================================
@@ -488,7 +491,7 @@ void CObjectX::SetRotSize(D3DXVECTOR3 &SetMax, D3DXVECTOR3 &SetMin, D3DXVECTOR3 
 // リストから外す
 //==========================================================
 void CObjectX::ListOut(void)
-{
+{	
 	m_List.Delete(this);
 }
 
