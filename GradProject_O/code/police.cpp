@@ -89,6 +89,8 @@ CPolice::~CPolice()
 HRESULT CPolice::Init(void)
 {
 	TailLamp();
+	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
+	m_pSiren->Stop();
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car003.x");
 	return S_OK;
 }
@@ -172,13 +174,16 @@ void CPolice::MoveRoad()
 
 	if (m_Info.bChase)
 	{
+		m_pSiren->Start();
 		if (m_Info.pPlayer != nullptr)
 			SetPosTarget(m_Info.pPlayer->GetPosition());
-
+		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
+		m_pSiren->SetVolume((2000.0f - dis) * 0.00075f);
 		SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
 	}
 	else
 	{
+		m_pSiren->Stop();
 		if (pRoadTarget != nullptr)
 		{
 			pRoadStart = GetRoadStart();

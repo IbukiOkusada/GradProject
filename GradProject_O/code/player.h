@@ -166,6 +166,7 @@ protected:	// 自分だけがアクセス可能
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
 	CRadio* pRadio;
+	CMasterSound::CObjectSound* m_pCollSound;
 	int m_nNumDeliveryStatus;  // 配達した数
 };
 

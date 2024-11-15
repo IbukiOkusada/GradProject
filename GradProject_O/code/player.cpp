@@ -134,6 +134,8 @@ CPlayer::CPlayer()
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
+	m_pCollSound->Stop();
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 
@@ -575,6 +577,8 @@ bool CPlayer::Collision(void)
 		if (bCollision)
 		{
 			CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", (m_Info.pos + m_Info.move), VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
+			m_pCollSound->SetVolume(m_fEngine*2.0f);
+			m_pCollSound->Play();
 			pObjectX->SetHit(true);
 			D3DXVECTOR3 vecMoveNor = m_Info.move;
 			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);

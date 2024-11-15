@@ -131,6 +131,7 @@ private:	// 自分だけがアクセス可能
 	std::list<CRoad*> listRoad;		// 追跡用リスト
 	std::list<CRoad*> listChase;	// 追跡用リスト
 
+	CMasterSound::CObjectSound* m_pSiren;
 	CEffekseer::CEffectData* m_pPatrolLamp;
 };
 
