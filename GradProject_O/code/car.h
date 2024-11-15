@@ -83,6 +83,7 @@ protected:	// 派生クラスからもアクセス可能
 	virtual void ReachRoad();
 	void TailLamp();
 	virtual void Break();
+	void Set();
 
 	// メンバ変数
 	CObjectX* m_pObj;

@@ -50,6 +50,7 @@
 #include "gimmick_policestation.h"
 #include "gimmick_guardrail.h"
 #include "goal_manager.h"
+#include "police_manager.h"
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace {
     const int MAX_STRING = (2048);
@@ -326,6 +327,7 @@ void CGame::Update(void)
         CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
     }
 
+    CPoliceManager::GetInstance()->Update();
     CScene::Update();
 }
 

@@ -11,7 +11,7 @@
 #include "task.h"
 #include "police.h"
 #include "player.h"
-#include <list>
+#include "list.h"
 
 // 前方宣言
 class CRoad;
@@ -28,6 +28,7 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数
 	static CAddPolice* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move);
+	static Clist<CAddPolice*>* GetList() { return &m_List; }
 
 private:	// 自分だけがアクセス可能
 
@@ -46,6 +47,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	D3DXVECTOR3 m_SpawnPos;
+	static Clist<CAddPolice*> m_List;
 };
 
 #endif

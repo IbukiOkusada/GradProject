@@ -20,6 +20,18 @@ class CPoliceManager : public CListManager
 {
 private:
 
+	struct SInspInfo
+	{
+		float fInterval;	// インターバル
+		float fTime;		// インターバル時間
+		int nCnt;			// カウント
+
+		// コンストラクタ
+		SInspInfo() : fInterval(0.0f), nCnt(0), fTime(0.0f) {}
+	};
+
+private:
+
 	CPoliceManager();		// コンストラクタ
 	~CPoliceManager();	// デストラクタ
 
@@ -47,6 +59,7 @@ private:	// 自分だけがアクセス可能
 	Clist<CPolice*>* m_pList;
 	int m_nNum;
 	static CPoliceManager* m_pInstance;	// インスタンス
+	SInspInfo m_InspInfo;
 };
 
 #endif

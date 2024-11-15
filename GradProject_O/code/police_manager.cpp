@@ -9,11 +9,15 @@
 #include "player_manager.h"
 #include "road.h"
 #include "inspection.h"
+#include "add_police.h"
+#include "deltatime.h"
+#include "debugproc.h"
 
 // 名前空間
 namespace
 {
-	
+	const float INTERVAL = 5.0f;	// インターバル
+	const int MAX_POLICE = (15);	// 警察の最大値
 }
 
 // 静的メンバ変数宣言
@@ -26,6 +30,7 @@ CPoliceManager::CPoliceManager()
 {
 	// 値のクリア
 	m_pList = nullptr;
+	m_InspInfo = SInspInfo();
 	m_nNum = 0;
 }
 
@@ -42,6 +47,7 @@ CPoliceManager::~CPoliceManager()
 //==========================================================
 HRESULT CPoliceManager::Init(void)
 {
+	m_InspInfo.fTime = INTERVAL;
 	return S_OK;
 }
 
@@ -68,7 +74,9 @@ void CPoliceManager::Uninit(void)
 //==========================================================
 void CPoliceManager::Update(void)
 {
+	m_InspInfo.fInterval += CDeltaTime::GetInstance()->GetDeltaTime();
 
+	CDebugProc::GetInstance()->Print("インターバル : [ %f ]\n", m_InspInfo.fInterval);
 }
 
 //==========================================================
@@ -78,6 +86,7 @@ CPoliceManager* CPoliceManager::GetInstance(void)
 {
 	if (m_pInstance == nullptr) {	// 使われていない
 		m_pInstance = DEBUG_NEW CPoliceManager;
+		m_pInstance->Init();
 	}
 
 	return m_pInstance;
@@ -148,8 +157,12 @@ void CPoliceManager::Warning(CPolice* pPolice)
 		pP->SetState(CPolice::STATE::STATE_SEARCH);
 	}
 
-	// 検問を配置する
-	SetInspection();
+	if (m_InspInfo.fInterval >= m_InspInfo.fTime && CAddPolice::GetList()->GetNum() < MAX_POLICE)
+	{
+		m_InspInfo.fInterval = 0.0f;
+		// 検問を配置する
+		SetInspection();
+	}
 }
 
 //==========================================================
