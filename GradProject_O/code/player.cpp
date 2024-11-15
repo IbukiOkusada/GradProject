@@ -578,6 +578,7 @@ bool CPlayer::Collision(void)
 
 		if (bCollision)
 		{
+			CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", (m_Info.pos + posObjectX) *0.5f, VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
 			pObjectX->SetHit(true);
 			D3DXVECTOR3 vecMoveNor = m_Info.move;
 			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
