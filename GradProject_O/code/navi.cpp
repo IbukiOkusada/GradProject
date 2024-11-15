@@ -40,6 +40,7 @@ CNavi::~CNavi()
 HRESULT CNavi::Init(void)
 {
 	m_pGole = nullptr;
+	m_IdxPath = 0;
 	m_Effects.Clear();
 	m_Path.clear();
 	return S_OK;
@@ -50,7 +51,7 @@ HRESULT CNavi::Init(void)
 //==========================================================
 void CNavi::Uninit(void)
 {
-	for (int i = m_Effects.GetNum() - 1; i >= 0; i--)
+	for (int i = m_Effects.GetNum()-1 ; i >= 0; i--)
 	{
 		SEffect* pEffect = m_Effects.Get(i);
 		SAFE_DELETE(pEffect->pLine);
@@ -117,6 +118,7 @@ void CNavi::StartNavigation(void)
 	}
 	if (m_pGole != nullptr && pStart != nullptr)
 	{
+		m_IdxPath = 0;
 		m_Path = AStar(pStart->GetSearchSelf(), m_pGole->GetRoad()->GetSearchSelf());
 	}
 
@@ -128,12 +130,14 @@ void CNavi::CreateEffect(void)
 {
 	if (!m_Path.empty())
 	{
-		for (int i = 0; i < m_Path.size() - 1; i++)
+		for (int i = 0; i < m_Path.size()-1; i++)
 		{
 			SEffect* pEffect = DEBUG_NEW SEffect;
 
-
-			pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\straight.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
+		
+				pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\straight.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
+			
+		
 			if (i < m_Path.size() - 1)
 			{
 				D3DXVECTOR3 vec = m_Path[i]->pos - m_Path[i + 1]->pos;
@@ -168,11 +172,6 @@ void CNavi::UpdateNavigation(void)
 		for (int i = nID - 1; i >= 0; i--)
 		{
 			m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[i]));
-			SAFE_DELETE(m_Effects.Get(i)->pLine);
-			m_Effects.Get(i)->pTarget = nullptr;
-			SEffect* pEffect = m_Effects.Get(i);
-			m_Effects.Delete(m_Effects.Get(i));
-			SAFE_DELETE(pEffect);
 		}
 		m_Path.shrink_to_fit();
 	}
@@ -181,12 +180,6 @@ void CNavi::UpdateNavigation(void)
 		if (fDis < 1000.0f && m_Path.size()>1)
 		{
 			m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[0]));
-			SAFE_DELETE(m_Effects.Get(0)->pLine);
-			m_Effects.Get(0)->pTarget = nullptr;
-
-			SEffect* pEffect = m_Effects.Get(0);
-			m_Effects.Delete(m_Effects.Get(0));
-			SAFE_DELETE(pEffect);
 		}
 	}
 	if (!m_Effects.Empty())
