@@ -112,6 +112,7 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetOldPosition(void) { return m_Info.posOld; }
 	CRoad* GetRoad(void) { return m_Info.pRoad; }
 	CPlayer* GetNext(void) { return m_pNext; }
+	CObjectX* GetObj() { return m_pObj; }
 	CPlayer* GetPrev(void) { return m_pPrev; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 	float GetEngine(void) { return m_fEngine; }

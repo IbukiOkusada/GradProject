@@ -586,6 +586,8 @@ bool CPlayer::Collision(void)
 		}
 	}
 
+	m_Info.pRoad = nullptr;
+
 	// “¹‚Æ‚Ì”»’è
 	auto list = CRoadManager::GetInstance()->GetList();
 	for (int i = 0; i < list->GetNum(); i++)
@@ -617,6 +619,7 @@ bool CPlayer::Collision(void)
 		{
 			m_Info.pos.y = height;
 			m_Info.move.y = 0.0f;
+			m_Info.pRoad = pRoad;
 		}
 	}
 

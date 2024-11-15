@@ -70,6 +70,7 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void Away();
 
 	// メンバ変数
 	CAddPolice* m_pPolice;	// 検問場所にいる警察
