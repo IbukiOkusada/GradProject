@@ -49,6 +49,7 @@ CPolice::STATE_FUNC CPolice::m_StateFunc[] =
 	&CPolice::StateChase,		// 追跡
 	&CPolice::StateSearch,		// 警戒
 	&CPolice::StateFadeOut,		// フェードアウト
+	&CPolice::StateStop,		// 停止
 };
 
 // 状態設定
@@ -58,6 +59,7 @@ CPolice::SETSTATE_FUNC CPolice::m_SetStateFunc[] =
 	&CPolice::SetStateChase,		// 追跡
 	&CPolice::SetStateSearch,		// 警戒
 	&CPolice::SetStateFadeOut,		// フェードアウト
+	&CPolice::SetStateStop,			// 停止
 };
 
 //==========================================================
@@ -107,6 +109,9 @@ void CPolice::Uninit(void)
 //==========================================================
 void CPolice::Update(void)
 {
+	// 停止状態なら動かない
+	if (m_stateInfo.state == STATE::STATE_STOP) { return; }
+
 	CCar::Update();
 	if (m_Info.bChase)
 	{
@@ -414,6 +419,14 @@ void CPolice::StateFadeOut(void)
 }
 
 //==========================================================
+// 停止状態
+//==========================================================
+void CPolice::StateStop(void)
+{
+
+}
+
+//==========================================================
 // 通常状態設定
 //==========================================================
 void CPolice::SetStateNormal(void)
@@ -441,6 +454,14 @@ void CPolice::SetStateSearch(void)
 // フェードアウト状態設定
 //==========================================================
 void CPolice::SetStateFadeOut(void)
+{
+
+}
+
+//==========================================================
+// 停止状態設定
+//==========================================================
+void CPolice::SetStateStop(void)
 {
 
 }

@@ -13,7 +13,8 @@
 //<************************************************
 namespace
 {
-	const D3DXVECTOR3 DEST_POS = D3DXVECTOR3(-4734.0f, 0.0f, 1054.0f); //目的地の位置
+	const D3DXVECTOR3 DEST_POS = D3DXVECTOR3(-4734.0f, 0.0f, 1054.0f);	//目的地の位置
+	const float DEST_DIFF = 5.0f;										//距離の差
 }
 
 //<================================================
@@ -125,10 +126,10 @@ void CPlayerTitle::Update(void)
 		CPlayer::Update();
 	}
 
-	// デバッグ表示
-	CDebugProc::GetInstance()->Print("プレイヤー :");
-	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
+	//// デバッグ表示
+	//CDebugProc::GetInstance()->Print("プレイヤー :");
+	//CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	//CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
 }
 //<================================================
 //動きに関する処理
@@ -136,17 +137,11 @@ void CPlayerTitle::Update(void)
 void CPlayerTitle::Moving(void)
 {
 	//目的地まで移動
-	m_Info.pos.x += (DEST_POS.x - m_Info.pos.x - m_Info.move.x) * 0.0045f;//X軸
-	m_Info.pos.z += (DEST_POS.z - m_Info.pos.z - m_Info.move.z) * 0.0045f;//Z軸
+	m_Info.pos.x += (DEST_POS.x - m_Info.pos.x - m_Info.move.x) * 0.075f;//X軸
+	m_Info.pos.z += (DEST_POS.z - m_Info.pos.z - m_Info.move.z) * 0.075f;//Z軸
 
-	//目的の位置についたら
-	if (m_Info.pos.x >= DEST_POS.x && m_Info.pos.x <= -DEST_POS.x
-		|| m_Info.pos.x <= DEST_POS.x && m_Info.pos.x >= -DEST_POS.x
-		&& m_Info.pos.z >= DEST_POS.z && m_Info.pos.z <= -DEST_POS.z
-		|| m_Info.pos.z <= DEST_POS.z && m_Info.pos.z >= -DEST_POS.z)
-	{
-		m_bReached = true;
-	}
+	if (Function::MoveToDest(m_Info.pos, DEST_POS, DEST_DIFF)) { m_bReached = true; }
+
 }
 //<================================================
 //生成処理
@@ -154,6 +149,7 @@ void CPlayerTitle::Moving(void)
 CPlayerTitle* CPlayerTitle::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move
 , const char* pBodyName, const char* pLegName)
 {
+	//生成のためのオブジェクト
 	CPlayerTitle* pPlayertitle = DEBUG_NEW CPlayerTitle;
 
 	//中身があったら
@@ -176,12 +172,12 @@ CPlayerTitle* CPlayerTitle::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 		//動かない状態にする
 		pPlayertitle->SetType(CPlayer::TYPE::TYPE_NONE);
 	}
-	//無かった場合
+	//無かった場合、中身なしを返す
 	else
 	{
 		return nullptr;
 	}
 
-
-	return nullptr;
+	//その情報を返す
+	return pPlayertitle;
 }

@@ -127,8 +127,7 @@ CPlayer::CPlayer()
 	m_pNext = nullptr;
 	m_pDamageEffect = nullptr;
 	m_pSound = nullptr;
-	m_pBaggage = nullptr;
-	
+	m_pBaggage = nullptr;	
 	m_fbrakePitch = 0.0f;
 	m_fbrakeVolume = 0.0f;
 	m_nNumDeliveryStatus = 0;
@@ -192,11 +191,8 @@ void CPlayer::Uninit(void)
 	SAFE_DELETE(m_pDamageEffect);
 	SAFE_UNINIT_DELETE(m_pSound);
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
-
 	SAFE_UNINIT_DELETE(pRadio);
 	CPlayerManager::GetInstance()->ListOut(this);
-
-
 
 	// ”pŠü
 	Release();

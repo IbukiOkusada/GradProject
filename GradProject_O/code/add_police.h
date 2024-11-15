@@ -1,7 +1,7 @@
 //==========================================================
 //
 // 追加パトカー処理 [add_police.h]
-// Author : Riku Nakamura
+// Author : Ibuki Okusada
 //
 //==========================================================
 #ifndef _ADD_POLICE_H_		// このマクロが定義されていない場合
@@ -27,7 +27,7 @@ public:	// 誰でもアクセス可能
 	~CAddPolice() override;	// デストラクタ
 
 	// メンバ関数
-	static CAddPolice* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move);
+	static CAddPolice* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move);
 
 private:	// 自分だけがアクセス可能
 
