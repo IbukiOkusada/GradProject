@@ -8,6 +8,7 @@
 #define _POLICESTATION_H_		// 二重インクルード防止用マクロを定義
 
 #include "gimmick.h"
+#include "list.h"
 
 // 前方宣言
 class CObjectX;
@@ -41,6 +42,9 @@ public:	// 誰でもアクセス可能
 	void Update(void) override;
 	static CGimmickPoliceStation* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale);
 	void SetColMulti(const D3DXCOLOR& col) override;
+	static Clist<CGimmickPoliceStation*>* GetList() { &m_List; }
+	static CGimmickPoliceStation* GetNear(const D3DXVECTOR3& pos);
+	CRoad* GetRoad() { return m_pRoad; }
 
 private:	// 自分だけがアクセス可能
 
@@ -53,6 +57,7 @@ private:	// 自分だけがアクセス可能
 	CObjectX* m_pObj;			// 描画オブジェクト
 	SInfo m_Info;
 	CRoad* m_pRoad;				// 最も近い道
+	static Clist<CGimmickPoliceStation*> m_List;	// リスト
 };
 
 #endif

@@ -29,6 +29,8 @@ namespace
 	const float SEARCH_RANGE = D3DX_PI * 0.3f;
 }
 
+Clist<CGimmickPoliceStation*> CGimmickPoliceStation::m_List = {};
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -38,6 +40,7 @@ CGimmickPoliceStation::CGimmickPoliceStation()
 	m_pObj = nullptr;
 	m_Info = SInfo();
 	m_pRoad = nullptr;
+	m_List.Regist(this);
 }
 
 //==========================================================
@@ -80,6 +83,7 @@ void CGimmickPoliceStation::Uninit(void)
 	}
 
 	m_pRoad = nullptr;
+	m_List.Delete(this);
 
 	CGimmick::Uninit();
 }
@@ -188,4 +192,30 @@ void CGimmickPoliceStation::SetObjScale(const D3DXVECTOR3& scale)
 	if (m_pObj == nullptr) { return; }
 
 	m_pObj->SetScale(scale);
+}
+
+//==========================================================
+// 最も近い場所受け取る
+//==========================================================
+CGimmickPoliceStation* CGimmickPoliceStation::GetNear(const D3DXVECTOR3& pos)
+{
+	float length = 1000000.0f;
+	CGimmickPoliceStation* pStation = nullptr;
+	// 道数分繰り返す
+	for (int i = 0; i < m_List.GetNum(); i++)
+	{
+		// 確認
+		CGimmickPoliceStation* pCheck = m_List.Get(i);
+		D3DXVECTOR3 vec = pCheck->GetPos() - pos;
+		float temp = D3DXVec3Length(&vec);
+
+		// 距離が近い
+		if (temp <= length)
+		{
+			length = temp;
+			pStation = pCheck;
+		}
+	}
+
+	return pStation;
 }

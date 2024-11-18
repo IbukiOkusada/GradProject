@@ -354,6 +354,8 @@ bool CCar::Collision()
 
 		CObjectX* pObjectX = mgr->Get(i);	// æ“ª‚ðŽæ“¾
 
+		if (!pObjectX->GetEnableCollision()) { continue; }
+
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
 		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();

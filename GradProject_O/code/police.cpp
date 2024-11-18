@@ -113,7 +113,10 @@ void CPolice::Uninit(void)
 void CPolice::Update(void)
 {
 	// 停止状態なら動かない
-	if (m_stateInfo.state == STATE::STATE_STOP) { return; }
+	if (m_stateInfo.state == STATE::STATE_STOP) { 
+		SearchPlayer();
+		return;
+	}
 
 	CCar::Update();
 	if (m_Info.bChase)
@@ -378,15 +381,9 @@ void CPolice::UpdateState(void)
 // 状態設定
 //==========================================================
 void CPolice::SetState(const STATE state)
-{ 
-	// 初期化
-	m_stateInfo = SState();
-
-	// 状態変更
-	m_stateInfo.state = state; 
-
+{
 	// 状態ごとの関数を呼ぶ
-	(this->*(m_SetStateFunc[m_stateInfo.state]))();
+	(this->*(m_SetStateFunc[state]))();
 }
 
 //==========================================================
@@ -437,7 +434,11 @@ void CPolice::StateStop(void)
 //==========================================================
 void CPolice::SetStateNormal(void)
 {
+	// 初期化
+	m_stateInfo = SState();
 
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_NORMAL;
 }
 
 //==========================================================
@@ -445,7 +446,11 @@ void CPolice::SetStateNormal(void)
 //==========================================================
 void CPolice::SetStateChase(void)
 {
+	// 初期化
+	m_stateInfo = SState();
 
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_CHASE;
 }
 
 //==========================================================
@@ -453,6 +458,11 @@ void CPolice::SetStateChase(void)
 //==========================================================
 void CPolice::SetStateSearch(void)
 {
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_SEARCH;
 	SetStateTimer(5.0f);
 }
 
@@ -461,7 +471,11 @@ void CPolice::SetStateSearch(void)
 //==========================================================
 void CPolice::SetStateFadeOut(void)
 {
+	// 初期化
+	m_stateInfo = SState();
 
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_FADEOUT;
 }
 
 //==========================================================
@@ -469,5 +483,9 @@ void CPolice::SetStateFadeOut(void)
 //==========================================================
 void CPolice::SetStateStop(void)
 {
+	// 初期化
+	m_stateInfo = SState();
 
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_STOP;
 }

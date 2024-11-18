@@ -216,5 +216,5 @@ void CPoliceManager::SetInspection()
 	pos.x += sinf(targetrot) * pPredRoad->GetInfo()->size.x;
 	pos.z += cosf(targetrot) * pPredRoad->GetInfo()->size.y;
 
-	CInstpection::Create(pos, rot);
+	CInstpection::Create(pos, rot, pPredRoad);
 }
