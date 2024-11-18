@@ -40,7 +40,7 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	// 
+	
 	// メンバ変数
 	CPlayer* m_pTop;	// 先頭
 	CPlayer* m_pCur;	// 最後尾

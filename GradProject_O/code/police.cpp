@@ -383,6 +383,8 @@ void CPolice::UpdateState(void)
 void CPolice::SetState(const STATE state)
 {
 	// ó‘Ô‚²‚Æ‚ÌŠÖ”‚ðŒÄ‚Ô
+	if (m_stateInfo.state == STATE::STATE_FADEOUT) { return; }
+
 	(this->*(m_SetStateFunc[state]))();
 }
 
