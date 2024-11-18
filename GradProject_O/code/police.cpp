@@ -103,6 +103,7 @@ void CPolice::Uninit(void)
 	CCar::Uninit();
 	CPoliceManager::GetInstance()->GetList()->Delete(this);
 	SAFE_DELETE(m_pPatrolLamp);
+	SAFE_UNINIT_DELETE(m_pSiren);
 	Release();
 }
 
@@ -112,7 +113,7 @@ void CPolice::Uninit(void)
 void CPolice::Update(void)
 {
 	// í‚é~èÛë‘Ç»ÇÁìÆÇ©Ç»Ç¢
-	if (m_stateInfo.state == STATE::STATE_STOP) { Set(); return; }
+	if (m_stateInfo.state == STATE::STATE_STOP) { return; }
 
 	CCar::Update();
 	if (m_Info.bChase)

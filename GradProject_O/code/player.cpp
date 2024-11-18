@@ -194,6 +194,7 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT_DELETE(m_pSound);
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
 	SAFE_UNINIT_DELETE(pRadio);
+	SAFE_UNINIT_DELETE(m_pCollSound);
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// ”pŠü
