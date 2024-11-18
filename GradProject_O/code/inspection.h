@@ -12,6 +12,8 @@
 // 前方宣言
 class CAddPolice;
 class CObjectX;
+class CGimmickPoliceStation;
+class CRoad;
 
 //==========================================================
 // 追加警察のクラス定義
@@ -26,9 +28,11 @@ private:
 	{
 		D3DXVECTOR3 pos;	// 座標
 		D3DXVECTOR3 rot;	// 向き
+		D3DXVECTOR3 carpos;	// 車座標
+		D3DXVECTOR3 carrot;	// 車向き
 
 		// コンストラクタ
-		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO) {}
+		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), carpos(VECTOR3_ZERO), carrot(VECTOR3_ZERO) {}
 	};
 
 	// fence用情報
@@ -57,7 +61,7 @@ public:	// 誰でもアクセス可能
 	void Update() override;
 
 	// 静的メンバ関数
-	static CInstpection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	static CInstpection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad);
 
 	// メンバ関数(取得)
 	D3DXVECTOR3& GetPosition() { return m_Info.pos; }
@@ -77,6 +81,8 @@ private:	// 自分だけがアクセス可能
 	SGuardInfo m_Guard;		// フェンス用
 	SInfo m_Info;			// 基本情報
 	bool m_bHit;			// 一度でも衝突した
+	CGimmickPoliceStation* m_pNearStation;	// 近い警察署
+	CRoad* m_pRoad;
 };
 
 #endif

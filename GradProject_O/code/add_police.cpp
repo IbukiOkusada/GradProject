@@ -22,7 +22,7 @@
 // 状態管理時間用名前空間
 namespace STATETIME
 {
-	const float NORMAL = (10.0f);	// 通常
+	const float NORMAL = (40.0f);	// 通常
 	const float SEARCH = (5.0f);	// 警戒
 	const float FADEOUT = (2.0f);	// フェードアウト
 }
@@ -37,6 +37,8 @@ CAddPolice::CAddPolice()
 {
 	m_SpawnPos = VECTOR3_ZERO;
 	m_List.Regist(this);
+	m_Path.clear();
+	m_nNowRoad = 0;
 }
 
 //==========================================================
@@ -86,6 +88,8 @@ void CAddPolice::StateNormal(void)
 	// カウントなくなるまで
 	if (m_stateInfo.fTimer > 0.0f) { return; }
 
+	if (m_Path.size() > 0) { return; }
+
 	SetState(STATE::STATE_FADEOUT);
 }
 
@@ -114,8 +118,6 @@ void CAddPolice::StateFadeOut(void)
 		return; 
 	}
 
-	CDebugProc::GetInstance()->Print("もうすぐ消えるよ～！\n");
-
 	// 削除
 	Uninit();
 }
@@ -125,6 +127,12 @@ void CAddPolice::StateFadeOut(void)
 //==========================================================
 void CAddPolice::SetStateNormal(void)
 {
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_NORMAL;
+
 	SetStateTimer(STATETIME::NORMAL);
 }
 
@@ -133,6 +141,14 @@ void CAddPolice::SetStateNormal(void)
 //==========================================================
 void CAddPolice::SetStateSearch(void)
 {
+	if (m_Path.size() > 0) { return; }
+
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_SEARCH;
+
 	SetStateTimer(STATETIME::SEARCH);
 }
 
@@ -141,5 +157,57 @@ void CAddPolice::SetStateSearch(void)
 //==========================================================
 void CAddPolice::SetStateFadeOut(void)
 {
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_FADEOUT;
+
 	SetStateTimer(STATETIME::FADEOUT);
+}
+
+//==========================================================
+// 探索
+//==========================================================
+void CAddPolice::SearchRoad()
+{
+	if (m_Path.size() == 0)
+	{
+		CCar::SearchRoad();
+		return;
+	}
+
+	if (m_nNowRoad >= m_Path.size() - 1) {
+
+		//if (GetState() == STATE::STATE_NORMAL)
+		{
+			SetState(STATE::STATE_STOP);
+			m_Path.clear();
+		}
+
+		return; 
+	}
+	SetRoadTarget(m_Path[m_nNowRoad]->pRoad);
+}
+
+//==========================================================
+// 探索終了後
+//==========================================================
+void CAddPolice::ReachRoad()
+{
+	if (m_Path.size() == 0)
+	{
+		CCar::ReachRoad();
+		return;
+	}
+
+	if (m_nNowRoad >= m_Path.size() - 1)
+	{ 
+			SetState(STATE::STATE_STOP);
+			m_Path.clear();
+
+		return; 
+	}
+	m_nNowRoad++;
+	SetRoadTarget(m_Path[m_nNowRoad]->pRoad);
 }

@@ -79,7 +79,7 @@ protected:	// 派生クラスからもアクセス可能
 
 	// メンバ関数
 	virtual void MoveRoad();
-	void SearchRoad();
+	virtual void SearchRoad();
 	virtual void ReachRoad();
 	void TailLamp();
 	virtual void Break();

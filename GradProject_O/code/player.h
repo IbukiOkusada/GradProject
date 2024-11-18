@@ -155,7 +155,7 @@ protected:	// 自分だけがアクセス可能
 	TYPE m_type;			// 種類
 	CObjectX* m_pObj;		// 描画オブジェクト
 	CBaggage* m_pBaggage;	// 荷物
-	CNavi* m_pNavi;
+	CNavi* m_pNavi;			// ナビ
 	CEffekseer::CEffectData * m_pTailLamp;
 	CEffekseer::CEffectData* m_pBackdust;
 	CEffekseer::CEffectData* m_pAfterburner;

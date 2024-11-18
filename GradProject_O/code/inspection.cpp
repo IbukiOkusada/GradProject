@@ -11,6 +11,8 @@
 #include "player.h"
 #include "player_manager.h"
 #include "deltatime.h"
+#include "gimmick_policestation.h"
+#include "a_star.h"
 
 // 無名名前空間を定義
 namespace
@@ -29,6 +31,8 @@ CInstpection::CInstpection()
 	m_Guard = SGuardInfo();
 	m_Info = SInfo();
 	m_bHit = false;
+	m_pNearStation = nullptr;
+	m_pRoad = nullptr;
 }
 
 //==========================================================
@@ -61,8 +65,16 @@ HRESULT CInstpection::Init(void)
 		pos.z += cosf(rot.y) * POLICE_SETLENGTH;
 
 		// 生成
+		m_pNearStation = CGimmickPoliceStation::GetNear(GetPosition());
+		if (m_pNearStation != nullptr) { pos = m_pNearStation->GetPos(); }
 		m_pPolice = CAddPolice::Create(pos, rot, VECTOR3_ZERO);
-		m_pPolice->SetState(CPolice::STATE::STATE_STOP);
+
+		// 経路を設定
+		if (m_pRoad != nullptr)
+		{
+			m_pPolice->SetNavi(AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf()));
+			m_pPolice->SetState(CPolice::STATE::STATE_NORMAL);
+		}
 	}
 
 	return S_OK;
@@ -124,6 +136,9 @@ void CInstpection::Update(void)
 			// 警察を切り離す
 			if (m_pPolice != nullptr)
 			{
+				std::vector<CRoad::SSearch*> navi = {};
+				navi.clear();
+				m_pPolice->SetNavi(navi);
 				m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
 				m_pPolice = nullptr;
 			}
@@ -143,7 +158,7 @@ void CInstpection::Update(void)
 //==========================================================
 // 生成
 //==========================================================
-CInstpection* CInstpection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+CInstpection* CInstpection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad)
 {
 	CInstpection* pInsp = nullptr;
 
@@ -154,6 +169,7 @@ CInstpection* CInstpection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& ro
 		// 値設定
 		pInsp->SetPosition(pos);
 		pInsp->SetRotation(rot);
+		pInsp->m_pRoad = pRoad;
 
 		// 初期化処理
 		pInsp->Init();

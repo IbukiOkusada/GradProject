@@ -233,6 +233,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="code\pred_route.cpp" />
     <ClCompile Include="code\radio.cpp" />
     <ClCompile Include="code\ranking.cpp" />
     <ClCompile Include="code\renderer.cpp" />
@@ -354,6 +355,7 @@
     <ClInclude Include="code\map_manager.h" />
     <ClInclude Include="code\edit_handle.h" />
     <ClInclude Include="code\timer.h" />
+    <ClInclude Include="code\pred_route.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

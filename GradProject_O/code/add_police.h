@@ -30,6 +30,9 @@ public:	// 誰でもアクセス可能
 	static CAddPolice* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move);
 	static Clist<CAddPolice*>* GetList() { return &m_List; }
 
+	// 設定関数
+	void SetNavi(std::vector<CRoad::SSearch*>& navi) { m_Path = navi; }
+
 private:	// 自分だけがアクセス可能
 
 	//=============================
@@ -40,6 +43,9 @@ private:	// 自分だけがアクセス可能
 	void StateSearch() override;	// 警戒
 	void StateFadeOut() override;	// フェードアウト
 
+	void SearchRoad() override;
+	void ReachRoad() override;
+
 	// 状態設定関数
 	virtual void SetStateNormal() override;		// 通常
 	virtual void SetStateSearch() override;		// 警戒
@@ -47,6 +53,8 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	D3DXVECTOR3 m_SpawnPos;
+	std::vector<CRoad::SSearch*> m_Path;
+	int m_nNowRoad;
 	static Clist<CAddPolice*> m_List;
 };
 

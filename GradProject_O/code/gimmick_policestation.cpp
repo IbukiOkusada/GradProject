@@ -16,6 +16,7 @@
 #include "player_manager.h"
 #include "add_police.h"
 #include "debugproc.h"
+#include "road_manager.h"
 
 // 定数定義
 namespace
@@ -28,6 +29,8 @@ namespace
 	const float SEARCH_RANGE = D3DX_PI * 0.3f;
 }
 
+Clist<CGimmickPoliceStation*> CGimmickPoliceStation::m_List = {};
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -36,6 +39,8 @@ CGimmickPoliceStation::CGimmickPoliceStation()
 	// 値のクリア
 	m_pObj = nullptr;
 	m_Info = SInfo();
+	m_pRoad = nullptr;
+	m_List.Regist(this);
 }
 
 //==========================================================
@@ -59,6 +64,9 @@ HRESULT CGimmickPoliceStation::Init(void)
 	m_Info.fInterVal = INTERVAL;
 	SetType(TYPE::TYPE_POLICESTATION);
 
+	// 最も近い道を取得
+	m_pRoad = CRoadManager::GetInstance()->GetNearRoad(GetPos());
+
 	return S_OK;
 }
 
@@ -73,6 +81,9 @@ void CGimmickPoliceStation::Uninit(void)
 		m_pObj->Uninit();
 		m_pObj = nullptr;
 	}
+
+	m_pRoad = nullptr;
+	m_List.Delete(this);
 
 	CGimmick::Uninit();
 }
@@ -117,7 +128,8 @@ void CGimmickPoliceStation::Update(void)
 	// 範囲内のみ警察生成
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
+	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
+	pP->SetRoadTarget(m_pRoad);
 }
 
 //==========================================================
@@ -180,4 +192,30 @@ void CGimmickPoliceStation::SetObjScale(const D3DXVECTOR3& scale)
 	if (m_pObj == nullptr) { return; }
 
 	m_pObj->SetScale(scale);
+}
+
+//==========================================================
+// 最も近い場所受け取る
+//==========================================================
+CGimmickPoliceStation* CGimmickPoliceStation::GetNear(const D3DXVECTOR3& pos)
+{
+	float length = 1000000.0f;
+	CGimmickPoliceStation* pStation = nullptr;
+	// 道数分繰り返す
+	for (int i = 0; i < m_List.GetNum(); i++)
+	{
+		// 確認
+		CGimmickPoliceStation* pCheck = m_List.Get(i);
+		D3DXVECTOR3 vec = pCheck->GetPos() - pos;
+		float temp = D3DXVec3Length(&vec);
+
+		// 距離が近い
+		if (temp <= length)
+		{
+			length = temp;
+			pStation = pCheck;
+		}
+	}
+
+	return pStation;
 }

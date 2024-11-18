@@ -37,6 +37,7 @@ public:	// 誰でもアクセス可能
 	Clist<CRoad::SInfo*>* GetInfoList() { return &m_InfoList; }
 	Clist<CRoad*>* GetList() { if (m_pList == nullptr) { m_pList = m_pList->Create(); }return m_pList; }	// リスト取得
 	void ListRelease() { if (m_pList != nullptr) { delete m_pList; m_pList = nullptr; } }			// リスト解放
+	CRoad* GetNearRoad(const D3DXVECTOR3& pos);
 
 	// 道連結関数
 	void AllConnect(void);
