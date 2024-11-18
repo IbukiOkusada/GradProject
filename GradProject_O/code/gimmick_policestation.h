@@ -52,6 +52,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	CObjectX* m_pObj;			// 描画オブジェクト
 	SInfo m_Info;
+	CRoad* m_pRoad;				// 最も近い道
 };
 
 #endif

@@ -16,6 +16,7 @@
 #include "player_manager.h"
 #include "add_police.h"
 #include "debugproc.h"
+#include "road_manager.h"
 
 // 定数定義
 namespace
@@ -36,6 +37,7 @@ CGimmickPoliceStation::CGimmickPoliceStation()
 	// 値のクリア
 	m_pObj = nullptr;
 	m_Info = SInfo();
+	m_pRoad = nullptr;
 }
 
 //==========================================================
@@ -59,6 +61,9 @@ HRESULT CGimmickPoliceStation::Init(void)
 	m_Info.fInterVal = INTERVAL;
 	SetType(TYPE::TYPE_POLICESTATION);
 
+	// 最も近い道を取得
+	m_pRoad = CRoadManager::GetInstance()->GetNearRoad(GetPos());
+
 	return S_OK;
 }
 
@@ -73,6 +78,8 @@ void CGimmickPoliceStation::Uninit(void)
 		m_pObj->Uninit();
 		m_pObj = nullptr;
 	}
+
+	m_pRoad = nullptr;
 
 	CGimmick::Uninit();
 }
@@ -117,7 +124,8 @@ void CGimmickPoliceStation::Update(void)
 	// 範囲内のみ警察生成
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
+	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
+	pP->SetRoadTarget(m_pRoad);
 }
 
 //==========================================================

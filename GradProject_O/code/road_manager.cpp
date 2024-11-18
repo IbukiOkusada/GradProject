@@ -282,3 +282,29 @@ void CRoadManager::SearchRoadConnect(void)
 		}
 	}
 }
+
+//==========================================================
+// Å‚à‹ß‚¢“¹æ“¾
+//==========================================================
+CRoad* CRoadManager::GetNearRoad(const D3DXVECTOR3& pos)
+{
+	float length = 1000000.0f;
+	CRoad* pRoad = nullptr;
+	// “¹”•ªŒJ‚è•Ô‚·
+	for (int i = 0; i < GetList()->GetNum(); i++)
+	{
+		// Šm”F
+		CRoad* pCheck = GetList()->Get(i);
+		D3DXVECTOR3 vec = pCheck->GetPosition() - pos;
+		float temp = D3DXVec3Length(&vec);
+		
+		// ‹——£‚ª‹ß‚¢
+		if (temp <= length)
+		{
+			length = temp;
+			pRoad = pCheck;
+		}
+	}
+
+	return pRoad;
+}
