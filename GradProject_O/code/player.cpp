@@ -46,6 +46,7 @@
 #include "baggage.h"
 #include "goal.h"
 #include "a_star.h"
+#include "container.h"
 //===============================================
 // ƒ}ƒNƒ’è‹`
 //===============================================
@@ -175,7 +176,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
 	m_pNavi = CNavi::Create();
-	
+	CContainer::Create();
 
 	return S_OK;
 }
