@@ -118,8 +118,6 @@ void CAddPolice::StateFadeOut(void)
 		return; 
 	}
 
-	CDebugProc::GetInstance()->Print("‚à‚¤‚·‚®Á‚¦‚é‚æ`I\n");
-
 	// íœ
 	Uninit();
 }

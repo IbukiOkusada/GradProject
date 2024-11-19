@@ -46,6 +46,8 @@
 #include "baggage.h"
 #include "goal.h"
 #include "a_star.h"
+#include "container.h"
+#include "pred_route.h"
 //===============================================
 // ƒ}ƒNƒ’è‹`
 //===============================================
@@ -128,6 +130,7 @@ CPlayer::CPlayer()
 	m_pDamageEffect = nullptr;
 	m_pSound = nullptr;
 	m_pBaggage = nullptr;	
+	m_pPredRoute = nullptr;
 	m_fbrakePitch = 0.0f;
 	m_fbrakeVolume = 0.0f;
 	m_nNumDeliveryStatus = 0;
@@ -175,7 +178,8 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
 	m_pNavi = CNavi::Create();
-	
+	CContainer::Create();
+	m_pPredRoute = CPredRoute::Create(this);
 
 	return S_OK;
 }

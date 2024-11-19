@@ -151,6 +151,12 @@
     <Filter Include="obstacle">
       <UniqueIdentifier>{2b8cf6e0-fd54-4616-a0e0-93ac90f57578}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\container">
+      <UniqueIdentifier>{024e5753-7f4c-4b9d-9855-42a2a16528d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="player\AI">
+      <UniqueIdentifier>{dfb07d7e-0153-4dac-b01c-cf424981fa7b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -431,6 +437,12 @@
     </ClCompile>
     <ClCompile Include="code\inspection.cpp">
       <Filter>obstacle</Filter>
+    </ClCompile>
+    <ClCompile Include="code\container.cpp">
+      <Filter>UI\container</Filter>
+    </ClCompile>
+    <ClCompile Include="code\pred_route.cpp">
+      <Filter>player\AI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -718,6 +730,12 @@
     </ClInclude>
     <ClInclude Include="code\inspection.h">
       <Filter>obstacle</Filter>
+    </ClInclude>
+    <ClInclude Include="code\container.h">
+      <Filter>UI\container</Filter>
+    </ClInclude>
+    <ClInclude Include="code\pred_route.h">
+      <Filter>player\AI</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

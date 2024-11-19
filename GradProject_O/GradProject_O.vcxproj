@@ -171,6 +171,7 @@
     <ClCompile Include="code\car_manager.cpp" />
     <ClCompile Include="code\character.cpp" />
     <ClCompile Include="code\collision.cpp" />
+    <ClCompile Include="code\container.cpp" />
     <ClCompile Include="code\convenience.cpp" />
     <ClCompile Include="code\debugproc.cpp" />
     <ClCompile Include="code\deliverystatus.cpp" />
@@ -232,6 +233,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="code\pred_route.cpp" />
     <ClCompile Include="code\radio.cpp" />
     <ClCompile Include="code\ranking.cpp" />
     <ClCompile Include="code\renderer.cpp" />
@@ -268,6 +270,7 @@
     <ClInclude Include="code\car.h" />
     <ClInclude Include="code\car_manager.h" />
     <ClInclude Include="code\character.h" />
+    <ClInclude Include="code\container.h" />
     <ClInclude Include="code\deliverystatus.h" />
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\edit_gimmick.h" />
@@ -352,6 +355,7 @@
     <ClInclude Include="code\map_manager.h" />
     <ClInclude Include="code\edit_handle.h" />
     <ClInclude Include="code\timer.h" />
+    <ClInclude Include="code\pred_route.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
