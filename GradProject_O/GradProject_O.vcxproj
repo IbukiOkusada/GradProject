@@ -186,6 +186,7 @@
     <ClCompile Include="code\effect2D.cpp" />
     <ClCompile Include="code\effect3D.cpp" />
     <ClCompile Include="code\effekseerControl.cpp" />
+    <ClCompile Include="code\extension.cpp" />
     <ClCompile Include="code\fade.cpp" />
     <ClCompile Include="code\font.cpp" />
     <ClCompile Include="code\fontChar.cpp" />
@@ -283,6 +284,7 @@
     <ClInclude Include="code\edit_manager.h" />
     <ClInclude Include="code\edit_object.h" />
     <ClInclude Include="code\edit_road.h" />
+    <ClInclude Include="code\extension.h" />
     <ClInclude Include="code\font.h" />
     <ClInclude Include="code\fontChar.h" />
     <ClInclude Include="code\gimmick.h" />

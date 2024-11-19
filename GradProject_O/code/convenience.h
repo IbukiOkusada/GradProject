@@ -10,12 +10,15 @@ using namespace std;
 float GetDistance(D3DXVECTOR3 vec1, D3DXVECTOR3 vec2);
 D3DXVECTOR3 VectorToAngles(const D3DXVECTOR3& vector);
 D3DXVECTOR3 AnglesToVector(const D3DXVECTOR3& angles);
+void PathToBaseName(std::string* pPath);
+
 void Adjust(D3DXVECTOR3& rot);
 void Adjust(float& rot);
 
 #define my_max(a,b)            (((a) > (b)) ? (a) : (b))// ‘å‚«‚¢”’l‚ğ•Ô‚·
-
 #define my_min(a,b)            (((a) < (b)) ? (a) : (b))// ¬‚³‚¢”’l‚ğ•Ô‚·
+
+#define NUM_ARRAY(a)	(sizeof((a)) / sizeof((a)[0]))	// ”z—ñ‚Ì—v‘f”ŒvZ
 
 #define SAFE_DELETE(p)		if ((p) != nullptr) { delete (p);		(p) = nullptr; }	// ”jŠü
 #define SAFE_DELETEARRAY(p)		if ((p) != nullptr) { delete[] (p);		(p) = nullptr; }	// ”jŠü

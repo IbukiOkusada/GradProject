@@ -254,7 +254,7 @@ HRESULT CFontChar::CreateTexture(SChar* pChar, BYTE* pBitMap)
 	sizeTexture.y = (int)pChar->text.tmHeight + 2;			// テクスチャ縦幅
 
 	// 空のテクスチャを生成・テクスチャインデックスを保存
-	CTexture* pTexture = GET_MANAGER->GetTexture();	// テクスチャ情報
+	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャ情報
 	pChar->nTexIdx = pTexture->Regist(CTexture::SInfo
 	( // 引数
 		sizeTexture.x,		// テクスチャ横幅
@@ -280,7 +280,7 @@ HRESULT CFontChar::CreateTexture(SChar* pChar, BYTE* pBitMap)
 	pChar->bEmpty = false;
 
 	// 生成したテクスチャのポインタを取得
-	LPDIRECT3DTEXTURE9 pTexChar = pTexture->GetPtr(pChar->nTexIdx);
+	LPDIRECT3DTEXTURE9 pTexChar = pTexture->SetAddress(pChar->nTexIdx);
 
 	// テクスチャをロックし、ピクセル情報を取得
 	D3DLOCKED_RECT lockRect;
