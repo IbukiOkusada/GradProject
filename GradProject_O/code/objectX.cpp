@@ -172,7 +172,7 @@ void CObjectX::DrawOnry()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
-	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
 	D3DMATERIAL9 matDef;					//現在のマテリアル保存用
 	D3DXMATERIAL* pMat;						//マテリアルデータへのポインタ
 
@@ -239,7 +239,7 @@ void CObjectX::DrawShadow()
 
 	// モデル使用されていない
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
-	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
 	if (pFileData == nullptr) { return; }
 
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
@@ -501,7 +501,7 @@ void CObjectX::ListOut(void)
 D3DXVECTOR3& CObjectX::GetVtxMax(void)
 {
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
-	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
 	D3DXVECTOR3 max = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (pFileData == nullptr) { return max; }
@@ -519,7 +519,7 @@ D3DXVECTOR3& CObjectX::GetVtxMax(void)
 D3DXVECTOR3& CObjectX::GetVtxMin(void)
 {
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
-	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
 
 	D3DXVECTOR3 min = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 

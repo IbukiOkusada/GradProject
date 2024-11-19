@@ -142,7 +142,7 @@ void CModel::Draw(void)
 	pDevice->GetMaterial(&matDef);
 
 	// ƒ‚ƒfƒ‹î•ñ‚ğæ“¾
-	CXFile::FileData *pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData *pFileData = pModelFile->SetAddress(m_nIdxModel);
 
 	if (pFileData != NULL)
 	{// g—p‚³‚ê‚Ä‚¢‚éê‡
