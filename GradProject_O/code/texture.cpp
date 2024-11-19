@@ -9,9 +9,6 @@
 #include "renderer.h"
 #include <string.h>
 
-// 静的メンバ変数宣言
-int CTexture::m_nNumAll = 0;	// 読み込み総数
-
 // ファイル名
 const char *CTexture::m_apDefFileName[TYPE_MAX] =
 {
@@ -24,11 +21,7 @@ const char *CTexture::m_apDefFileName[TYPE_MAX] =
 //===============================================
 CTexture::CTexture()
 {
-	for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
-	{
-		m_aFile[nCntTex].pTexture = NULL;	// 使用していない状態にする
-		memset(&m_aFile[nCntTex].aName[0], '\0', sizeof(File::aName));	// 名前のクリア
-	}
+	m_List.Clear();
 }
 
 //===============================================
@@ -50,21 +43,21 @@ HRESULT CTexture::Load(void)
 	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 
 	// 総数分読み込み
-	for (int nCntTex = 0; nCntTex < TYPE_MAX; nCntTex++)
+	for (int i = 0; i < TYPE_MAX; i++)
 	{
-		if (m_aFile[nCntTex].pTexture == NULL)
-		{// 使用されていない場合
-			if (m_aFile[nCntTex].aName[0] == '\0')
-			{// ファイル名が存在していない場合
-				D3DXCreateTextureFromFile(pDevice,
-					m_apDefFileName[nCntTex],
-					&m_aFile[nCntTex].pTexture);
+		File* pFile = DEBUG_NEW File;
 
-				strcpy(&m_aFile[nCntTex].aName[0], m_apDefFileName[nCntTex]);
-
-				m_nNumAll++;
-			}
+		if (FAILED(D3DXCreateTextureFromFile(pDevice,
+			m_apDefFileName[i],
+			&pFile->pTexture)))
+		{
+			delete pFile;
+			return -1;
 		}
+
+		m_List.Regist(pFile);
+		pFile->filename = m_apDefFileName[i];
+
 	}
 
 	return S_OK;
@@ -75,15 +68,20 @@ HRESULT CTexture::Load(void)
 //===============================================
 void CTexture::Unload(void)
 {
-	for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
+	for (int i = 0; i < m_List.GetNum(); i++)
 	{
+		File* pFile = m_List.Get(i);
+
 		// テクスチャの廃棄
-		if (m_aFile[nCntTex].pTexture != NULL)
+		if (pFile->pTexture != nullptr)
 		{// 使用されている場合
-			m_aFile[nCntTex].pTexture->Release();
-			m_aFile[nCntTex].pTexture = NULL;
-			m_nNumAll--;
+			pFile->pTexture->Release();
+			pFile->pTexture = nullptr;
 		}
+
+		m_List.Delete(pFile);
+		delete pFile;
+		i--;
 	}
 }
 
@@ -92,37 +90,34 @@ void CTexture::Unload(void)
 //===============================================
 int CTexture::Regist(const char* pFileName)
 {
-	CRenderer *pRenderer = CManager::GetInstance()->GetRenderer();
+	CRenderer* pRenderer = CManager::GetInstance()->GetRenderer();
 	LPDIRECT3DDEVICE9 pDevice = pRenderer->GetDevice();		//デバイスへのポインタを取得
 	int nIdx = -1;	// テクスチャ番号
 
-	for (int nCntTex = 0; nCntTex < MAX_TEXTURE; nCntTex++)
+	for (int i = 0; i < m_List.GetNum(); i++)
 	{
-		if (m_aFile[nCntTex].pTexture == NULL)
-		{// 使用されていない場合
-			// ファイル名を取得
-			strcpy(&m_aFile[nCntTex].aName[0], pFileName);
-
-			// テクスチャの読み込み
-			if (SUCCEEDED(D3DXCreateTextureFromFile(pDevice,
-				&m_aFile[nCntTex].aName[0],
-				&m_aFile[nCntTex].pTexture)))
-			{
-				m_nNumAll++;	// 総数をカウントアップ
-				nIdx = nCntTex;	// テクスチャ番号を設定
-			}
-
-			break;
-		}
-		else
-		{// 使用されている場合
-			if (strstr(&m_aFile[nCntTex].aName[0], pFileName) != NULL)
-			{// ファイル名が一致している場合
-				nIdx = nCntTex;	// テクスチャ番号を設定
-				break;
-			}
+		if (strstr(&m_List.Get(i)->filename[0], pFileName) != nullptr)
+		{// ファイル名が一致している場合
+			nIdx = i;	// テクスチャ番号を設定
+			return nIdx;
 		}
 	}
+
+	nIdx = m_List.GetNum();
+	File* pFile = DEBUG_NEW File;
+	pFile->pTexture = nullptr;
+
+	if(FAILED(D3DXCreateTextureFromFile(pDevice,
+		pFileName,
+		&pFile->pTexture)))
+	{
+		delete pFile;
+		return -1;
+	}
+
+	m_List.Regist(pFile);
+
+	pFile->filename = pFileName;
 
 	return nIdx;	// テクスチャ番号を返す
 }
@@ -132,12 +127,12 @@ int CTexture::Regist(const char* pFileName)
 //===============================================
 LPDIRECT3DTEXTURE9 CTexture::SetAddress(int nIdx)
 {
-	if (nIdx > m_nNumAll || nIdx < 0)
+	if (nIdx > m_List.GetNum() || nIdx < 0)
 	{// 読み込み範囲外の場合
-		return NULL;
+		return nullptr;
 	}
 
-	return m_aFile[nIdx].pTexture;
+	return m_List.Get(nIdx)->pTexture;
 }
 
 //===============================================
@@ -150,5 +145,5 @@ const char *CTexture::GetFileName(int nIdx)
 		return m_apDefFileName[nIdx];
 	}
 
-	return NULL;
+	return nullptr;
 }
