@@ -324,3 +324,102 @@ void CRoad::SetSize(const D3DXVECTOR2& size)
 
 	m_pObj->SetpVtx(m_Info.size.x, m_Info.size.y);
 }
+
+//==========================================================
+// 指定方向の交差点までを割り出し
+//==========================================================
+bool CRoad::GetJunctionRoad(float fRot, CRoad** pGoalOut, CRoad** pGoalPrevOut)
+{
+	// 最初に向かう方向を産出
+	DIRECTION dic = GetDic(fRot);
+
+	// 方向ナシ
+	if (dic == DIRECTION::DIC_MAX) { return false; }
+
+	// 連結していない
+	if (!m_aSearchRoad[dic].bActive) { return false; }
+
+	// 連結個所から交差点を導き出す
+	{
+		CRoad* pThis = this;
+		pGoalPrevOut = &pThis;
+	}
+	CRoad* pRoad = m_aSearchRoad[dic].pRoad;
+	CRoad* pOld = this;
+
+	// 行き止まりまで確認
+	while (pRoad->GetType() != TYPE::TYPE_STOP)
+	{
+		// 交差点なら終了!
+		if (pRoad->GetType() == TYPE::TYPE_T_JUNCTION || pRoad->GetType() == TYPE::TYPE_CROSSING)
+		{
+			pGoalOut = &pRoad;
+			return true;
+		}
+
+		// 交差点ではないので確認します
+		CRoad* pCheck = nullptr;
+
+		for (int i = 0; i < DIRECTION::DIC_MAX; i++)
+		{
+			pCheck = pRoad->m_aSearchRoad[i].pRoad;
+
+			// 同じ道なら確認しない
+			if (pCheck == pOld) { continue; }
+			if (pCheck == nullptr) { continue; }
+
+			break;
+		}
+
+		// 道がない
+		if (pCheck == nullptr)
+		{
+			break;
+		}
+
+		// 行き止まり
+		if (pCheck->GetType() == TYPE::TYPE_STOP)
+		{
+			break;
+		}
+
+		// カーブの場合さらに検索する
+		pOld = pRoad;
+		pGoalPrevOut = &pRoad;	// 前回を覚える
+		pRoad = pCheck;			// 次へ
+	}
+
+	// 存在していないので中身ナシ
+	pGoalOut = nullptr;
+	pGoalPrevOut = nullptr;
+
+	return false;
+}
+
+//==========================================================
+// 向きから方向を産出
+//==========================================================
+CRoad::DIRECTION CRoad::GetDic(float fRot)
+{
+	float range = D3DX_PI * 0.25f;
+
+	// 差分から曲がった方向を求める
+	if (fRot <= range && fRot >= -range)
+	{// 下
+		return DIRECTION::DIC_DOWN;
+	}
+	else if (fRot <= -range && fRot >= -range * 3)
+	{// 左
+		return DIRECTION::DIC_LEFT;
+	}
+	else if (fRot <= range * 3 && fRot >= range)
+	{// 右
+		return DIRECTION::DIC_RIGHT;
+	}
+	else if (fRot >= range * 3 && fRot <= -range * 3)
+	{// 上
+		return DIRECTION::DIC_UP;
+	}
+
+	return DIRECTION::DIC_MAX;
+}

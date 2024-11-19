@@ -54,7 +54,7 @@ HRESULT CMeter::Init(void)
 	for (int i = 0; i < METER_NUM; i++)
 	{
 		D3DXMATRIX mtxRot;
-		D3DXVECTOR3 offset = OFFSET_METER;
+		offset = OFFSET_METER;
 		float Rot = 0.157f * i - (D3DX_PI*0.975f);
 		D3DXMatrixIdentity(&mtxRot);
 		D3DXMatrixRotationZ(&mtxRot, Rot);
@@ -97,7 +97,7 @@ void CMeter::Uninit(void)
 //==========================================================
 void CMeter::Update(void)
 {
-	m_pCircle->SetRotation(D3DXVECTOR3(0.0f,0.0f,m_pCircle->GetRotation().z-0.005f));
+	m_pCircle->SetRotation(D3DXVECTOR3(0.0f,0.0f,m_pCircle->GetRotation().z - 0.005f));
 	m_pCircle->SetVtx();
 	m_pInnerCircle->SetRotation(D3DXVECTOR3(0.0f, 0.0f, m_pInnerCircle->GetRotation().z + 0.005f));
 	m_pInnerCircle->SetVtx();

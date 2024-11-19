@@ -218,7 +218,6 @@ void CPlayer::Update(void)
 	pRadio->Update();
 	if (m_type == TYPE_ACTIVE)
 	{
-		
 		// ƒvƒŒƒCƒ„[‘€ì
 		Controller();
 

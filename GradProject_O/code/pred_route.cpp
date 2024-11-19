@@ -27,6 +27,8 @@ CPredRoute::CPredRoute()
 	m_PassRoad.clear();
 	m_pPlayer = nullptr;
 	m_pOldRoad = nullptr;
+	m_pPredPrevRoad = nullptr;
+	m_pPredRoad = nullptr;
 	m_fStopCount = 0.0f;
 
 	memset(&m_aTurnCount[0], 0, sizeof(m_aTurnCount));
@@ -78,6 +80,9 @@ void CPredRoute::Update(void)
 
 			// 確認
 			TurnCheck();
+
+			// 予測地点を立てる
+			Pred();
 		}
 		else
 		{
@@ -91,7 +96,7 @@ void CPredRoute::Update(void)
 		m_fStopCount += CDeltaTime::GetInstance()->GetDeltaTime();
 
 		// 停止し続けている
-		if (m_fStopCount >= STOP_TIME) {
+		if (m_fStopCount >= STOP_TIME && m_pPlayer->GetEngine() <= 0.3f) {
 			m_vecOld = VEC::VEC_STOP;
 			m_aTurnCount[VEC::VEC_STOP]++;
 			m_fStopCount = 0.0f;
@@ -140,7 +145,7 @@ void CPredRoute::TurnCheck()
 	if (pNow == pOld) {
 
 		// 停止し続けている
-		if (m_fStopCount >= STOP_TIME) { 
+		if (m_fStopCount >= STOP_TIME && m_pPlayer->GetEngine() <= 0.3f) { 
 			m_vecOld = VEC::VEC_STOP;
 			m_aTurnCount[VEC::VEC_STOP]++;
 			m_fStopCount = 0.0f;
@@ -176,6 +181,7 @@ void CPredRoute::TurnCheck()
 	{// 直線
 		if (m_vecOld == VEC::VEC_STRAIGHT) { return; }
 		m_vecOld = VEC::VEC_STRAIGHT;
+		m_fStopCount = 0.0f;
 		m_aTurnCount[VEC::VEC_STRAIGHT]++;
 	}
 	else if (diff <= -RANGE && diff >= -RANGE * 3)
@@ -195,7 +201,7 @@ void CPredRoute::TurnCheck()
 	}
 	else
 	{
-		m_vecOld = VEC::VEC_STRAIGHT;
+		m_vecOld = VEC::VEC_STOP;
 		m_aTurnCount[VEC::VEC_STOP]++;
 	}
 }
@@ -245,7 +251,23 @@ void CPredRoute::Interp()
 //==========================================================
 void CPredRoute::Pred()
 {
+	// 確認数に満たない
+	if (m_PassRoad.size() < MIN_PRED_NUM) { return; }
 
+	// 次に向かう方向を取得する
+	for (int i = 0; i < VEC::VEC_MAX; i++)
+	{
+		float rot = GetNextRot(GetSelectRankVec(i));
+
+		// 現在の位置を取得する
+		CRoad* pRoad = m_pOldRoad;
+
+		bool flag = pRoad->GetJunctionRoad(rot, &m_pPredRoad, &m_pPredPrevRoad);
+
+		if (flag) { 
+			break;
+		}
+	}
 }
 
 //==========================================================
@@ -271,21 +293,37 @@ float CPredRoute::GetNextRot(const VEC& vec)
 }
 
 //==========================================================
-// 一番多い回転方向を取得
+// 指定された順位の回転方向を取得
 //==========================================================
-CPredRoute::VEC CPredRoute::GetMaxVec()
+CPredRoute::VEC CPredRoute::GetSelectRankVec(const int nRank)
 {
-	VEC vec = VEC::VEC_STRAIGHT;
+	std::vector<VEC> ranklist;
+	bool flag[VEC::VEC_MAX] = {false};
 
-	for (int i = 1; i < VEC::VEC_MAX; i++)
+	// 全順位分確認
+	for (int j = 0; j < VEC::VEC_MAX; j++)
 	{
-		if (m_aTurnCount[i] > m_aTurnCount[vec])
+		VEC vec = VEC::VEC_STRAIGHT;
+
+		for (int i = 0; i < VEC::VEC_MAX; i++)
 		{
-			vec = static_cast<VEC>(i);
+			auto result = find(ranklist.begin(), ranklist.end(), vec);
+
+			if (m_aTurnCount[i] > m_aTurnCount[vec])
+			{
+				vec = static_cast<VEC>(i);
+			}
+			else if (result != ranklist.end())
+			{
+				vec = static_cast<VEC>(i);
+			}
 		}
+
+		ranklist.push_back(vec);
+		flag[vec] = true;
 	}
 
-	return vec;
+	return ranklist[nRank];
 }
 
 //==========================================================

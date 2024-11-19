@@ -46,7 +46,8 @@ public:	// 誰でもアクセス可能
 	// メンバ関数(取得)
 	float GetNextRot(const VEC& vec);
 	CRoad* GetPredRoad() { return m_pPredRoad; }
-	VEC GetMaxVec();
+	CRoad* GetPredPrevRoad() { return m_pPredPrevRoad; }
+	VEC GetSelectRankVec(const int nRank = 0);
 
 	// メンバ関数(設定)
 
@@ -65,7 +66,8 @@ private:	// 自分だけがアクセス可能
 	int m_aTurnCount[VEC_MAX];		// ターン数カウント
 	float m_fStopCount;				// 停止カウント
 	VEC m_vecOld;					// 前回の回転方向
-	CRoad* m_pPredRoad;
+	CRoad* m_pPredRoad;				// 予測地点
+	CRoad* m_pPredPrevRoad;			// 予測地点のひとつ前
 };
 
 #endif

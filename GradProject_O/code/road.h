@@ -79,6 +79,7 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 	static CRoad* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR2& size);
 	void BindTexture();
+	bool GetJunctionRoad(float fRot, CRoad** pGoalOut, CRoad** pGoalPrevOut);
 
 	// メンバ関数(取得)
 	CObject3D* GetObj(void) { return m_pObj; }	// 描画オブジェ
@@ -95,6 +96,7 @@ public:	// 誰でもアクセス可能
 	SSearch* GetSearchSelf()
 	{ return &m_Searchself; }
 	D3DXVECTOR3* GetVtxPos() { return &m_aVtxPos[0]; }
+
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);
 	void SearchConnect(CRoad* pRoad, const DIRECTION dic);
@@ -105,6 +107,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	void Rotation(TYPE type);
+	DIRECTION GetDic(float fRot);
 
 	// メンバ変数
 	SInfo m_Info;	// 基本情報
