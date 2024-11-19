@@ -121,7 +121,60 @@ int CTexture::Regist(const char* pFileName)
 
 	return nIdx;	// テクスチャ番号を返す
 }
+//============================================================
+//	テクスチャ登録処理 (生成)
+//============================================================
+int CTexture::Regist(const SInfo info)
+{
+	int nIdx = m_List.GetNum();	// テクスチャ読込番号
+	HRESULT hr;				// 異常終了の確認用
+	CTexture::File *tempMapInfo = DEBUG_NEW CTexture::File;	// マップ情報
 
+	// マップ情報のポインタを初期化
+	tempMapInfo->pTexture = nullptr;	// テクスチャへのポインタ
+
+	// 空のテクスチャを生成
+	hr = D3DXCreateTexture
+	( // 引数
+		CManager::GetInstance()->GetRenderer()->GetDevice(),		// Direct3Dデバイス
+		info.Width,		// テクスチャ横幅
+		info.Height,	// テクスチャ縦幅
+		info.MipLevels,	// ミップマップレベル
+		info.Usage,		// 性質・確保オプション
+		info.Format,	// ピクセルフォーマット
+		info.Pool,		// 格納メモリ
+		&tempMapInfo->pTexture	// テクスチャへのポインタ
+	);
+	if (FAILED(hr))
+	{ // テクスチャの生成に失敗した場合
+
+		assert(false);
+		return -1;
+	}
+
+	// テクスチャステータスを設定
+	D3DXIMAGE_INFO* pStatus = &tempMapInfo->status;	// ステータス情報
+	pStatus->Width = info.Width;						// テクスチャ横幅
+	pStatus->Height = info.Height;						// テクスチャ縦幅
+	pStatus->Depth = 1;								// テクスチャ深度
+	pStatus->MipLevels = info.MipLevels;					// ミップマップレベル
+	pStatus->Format = info.Format;						// ピクセルフォーマット
+	pStatus->ResourceType = D3DRTYPE_TEXTURE;				// リソース種類
+	pStatus->ImageFileFormat = (D3DXIMAGE_FILEFORMAT)-1;	// ファイル形式 (作成のため無し)
+
+	// ファイルパス名を保存
+	tempMapInfo->filename = -1;	// 読込ではないのでパス無し
+
+	// アスペクト比を計算
+	tempMapInfo->aspect.x = (float)info.Width / (float)info.Height;
+	tempMapInfo->aspect.y = (float)info.Height / (float)info.Width;
+
+	// テクスチャ情報を保存
+	m_List.Regist(tempMapInfo);
+
+	// 読み込んだテクスチャの配列番号を返す
+	return nIdx;
+}
 //===============================================
 // 指定アドレスのテクスチャを取得
 //===============================================

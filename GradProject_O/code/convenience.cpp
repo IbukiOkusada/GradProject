@@ -90,3 +90,14 @@ D3DXVECTOR3 AnglesToVector(const D3DXVECTOR3& angles)
 
 	return vector;
 }
+
+//============================================================
+//	パスのベースネーム変換
+//============================================================
+void PathToBaseName(std::string* pPath)
+{
+	std::filesystem::path fsPath(*pPath);	// パス
+
+	// パスからベースネームを取得
+	*pPath = fsPath.stem().string();
+}
