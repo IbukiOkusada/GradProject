@@ -18,6 +18,19 @@ class CRoad;
 //==========================================================
 class CPredRoute : public CTask
 {
+public:
+
+	// 方向
+	enum VEC
+	{
+		VEC_STRAIGHT = 0,	// 直進
+		VEC_TURNLEFT,		// 左曲がり
+		VEC_TURNRIGHT,		// 右曲がり
+		VEC_TURNING,		// 転回
+		VEC_OVER,			// 道を出た
+		VEC_STOP,			// 停止している
+		VEC_MAX
+	};
 
 public:	// 誰でもアクセス可能
 
@@ -28,19 +41,31 @@ public:	// 誰でもアクセス可能
 	HRESULT Init(void) override;
 	void Uninit(void) override;
 	void Update(void) override;
-	static CPredRoute* Create(void);
+	static CPredRoute* Create(CPlayer* pPlayer);
 
 	// メンバ関数(取得)
+	float GetNextRot(const VEC& vec);
+	CRoad* GetPredRoad() { return m_pPredRoad; }
+	VEC GetMaxVec();
 
 	// メンバ関数(設定)
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void Interp();
+	void Pred();
+	void TurnCheck();
+	float GetRot(const VEC& vec);
 
 	// メンバ変数
+	CRoad* m_pOldRoad;				// 前回の道
 	std::vector<CRoad*> m_PassRoad;	// 通過した道
 	CPlayer* m_pPlayer;				// 確認するプレイヤー
+	int m_aTurnCount[VEC_MAX];		// ターン数カウント
+	float m_fStopCount;				// 停止カウント
+	VEC m_vecOld;					// 前回の回転方向
+	CRoad* m_pPredRoad;
 };
 
 #endif

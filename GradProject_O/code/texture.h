@@ -8,10 +8,7 @@
 #define _TEXTURE_H_		// 二重インクルード防止用マクロを定義
 
 #include "main.h"
-
-// マクロ定義
-#define MAX_TEXTURE		(256)	// テクスチャの最大数
-#define MAX_FILENAME	(256)	// ファイル名最大文字数
+#include "list.h"
 
 //**********************************************************
 // テクスチャクラスの定義
@@ -31,11 +28,14 @@ public:	// 誰でもアクセス可能な定義
 private:	// 自分だけがアクセス可能な定義
 	
 	// ファイル情報
-	typedef struct
+	struct File
 	{
 		LPDIRECT3DTEXTURE9 pTexture;	// テクスチャのポインタ
-		char aName[MAX_FILENAME];		// ファイル名
-	}File;
+		std::string filename;				// ファイル名
+
+		// コンストラクタ 
+		File() : pTexture(nullptr), filename("") {}
+	};
 
 public:	// 誰でもアクセス可能
 
@@ -49,14 +49,13 @@ public:	// 誰でもアクセス可能
 	LPDIRECT3DTEXTURE9 SetAddress(int nIdx);
 
 	// メンバ関数(取得)
-	int GetNumAll(void) { return m_nNumAll; }
+	int GetNumAll(void) { return m_List.GetNum(); }
 	const static char *GetFileName(int nIdx);
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	File m_aFile[MAX_TEXTURE];	// テクスチャへのポインタ
-	static int m_nNumAll;		// 読み込み総数
+	Clist<File*> m_List;
 	const static char *m_apDefFileName[TYPE_MAX];	// 初期読み込みファイル名
 };
 

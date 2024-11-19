@@ -50,7 +50,7 @@ HRESULT CObject3D::Init(void)
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// テクスチャの割り当て
-	m_nIdxTexture = pTexture->Regist(TEXTUREFILE_DATA);
+	m_nIdxTexture = -1;
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(
