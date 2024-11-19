@@ -157,6 +157,9 @@
     <Filter Include="player\AI">
       <UniqueIdentifier>{dfb07d7e-0153-4dac-b01c-cf424981fa7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="font">
+      <UniqueIdentifier>{9f275a95-f65e-4dc6-8b73-a466441159d4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -443,6 +446,12 @@
     </ClCompile>
     <ClCompile Include="code\pred_route.cpp">
       <Filter>player\AI</Filter>
+    </ClCompile>
+    <ClCompile Include="code\font.cpp">
+      <Filter>font</Filter>
+    </ClCompile>
+    <ClCompile Include="code\fontChar.cpp">
+      <Filter>font</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -736,6 +745,12 @@
     </ClInclude>
     <ClInclude Include="code\pred_route.h">
       <Filter>player\AI</Filter>
+    </ClInclude>
+    <ClInclude Include="code\font.h">
+      <Filter>font</Filter>
+    </ClInclude>
+    <ClInclude Include="code\fontChar.h">
+      <Filter>font</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
