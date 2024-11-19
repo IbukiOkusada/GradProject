@@ -65,7 +65,7 @@ HRESULT CEdit_Arrow::Init(void)
 	m_pos = VECTOR3_ZERO;
 
 	// ÉÇÉfÉãê∂ê¨
-	for (int i = 0; i < TYPE_MAX; i++)
+	for (int i = 0; i < VEC_MAX; i++)
 	{
 		m_aObj[i].pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, FILENAME[i], 2);
 		m_aObj[i].pObj->SetType(CObject::TYPE_EDIT);

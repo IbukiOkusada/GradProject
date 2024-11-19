@@ -339,7 +339,7 @@ bool CollideRayToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DX
 	posPlaneCenter[0] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeMaxV.x, 0.0f, 0.0f));
 	posPlaneCenter[1] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(sizeMinV.x, 0.0f, 0.0f));
 	posPlaneCenter[2] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeMaxV.y, 0.0f));
-	posPlaneCenter[3] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeMinV.y, 0.0f));
+	posPlaneCenter[3] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, sizeMinV.y - 0.001f, 0.0f));
 	posPlaneCenter[4] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeMaxV.z));
 	posPlaneCenter[5] = PosRelativeMtx(posV, rotV, D3DXVECTOR3(0.0f, 0.0f, sizeMinV.z));
 

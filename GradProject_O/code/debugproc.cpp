@@ -146,7 +146,7 @@ void CDebugProc::Update(void)
 	}
 
 	{
-		Print("       カメラ数 : [%d]\n", CCameraManager::GetInstance()->GetNum());
+		Print("       カメラ数 : [%d] : 距離 [%f]\n", CCameraManager::GetInstance()->GetNum(), CManager::GetInstance()->GetCamera()->GetLength());
 	}
 
 	{
@@ -165,7 +165,7 @@ void CDebugProc::Draw(void)
 	if (m_bDisp == true)
 	{//デバックモードがオンの時
 		//テキストの描画
-		m_pFont->DrawText(nullptr, &m_aStr[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(0, 0, 0, 255));
+		m_pFont->DrawText(nullptr, &m_aStr[0], -1, &rect, DT_LEFT, D3DCOLOR_RGBA(255, 255, 255, 255));
 	}
 
 	//デバッグ表示情報のクリア

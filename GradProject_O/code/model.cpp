@@ -23,6 +23,9 @@ CModel::CModel() : CObject(1)
 	m_bChangeCol = false;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_scale = VECTOR3_ONE;
+	m_scaleOrigin = VECTOR3_ONE;
+	m_mtxpos = VECTOR3_ONE;
 	m_OldPos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_ChangeMat.Ambient = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_ChangeMat.Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -96,7 +99,7 @@ void CModel::Draw(void)
 
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスへのポインタを取得
 	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	// 計算用マトリックス
 	CXFile *pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	D3DMATERIAL9 matDef;	// 現在のマテリアル保存用
 	D3DMATERIAL9 changemat;
@@ -104,8 +107,15 @@ void CModel::Draw(void)
 	D3DXMATRIX mtxParent;	// 親のマトリックス情報
 	CSlow *pSlow = CManager::GetInstance()->GetSlow();
 
+	// 正規化を有効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
+
+	// スケールの反映
+	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_CurRot.y, m_CurRot.x, m_CurRot.z);
@@ -132,7 +142,7 @@ void CModel::Draw(void)
 	pDevice->GetMaterial(&matDef);
 
 	// モデル情報を取得
-	CXFile::FileData *pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData *pFileData = pModelFile->SetAddress(m_nIdxModel);
 
 	if (pFileData != NULL)
 	{// 使用されている場合
@@ -167,92 +177,96 @@ void CModel::Draw(void)
 	// 保存していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);
 
-	if(m_bShadow == true)
-	{
-		D3DXMATRIX mtxShadow;
-		D3DLIGHT9 light;
-		D3DXVECTOR4 posLight;
-		D3DXVECTOR3 pos, normal;
-		D3DXPLANE plane;
+	// 正規化を無効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
 
-		// ライトの位置を設定
-		pDevice->GetLight(0, &light);
-		posLight = D3DXVECTOR4(-light.Direction.x, -light.Direction.y, -light.Direction.z, 0.0f);
+	m_mtxpos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
 
-		// 平面情報を設定
-		if (m_mtxWorld._42 >= -296.0f)
-		{
-			D3DXVECTOR3 DefPos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
-			pos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
-			CObjectX::CollisionLand(pos);
+	//if(m_bShadow == true)
+	//{
+	//	D3DXMATRIX mtxShadow;
+	//	D3DLIGHT9 light;
+	//	D3DXVECTOR4 posLight;
+	//	D3DXVECTOR3 pos, normal;
+	//	D3DXPLANE plane;
 
-			if (pos.y > DefPos.y) {	// 現在の腕の位置よりも高い
-				pos = DefPos;
-			}
+	//	// ライトの位置を設定
+	//	pDevice->GetLight(0, &light);
+	//	posLight = D3DXVECTOR4(-light.Direction.x, -light.Direction.y, -light.Direction.z, 0.0f);
 
-			float fHeight = CMeshField::GetHeight(D3DXVECTOR3(m_mtxWorld._41, -10000.0f, m_mtxWorld._43), pos) + 1.0f;
+	//	// 平面情報を設定
+	//	if (m_mtxWorld._42 >= -296.0f)
+	//	{
+	//		D3DXVECTOR3 DefPos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
+	//		pos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
 
-			if (fHeight >= pos.y && fHeight <= DefPos.y || pos.y == DefPos.y) {	// 現在の座標よりも低い
-				pos.y = fHeight;
-			}
-			normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
-			D3DXPlaneFromPointNormal(&plane, &pos, &normal);
+	//		if (pos.y > DefPos.y) {	// 現在の腕の位置よりも高い
+	//			pos = DefPos;
+	//		}
 
-			// シャドウマトリックスの初期化
-			D3DXMatrixIdentity(&mtxShadow);
+	//		float fHeight = CMeshField::GetHeight(D3DXVECTOR3(m_mtxWorld._41, -10000.0f, m_mtxWorld._43), pos) + 1.0f;
 
-			// シャドウマトリックスの作成
-			D3DXMatrixShadow(&mtxShadow, &posLight, &plane);
-			D3DXMatrixMultiply(&mtxShadow, &m_mtxWorld, &mtxShadow);
+	//		if (fHeight >= pos.y && fHeight <= DefPos.y || pos.y == DefPos.y) {	// 現在の座標よりも低い
+	//			pos.y = fHeight;
+	//		}
+	//		normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	//		D3DXPlaneFromPointNormal(&plane, &pos, &normal);
 
-			//ワールドマトリックスの設定
-			pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
+	//		// シャドウマトリックスの初期化
+	//		D3DXMatrixIdentity(&mtxShadow);
 
-			//現在のマテリアルを取得
-			pDevice->GetMaterial(&matDef);
+	//		// シャドウマトリックスの作成
+	//		D3DXMatrixShadow(&mtxShadow, &posLight, &plane);
+	//		D3DXMatrixMultiply(&mtxShadow, &m_mtxWorld, &mtxShadow);
 
-			// モデル情報を取得
-			pFileData = pModelFile->SetAddress(m_nIdxModel);
+	//		//ワールドマトリックスの設定
+	//		pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
 
-			if (pFileData != NULL)
-			{// 使用されている場合
-				//マテリアルデータへのポインタを取得
-				pMat = (D3DXMATERIAL*)pFileData->pBuffMat->GetBufferPointer();
-				for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
-				{
-					if (m_bChangeCol == false)
-					{
-						changemat = m_ChangeMat;
-						changemat.Ambient = {0.0f, 0.0f, 0.0f, 0.7f};
-						changemat.Diffuse = { 0.0f, 0.0f, 0.0f, 0.7f };
-						changemat.Emissive = { 0.0f, 0.0f, 0.0f, 0.7f };
-						changemat.Specular = { 0.0f, 0.0f, 0.0f, 0.7f };
+	//		//現在のマテリアルを取得
+	//		pDevice->GetMaterial(&matDef);
 
-						//マテリアルの設定
-						pDevice->SetMaterial(&changemat);
-					}
-					else
-					{
-						changemat = m_ChangeMat;
-						changemat.Ambient = { 0.0f, 0.0f, 0.0f, 0.7f };
-						changemat.Diffuse = { 0.0f, 0.0f, 0.0f, 0.7f };
-						changemat.Emissive = { 0.0f, 0.0f, 0.0f, 0.7f };
-						changemat.Specular = { 0.0f, 0.0f, 0.0f, 0.7f };
-						pDevice->SetMaterial(&changemat);
-					}
+	//		// モデル情報を取得
+	//		pFileData = pModelFile->SetAddress(m_nIdxModel);
 
-					//テクスチャの設定
-					pDevice->SetTexture(0, nullptr);
+	//		if (pFileData != NULL)
+	//		{// 使用されている場合
+	//			//マテリアルデータへのポインタを取得
+	//			pMat = (D3DXMATERIAL*)pFileData->pBuffMat->GetBufferPointer();
+	//			for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
+	//			{
+	//				if (m_bChangeCol == false)
+	//				{
+	//					changemat = m_ChangeMat;
+	//					changemat.Ambient = {0.0f, 0.0f, 0.0f, 0.7f};
+	//					changemat.Diffuse = { 0.0f, 0.0f, 0.0f, 0.7f };
+	//					changemat.Emissive = { 0.0f, 0.0f, 0.0f, 0.7f };
+	//					changemat.Specular = { 0.0f, 0.0f, 0.0f, 0.7f };
 
-					//モデル(パーツ)の描画
-					pFileData->pMesh->DrawSubset(nCntMat);
-				}
-			}
+	//					//マテリアルの設定
+	//					pDevice->SetMaterial(&changemat);
+	//				}
+	//				else
+	//				{
+	//					changemat = m_ChangeMat;
+	//					changemat.Ambient = { 0.0f, 0.0f, 0.0f, 0.7f };
+	//					changemat.Diffuse = { 0.0f, 0.0f, 0.0f, 0.7f };
+	//					changemat.Emissive = { 0.0f, 0.0f, 0.0f, 0.7f };
+	//					changemat.Specular = { 0.0f, 0.0f, 0.0f, 0.7f };
+	//					pDevice->SetMaterial(&changemat);
+	//				}
 
-			//保存していたマテリアルを戻す
-			pDevice->SetMaterial(&matDef);
-		}
-	}
+	//				//テクスチャの設定
+	//				pDevice->SetTexture(0, nullptr);
+
+	//				//モデル(パーツ)の描画
+	//				pFileData->pMesh->DrawSubset(nCntMat);
+	//			}
+	//		}
+
+	//		//保存していたマテリアルを戻す
+	//		pDevice->SetMaterial(&matDef);
+	//	}
+	//}
 }
 
 //==========================================================

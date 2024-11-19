@@ -1,6 +1,6 @@
 //==========================================================
 //
-// デルタタイム [deltatime.cpp]
+// デルタタイム [deltatime.h]
 // Author : Ryosuke Ohara
 //
 //==========================================================
@@ -32,6 +32,9 @@ public:	// 誰でもアクセス可能
 	static CDeltaTime *GetInstance(void) { return m_pInstance; }  // 自分自身
 
 	// メンバ関数(設定)
+	float GetDestTime(void) { return m_Timer.DeltaTime.count(); }
+	float GetSlow() { return m_fAdd; }
+	void SetSlow(float fMulti) { m_fAdd = fMulti; }
 
 private:	// 自分だけがアクセス可能
 

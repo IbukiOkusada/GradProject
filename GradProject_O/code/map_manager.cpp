@@ -9,6 +9,7 @@
 #include "map_obstacle.h"
 #include "manager.h"
 #include "road_manager.h"
+#include "gimmick.h"
 
 namespace
 {
@@ -26,6 +27,14 @@ namespace
 		"data\\FILE\\map\\obstacle.bin",
 		"data\\FILE\\map\\obstacle.bin",
 		"data\\FILE\\map\\obstacle.bin",
+	};
+
+	const std::string GIMMICKFILENAME[CScene::MODE_MAX] = {	// ギミックファイル名
+		"data\\FILE\\map\\gimmick.bin",
+		"data\\FILE\\map\\gimmick.bin",
+		"data\\FILE\\map\\gimmick.bin",
+		"data\\FILE\\map\\gimmick.bin",
+		"data\\FILE\\map\\gimmick.bin",
 	};
 
 	const std::string MODELNAMEFILE[CScene::MODE_MAX] = {	// モデル名ファイル
@@ -116,6 +125,9 @@ void CMapManager::Load(void)
 
 	// 道読み込み
 	LoadRoad(ROADFILENAME[mode]);
+
+	// ギミック読み込み
+	LoadGimmick(GIMMICKFILENAME[mode]);
 
 	// 障害物読み込み
 	LoadObstacle(OBSTACLEFILENAME[mode]);
@@ -235,6 +247,35 @@ void CMapManager::LoadModelName(const std::string& filename)
 		{
 			break;
 		}
+	}
+
+	// ファイルを閉じる
+	File.close();
+}
+
+//===============================================
+// ギミック読み込み
+//===============================================
+void CMapManager::LoadGimmick(const std::string& filename)
+{
+	// ファイルを開く
+	std::ifstream File(filename, std::ios::binary);
+	if (!File.is_open()) {
+		// 例外処理
+		return;
+	}
+
+	// サイズ読み込み
+	int size = 0;
+	File.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+	// データ読み込み
+	std::vector<CGimmick::SInfo> roaddata(size);
+	File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CGimmick::SInfo));
+
+	for (const auto& it : roaddata)
+	{
+		CGimmick::Create(it.pos, it.rot, it.scale, it.type);
 	}
 
 	// ファイルを閉じる

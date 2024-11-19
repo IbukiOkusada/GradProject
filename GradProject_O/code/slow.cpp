@@ -90,28 +90,28 @@ void CSlow::Update(void)
 
 	m_fMulOld = m_fAdd;
 
-	if (m_nTimer > 0)
-	{// スローにする
-		m_nTimeCnt++;	// カウントアップ
-		if (m_nTimeCnt % m_nTimer == 0)
-		{// スローの規定値を超えた場合
-			m_nTimeCnt = 0;
+	//if (m_nTimer > 0)
+	//{// スローにする
+	//	m_nTimeCnt++;	// カウントアップ
+	//	if (m_nTimeCnt % m_nTimer == 0)
+	//	{// スローの規定値を超えた場合
+	//		m_nTimeCnt = 0;
 
-			if (m_bUse == false)
-			{//使用しない場合
-				m_nTimer--;
-			}
-			m_b = true;
-		}
-		else
-		{// 規定値ではない
-			m_b = false;
-		}
-	}
-	else
-	{// しない場合
-		m_b = true;
-	}
+	//		if (m_bUse == false)
+	//		{//使用しない場合
+	//			m_nTimer--;
+	//		}
+	//		m_b = true;
+	//	}
+	//	else
+	//	{// 規定値ではない
+	//		m_b = false;
+	//	}
+	//}
+	//else
+	//{// しない場合
+	//	m_b = true;
+	//}
 
 	if (m_nTimer > 0)
 	{

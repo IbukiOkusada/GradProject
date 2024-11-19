@@ -31,16 +31,17 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 	static CRoadManager* GetInstance(void);
 	static void Release(void);
-	CRoad* GetTop(void) { return m_pTop; }
-	CRoad* GetCur(void) { return m_pCur; }
 	void ListIn(CRoad* pRoad);
 	void ListOut(CRoad* pRoad);
-	int GetNum(void) { return m_nNum; }
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
-	Clist<CRoad::SInfo*>* GetList() { return &m_InfoList; }
+	Clist<CRoad::SInfo*>* GetInfoList() { return &m_InfoList; }
+	Clist<CRoad*>* GetList() { if (m_pList == nullptr) { m_pList = m_pList->Create(); }return m_pList; }	// リスト取得
+	void ListRelease() { if (m_pList != nullptr) { delete m_pList; m_pList = nullptr; } }			// リスト解放
+	CRoad* GetNearRoad(const D3DXVECTOR3& pos);
 
 	// 道連結関数
 	void AllConnect(void);
+	void SearchRoadConnect(void);
 
 private:	// 自分だけがアクセス可能
 
@@ -49,9 +50,7 @@ private:	// 自分だけがアクセス可能
 	void VerticalConnectCheck(CRoad* pRoad, CRoad* pCheckRoad);	// 縦連結判定
 
 	// メンバ変数
-	CRoad* m_pTop;	// 先頭
-	CRoad* m_pCur;	// 最後尾
-	int m_nNum;
+	Clist<CRoad*>* m_pList;
 	static CRoadManager* m_pInstance;	// インスタンス
 	Clist<CRoad::SInfo*> m_InfoList;
 	

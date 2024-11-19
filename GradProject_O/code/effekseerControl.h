@@ -22,13 +22,14 @@ public:
 		~CEffectData();
 		void Erase();
 		bool GetExist();
+		void Trigger(int nValue);
 		::Effekseer::Vector3D m_pos;	//座標
 		::Effekseer::Vector3D m_rot;	//向き
 		::Effekseer::Vector3D m_move;	//移動量
 		Effekseer::Handle handle;		//本体
 		Effekseer::EffectRef efcRef;	//参照情報
 		std::string Path;				//パス
-		float m_fScale;					//スケール
+		::Effekseer::Vector3D m_Scale;	//スケール
 		bool m_bLoop;					//ループ
 		bool m_bAutoDelete;				//自動削除の可否
 	};
@@ -45,7 +46,7 @@ public:
 	Effekseer::EffectRef Loading(std::string path);
 	CEffectData* Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale = 1.0f, bool bLoop = false, bool bAutoDelete = true);
 	static CEffekseer* GetInstance() {
-		if (pInstance == NULL) { pInstance = new CEffekseer;  return pInstance; }
+		if (pInstance == NULL) { pInstance = DEBUG_NEW CEffekseer;  return pInstance; }
 		else
 		{
 			return pInstance;

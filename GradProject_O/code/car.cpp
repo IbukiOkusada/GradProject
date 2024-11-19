@@ -53,8 +53,8 @@ CCar::CCar()
 	m_Info.bBreak = false;
 	m_Info.bBack = false;
 
-	m_pNext = nullptr;
-	m_pPrev = nullptr;
+	// リストに入れる
+	CCarManager::GetInstance()->ListIn(this);
 }
 
 //==========================================================
@@ -105,19 +105,8 @@ void CCar::Update(void)
 	// 当たり判定処理
 	Collision();
 
-	if (m_pObj != nullptr)
-	{
-		m_Info.rot.y += D3DX_PI;
-		m_pObj->SetPosition(m_Info.pos);
-		m_pObj->SetRotation(m_Info.rot);
-		m_Info.rot.y -= D3DX_PI;
-	}
-
-	if (m_pTailLamp != nullptr)
-	{
-		m_pTailLamp->m_pos = m_Info.pos;
-		m_pTailLamp->m_rot = m_Info.rot;
-	}
+	// 座標系設定
+	Set();
 }
 
 //==========================================================
@@ -291,9 +280,10 @@ void CCar::MoveRoad()
 void CCar::SearchRoad()
 {
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
+	auto list = pRoadManager->GetList();
 
-	CRoad* pRoad = pRoadManager->GetTop();
-	CRoad* pRoadClose = pRoadManager->GetTop();
+	CRoad* pRoad = pRoadManager->GetList()->Get(0);
+	CRoad* pRoadClose = pRoadManager->GetList()->Get(0);
 
 	if (pRoad == nullptr)
 	{
@@ -303,10 +293,9 @@ void CCar::SearchRoad()
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
-	while (pRoad != nullptr)
-	{// 使用されていない状態まで
-
-		CRoad* pRoadNext = pRoad->GetNext();	// 次のオブジェクトへのポインタを取得
+	for (int i = 0; i < pRoadManager->GetList()->GetNum() - 1; i++)
+	{
+		pRoad = list->Get(i);
 
 		// 距離判定処理
 		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
@@ -316,8 +305,6 @@ void CCar::SearchRoad()
 			length = lengthClose;
 			pRoadClose = pRoad;
 		}
-
-		pRoad = pRoadNext;	// 次のオブジェクトに移動
 	}
 
 	m_Info.pRoadTarget = pRoadClose;
@@ -328,7 +315,6 @@ void CCar::SearchRoad()
 //==========================================================
 void CCar::ReachRoad()
 {
-	CRoadManager* pRoadManager = CRoadManager::GetInstance();
 	CRoad* pRoadNext = nullptr;
 
 	while (1)
@@ -362,12 +348,13 @@ void CCar::ReachRoad()
 //==========================================================
 bool CCar::Collision()
 {
-	CObjectX* pObjectX = CObjectX::GetTop();	// 先頭を取得
-
-	while (pObjectX != nullptr)
+	auto mgr = CObjectX::GetList();
+	for(int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
 
-		CObjectX* pObjectXNext = pObjectX->GetNext();	// 次のオブジェクトへのポインタを取得
+		CObjectX* pObjectX = mgr->Get(i);	// 先頭を取得
+
+		if (!pObjectX->GetEnableCollision()) { continue; }
 
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
@@ -387,17 +374,42 @@ bool CCar::Collision()
 				m_Info.nBackTime = TIME_BACK;
 			}
 
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
-			if (pPlayer->GetModelIndex() == pObjectX->GetIdx())
+			if (pObjectX->GetType() == TYPE_PLAYER)
 			{
-				m_Info.bBreak = true;
+				Break();
 			}
 
 			return true;
 		}
-
-		pObjectX = pObjectXNext;	// 次のオブジェクトに移動
 	}
 
 	return false;
+}
+
+//==========================================================
+// 破壊
+//==========================================================
+void CCar::Break()
+{
+	m_Info.bBreak = true;
+}
+
+//==========================================================
+// 設定
+//==========================================================
+void CCar::Set()
+{
+	if (m_pObj != nullptr)
+	{
+		m_Info.rot.y += D3DX_PI;
+		m_pObj->SetPosition(m_Info.pos);
+		m_pObj->SetRotation(m_Info.rot);
+		m_Info.rot.y -= D3DX_PI;
+	}
+
+	if (m_pTailLamp != nullptr)
+	{
+		m_pTailLamp->m_pos = m_Info.pos;
+		m_pTailLamp->m_rot = m_Info.rot;
+	}
 }

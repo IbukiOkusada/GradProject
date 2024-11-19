@@ -15,6 +15,8 @@
 #include "player.h"
 #include "player_manager.h"
 #include "debugproc.h"
+#include "police_manager.h"
+#include "deltatime.h"
 
 // マクロ定義
 
@@ -27,10 +29,38 @@ namespace
 	const float SECURE_SPEED = (0.8f);			// 確保時の加速倍率
 	const int CHASE_TIME = (300);				// 追跡時間
 	const float CHASE_SECURE = (400.0f);		// 追跡確保距離
-	const float CHASE_BEGIN = (700.0f);			// 追跡開始距離
+	const float CHASE_BEGIN[CPolice::STATE::STATE_MAX] = {
+		(700.0f),
+		(700.0f),
+		(2000.0f),
+		(400.0f),
+	};			// 追跡開始距離
 	const float CHASE_CONTINUE = (2000.0f);		// 追跡継続距離
 	const float CHASE_END = (3000.0f);			// 追跡終了距離
 }
+
+//==========================================================================
+// 関数ポインタ
+//==========================================================================
+// 状態管理
+CPolice::STATE_FUNC CPolice::m_StateFunc[] =
+{
+	&CPolice::StateNormal,		// 通常
+	&CPolice::StateChase,		// 追跡
+	&CPolice::StateSearch,		// 警戒
+	&CPolice::StateFadeOut,		// フェードアウト
+	&CPolice::StateStop,		// 停止
+};
+
+// 状態設定
+CPolice::SETSTATE_FUNC CPolice::m_SetStateFunc[] =
+{
+	&CPolice::SetStateNormal,		// 通常
+	&CPolice::SetStateChase,		// 追跡
+	&CPolice::SetStateSearch,		// 警戒
+	&CPolice::SetStateFadeOut,		// フェードアウト
+	&CPolice::SetStateStop,			// 停止
+};
 
 //==========================================================
 // コンストラクタ
@@ -38,10 +68,11 @@ namespace
 CPolice::CPolice()
 {
 	// 値のクリア
-	m_Info.pPlayer = nullptr;
-	m_Info.nChaseCount = 0;
-	m_Info.bChase = false;
+	m_Info = SInfo();
 	m_pPatrolLamp = nullptr;
+	m_stateInfo = SState();
+
+	CPoliceManager::GetInstance()->GetList()->Regist(this);
 }
 
 //==========================================================
@@ -58,6 +89,8 @@ CPolice::~CPolice()
 HRESULT CPolice::Init(void)
 {
 	TailLamp();
+	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
+	m_pSiren->Stop();
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car003.x");
 	return S_OK;
 }
@@ -68,7 +101,9 @@ HRESULT CPolice::Init(void)
 void CPolice::Uninit(void)
 {
 	CCar::Uninit();
+	CPoliceManager::GetInstance()->GetList()->Delete(this);
 	SAFE_DELETE(m_pPatrolLamp);
+	SAFE_UNINIT_DELETE(m_pSiren);
 	Release();
 }
 
@@ -77,6 +112,12 @@ void CPolice::Uninit(void)
 //==========================================================
 void CPolice::Update(void)
 {
+	// 停止状態なら動かない
+	if (m_stateInfo.state == STATE::STATE_STOP) { 
+		SearchPlayer();
+		return;
+	}
+
 	CCar::Update();
 	if (m_Info.bChase)
 	{
@@ -91,6 +132,8 @@ void CPolice::Update(void)
 	{
 		SAFE_DELETE(m_pPatrolLamp);
 	}
+
+	UpdateState();
 }
 
 //==========================================================
@@ -100,7 +143,7 @@ CPolice *CPolice::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
 {
 	CPolice *pCar = nullptr;
 
-	pCar = new CPolice;
+	pCar = DEBUG_NEW CPolice;
 
 	if (pCar != nullptr)
 	{
@@ -135,13 +178,16 @@ void CPolice::MoveRoad()
 
 	if (m_Info.bChase)
 	{
+		m_pSiren->Start();
 		if (m_Info.pPlayer != nullptr)
 			SetPosTarget(m_Info.pPlayer->GetPosition());
-
+		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
+		m_pSiren->SetVolume((2000.0f - dis) * 0.00075f);
 		SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
 	}
 	else
 	{
+		m_pSiren->Stop();
 		if (pRoadTarget != nullptr)
 		{
 			pRoadStart = GetRoadStart();
@@ -163,7 +209,6 @@ void CPolice::ReachRoad()
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
-	CRoadManager* pRoadManager = CRoadManager::GetInstance();
 	CRoad* pRoadNext = nullptr;
 
 	while (1)
@@ -219,8 +264,11 @@ void CPolice::SearchPlayer()
 
 			SetSpeedDest(SECURE_SPEEDDEST);
 			SetSpeed(GetSpeed() * SECURE_SPEED);
+
+			// 状態設定
+			SetState(STATE::STATE_CHASE);
 		}
-		else if (length < CHASE_BEGIN)
+		else if (length < CHASE_BEGIN[m_stateInfo.state])
 		{// 追跡開始
 
 			m_Info.bChase = true;
@@ -228,6 +276,9 @@ void CPolice::SearchPlayer()
 
 			SetRoadStart(nullptr);
 			SetRoadTarget(nullptr);
+
+			// 状態設定
+			SetState(STATE::STATE_CHASE);
 		}
 		else if (length < CHASE_CONTINUE)
 		{// 追跡継続
@@ -239,6 +290,9 @@ void CPolice::SearchPlayer()
 				SetRoadStart(nullptr);
 				SetRoadTarget(nullptr);
 			}
+
+			// 状態設定
+			SetState(STATE::STATE_CHASE);
 		}
 		else if (length < CHASE_END)
 		{// 追跡終了
@@ -252,6 +306,9 @@ void CPolice::SearchPlayer()
 
 				if (m_Info.nChaseCount < 0)
 				{
+					// 全員を警戒状態に
+					SetState(STATE::STATE_SEARCH);
+					CPoliceManager::GetInstance()->Warning(this);
 					m_Info.bChase = false;
 					m_Info.nChaseCount = 0;
 				}
@@ -259,6 +316,13 @@ void CPolice::SearchPlayer()
 		}
 		else
 		{// 追跡強制終了
+
+			// 追跡してた
+			if (m_Info.bChase)
+			{
+				SetState(STATE::STATE_SEARCH);
+				CPoliceManager::GetInstance()->Warning(this);
+			}
 
 			m_Info.bChase = false;
 			m_Info.nChaseCount = 0;
@@ -272,14 +336,11 @@ void CPolice::SearchPlayer()
 void CPolice::ChasePlayer()
 {
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
-	CRoad* pRoad = pRoadManager->GetTop();
-
-	while (pRoad != nullptr)
-	{// 使用されていない状態まで
-
-		CRoad* pRoadNext = pRoad->GetNext();	// 次のオブジェクトへのポインタを取得
-
-		pRoad = pRoadNext;	// 次のオブジェクトに移動
+	auto list = pRoadManager->GetList();
+	
+	for (int i = 0; i < list->GetNum() - 1; i++)
+	{
+		CRoad* pRoad = list->Get(i);
 	}
 }
 
@@ -289,4 +350,144 @@ void CPolice::ChasePlayer()
 void CPolice::Collision()
 {
 	
+}
+
+//==========================================================
+// 破壊
+//==========================================================
+void CPolice::Break()
+{
+	CPlayer* p = CPlayerManager::GetInstance()->GetTop();
+	p->Damage(p->GetLifeOrigin() * 0.1f);
+}
+
+//==========================================================
+// 状態設定
+//==========================================================
+void CPolice::UpdateState(void)
+{
+	// タイマー減少
+	m_stateInfo.fTimer -= CDeltaTime::GetInstance()->GetDeltaTime();
+	if(m_stateInfo.fTimer < 0.0f)
+	{ 
+		m_stateInfo.fTimer = 0.0f;
+	}
+
+	// 状態ごとの関数を呼ぶ
+	(this->*(m_StateFunc[m_stateInfo.state]))();
+}
+
+//==========================================================
+// 状態設定
+//==========================================================
+void CPolice::SetState(const STATE state)
+{
+	// 状態ごとの関数を呼ぶ
+	if (m_stateInfo.state == STATE::STATE_FADEOUT) { return; }
+
+	(this->*(m_SetStateFunc[state]))();
+}
+
+//==========================================================
+// 通常状態
+//==========================================================
+void CPolice::StateNormal(void)
+{
+	
+}
+
+//==========================================================
+// 追跡状態
+//==========================================================
+void CPolice::StateChase(void)
+{
+	if (m_pObj == nullptr) { return; }
+}
+
+//==========================================================
+// 警戒状態
+//==========================================================
+void CPolice::StateSearch(void)
+{
+	// カウントなくなるまで
+	if (m_stateInfo.fTimer > 0.0f) { return; }
+
+	SetState(STATE::STATE_NORMAL);
+}
+
+//==========================================================
+// フェードアウト状態
+//==========================================================
+void CPolice::StateFadeOut(void)
+{
+
+}
+
+//==========================================================
+// 停止状態
+//==========================================================
+void CPolice::StateStop(void)
+{
+
+}
+
+//==========================================================
+// 通常状態設定
+//==========================================================
+void CPolice::SetStateNormal(void)
+{
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_NORMAL;
+}
+
+//==========================================================
+// 追跡状態設定
+//==========================================================
+void CPolice::SetStateChase(void)
+{
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_CHASE;
+}
+
+//==========================================================
+// 警戒状態設定
+//==========================================================
+void CPolice::SetStateSearch(void)
+{
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_SEARCH;
+	SetStateTimer(5.0f);
+}
+
+//==========================================================
+// フェードアウト状態設定
+//==========================================================
+void CPolice::SetStateFadeOut(void)
+{
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_FADEOUT;
+}
+
+//==========================================================
+// 停止状態設定
+//==========================================================
+void CPolice::SetStateStop(void)
+{
+	// 初期化
+	m_stateInfo = SState();
+
+	// 状態変更
+	m_stateInfo.state = STATE::STATE_STOP;
 }

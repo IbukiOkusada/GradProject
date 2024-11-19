@@ -10,9 +10,14 @@
 #include "task.h"
 #include "list.h"
 #include "effekseerControl.h"
+#include "road.h"
+
 //#include "task.h"	// これでファイルインクルードできます
 //前方宣言
 class CMeshCylinder;
+class CCharacter;
+class CBaggage;
+
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
@@ -30,19 +35,27 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 	static CGole* Create(D3DXVECTOR3 pos,float fRange,float fLimit);
 
-	
+	CRoad* GetRoad() { return m_pRoad; }
+	D3DXVECTOR3 GetPos() { return m_pos; }
 	static Clist<CGole*>* GetInstance() { if (pList == nullptr) { pList = pList->Create(); }return pList; }		// リスト取得
 	static void ListRelease() { if (pList != nullptr) { delete pList; pList = nullptr; } }					// リスト解放
+	
+	bool GetEnd() { return m_bEnd; }
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	bool CheckRange();
 	bool CheckSpeed();
+	void ScreenEffect();
+
 	// メンバ変数
 	D3DXVECTOR3 m_pos;				// 座標
 	float m_fRange;					// ゴールの範囲
 	float m_fLimit;					// 速度制限
-
+	bool m_bEnd;					// 終了地点
+	CCharacter* m_pPeople;			// 人
+	CRoad * m_pRoad;
+	CBaggage* m_pBaggage;
 	CEffekseer::CEffectData* pEffect;
 	static Clist<CGole*>* pList;	// 自分のリスト*GetInstance()経由でアクセスする事*
 };

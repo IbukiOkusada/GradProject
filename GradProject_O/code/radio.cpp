@@ -134,6 +134,7 @@ void CRadio::Update(void)
 
 		if (!m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->GetPlay())
 		{
+
 			m_pRadio[i].m_pList->Get(m_pRadio[i].nCurrent)->Stop();
 			m_pRadio[i].nCurrent++;
 			m_pRadio[i].nCurrent %= m_pRadio[i].m_pList->GetNum();

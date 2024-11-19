@@ -10,6 +10,7 @@
 #include "object.h"
 #include "manager.h"
 #include <assert.h>
+#include "debugproc.h"
 
 CObjectManager *CObjectManager::m_pInstance = nullptr;
 
@@ -81,11 +82,12 @@ void CObjectManager::Uninit(void)
 //==========================================================
 void CObjectManager::Draw(void)
 {
-	CCamera *pCamera = CCameraManager::GetInstance()->GetCur();
+	CCamera *pCamera = CCameraManager::GetInstance()->GetTop();
+	CDebugProc::GetInstance()->Print("オブジェクト数 [ %d ]\n", m_nNumAll);
 
 	while (pCamera != nullptr) {
 
-		CCamera *pCameraNext = pCamera->GetPrev();
+		CCamera *pCameraNext = pCamera->GetNext();
 
 		// 設定
 		pCamera->SetCamera();

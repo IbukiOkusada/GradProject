@@ -4,7 +4,7 @@
 // Author : Ibuki Okusada
 //
 //===============================================
-#include "effect.h"
+#include "effect2D.h"
 #include "manager.h"
 #include "renderer.h"
 #include "input.h"
@@ -13,7 +13,7 @@
 #include "slow.h"
 #include "game.h"
 #include "meshfield.h"
-#include "billboard.h"
+#include "object2D.h"
 
 //===============================================
 // 無名名前空間
@@ -22,12 +22,12 @@ namespace {
 	const float LIFE = (30.0f); // 寿命
 	const float GUNCHARGE = (0.1f);
 
-	const D3DXCOLOR COLINFO[CEffect::TYPE_MAX] = {	// 種類別初期色の設定
+	const D3DXCOLOR COLINFO[CEffect2D::TYPE_MAX] = {	// 種類別初期色の設定
 		{1.0f, 1.0f, 1.0f, 1.0f},
 		{ 1.0f, 1.0f, 0.0f, 1.0f },
 	};
 
-	const float RADIUSINFO[CEffect::TYPE_MAX] = {	// 種類別半径の設定
+	const float RADIUSINFO[CEffect2D::TYPE_MAX] = {	// 種類別半径の設定
 		100.0f,
 		100.0f,
 	};
@@ -36,20 +36,17 @@ namespace {
 //===============================================
 // コンストラクタ
 //===============================================
-CEffect::CEffect()
+CEffect2D::CEffect2D()
 {
 	// 値のクリア
-	m_Info.col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	m_Info.fLife = 0;
-	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.fRadius = 0.0f;
-	m_Info.Type = TYPE_NONE;
+	m_pObj = nullptr;
+	m_Info = INFO();
 }
 
 //===============================================
 // デストラクタ
 //===============================================
-CEffect::~CEffect()
+CEffect2D::~CEffect2D()
 {
 
 }
@@ -57,15 +54,11 @@ CEffect::~CEffect()
 //===============================================
 // 初期化処理
 //===============================================
-HRESULT CEffect::Init(void)
+HRESULT CEffect2D::Init(void)
 {
 	// オブジェクトの初期化処理
-	m_pObjectBilBoard = CObjectBillboard::Create(m_Info.pos, 6);
-	m_pObjectBilBoard->BindTexture(CManager::GetInstance()->GetTexture()->Regist(CManager::GetInstance()->GetTexture()->GetFileName(SetTex(m_Info.Type))));
-	m_pObjectBilBoard->SetAlphaText(true);
-	m_pObjectBilBoard->SetZTest(true);
-	m_pObjectBilBoard->SetLighting(true);
-	m_pObjectBilBoard->SetFusion(CObjectBillboard::FUSION_ADD);
+	m_pObj = CObject2D::Create(m_Info.pos, VECTOR3_ZERO, 6);
+	m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(CManager::GetInstance()->GetTexture()->GetFileName(SetTex(m_Info.Type))));
 
 	m_Info.fLife = LIFE;	// 体力の初期化
 
@@ -75,12 +68,12 @@ HRESULT CEffect::Init(void)
 //===============================================
 // 終了処理
 //===============================================
-void CEffect::Uninit(void)
+void CEffect2D::Uninit(void)
 {
 	// オブジェクトの終了処理
-	if (m_pObjectBilBoard != nullptr) {
-		m_pObjectBilBoard->Uninit();
-		m_pObjectBilBoard = nullptr;
+	if (m_pObj != nullptr) {
+		m_pObj->Uninit();
+		m_pObj = nullptr;
 	}
 
 	Release();
@@ -89,7 +82,7 @@ void CEffect::Uninit(void)
 //===============================================
 // 更新処理
 //===============================================
-void CEffect::Update(void)
+void CEffect2D::Update(void)
 {
 	m_Info.fLife -= CManager::GetInstance()->GetSlow()->Get();
 	D3DXVECTOR3 nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -129,7 +122,7 @@ void CEffect::Update(void)
 	if (m_Info.col.a < 0.0f || m_Info.fRadius < 0.0f)
 	{// 値がひっくり返った
 
-		
+
 		Uninit();
 		return;
 	}
@@ -140,33 +133,33 @@ void CEffect::Update(void)
 //===============================================
 // 生成
 //===============================================
-CEffect *CEffect::Create(D3DXVECTOR3 pos, TYPE type)
+CEffect2D* CEffect2D::Create(D3DXVECTOR3 pos, TYPE type)
 {
-	CEffect *pEffect = NULL;
-	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
+	CEffect2D* pEffect2D = NULL;
+	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// エフェクトの生成
-	pEffect = new CEffect;
+	pEffect2D = DEBUG_NEW CEffect2D;
 
-	if (pEffect != NULL)
+	if (pEffect2D != NULL)
 	{// 生成できた場合
 
 		// 座標設定
-		pEffect->SetPosition(pos);
+		pEffect2D->SetPosition(pos);
 
 		// 種類の設定
-		pEffect->SetType(type);
+		pEffect2D->SetType(type);
 
 		// 半径設定
-		pEffect->RadiusSet();
+		pEffect2D->RadiusSet();
 
 		// 色の設定
-		pEffect->ColorSet();
+		pEffect2D->ColorSet();
 
-		pEffect->InfoSet();
+		pEffect2D->InfoSet();
 
 		// 初期化処理
-		pEffect->Init();
+		pEffect2D->Init();
 
 		// テクスチャの割り当て
 	}
@@ -175,95 +168,95 @@ CEffect *CEffect::Create(D3DXVECTOR3 pos, TYPE type)
 		return NULL;
 	}
 
-	return pEffect;
+	return pEffect2D;
 }
 
 //===============================================
 // 生成
 //===============================================
-CEffect *CEffect::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, float fLife, TYPE type)
+CEffect2D* CEffect2D::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, float fLife, TYPE type)
 {
-	CEffect *pEffect = NULL;
-	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
+	CEffect2D* pEffect2D = NULL;
+	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// エフェクトの生成
-	pEffect = new CEffect();
+	pEffect2D = DEBUG_NEW CEffect2D();
 
-	if (pEffect != NULL)
+	if (pEffect2D != NULL)
 	{// 生成できた場合
 
 		// 座標設定
-		pEffect->SetPosition(pos);
+		pEffect2D->SetPosition(pos);
 
 		// エフェクトの設定
-		pEffect->SetType(type);
+		pEffect2D->SetType(type);
 
 		// 半径設定
-		pEffect->m_Info.fRadius = fRadius;
+		pEffect2D->m_Info.fRadius = fRadius;
 
 		// 移動量設定
-		pEffect->SetMove(move);
+		pEffect2D->SetMove(move);
 
 		// サイズの設定
-		//pEffect->SetSize(pEffect->m_Info.fRadius, pEffect->m_Info.fRadius);
+		//pEffect2D->SetSize(pEffect2D->m_Info.fRadius, pEffect2D->m_Info.fRadius);
 
 		// 色の設定
-		pEffect->m_Info.col = col;
+		pEffect2D->m_Info.col = col;
 
 		// 初期化処理
-		pEffect->Init();
+		pEffect2D->Init();
 
 		// 寿命設定
-		pEffect->m_Info.fLife = fLife;
+		pEffect2D->m_Info.fLife = fLife;
 
-		pEffect->InfoSet();
+		pEffect2D->InfoSet();
 
 		// 描画方法設定
-		pEffect->DrawSet();
+		pEffect2D->DrawSet();
 	}
 	else
 	{// 生成に失敗した場合
 		return NULL;
 	}
 
-	return pEffect;
+	return pEffect2D;
 }
 
 //===============================================
 // 色設定
 //===============================================
-void CEffect::ColorSet(void)
+void CEffect2D::ColorSet(void)
 {
 	// 種類ごとに色の設定
 	m_Info.col = COLINFO[m_Info.Type];
-	
 
-	if (m_pObjectBilBoard == nullptr) {
+
+	if (m_pObj == nullptr) {
 		return;
 	}
 
-	m_pObjectBilBoard->SetCol(m_Info.col);
+	m_pObj->SetCol(m_Info.col);
 }
 
 //===============================================
 // サイズの設定
 //===============================================
-void CEffect::RadiusSet(void)
+void CEffect2D::RadiusSet(void)
 {
 	// 半径の設定
 	m_Info.fRadius = RADIUSINFO[m_Info.Type];
 
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return;
 	}
 
-	m_pObjectBilBoard->SetSize(m_Info.fRadius, m_Info.fRadius);
+	m_pObj->SetSize(m_Info.fRadius, m_Info.fRadius);
 }
 
 //===============================================
 // 移動量の設定
 //===============================================
-void CEffect::SetMove(D3DXVECTOR3 move)
+void CEffect2D::SetMove(D3DXVECTOR3 move)
 {
 	m_Info.move = move;
 }
@@ -271,21 +264,21 @@ void CEffect::SetMove(D3DXVECTOR3 move)
 //===============================================
 // 情報基本設定
 //===============================================
-void CEffect::InfoSet(void)
+void CEffect2D::InfoSet(void)
 {
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return;
 	}
 
-	m_pObjectBilBoard->SetPosition(m_Info.pos);
-	m_pObjectBilBoard->SetCol(m_Info.col);
-	m_pObjectBilBoard->SetSize(m_Info.fRadius, m_Info.fRadius);
+	m_pObj->SetPosition(m_Info.pos);
+	m_pObj->SetCol(m_Info.col);
+	m_pObj->SetSize(m_Info.fRadius, m_Info.fRadius);
 }
 
 //===============================================
 // タイプ別テクスチャ
 //===============================================
-CTexture::TYPE CEffect::SetTex(TYPE type)
+CTexture::TYPE CEffect2D::SetTex(TYPE type)
 {
 	switch (type)
 	{
@@ -301,6 +294,13 @@ CTexture::TYPE CEffect::SetTex(TYPE type)
 
 	}
 	break;
+
+	case TYPE_TARGET:
+	{
+		return CTexture::TYPE_EFFECT;
+
+	}
+	break;
 	}
 
 	return CTexture::TYPE();
@@ -309,9 +309,9 @@ CTexture::TYPE CEffect::SetTex(TYPE type)
 //===============================================
 // 描画設定
 //===============================================
-void CEffect::DrawSet(void)
+void CEffect2D::DrawSet(void)
 {
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return;
 	}
 
@@ -325,10 +325,19 @@ void CEffect::DrawSet(void)
 
 	case TYPE_SMAKE:
 	{
-		m_pObjectBilBoard->SetAlphaText(true);
-		m_pObjectBilBoard->SetZTest(true);
-		m_pObjectBilBoard->SetLighting(true);
-		m_pObjectBilBoard->SetFusion(CObjectBillboard::FUSION_ADD);
+		m_pObj->SetAlphaText(true);
+		m_pObj->SetZTest(true);
+		m_pObj->SetLighting(true);
+		m_pObj->SetFusion(CObject2D::FUSION_ADD);
+	}
+	break;
+
+	case TYPE_TARGET:
+	{
+		m_pObj->SetAlphaText(true);
+		m_pObj->SetZTest(true);
+		m_pObj->SetLighting(true);
+		m_pObj->SetFusion(CObject2D::FUSION_ADD);
 	}
 	break;
 
@@ -338,23 +347,23 @@ void CEffect::DrawSet(void)
 //===============================================
 // 半径取得
 //===============================================
-float CEffect::GetRange(void) const
+float CEffect2D::GetRange(void) const
 {
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return 0.0f;
 	}
 
-	return m_pObjectBilBoard->GetWidth();
+	return m_pObj->GetWidth();
 }
 
 //===============================================
 // 色取得
 //===============================================
-D3DXCOLOR CEffect::GetCol(void) const
+D3DXCOLOR CEffect2D::GetCol(void) const
 {
-	if (m_pObjectBilBoard == nullptr) {
+	if (m_pObj == nullptr) {
 		return D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 
-	return m_pObjectBilBoard->GetCol();
+	return m_pObj->GetCol();
 }

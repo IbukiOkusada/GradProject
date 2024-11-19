@@ -63,29 +63,27 @@ public:	// 誰でもアクセス可能
 	float GetSpeedDest(void) { return m_Info.fSpeedDest; }
 	CRoad* GetRoadStart(void) { return m_Info.pRoadStart; }
 	CRoad* GetRoadTarget(void) { return m_Info.pRoadTarget; }
-	CCar* GetNext(void) { return m_pNext; }
-	CCar* GetPrev(void) { return m_pPrev; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 
 	// メンバ関数(設定)
-	void SetMove(const D3DXVECTOR3 move) { m_Info.move = move; }
-	void SetPosition(const D3DXVECTOR3 pos) { m_Info.pos = pos; }
-	void SetRotation(const D3DXVECTOR3 rot) { m_Info.rot = rot; }
-	void SetPosTarget(const D3DXVECTOR3 pos) { m_Info.posTarget = pos; }
+	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }
+	void SetPosition(const D3DXVECTOR3& pos) { m_Info.pos = pos; }
+	void SetRotation(const D3DXVECTOR3& rot) { m_Info.rot = rot; }
+	void SetPosTarget(const D3DXVECTOR3& pos) { m_Info.posTarget = pos; }
 	void SetSpeed(const float speed) { m_Info.fSpeed = speed; }
 	void SetSpeedDest(const float speedDest) { m_Info.fSpeedDest = speedDest; }
 	void SetRoadStart(CRoad* RoadStart) { m_Info.pRoadStart = RoadStart; }
 	void SetRoadTarget(CRoad* RoadTarget) { m_Info.pRoadTarget = RoadTarget; }
-	void SetNext(CCar* pNext) { m_pNext = pNext; }
-	void SetPrev(CCar* pPrev) { m_pPrev = pPrev; }
 
 protected:	// 派生クラスからもアクセス可能
 
 	// メンバ関数
 	virtual void MoveRoad();
-	void SearchRoad();
+	virtual void SearchRoad();
 	virtual void ReachRoad();
 	void TailLamp();
+	virtual void Break();
+	void Set();
 
 	// メンバ変数
 	CObjectX* m_pObj;
@@ -98,8 +96,6 @@ private:	// 自分だけがアクセス可能
 	bool Collision();
 
 	// メンバ変数
-	CCar* m_pPrev;			// 前のオブジェクトへのポインタ
-	CCar* m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;				// 自分自身の情報
 	CEffekseer::CEffectData* m_pTailLamp;
 };

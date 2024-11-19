@@ -266,7 +266,7 @@ void CObjectMesh::Create(int nWidth, int nHeight)
 	SetIndex();
 
 	// í∏ì_èÓïÒÇÃê∂ê¨
-	m_pVtx = new VERTEX_3D[m_nVertex];
+	m_pVtx = DEBUG_NEW VERTEX_3D[m_nVertex];
 }
 
 //==========================================================

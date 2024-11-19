@@ -12,8 +12,7 @@
 #include "Xfile.h"
 
 // 静的メンバ変数宣言
-CObjectX *CObjectX::m_pTop = NULL;	// 先頭のオブジェクトへのポインタ
-CObjectX *CObjectX::m_pCur = NULL;	// 最後尾のオブジェクトへのポインタ
+Clist<CObjectX*> CObjectX::m_List = {};
 
 //==========================================================
 // コンストラクタ
@@ -21,29 +20,18 @@ CObjectX *CObjectX::m_pCur = NULL;	// 最後尾のオブジェクトへのポインタ
 CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 {
 	m_nIdxModel = -1;
-
-	m_pNext = NULL;
-	m_pPrev = NULL;
-
-	// 自分自身をリストに追加
-	if (m_pTop != NULL)
-	{// 先頭が存在している場合
-		m_pCur->m_pNext = this;	// 現在最後尾のオブジェクトのポインタにつなげる
-		m_pPrev = m_pCur;
-		m_pCur = this;	// 自分自身が最後尾になる
-	}
-	else
-	{// 存在しない場合
-		m_pTop = this;	// 自分自身が先頭になる
-		m_pCur = this;	// 自分自身が最後尾になる
-	}
-
 	m_bEnableCollision = true;
+	m_fShadowHeight = 0.0f;
 	m_ColMulti = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_AddCol = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 	m_scale = VECTOR3_ZERO;
 	m_pos = VECTOR3_ZERO;
 	m_rot = VECTOR3_ZERO;
+	m_bHit = false;
+	m_bHitOld = false;
+	m_bShadow = true;
+
+	m_List.Regist(this);
 }
 
 //==========================================================
@@ -59,8 +47,8 @@ CObjectX::~CObjectX()
 //==========================================================
 HRESULT CObjectX::Init(void)
 {
-
 	//各種変数の初期化
+	m_Type = TYPE_NORMAL;
 	m_scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -73,11 +61,14 @@ HRESULT CObjectX::Init(void)
 //==========================================================
 void CObjectX::Uninit(void)
 {
-	// リストから外す
-	ListOut();
+	if (!GetDeath())
+	{
+		// リストから外す
+		ListOut();
 
-	// 廃棄
-	Release();
+		// 廃棄
+		Release();
+	}
 }
 
 //==========================================================
@@ -95,11 +86,24 @@ void CObjectX::Draw(void)
 {
 	//Update();
 
+	m_bHitOld = m_bHit;
+	m_bHit = false;
+
 	// マトリックス計算
-	//CalWorldMtx();
-	Quaternion();
+	if (m_Type == TYPE_NORMAL)
+	{
+		CalWorldMtx();
+	}
+	else
+	{
+		Quaternion();
+	}
+
 	// 描画
 	DrawOnry();
+
+	// 影の描画
+	DrawShadow();
 }
 
 //==========================================================
@@ -167,9 +171,12 @@ void CObjectX::DrawOnry()
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
-	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
 	D3DMATERIAL9 matDef;					//現在のマテリアル保存用
 	D3DXMATERIAL* pMat;						//マテリアルデータへのポインタ
+
+	// 正規化を有効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
 
 	// モデル使用されていない
 	if (pFileData == nullptr) { return; }
@@ -216,6 +223,90 @@ void CObjectX::DrawOnry()
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+
+	// 正規化を無効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+}
+
+//==========================================================
+// シャドウマトリックスでの影の描画
+//==========================================================
+void CObjectX::DrawShadow()
+{
+	// 影使用しない
+	if (!m_bShadow) { return; }
+
+	// モデル使用されていない
+	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	if (pFileData == nullptr) { return; }
+
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
+	D3DMATERIAL9 matDef;					//現在のマテリアル保存用
+	D3DXMATERIAL* pMat;						//マテリアルデータへのポインタ
+	D3DXMATRIX mtxShadow;
+	D3DLIGHT9 light;
+	D3DXVECTOR4 posLight;
+	D3DXVECTOR3 pos, normal;
+	D3DXPLANE plane;
+
+	// ライトの位置を設定
+	pDevice->GetLight(0, &light);
+	posLight = D3DXVECTOR4(-light.Direction.x, -light.Direction.y, -light.Direction.z, 0.0f);
+
+	// 平面情報を設定
+	D3DXVECTOR3 DefPos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
+	pos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
+
+	if (pos.y > DefPos.y) {	// 現在の腕の位置よりも高い
+		pos = DefPos;
+	}
+
+	pos.y = m_fShadowHeight + 0.1f;
+	normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	D3DXPlaneFromPointNormal(&plane, &pos, &normal);
+
+	// シャドウマトリックスの初期化
+	D3DXMatrixIdentity(&mtxShadow);
+
+	// シャドウマトリックスの作成
+	D3DXMatrixShadow(&mtxShadow, &posLight, &plane);
+	D3DXMatrixMultiply(&mtxShadow, &m_mtxWorld, &mtxShadow);
+
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
+
+	//現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
+
+	// モデル情報を取得
+	pFileData = pModelFile->SetAddress(m_nIdxModel);
+
+	if (pFileData != NULL)
+	{// 使用されている場合
+		//マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)pFileData->pBuffMat->GetBufferPointer();
+		for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
+		{
+			D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
+			mat.Ambient = { 0.0f, 0.0f, 0.0f, 0.7f };
+			mat.Diffuse = { 0.0f, 0.0f, 0.0f, 0.7f };
+			mat.Emissive = { 0.0f, 0.0f, 0.0f, 0.7f };
+			mat.Specular = { 0.0f, 0.0f, 0.0f, 0.7f };
+			pDevice->SetMaterial(&mat);
+
+			//テクスチャの設定
+			pDevice->SetTexture(0, nullptr);
+
+			//モデル(パーツ)の描画
+			pFileData->pMesh->DrawSubset(nCntMat);
+		}
+	}
+
+	//保存していたマテリアルを戻す
+	pDevice->SetMaterial(&matDef);
+
+	m_fShadowHeight = GetPosition().y;
 }
 
 //==========================================================
@@ -274,7 +365,7 @@ void CObjectX::BindFile(const char* file)
 //==========================================================
 // 座標の設定
 //==========================================================
-void CObjectX::SetPosition(const D3DXVECTOR3 pos)
+void CObjectX::SetPosition(const D3DXVECTOR3& pos)
 {
 	m_pos = pos; 
 }
@@ -282,36 +373,65 @@ void CObjectX::SetPosition(const D3DXVECTOR3 pos)
 //==========================================================
 // 向きの設定
 //==========================================================
-void CObjectX::SetRotation(const D3DXVECTOR3 rot)
+void CObjectX::SetRotation(const D3DXVECTOR3& rot)
 { 
 	m_rot = rot;
 
-	if (m_rot.z < -D3DX_PI)
-	{// z座標角度限界
-		m_rot.z += D3DX_PI * 2;
-	}
-	else if (m_rot.z > D3DX_PI)
-	{// z座標角度限界
-		m_rot.z += -D3DX_PI * 2;
-	}
-
-	if (m_rot.x < -D3DX_PI)
-	{// x座標角度限界
-		m_rot.x += D3DX_PI * 2;
-	}
-	else if (m_rot.x > D3DX_PI)
-	{// x座標角度限界
-		m_rot.x += -D3DX_PI * 2;
+	while (1)
+	{
+		if (m_rot.z < -D3DX_PI)
+		{// z座標角度限界
+			m_rot.z += D3DX_PI * 2;
+		}
+		else if (m_rot.z > D3DX_PI)
+		{// z座標角度限界
+			m_rot.z += -D3DX_PI * 2;
+		}
+		else
+		{
+			break;
+		}
 	}
 
-	if (m_rot.y < -D3DX_PI)
-	{// x座標角度限界
-		m_rot.y += D3DX_PI * 2;
+	while (1)
+	{
+		if (m_rot.x < -D3DX_PI)
+		{// x座標角度限界
+			m_rot.x += D3DX_PI * 2;
+		}
+		else if (m_rot.x > D3DX_PI)
+		{// x座標角度限界
+			m_rot.x += -D3DX_PI * 2;
+		}
+		else
+		{
+			break;
+		}
 	}
-	else if (m_rot.y > D3DX_PI)
-	{// x座標角度限界
-		m_rot.y += -D3DX_PI * 2;
+
+	while (1)
+	{
+		if (m_rot.y < -D3DX_PI)
+		{// x座標角度限界
+			m_rot.y += D3DX_PI * 2;
+		}
+		else if (m_rot.y > D3DX_PI)
+		{// x座標角度限界
+			m_rot.y += -D3DX_PI * 2;
+		}
+		else
+		{
+			break;
+		}
 	}
+}
+
+//==========================================================
+// スケールの設定
+//==========================================================
+void CObjectX::SetScale(const D3DXVECTOR3& scale)
+{
+	m_scale = scale;
 }
 
 //==========================================================
@@ -370,81 +490,8 @@ void CObjectX::SetRotSize(D3DXVECTOR3 &SetMax, D3DXVECTOR3 &SetMin, D3DXVECTOR3 
 // リストから外す
 //==========================================================
 void CObjectX::ListOut(void)
-{
-	// リストから自分自身を削除する
-	if (m_pTop == this)
-	{// 自身が先頭
-		if (m_pNext != NULL)
-		{// 次が存在している
-			m_pTop = m_pNext;	// 次を先頭にする
-			m_pNext->m_pPrev = NULL;	// 次の前のポインタを覚えていないようにする
-		}
-		else
-		{// 存在していない
-			m_pTop = NULL;	// 先頭がない状態にする
-			m_pCur = NULL;	// 最後尾がない状態にする
-		}
-	}
-	else if (m_pCur == this)
-	{// 自身が最後尾
-		if (m_pPrev != NULL)
-		{// 次が存在している
-			m_pCur = m_pPrev;			// 前を最後尾にする
-			m_pPrev->m_pNext = NULL;	// 前の次のポインタを覚えていないようにする
-		}
-		else
-		{// 存在していない
-			m_pTop = NULL;	// 先頭がない状態にする
-			m_pCur = NULL;	// 最後尾がない状態にする
-		}
-	}
-	else
-	{
-		if (m_pNext != NULL)
-		{
-			m_pNext->m_pPrev = m_pPrev;	// 自身の次に前のポインタを覚えさせる
-		}
-		if (m_pPrev != NULL)
-		{
-			m_pPrev->m_pNext = m_pNext;	// 自身の前に次のポインタを覚えさせる
-		}
-	}
-}
-
-void CObjectX::CollisionLand(D3DXVECTOR3 &pos)
-{
-	CObjectX *pObj = m_pTop;	// 先頭取得
-	CXFile *pFile = CManager::GetInstance()->GetModelFile();
-
-	while (pObj != NULL)
-	{
-		CObjectX *pObjNext = pObj->m_pNext;
-		D3DXVECTOR3 vtxObjMax = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-		D3DXVECTOR3 vtxObjMin = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-		// 向きを反映
-		int nIdx = pObj->GetIdx();
-		pObj->SetRotSize(vtxObjMax,
-			vtxObjMin,
-			pFile->GetMax(nIdx),
-			pFile->GetMin(nIdx),
-			pObj->m_rot.y);
-
-		if (pos.x >= pObj->m_pos.x + vtxObjMin.x
-			&& pos.x <= pObj->m_pos.x + vtxObjMax.x
-			&& pos.z >= pObj->m_pos.z + vtxObjMin.z
-			&& pos.z <= pObj->m_pos.z + vtxObjMax.z)
-		{//範囲内にある
-			//上からの判定
-			if (pos.y >= pObj->m_pos.y + vtxObjMax.y)
-			{//上からめり込んだ
-				//上にのせる
-				pos.y = pObj->m_pos.y + vtxObjMax.y + 4.0f;
-			}
-		}
-
-		pObj = pObjNext;
-	}
+{	
+	m_List.Delete(this);
 }
 
 //==========================================================
@@ -453,7 +500,7 @@ void CObjectX::CollisionLand(D3DXVECTOR3 &pos)
 D3DXVECTOR3& CObjectX::GetVtxMax(void)
 {
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
-	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
 	D3DXVECTOR3 max = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (pFileData == nullptr) { return max; }
@@ -471,7 +518,7 @@ D3DXVECTOR3& CObjectX::GetVtxMax(void)
 D3DXVECTOR3& CObjectX::GetVtxMin(void)
 {
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
-	CXFile::FileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
 
 	D3DXVECTOR3 min = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 

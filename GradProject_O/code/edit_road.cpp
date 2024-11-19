@@ -135,7 +135,8 @@ void CEdit_Road::Update(void)
 void CEdit_Road::ClickCheck()
 {
 	CInputMouse* pMouse = CInputMouse::GetInstance();
-	CRoad* pRoad = CRoadManager::GetInstance()->GetTop();
+	CRoadManager* pRoadManager = CRoadManager::GetInstance();
+	auto list = pRoadManager->GetList();
 
 	// 入力があれば確認する
 	if (!pMouse->GetTrigger(CInputMouse::BUTTON_LBUTTON)) 
@@ -160,9 +161,9 @@ void CEdit_Road::ClickCheck()
 	m_pSelect = nullptr;
 
 	// 道を全て確認
-	while (pRoad != nullptr)
+	for (int i = 0; i < list->GetNum(); i++)
 	{
-		CRoad* pNext = pRoad->GetNext();
+		CRoad* pRoad = list->Get(i);
 
 		// 衝突した
 		if (CursorCollision(pRoad))
@@ -178,8 +179,6 @@ void CEdit_Road::ClickCheck()
 
 			return;
 		}
-
-		pRoad = pNext;
 	}
 
 	// 道が選ばれていない
@@ -373,9 +372,9 @@ void CEdit_Road::Save()
 
 	std::vector<CRoad::SInfo> savedata;
 
-	for (int i = 0; i < pMgr->GetList()->GetNum(); i++)
+	for (int i = 0; i < pMgr->GetInfoList()->GetNum(); i++)
 	{
-		savedata.push_back(*pMgr->GetList()->Get(i));
+		savedata.push_back(*pMgr->GetInfoList()->Get(i));
 	}
 
 	int size = savedata.size();

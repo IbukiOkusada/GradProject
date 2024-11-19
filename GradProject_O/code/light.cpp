@@ -45,16 +45,16 @@ HRESULT CLight::Init(void)
 		switch (nCntLight)
 		{
 		case 0:
-			m_aLight[nCntLight].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.6f, 0.6f, 0.7f, 1.0f);
 			break;
 		case 1:
-			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.65f, 0.65f, 0.65f, 1.0f);
+			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.32f, 0.32f, 0.32f, 1.0f);
 			break;
 		case 2:
-			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.65f, 0.65f, 0.65f, 1.0f);
+			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.32f, 0.32f, 0.32f, 1.0f);
 			break;
 		case 3:
-			m_aLight[nCntLight].Diffuse = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.6f, 0.6f, 0.7f, 1.0f);
 			break;
 		}
 		// ÉâÉCÉgÇÃï˚å¸Çê›íË
@@ -63,7 +63,7 @@ HRESULT CLight::Init(void)
 		case 0:
 			//vecDir = D3DXVECTOR3(0.1f, -0.11f, 0.44f);
 			//vecDir = D3DXVECTOR3(0.8f, 0.23f, -0.55f);
-			vecDir = D3DXVECTOR3(-0.05f, -0.87f, 0.05f);
+			vecDir = D3DXVECTOR3(-0.5f, -0.87f, 0.05f);
 
 			break;
 		case 1:

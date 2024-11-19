@@ -80,7 +80,7 @@ void CEditManager::Update(void)
 	pProc->Print("+---------------------------------------------------------------\n");
 	pProc->Print("<エディター起動中> モデル読み込み数 [ %d ]", CMapManager::GetInstance()->GetFileNameList().size());
 	if (CMapObstacle::GetList() != nullptr) { pProc->Print(" : 障害物配置数 [ %d ]", CMapObstacle::GetList()->GetNum()); }
-	if (CRoadManager::GetInstance() != nullptr) { pProc->Print(" : 道配置数 [ %d ]\n", CRoadManager::GetInstance()->GetNum());}
+	if (CRoadManager::GetInstance() != nullptr) { pProc->Print(" : 道配置数 [ %d ]\n", CRoadManager::GetInstance()->GetList()->GetNum());}
 	pProc->Print("終了[ F4 ] : モード切替[ F3 ] : ");
 	//pProc->Print("<マウス> [ %f, %f, %f ]\n", pMouse->GetWorldPos().x, pMouse->GetWorldPos().y, pMouse->GetWorldPos().z);
 

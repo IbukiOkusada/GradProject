@@ -10,18 +10,12 @@
 #include "texture.h"
 #include <string.h>
 
-// 静的メンバ変数宣言
-int CXFile::m_nNumAll = 0;	// 読み込み総数
-
 //==========================================================
 // コンストラクタ
 //==========================================================
 CXFile::CXFile()
 {
-	for(int nCnt = 0; nCnt < MAX_FILE; nCnt++)
-	{
-		m_apModelFileData[nCnt] = NULL;
-	}
+	m_List.clear();
 }
 
 //==========================================================
@@ -35,64 +29,40 @@ CXFile::~CXFile()
 //==========================================================
 // 読み込み確認
 //==========================================================
-int CXFile::Regist(const char *pFileName)
+int CXFile::Regist(const char* pFileName)
 {
 	int nIdx = -1;
-	// 読み込まれているか確認
-	for (int nCnt = 0; nCnt < MAX_FILE; nCnt++)
-	{
-		if (m_apModelFileData[nCnt] == NULL)
-		{// 使われていない場合
-			continue;
-		}
 
+	// 読み込まれているか確認
+	for (int i = 0; i < m_List.size(); i++)
+	{
 		// 同じファイルか確認
-		if (strstr(pFileName, &m_apModelFileData[nCnt]->aFileName[0]) != NULL)
+		if (strstr(pFileName, m_List[i]->name.c_str()) != nullptr)
 		{// 同じものが存在している場合
-			nIdx = nCnt;
+			nIdx = i;
 			return nIdx;	// ファイル情報を返す
 		}
 	}
 
-	// 最後まで存在していない場合
-	for (int nCnt = 0; nCnt < MAX_FILE; nCnt++)
-	{
-		if (m_apModelFileData[nCnt] == NULL)
-		{// 使われていない場合
-			m_apModelFileData[nCnt] = DEBUG_NEW FileInfo;	// メモリの確保
+	// 存在していない場合メモリを確保する
+	SFileInfo* pInfo = DEBUG_NEW SFileInfo;	// メモリの確保
+	*pInfo = SFileInfo();
 
-			if (m_apModelFileData[nCnt] != NULL)
-			{// メモリを確保できた場合
+	// ファイル名の取得
+	pInfo->name = pFileName;
 
-				// メモリのクリア
-				memset(m_apModelFileData[nCnt], NULL, sizeof(FileInfo));
+	nIdx = m_List.size();
+	m_List.push_back(pInfo);
 
-				// サイズの最低値を代入
-				m_apModelFileData[nCnt]->filedata.vtxMax = D3DXVECTOR3(-100000.0f, -100000.0f, -100000.0f);
-				m_apModelFileData[nCnt]->filedata.vtxMin = D3DXVECTOR3(100000.0f, 100000.0f, 100000.0f);
-
-				// ファイル名の取得
-				strcpy(&m_apModelFileData[nCnt]->aFileName[0], pFileName);
-
-				// Xファイルの読み込み
-				if (SUCCEEDED(FileLoad(nCnt)))
-				{// 成功した場合
-
-					m_nNumAll++;	// 読み込み数カウントアップ
-					nIdx = nCnt;
-					return nIdx;	// ファイル情報を返す
-				}
-				else {
-					// 値をクリアする
-					memset(m_apModelFileData[nCnt]->aFileName, '\0', sizeof(m_apModelFileData[nCnt]->aFileName));
-
-					delete m_apModelFileData[nCnt];
-					m_apModelFileData[nCnt] = nullptr;
-				}
-
-				break;
-			}
-		}
+	// Xファイルの読み込み
+	if (SUCCEEDED(FileLoad(nIdx)))
+	{// 成功した場合
+		return nIdx;	// ファイル情報を返す
+	}
+	else {	// 失敗
+		m_List.pop_back();
+		delete pInfo;
+		pInfo = nullptr;
 	}
 
 	return -1;
@@ -111,92 +81,92 @@ HRESULT CXFile::FileLoad(int nIdx)
 	BYTE *pVtxBuff;		//頂点バッファのポインタ
 
 	//Xファイルの読み込み
-	if (FAILED(D3DXLoadMeshFromX(&m_apModelFileData[nIdx]->aFileName[0],
+	if (FAILED(D3DXLoadMeshFromX(m_List[nIdx]->name.c_str(),
 		D3DXMESH_SYSTEMMEM,
 		pDevice,
-		NULL,
-		&m_apModelFileData[nIdx]->filedata.pBuffMat,
-		NULL,
-		&m_apModelFileData[nIdx]->filedata.dwNumMat,
-		&m_apModelFileData[nIdx]->filedata.pMesh)))
+		nullptr,
+		&m_List[nIdx]->data.pBuffMat,
+		nullptr,
+		&m_List[nIdx]->data.dwNumMat,
+		&m_List[nIdx]->data.pMesh)))
 	{// 読み込みに失敗した場合
 		return E_FAIL;	// 失敗を返す
 	}
 
 	// テクスチャポインタの確保
-	if ((int)m_apModelFileData[nIdx]->filedata.dwNumMat > 0)
+	if ((int)m_List[nIdx]->data.dwNumMat > 0)
 	{// マテリアルを使用している場合
-		if (m_apModelFileData[nIdx]->filedata.pIdexTexture == NULL)
+		if (m_List[nIdx]->data.pIdexTexture == nullptr)
 		{// テクスチャが使用されていない場合
 			// マテリアル数分確保
-			m_apModelFileData[nIdx]->filedata.pIdexTexture = DEBUG_NEW int[(int)m_apModelFileData[nIdx]->filedata.dwNumMat];
+			m_List[nIdx]->data.pIdexTexture = DEBUG_NEW int[(int)m_List[nIdx]->data.dwNumMat];
 		}
 	}
 
 	//マテリアルデータへのポインタを取得
-	pMat = (D3DXMATERIAL*)m_apModelFileData[nIdx]->filedata.pBuffMat->GetBufferPointer();
+	pMat = (D3DXMATERIAL*)m_List[nIdx]->data.pBuffMat->GetBufferPointer();
 
-	for (int nCntMat = 0; nCntMat < (int)m_apModelFileData[nIdx]->filedata.dwNumMat; nCntMat++)
+	for (int iMat = 0; iMat < (int)m_List[nIdx]->data.dwNumMat; iMat++)
 	{
-		if (pMat[nCntMat].pTextureFilename != NULL)
+		if (pMat[iMat].pTextureFilename != nullptr)
 		{//テクスチャファイルが存在している
 			//テクスチャの読み込み
-			m_apModelFileData[nIdx]->filedata.pIdexTexture[nCntMat] = pTexture->Regist(pMat[nCntMat].pTextureFilename);
+			m_List[nIdx]->data.pIdexTexture[iMat] = pTexture->Regist(pMat[iMat].pTextureFilename);
 		}
 		else
 		{
-			m_apModelFileData[nIdx]->filedata.pIdexTexture[nCntMat] = -1;
+			m_List[nIdx]->data.pIdexTexture[iMat] = -1;
 		}
 	}
 
 	//頂点数を取得
-	nNumVtx = m_apModelFileData[nIdx]->filedata.pMesh->GetNumVertices();
+	nNumVtx = m_List[nIdx]->data.pMesh->GetNumVertices();
 
 	//頂点フォーマットのサイズを取得
-	dwSizeFVF = D3DXGetFVFVertexSize(m_apModelFileData[nIdx]->filedata.pMesh->GetFVF());
+	dwSizeFVF = D3DXGetFVFVertexSize(m_List[nIdx]->data.pMesh->GetFVF());
 
 	//頂点バッファをロック
-	m_apModelFileData[nIdx]->filedata.pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
+	m_List[nIdx]->data.pMesh->LockVertexBuffer(D3DLOCK_READONLY, (void**)&pVtxBuff);
 
-	for (int nCntVtx = 0; nCntVtx < nNumVtx; nCntVtx++)
+	for (int iVtx = 0; iVtx < nNumVtx; iVtx++)
 	{
 		D3DXVECTOR3 vtx = *(D3DXVECTOR3*)pVtxBuff;	//頂点座標の代入
 
 		// X座標
-		if (vtx.x < m_apModelFileData[nIdx]->filedata.vtxMin.x)
+		if (vtx.x < m_List[nIdx]->data.vtxMin.x)
 		{//最小値よりも値が小さい場合
-			m_apModelFileData[nIdx]->filedata.vtxMin.x = vtx.x;
+			m_List[nIdx]->data.vtxMin.x = vtx.x;
 		}
-		else if (vtx.x > m_apModelFileData[nIdx]->filedata.vtxMax.x)
+		else if (vtx.x > m_List[nIdx]->data.vtxMax.x)
 		{//最大値よりも値が大きい場合
-			m_apModelFileData[nIdx]->filedata.vtxMax.x = vtx.x;
+			m_List[nIdx]->data.vtxMax.x = vtx.x;
 		}
 
 		// Z座標
-		if (vtx.z < m_apModelFileData[nIdx]->filedata.vtxMin.z)
+		if (vtx.z < m_List[nIdx]->data.vtxMin.z)
 		{//最小値よりも値が小さい場合
-			m_apModelFileData[nIdx]->filedata.vtxMin.z = vtx.z;
+			m_List[nIdx]->data.vtxMin.z = vtx.z;
 		}
-		else if (vtx.z > m_apModelFileData[nIdx]->filedata.vtxMax.z)
+		else if (vtx.z > m_List[nIdx]->data.vtxMax.z)
 		{//最大値よりも値が大きい場合
-			m_apModelFileData[nIdx]->filedata.vtxMax.z = vtx.z;
+			m_List[nIdx]->data.vtxMax.z = vtx.z;
 		}
 
 		// Y座標
-		if (vtx.y < m_apModelFileData[nIdx]->filedata.vtxMin.y)
+		if (vtx.y < m_List[nIdx]->data.vtxMin.y)
 		{//最小値よりも値が小さい場合
-			m_apModelFileData[nIdx]->filedata.vtxMin.y = vtx.y;
+			m_List[nIdx]->data.vtxMin.y = vtx.y;
 		}
-		else if (vtx.y > m_apModelFileData[nIdx]->filedata.vtxMax.y)
+		else if (vtx.y > m_List[nIdx]->data.vtxMax.y)
 		{//最大値よりも値が大きい場合
-			m_apModelFileData[nIdx]->filedata.vtxMax.y = vtx.y;
+			m_List[nIdx]->data.vtxMax.y = vtx.y;
 		}
 
 		pVtxBuff += dwSizeFVF;	//頂点フォーマットのサイズ分ポインタを進める
 	}
 
 	//頂点バッファをアンロック
-	m_apModelFileData[nIdx]->filedata.pMesh->UnlockVertexBuffer();
+	m_List[nIdx]->data.pMesh->UnlockVertexBuffer();
 
 	return S_OK;	// 成功を返す
 }
@@ -206,49 +176,44 @@ HRESULT CXFile::FileLoad(int nIdx)
 //==========================================================
 void CXFile::Unload(void)
 {
-	// 読み込まれているか確認
-	for (int nCnt = 0; nCnt < MAX_FILE; nCnt++)
+	for (int i = 0; i < m_List.size(); i++)
 	{
-		if (m_apModelFileData[nCnt] == NULL)
-		{// 使用されていない場合
-			continue;	// やり直し
-		}
-		
-		// 値をクリアする
-		memset(m_apModelFileData[nCnt]->aFileName, '\0', sizeof(m_apModelFileData[nCnt]->aFileName));
+		auto texture = m_List[i];
 
 		//メッシュの廃棄
-		if (m_apModelFileData[nCnt]->filedata.pMesh != NULL)
+		if (texture->data.pMesh != nullptr)
 		{
-			m_apModelFileData[nCnt]->filedata.pMesh->Release();
-			m_apModelFileData[nCnt]->filedata.pMesh = NULL;
+			texture->data.pMesh->Release();
+			texture->data.pMesh = nullptr;
 		}
 
 		//マテリアルの廃棄
-		if (m_apModelFileData[nCnt]->filedata.pBuffMat != NULL)
+		if (texture->data.pBuffMat != nullptr)
 		{
-			m_apModelFileData[nCnt]->filedata.pBuffMat->Release();
-			m_apModelFileData[nCnt]->filedata.pBuffMat = NULL;
+			texture->data.pBuffMat->Release();
+			texture->data.pBuffMat = nullptr;
 		}
 
 		// テクスチャ番号の廃棄
-		delete[] m_apModelFileData[nCnt]->filedata.pIdexTexture;	// テクスチャポインタの開放
+		delete[] texture->data.pIdexTexture;	// テクスチャポインタの開放
 
-		delete m_apModelFileData[nCnt];	// メモリの開放
-		m_apModelFileData[nCnt] = NULL;	// 使用していない状態にする
-		m_nNumAll--;	// 読み込み数カウントダウン
+		// 外す
+		m_List.erase(m_List.begin() + i);
+		delete texture;	// メモリの開放
+		i--;
+
 	}
 }
 
 //==========================================================
-// Xファイル情報廃棄
+// 指定された番号の情報取得
 //==========================================================
-CXFile::FileData *CXFile::SetAddress(int nIdx)
+CXFile::SFileData *CXFile::SetAddress(int nIdx)
 {
-	if (nIdx > m_nNumAll || nIdx < 0)
+	if (nIdx > m_List.size() || nIdx < 0)
 	{// 読み込み範囲外の場合
-		return NULL;
+		return nullptr;
 	}
 
-	return &m_apModelFileData[nIdx]->filedata;
+	return &m_List[nIdx]->data;
 }

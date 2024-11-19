@@ -15,12 +15,17 @@
 #include "convenience.h"
 #include "objectsound.h"
 #include "radio.h"
+#include "navi.h"
+#include "road.h"
 using namespace std;
 // 前方宣言
 class CWaist;
 class CCharacter;
 class CObjectX;
 class CRoad;
+class CBaggage;
+class CMultiCamera;
+class CPredRoute;
 
 // マクロ定義
 #define MAX_ITEM  (1280)  // 所持できるアイテムの最大数
@@ -35,8 +40,8 @@ public:
 	// 操作種類列挙型
 	enum TYPE
 	{
-		TYPE_NONE,	// 操作不可能
-		TYPE_SEND,	// データ送信
+		TYPE_NONE,		// 操作不可能
+		TYPE_SEND,		// データ送信
 		TYPE_ACTIVE,	// 操作可能
 		TYPE_MAX
 	};
@@ -95,7 +100,12 @@ public:	// 誰でもアクセス可能
 	void SetNext(CPlayer* pNext) { m_pNext = pNext; }
 	void SetPrev(CPlayer* pPrev) { m_pPrev = pPrev; }
 	void SetRotDiff(float fDiff) { m_fRotDest = fDiff; }
+	CBaggage* ThrowBaggage(D3DXVECTOR3* pTarget);
+	void Damage(float fDamage);
 
+	void SetNumDeliveryStatus(int nNum) { m_nNumDeliveryStatus = nNum; }
+	void AddDeliveryCount(void) { m_nNumDeliveryStatus++; }
+	
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetMove(void) { return m_Info.move; }
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
@@ -103,10 +113,15 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetOldPosition(void) { return m_Info.posOld; }
 	CRoad* GetRoad(void) { return m_Info.pRoad; }
 	CPlayer* GetNext(void) { return m_pNext; }
+	CObjectX* GetObj() { return m_pObj; }
 	CPlayer* GetPrev(void) { return m_pPrev; }
+	CPredRoute* GetPredRoute() { return m_pPredRoute; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
+	float GetEngine(void) { return m_fEngine; }
+	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
+	float GetLifeOrigin() { return m_fLifeOrigin; }
 
-private:	// 自分だけがアクセス可能
+protected:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	void SetMatrix(void);
@@ -118,8 +133,8 @@ private:	// 自分だけがアクセス可能
 	bool Collision(void);
 	void Engine(float fThrottle);
 	void SearchRoad(void);
-	void Damage(float fDamage);
 	void Nitro();
+	void GetBestPath();
 	void DEBUGKEY();
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
@@ -134,21 +149,28 @@ private:	// 自分だけがアクセス可能
 	float m_fTurnSpeed;
 	float m_fHandle;
 	float m_fLife;
+	float m_fLifeOrigin;
 	float m_fCamera;
 	float m_fSlowRate = 1.0f;
 	float m_fNitroCool;
 	int m_nId;					// ID
-	TYPE m_type;
-	CObjectX* m_pObj;
+	TYPE m_type;			// 種類
+	CObjectX* m_pObj;		// 描画オブジェクト
+	CBaggage* m_pBaggage;	// 荷物
+	CNavi* m_pNavi;			// ナビ
+	CPredRoute* m_pPredRoute;	// 予測用
 	CEffekseer::CEffectData * m_pTailLamp;
 	CEffekseer::CEffectData* m_pBackdust;
 	CEffekseer::CEffectData* m_pAfterburner;
 	CEffekseer::CEffectData* m_pDamageEffect;
 	CMasterSound::CObjectSound* m_pSound;
 	CMasterSound::CObjectSound* m_pSoundBrake;
+	std::vector<CRoad::SSearch*> m_pPath;
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
 	CRadio* pRadio;
+	CMasterSound::CObjectSound* m_pCollSound;
+	int m_nNumDeliveryStatus;  // 配達した数
 };
 
 

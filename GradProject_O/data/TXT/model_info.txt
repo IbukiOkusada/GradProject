@@ -7,7 +7,11 @@
 
 SCRIPT
 
-MODEL_FILENAME = data/MODEL/bill.x	# [0]砂場
-MODEL_FILENAME = data/MODEL/bill2.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/map/bill_00.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/map/bill_01.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/map/cubebridge.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/map/open.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/map/sign_speed_limit.x	# [0]砂場
+MODEL_FILENAME = data/MODEL/map/sign_stop.x	# [0]砂場
 
 END_SCRIPT

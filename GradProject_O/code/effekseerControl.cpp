@@ -157,7 +157,7 @@ void CEffekseer::Update()
 
 				m_EfkManager->SetLocation(m_vEffect[i]->handle, m_vEffect[i]->m_pos.X, m_vEffect[i]->m_pos.Y, m_vEffect[i]->m_pos.Z);
 				m_EfkManager->SetRotation(m_vEffect[i]->handle, m_vEffect[i]->m_rot.X, m_vEffect[i]->m_rot.Y, m_vEffect[i]->m_rot.Z);
-				m_EfkManager->SetScale(m_vEffect[i]->handle, m_vEffect[i]->m_fScale, m_vEffect[i]->m_fScale, m_vEffect[i]->m_fScale);
+				m_EfkManager->SetScale(m_vEffect[i]->handle, m_vEffect[i]->m_Scale.X, m_vEffect[i]->m_Scale.Y, m_vEffect[i]->m_Scale.Z);
 			}
 		}
 		else
@@ -165,7 +165,7 @@ void CEffekseer::Update()
 			m_vEffect[i]->m_pos += m_vEffect[i]->m_move;
 			m_EfkManager->SetLocation(m_vEffect[i]->handle, m_vEffect[i]->m_pos.X, m_vEffect[i]->m_pos.Y, m_vEffect[i]->m_pos.Z);
 			m_EfkManager->SetRotation(m_vEffect[i]->handle, m_vEffect[i]->m_rot.X, m_vEffect[i]->m_rot.Y, m_vEffect[i]->m_rot.Z);
-			m_EfkManager->SetScale(m_vEffect[i]->handle, m_vEffect[i]->m_fScale, m_vEffect[i]->m_fScale, m_vEffect[i]->m_fScale);
+			m_EfkManager->SetScale(m_vEffect[i]->handle, m_vEffect[i]->m_Scale.X, m_vEffect[i]->m_Scale.Y, m_vEffect[i]->m_Scale.Z);
 		}
 
 	}
@@ -241,7 +241,9 @@ CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D
 	pEffect->m_pos = pos;
 	pEffect->m_rot = rot;
 	pEffect->m_move = move;
-	pEffect->m_fScale = fScale;
+	pEffect->m_Scale.X = fScale;
+	pEffect->m_Scale.Y = fScale;
+	pEffect->m_Scale.Z = fScale;
 	pEffect->m_bLoop = bLoop;
 	pEffect->m_bAutoDelete = bAutoDelete;
 	return pEffect;
@@ -314,4 +316,11 @@ void CEffekseer::CEffectData::Erase()
 bool CEffekseer::CEffectData::GetExist()
 {
 	return CEffekseer::GetInstance()->GetManager()->Exists(handle);
+}
+//======================================================
+//エフェクトインスタンスへのトリガー送信
+//======================================================	
+void CEffekseer::CEffectData::Trigger(int nValue)
+{
+	return CEffekseer::GetInstance()->GetManager()->SendTrigger(handle, nValue);
 }

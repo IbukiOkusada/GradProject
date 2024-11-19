@@ -48,12 +48,14 @@ public:	// 誰でもアクセス可能
 	// 取得関数
 	D3DXVECTOR3& GetPosition() { return m_Info.pos; }
 	D3DXVECTOR3& GetRotation() { return m_Info.rot; }
+	D3DXVECTOR3& GetScale() { return m_Info.scale; }
 	CObjectX* GetObj() { return m_pObj; }
 	SInfo& GetInfo() { return m_Info; }
 
 	// 設定関数
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetRotation(const D3DXVECTOR3& rot);
+	void SetScale(const D3DXVECTOR3& scale);
 	void BindModel(const int& idx);
 
 	// 静的
