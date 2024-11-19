@@ -137,7 +137,7 @@ bool LineCrossProduct(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3* pos, D3DX
 }
 
 //==================================================================================================
-//点とOBBの衝突判定
+// 点とOBBの衝突判定
 //==================================================================================================
 bool CollidePointToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV, D3DXVECTOR3* posInter, D3DXVECTOR3* vecRef, float fRefIner)
 {
@@ -226,7 +226,7 @@ bool CollidePointToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 posOldO, D3DXVECTOR3
 }
 
 //==================================================================================================
-//点とOBBの押し戻し判定
+// 点とOBBの押し戻し判定
 //==================================================================================================
 bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV)
 {
@@ -246,7 +246,7 @@ bool CollidePointToOBB(D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV,
 }
 
 //==================================================================================================
-//点とOBBの押し戻し判定
+// 点とOBBの押し戻し判定
 //==================================================================================================
 bool CollidePointToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3* posO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV)
 {
@@ -267,7 +267,7 @@ bool CollidePointToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3* posO, D3DXVECTOR3 posOldO
 }
 
 //==================================================================================================
-//点とOBBの反射判定
+// 点とOBBの反射判定
 //==================================================================================================
 bool ReflectPointToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3* posO, D3DXVECTOR3* moveO, D3DXVECTOR3 posOldO, D3DXVECTOR3 posV, D3DXVECTOR3 rotV, D3DXVECTOR3 sizeV, float fRefIner)
 {
@@ -587,45 +587,45 @@ float lengthAxis(D3DXVECTOR3 separationAxis, D3DXVECTOR3 e1, D3DXVECTOR3 e2, D3D
 }
 
 //========================================
-//3次元空間での行列による回転座標変換関数
-//(任意の点からのオフセット位置を角度と距離で変換)
+// 3次元空間での行列による回転座標変換関数
+// (任意の点からのオフセット位置を角度と距離で変換)
 //========================================
 D3DXVECTOR3 PosRelativeMtx(D3DXVECTOR3 posO, D3DXVECTOR3 rot, D3DXVECTOR3 offset)
 {
 	D3DXVECTOR3 posAnswer;
 	D3DXMATRIX mtxO, mtxAnswer;
-	D3DXMATRIX mtxRot, mtxTrans;		//計算用マトリックス
-	D3DXMATRIX mtxRotModel, mtxTransModel, mtxPalent;		//計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans;		// 計算用マトリックス
+	D3DXMATRIX mtxRotModel, mtxTransModel, mtxPalent;		// 計算用マトリックス
 
-	//パーツのワールドマトリックス初期化
+	// パーツのワールドマトリックス初期化
 	D3DXMatrixIdentity(&mtxO);
 
-	//向きを反映
+	// 向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot,
 		rot.y, rot.x, rot.z);
 	D3DXMatrixMultiply(&mtxO, &mtxO, &mtxRot);
 
-	//位置を反映
+	// 位置を反映
 	D3DXMatrixTranslation(&mtxTransModel,
 		posO.x, posO.y, posO.z);
 	D3DXMatrixMultiply(&mtxO, &mtxO, &mtxTransModel);
 
 	mtxPalent = mtxO;
 
-	//パーツのワールドマトリックス初期化
+	// パーツのワールドマトリックス初期化
 	D3DXMatrixIdentity(&mtxAnswer);
 
-	//向きを反映
+	// 向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot,
 		3.14f, 3.14f, 3.14f);
 	D3DXMatrixMultiply(&mtxO, &mtxO, &mtxRot);
 
-	//位置を反映
+	// 位置を反映
 	D3DXMatrixTranslation(&mtxTransModel,
 		offset.x, offset.y, offset.z);
 	D3DXMatrixMultiply(&mtxAnswer, &mtxAnswer, &mtxTransModel);
 
-	//算出したパーツのワールドマトリックスと親のマトリックスをかけ合わせる
+	// 算出したパーツのワールドマトリックスと親のマトリックスをかけ合わせる
 	D3DXMatrixMultiply(&mtxAnswer,
 		&mtxAnswer,
 		&mtxPalent);
@@ -636,7 +636,7 @@ D3DXVECTOR3 PosRelativeMtx(D3DXVECTOR3 posO, D3DXVECTOR3 rot, D3DXVECTOR3 offset
 }
 
 //========================================
-//3次元空間での行列による回転座標変換からの法線計算関数
+// 3次元空間での行列による回転座標変換からの法線計算関数
 //========================================
 D3DXVECTOR3 NorRelativeMtx(D3DXVECTOR3 posO, D3DXVECTOR3 rot, D3DXVECTOR3 offsetMax, D3DXVECTOR3 offsetMin)
 {
