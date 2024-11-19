@@ -1,6 +1,6 @@
 //===============================================
 //
-// フェードの処理全般 [fade.h]
+// タイマーの処理 [timer.h]
 // Author : Kenta Hashimoto
 //
 //===============================================
@@ -11,6 +11,7 @@
 #include "manager.h"
 #include "object2D.h"
 #include "edit_manager.h"
+#include "fade.h"
 
 //==========================================================
 // 定数定義
@@ -31,13 +32,24 @@ namespace DECPOINT
 	const char* TEX_PATH = "data\\TEXTURE\\Point.png";
 }
 
+namespace BLINKING
+{
+	const float STERT = 190.0f;	// 点滅になる時間
+	const float SPEED = 1.8f;	// 点滅の速さ
+}
+
+//===============================================
+// 静的メンバ変数
+//===============================================
+float CTimer::m_LimitTime = 0.0f;
+
 //===============================================
 // コンストラクタ
 //===============================================
 CTimer::CTimer()
 {
 	// 値のクリア
-	m_LimitTime = 0;
+	m_Ratio = 0.0f;
 }
 
 //===============================================
@@ -86,6 +98,7 @@ HRESULT CTimer::Init(void)
 	m_pDecPoint->SetDraw();
 
 	m_LimitTime = 200.0f;
+	m_Ratio = 0.0f;
 
 	return S_OK;
 }
@@ -104,6 +117,12 @@ void CTimer::Uninit(void)
 		}
 	}
 
+	if (m_pDecPoint != NULL)
+	{
+		m_pDecPoint->Uninit();
+		m_pDecPoint = NULL;
+	}
+
 	delete this;
 }
 
@@ -117,6 +136,11 @@ void CTimer::Update(void)
 #endif // _DEBUG
 
 	CalTime();
+
+	if (m_LimitTime < BLINKING::STERT)
+	{
+		BlinkingTime();
+	}
 }
 
 //===============================================
@@ -143,7 +167,10 @@ void CTimer::CalTime(void)
 {
 	CDeltaTime* m_pDeltaTime = CDeltaTime::GetInstance();
 
-	m_LimitTime = m_LimitTime - m_pDeltaTime->GetDestTime();
+	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
+	{
+		m_LimitTime -= m_pDeltaTime->GetDestTime();
+	}
 
 	m_LimitTime = m_LimitTime * 100.0f;
 
@@ -158,5 +185,34 @@ void CTimer::CalTime(void)
 	for (int Cnt = 0; Cnt < 5; Cnt++)
 	{	
 		m_pObject[Cnt]->SetIdx(m_Time[Cnt]);
+	}
+}
+//===============================================
+// 点滅処理
+//===============================================
+void CTimer::BlinkingTime(void)
+{
+	CDeltaTime* m_pDeltaTime = CDeltaTime::GetInstance();
+
+	D3DXCOLOR col = m_pDecPoint->GetObject2D()->GetCol();
+
+	if (col.b >= 1.0f && col.g >= 1.0f)
+	{
+		m_Ratio = -m_pDeltaTime->GetDestTime() * BLINKING::SPEED;
+	}
+
+	else if (col.b <= 0.0f && col.g <= 0.0f)
+	{
+		m_Ratio = m_pDeltaTime->GetDestTime() * BLINKING::SPEED;
+	}
+
+	col.b += m_Ratio;
+	col.g += m_Ratio;
+
+	m_pDecPoint->GetObject2D()->SetCol(col);
+
+	for (int Cnt = 0; Cnt < 5; Cnt++)
+	{
+		m_pObject[Cnt]->GetObject2D()->SetCol(col);
 	}
 }

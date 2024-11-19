@@ -1,7 +1,7 @@
 //===============================================
 //
-// フェードの処理全般 [fade.h]
-// Author : Ibuki Okusada
+// タイマーの処理 [timer.h]
+// Author : Kenta Hashimoto
 //
 //===============================================
 #ifndef _TIMER_H_
@@ -31,16 +31,21 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 	static CTimer* Create();
 
+	static float GetTime() { return m_LimitTime; }
+
 private:	// 自分だけがアクセス可能な定義
 
-	void CalTime();
+	void CalTime();				// タイマーの計算
+	void BlinkingTime();		// 点滅処理
 
 	// メンバ変数
 	CNumber* m_pObject[5];		// 描画オブジェクト
 	CObject2D* m_pDecPoint;		// 小数点のオブジェクト
 
-	float m_LimitTime;
+	static float m_LimitTime;
 	int m_Time[5];
+
+	float m_Ratio;
 };
 
 #endif
