@@ -292,10 +292,10 @@ void CPolice::SearchPlayer()
 
 				SetRoadStart(nullptr);
 				SetRoadTarget(nullptr);
-			}
 
-			// ó‘Ôİ’è
-			SetState(STATE::STATE_CHASE);
+				// ó‘Ôİ’è
+				SetState(STATE::STATE_CHASE);
+			}
 		}
 		else if (length < CHASE_END)
 		{// ’ÇÕI—¹
