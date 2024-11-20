@@ -222,7 +222,7 @@ void CPredRoute::Interp()
 	CRoad* pOld = m_PassRoad[m_PassRoad.size() - 1];
 
 	// ŠÔ‚ð•âŠ®‚·‚é
-	std::vector<CRoad::SSearch*> path = AStar(pOld->GetSearchSelf(), m_pOldRoad->GetSearchSelf());
+	std::vector<CRoad::SSearch*> path = AStar::AStar(pOld->GetSearchSelf(), m_pOldRoad->GetSearchSelf());
 
 	// ’¼üˆÚ“®‚¾‚Á‚½ê‡
 	if (pOld->GetPosition().x == m_pOldRoad->GetPosition().x ||
