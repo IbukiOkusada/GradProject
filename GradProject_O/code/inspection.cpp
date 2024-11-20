@@ -68,7 +68,7 @@ HRESULT CInstpection::Init(void)
 		// Œo˜H‚ðÝ’è
 		if (m_pRoad != nullptr)
 		{
-			m_pPolice->SetNavi(AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf()));
+			m_pPolice->SetNavi(AStar::AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf()));
 			m_pPolice->SetState(CPolice::STATE::STATE_NORMAL);
 		}
 	}

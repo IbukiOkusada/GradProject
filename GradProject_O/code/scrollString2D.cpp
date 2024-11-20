@@ -11,7 +11,8 @@
 #include "manager.h"
 #include "string2D.h"
 #include "char2D.h"
-
+#include "convenience.h"
+#include "deltatime.h"
 //************************************************************
 //	子クラス [CScrollString2D] のメンバ関数
 //************************************************************
@@ -19,7 +20,7 @@
 //	コンストラクタ
 //============================================================
 CScrollString2D::CScrollString2D() :
-	m_labelSE	(CSound::LABEL_NONE),	// 文字送り再生SEラベル
+	m_labelSE	(nullptr),	// 文字送り再生SEラベル
 	m_nNextIdx	(0),	// 次表示する文字インデックス
 	m_fNextTime	(0.0f),	// 次表示するまでの時間
 	m_fCurTime	(0.0f),	// 現在の待機時間
@@ -42,7 +43,7 @@ CScrollString2D::~CScrollString2D()
 HRESULT CScrollString2D::Init()
 {
 	// メンバ変数を初期化
-	m_labelSE	= CSound::LABEL_NONE;	// 文字送り再生SEラベル
+	m_labelSE	= nullptr;	// 文字送り再生SEラベル
 	m_nNextIdx	= 0;		// 次表示する文字インデックス
 	m_fNextTime	= 0.0f;		// 次表示するまでの時間
 	m_fCurTime	= 0.0f;		// 現在の待機時間
@@ -73,20 +74,20 @@ void CScrollString2D::Uninit()
 //============================================================
 void CScrollString2D::Update(const float fDeltaTime)
 {
-	// 文字送りの更新
-	UpdateScroll(fDeltaTime);
-
-	// 文字列2Dの更新
-	CString2D::Update(fDeltaTime);
+	
 }
 
 //============================================================
 //	描画処理
 //============================================================
-void CScrollString2D::Draw(CShader* pShader)
+void CScrollString2D::Draw()
 {
+	// 文字送りの更新
+	UpdateScroll(CManager::GetInstance()->GetDeltaTime()->GetDeltaTime());
+
+	
 	// 文字列2Dの描画
-	CString2D::Draw(pShader);
+	CString2D::Draw();
 }
 
 //============================================================
@@ -110,7 +111,7 @@ void CScrollString2D::SetEnableDraw(const bool bDraw)
 HRESULT CScrollString2D::SetString(const std::string& rStr)
 {
 	// 文字列をワイド変換
-	std::wstring wsStr = useful::MultiByteToWide(rStr);
+	std::wstring wsStr = MultiByteToWide(rStr);
 
 	// 文字列を設定
 	if (FAILED(SetString(wsStr)))
@@ -150,12 +151,12 @@ CScrollString2D* CScrollString2D::Create
 	const std::string& rFilePath,	// フォントパス
 	const bool bItalic,				// イタリック
 	const std::string& rStr,		// 指定文字列
-	const VECTOR3& rPos,			// 原点位置
+	const D3DXVECTOR3& rPos,			// 原点位置
 	const float fNextTime,			// 文字表示の待機時間
 	const float fHeight,			// 文字縦幅
 	const EAlignX alignX,			// 横配置
-	const VECTOR3& rRot,			// 原点向き
-	const COLOR& rCol				// 色
+	const D3DXVECTOR3& rRot,			// 原点向き
+	const D3DXCOLOR& rCol				// 色
 )
 {
 	// 文字送り文字列2Dの生成
@@ -220,12 +221,12 @@ CScrollString2D* CScrollString2D::Create
 	const std::string& rFilePath,	// フォントパス
 	const bool bItalic,				// イタリック
 	const std::wstring& rStr,		// 指定文字列
-	const VECTOR3& rPos,			// 原点位置
+	const D3DXVECTOR3& rPos,			// 原点位置
 	const float fNextTime,			// 文字表示の待機時間
 	const float fHeight,			// 文字縦幅
 	const EAlignX alignX,			// 横配置
-	const VECTOR3& rRot,			// 原点向き
-	const COLOR& rCol				// 色
+	const D3DXVECTOR3& rRot,			// 原点向き
+	const D3DXCOLOR& rCol				// 色
 )
 {
 	// 文字送り文字列2Dの生成
@@ -302,7 +303,7 @@ void CScrollString2D::UpdateScroll(const float fDeltaTime)
 
 		// 文字の自動描画をONにする
 		assert(pChar != nullptr);
-		pChar->SetEnableDraw(true);
+		pChar->SetDraw(true);
 
 		// 現在の待機時間から待機時間を減算
 		m_fCurTime -= m_fNextTime;
@@ -313,7 +314,7 @@ void CScrollString2D::UpdateScroll(const float fDeltaTime)
 		// 次の文字インデックスに移行
 		m_nNextIdx++;
 
-		if (useful::LimitMaxNum(m_nNextIdx, GetNumChar() - 1))
+		if (LimitMaxNum(m_nNextIdx, GetNumChar() - 1))
 		{ // 最後の文字に到達した場合
 
 			// 現在の待機時間を初期化
@@ -333,11 +334,11 @@ void CScrollString2D::UpdateScroll(const float fDeltaTime)
 void CScrollString2D::PlayScrollSE(CChar2D* pChar2D)
 {
 	// ラベルが指定なしの場合抜ける
-	if (m_labelSE == CSound::LABEL_NONE) { return; }
+	if (m_labelSE == nullptr) { return; }
 
 	// テクスチャが透明な場合抜ける
 	if (pChar2D->IsTexEmpty()) { return; }
 
 	// 指定ラベルのSEを再生
-	PLAY_SOUND(m_labelSE);
+	m_labelSE->Play();
 }

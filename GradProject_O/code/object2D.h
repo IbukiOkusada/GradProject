@@ -72,6 +72,7 @@ public:	// 誰でもアクセス可能
 	float GetAngle(void) { return m_fAngle; }
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return m_fHeight; }
+	D3DXVECTOR3 GetSize() { return D3DXVECTOR3(m_fWidth, m_fHeight,0.0f); }
 	CObject2D *GetObject2D(void) { return this; }
 	int GetIdxTex(void) { return m_nIdxTexture; }
 

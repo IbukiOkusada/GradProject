@@ -119,7 +119,7 @@ void CNavi::StartNavigation(void)
 	if (m_pGole != nullptr && pStart != nullptr)
 	{
 		m_IdxPath = 0;
-		m_Path = AStar(pStart->GetSearchSelf(), m_pGole->GetRoad()->GetSearchSelf());
+		m_Path = AStar::AStar(pStart->GetSearchSelf(), m_pGole->GetRoad()->GetSearchSelf());
 	}
 
 }

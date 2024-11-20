@@ -26,12 +26,12 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CString2D::CString2D() : CObject(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CString2D::CString2D() : CObject(7),
 	m_ppChar		(nullptr),			// 文字ポリゴンの情報
 	m_pFontChar		(nullptr),			// フォント文字
-	m_pos			(VEC3_ZERO),		// 位置
-	m_rot			(VEC3_ZERO),		// 向き
-	m_col			(color::White()),	// 色
+	m_pos			(VECTOR3_ZERO),		// 位置
+	m_rot			(VECTOR3_ZERO),		// 向き
+	m_col			(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)),	// 色
 	m_alignX		(XALIGN_CENTER),	// 横配置
 	m_fCharHeight	(0.0f)				// 文字の縦幅
 {
@@ -54,9 +54,9 @@ HRESULT CString2D::Init()
 	// メンバ変数を初期化
 	m_ppChar		= nullptr;			// 文字ポリゴンの情報
 	m_pFontChar		= nullptr;			// フォント文字
-	m_pos			= VEC3_ZERO;		// 位置
-	m_rot			= VEC3_ZERO;		// 向き
-	m_col			= color::White();	// 色
+	m_pos			= VECTOR3_ZERO;		// 位置
+	m_rot			= VECTOR3_ZERO;		// 向き
+	m_col = (D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));	// 色
 	m_alignX		= XALIGN_CENTER;	// 横配置
 	m_fCharHeight	= 0.0f;				// 文字の縦幅
 
@@ -80,7 +80,7 @@ void CString2D::Uninit()
 	}
 
 	// 文字列の破棄
-	SAFE_DEL_ARRAY(m_ppChar);
+	SAFE_DELETEARRAY(m_ppChar);
 
 	// オブジェクトを破棄
 	Release();
@@ -89,7 +89,7 @@ void CString2D::Uninit()
 //============================================================
 //	更新処理
 //============================================================
-void CString2D::Update(const float fDeltaTime)
+void CString2D::Update()
 {
 	// 相対位置の設定
 	SetPositionRelative();
@@ -98,39 +98,13 @@ void CString2D::Update(const float fDeltaTime)
 //============================================================
 //	描画処理
 //============================================================
-void CString2D::Draw(CShader* /*pShader*/)
+void CString2D::Draw()
 {
-
+	SetPositionRelative();
 }
 
-//============================================================
-//	優先順位の設定処理
-//============================================================
-void CString2D::SetPriority(const int nPriority)
-{
-	// 自身の優先順位を設定
-	CObject::SetPriority(nPriority);
 
-	for (int i = 0; i < (int)m_wsStr.size(); i++)
-	{ // 文字数分繰り返す
 
-		// 文字の優先順位を設定
-		m_ppChar[i]->SetPriority(nPriority);
-	}
-}
-
-//============================================================
-//	更新状況の設定処理
-//============================================================
-void CString2D::SetEnableUpdate(const bool bUpdate)
-{
-	for (int i = 0; i < (int)m_wsStr.size(); i++)
-	{ // 文字数分繰り返す
-
-		// 文字の更新状況を設定
-		m_ppChar[i]->SetEnableUpdate(bUpdate);
-	}
-}
 
 //============================================================
 //	描画状況の設定処理
@@ -141,14 +115,14 @@ void CString2D::SetEnableDraw(const bool bDraw)
 	{ // 文字数分繰り返す
 
 		// 文字の描画状況を設定
-		m_ppChar[i]->SetEnableDraw(bDraw);
+		m_ppChar[i]->SetDraw(bDraw);
 	}
 }
 
 //============================================================
 //	位置の設定処理
 //============================================================
-void CString2D::SetVec3Position(const VECTOR3& rPos)
+void CString2D::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_pos = rPos;
@@ -160,7 +134,7 @@ void CString2D::SetVec3Position(const VECTOR3& rPos)
 //============================================================
 //	向きの設定処理
 //============================================================
-void CString2D::SetVec3Rotation(const VECTOR3& rRot)
+void CString2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
 {
 	// 設定する向きを保存
 	m_rot = rRot;
@@ -170,7 +144,7 @@ void CString2D::SetVec3Rotation(const VECTOR3& rRot)
 
 		// 文字向きの設定
 		assert(m_ppChar[i] != nullptr);
-		m_ppChar[i]->SetVec3Rotation(rRot);
+		m_ppChar[i]->SetRotation(rRot);
 	}
 
 	// 相対位置の設定
@@ -185,11 +159,11 @@ CString2D* CString2D::Create
 	const std::string& rFilePath,	// フォントパス
 	const bool bItalic,				// イタリック
 	const std::string& rStr,		// 指定文字列
-	const VECTOR3& rPos,			// 原点位置
+	const D3DXVECTOR3& rPos,			// 原点位置
 	const float fHeight,			// 文字縦幅
 	const EAlignX alignX,			// 横配置
-	const VECTOR3& rRot,			// 原点向き
-	const COLOR& rCol				// 色
+	const D3DXVECTOR3& rRot,			// 原点向き
+	const D3DXCOLOR& rCol				// 色
 )
 {
 	// 文字列2Dの生成
@@ -251,11 +225,11 @@ CString2D* CString2D::Create
 	const std::string& rFilePath,	// フォントパス
 	const bool bItalic,				// イタリック
 	const std::wstring& rStr,		// 指定文字列
-	const VECTOR3& rPos,			// 原点位置
+	const D3DXVECTOR3& rPos,			// 原点位置
 	const float fHeight,			// 文字縦幅
 	const EAlignX alignX,			// 横配置
-	const VECTOR3& rRot,			// 原点向き
-	const COLOR& rCol				// 色
+	const D3DXVECTOR3& rRot,			// 原点向き
+	const D3DXCOLOR& rCol				// 色
 )
 {
 	// 文字列2Dの生成
@@ -315,7 +289,7 @@ CString2D* CString2D::Create
 HRESULT CString2D::SetString(const std::string& rStr)
 {
 	// 文字列をワイド変換
-	std::wstring wsStr = useful::MultiByteToWide(rStr);
+	std::wstring wsStr = MultiByteToWide(rStr);
 
 	// 文字列を設定
 	if (FAILED(SetString(wsStr)))
@@ -351,7 +325,7 @@ HRESULT CString2D::SetString(const std::wstring& rStr)
 	}
 
 	// 文字列を破棄
-	SAFE_DEL_ARRAY(m_ppChar);
+	SAFE_DELETEARRAY(m_ppChar);
 
 	//--------------------------------------------------------
 	//	新しい文字を生成
@@ -379,11 +353,7 @@ HRESULT CString2D::SetString(const std::wstring& rStr)
 			return E_FAIL;
 		}
 
-		// 文字のラベルを指定なしにする
-		m_ppChar[i]->SetLabel(LABEL_NONE);
-
-		// 文字の優先順位を自身のものにする
-		m_ppChar[i]->SetPriority(GetPriority());
+		
 	}
 
 	// 相対位置の設定
@@ -402,7 +372,7 @@ void CString2D::SetFont
 )
 {
 	// フォント文字情報を設定
-	CFont* pFont = GET_MANAGER->GetFont();	// フォント情報
+	CFont* pFont = CManager::GetInstance()->GetFont();	// フォント情報
 	m_pFontChar = pFont->Regist(rFilePath, bItalic).pFontChar;
 
 	// 文字列の再設定
@@ -424,7 +394,7 @@ void CString2D::SetAlpha(const float fAlpha)
 //============================================================
 //	色の設定処理
 //============================================================
-void CString2D::SetColor(const COLOR& rCol)
+void CString2D::SetColor(const D3DXCOLOR& rCol)
 {
 	// 設定する色を保存
 	m_col = rCol;
@@ -434,7 +404,7 @@ void CString2D::SetColor(const COLOR& rCol)
 
 		// 文字色の設定
 		assert(m_ppChar[i] != nullptr);
-		m_ppChar[i]->SetColor(rCol);
+		m_ppChar[i]->SetCol(rCol);
 	}
 }
 
@@ -491,13 +461,13 @@ float CString2D::GetStrWidth() const
 
 	// 先頭文字のサイズをブラックボックス左からの大きさに補正
 	assert(m_ppChar[0] != nullptr);
-	float fHeadWidth = m_ppChar[0]->GetVec3Size().x * 0.5f;			// 先頭文字の横幅
+	float fHeadWidth = m_ppChar[0]->GetSize().x * 0.5f;			// 先頭文字の横幅
 	fStrWidth += fHeadWidth - m_ppChar[0]->GetOffsetOrigin();		// 原点より前の空間を加算
 	fStrWidth -= fHeadWidth + m_ppChar[0]->GetOffsetBlackBoxLU().x;	// ブラックボックス開始より前の空間を減算
 
 	// 終端文字のサイズをブラックボックス右までの大きさに補正
 	assert(m_ppChar[nEndCharIdx] != nullptr);
-	float fTailWidth = m_ppChar[nEndCharIdx]->GetVec3Size().x * 0.5f;			// 終端文字の横幅
+	float fTailWidth = m_ppChar[nEndCharIdx]->GetSize().x * 0.5f;			// 終端文字の横幅
 	fStrWidth -= fTailWidth - m_ppChar[nEndCharIdx]->GetOffsetOrigin();			// 原点より前の空間を減算
 	fStrWidth += fTailWidth + m_ppChar[nEndCharIdx]->GetOffsetBlackBoxRD().x;	// ブラックボックス終了より前の空間を加算
 
@@ -515,7 +485,7 @@ CChar2D *CString2D::GetChar2D(const int nCharIdx) const
 	if (nStrLen <= 0) { assert(false); return nullptr; }
 
 	// インデックスが範囲外の場合抜ける
-	if (nCharIdx <= NONE_IDX || nCharIdx >= nStrLen) { assert(false); return nullptr; }
+	if (nCharIdx <= -1 || nCharIdx >= nStrLen) { assert(false); return nullptr; }
 
 	// 引数インデックスの文字を返す
 	return m_ppChar[nCharIdx];
@@ -527,7 +497,7 @@ CChar2D *CString2D::GetChar2D(const int nCharIdx) const
 std::string CString2D::GetStr() const
 {
 	// 文字列をマルチバイト変換して返す
-	return useful::WideToMultiByte(m_wsStr);
+	return WideToMultiByte(m_wsStr);
 }
 
 //============================================================
@@ -541,8 +511,8 @@ void CString2D::SetPositionRelative()
 	assert(m_ppChar[0] != nullptr);
 	float fHeadOffsetOrigin	= m_ppChar[0]->GetOffsetOrigin();			// 先頭文字の原点オフセット
 	float fHeadOffsetLU	= m_ppChar[0]->GetOffsetBlackBoxLU().x;			// 先頭文字のブラックボックスオフセット
-	float fHeadRot		= m_ppChar[0]->GetVec3Rotation().z - HALF_PI;	// 先頭文字の向き
-	float fHeadWidth	= m_ppChar[0]->GetVec3Size().x * 0.5f;			// 先頭文字の横幅
+	float fHeadRot		= m_ppChar[0]->GetRotation().z - D3DX_PI/2;	// 先頭文字の向き
+	float fHeadWidth	= m_ppChar[0]->GetSize().x * 0.5f;			// 先頭文字の横幅
 	float fStrWidth		= GetStrWidth() * 0.5f;							// 文字列全体の横幅
 
 	float fStartOffset = fStrWidth;	// 文字の開始位置オフセット
@@ -550,7 +520,7 @@ void CString2D::SetPositionRelative()
 	fStartOffset += fHeadWidth + fHeadOffsetLU;		// 先頭文字のブラックボックス分ずらす
 	fStartOffset += (fStrWidth * (m_alignX - 1));	// 指定された横配置にする
 
-	VECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
+	D3DXVECTOR3 posStart = VECTOR3_ZERO;	// 文字の開始位置
 	posStart.x = m_pos.x + sinf(fHeadRot) * fStartOffset;	// 開始位置X
 	posStart.y = m_pos.y + cosf(fHeadRot) * fStartOffset;	// 開始位置Y
 
@@ -566,7 +536,7 @@ void CString2D::SetPositionRelative()
 		posStart.y -= cosf(fHeadRot) * fOffset;
 
 		// 位置を反映
-		m_ppChar[i]->SetVec3Position(posStart);
+		m_ppChar[i]->SetPosition(posStart);
 
 		// 次の設定座標の開始点を保存
 		float fNextStart = fOffset - fNext;	// 次の開始点

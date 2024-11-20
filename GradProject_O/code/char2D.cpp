@@ -26,7 +26,7 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CChar2D::CChar2D() : CObject2D(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CChar2D::CChar2D() : CObject2D(7),
 	m_pFontChar		(nullptr),	// フォント文字
 	m_wcChar		(0),		// 指定文字
 	m_fCharHeight	(0.0f),		// 文字の縦幅
@@ -81,25 +81,25 @@ void CChar2D::Uninit()
 //============================================================
 //	更新処理
 //============================================================
-void CChar2D::Update(const float fDeltaTime)
+void CChar2D::Update()
 {
 	// オブジェクト2Dの更新
-	CObject2D::Update(fDeltaTime);
+	CObject2D::Update();
 }
 
 //============================================================
 //	描画処理
 //============================================================
-void CChar2D::Draw(CShader* pShader)
+void CChar2D::Draw()
 {
 	// オブジェクト2Dの描画
-	CObject2D::Draw(pShader);
+	CObject2D::Draw();
 }
 
 //============================================================
 //	大きさの設定処理
 //============================================================
-void CChar2D::SetVec3Size(const VECTOR3& /*rSize*/)
+void CChar2D::SetVec3Size(const D3DXVECTOR3& /*rSize*/)
 {
 	/*
 		こっちで大きさを自由に変えられると
@@ -119,10 +119,10 @@ CChar2D* CChar2D::Create
 	const std::string& rFilePath,	// フォントパス
 	const bool bItalic,				// イタリック
 	const std::string& rChar,		// 指定文字
-	const VECTOR3& rPos,			// 位置
+	const D3DXVECTOR3& rPos,			// 位置
 	const float fHeight,			// 縦幅
-	const VECTOR3& rRot,			// 向き
-	const COLOR& rCol				// 色
+	const D3DXVECTOR3& rRot,			// 向き
+	const D3DXCOLOR& rCol				// 色
 )
 {
 	// 文字2Dの生成
@@ -151,16 +151,16 @@ CChar2D* CChar2D::Create
 		pChar2D->SetChar(rChar);
 
 		// 位置を設定
-		pChar2D->SetVec3Position(rPos);
+		pChar2D->SetPosition(rPos);
 
 		// 向きを設定
-		pChar2D->SetVec3Rotation(rRot);
+		pChar2D->SetRotation(rRot);
 
 		// 文字縦幅を設定
 		pChar2D->SetCharHeight(fHeight);
 
 		// 色を設定
-		pChar2D->SetColor(rCol);
+		pChar2D->SetCol(rCol);
 
 		// 確保したアドレスを返す
 		return pChar2D;
@@ -175,10 +175,10 @@ CChar2D* CChar2D::Create
 	const std::string& rFilePath,	// フォントパス
 	const bool bItalic,				// イタリック
 	const wchar_t wcChar,			// 指定文字
-	const VECTOR3& rPos,			// 位置
+	const D3DXVECTOR3& rPos,			// 位置
 	const float fHeight,			// 縦幅
-	const VECTOR3& rRot,			// 向き
-	const COLOR& rCol				// 色
+	const D3DXVECTOR3& rRot,			// 向き
+	const D3DXCOLOR& rCol				// 色
 )
 {
 	// 文字2Dの生成
@@ -207,16 +207,16 @@ CChar2D* CChar2D::Create
 		pChar2D->SetChar(wcChar);
 
 		// 位置を設定
-		pChar2D->SetVec3Position(rPos);
+		pChar2D->SetPosition(rPos);
 
 		// 向きを設定
-		pChar2D->SetVec3Rotation(rRot);
+		pChar2D->SetRotation(rRot);
 
 		// 文字縦幅を設定
 		pChar2D->SetCharHeight(fHeight);
 
 		// 色を設定
-		pChar2D->SetColor(rCol);
+		pChar2D->SetCol(rCol);
 
 		// 確保したアドレスを返す
 		return pChar2D;
@@ -233,7 +233,7 @@ void CChar2D::SetFont
 )
 {
 	// フォント文字情報を設定
-	CFont* pFont = GET_MANAGER->GetFont();	// フォント情報
+	CFont* pFont = CManager::GetInstance()->GetFont();	// フォント情報
 	m_pFontChar = pFont->Regist(rFilePath, bItalic).pFontChar;
 
 	// 指定文字を再設定
@@ -246,7 +246,7 @@ void CChar2D::SetFont
 void CChar2D::SetChar(const std::string& rChar)
 {
 	// ワイド変換後の先頭文字を設定
-	SetChar(useful::MultiByteToWide(rChar)[0]);
+	SetChar(MultiByteToWide(rChar)[0]);
 }
 
 //============================================================
@@ -277,9 +277,9 @@ void CChar2D::SetChar(const wchar_t wcChar)
 //============================================================
 void CChar2D::SetCharHeight(const float fHeight)
 {
-	int nTexIdx = GetTextureIndex();	// フォントのテクスチャインデックス
-	float fTexWidth = useful::GetTexWidthFromAspect(fHeight, nTexIdx);			// テクスチャ横幅
-	D3DXIMAGE_INFO status = GET_MANAGER->GetTexture()->GetInfo(nTexIdx).status;	// テクスチャステータス
+	int nTexIdx = GetIdxTex();	// フォントのテクスチャインデックス
+	float fTexWidth = GetTexWidthFromAspect(fHeight, nTexIdx);			// テクスチャ横幅
+	D3DXIMAGE_INFO status = CManager::GetInstance()->GetTexture()->GetTexFile(nTexIdx)->status;	// テクスチャステータス
 
 	// 文字の縦幅を保存
 	m_fCharHeight = fHeight;
@@ -288,17 +288,17 @@ void CChar2D::SetCharHeight(const float fHeight)
 	m_fSizeRate = fHeight / (float)status.Height;
 
 	// 大きさを設定
-	CObject2D::SetVec3Size(VECTOR3(fTexWidth, fHeight, 0.0f));
+	CObject2D::SetSize(fTexWidth,fHeight);
 }
 
 //============================================================
 //	ブラックボックスの左上オフセット取得処理
 //============================================================
-VECTOR2 CChar2D::GetOffsetBlackBoxLU()
+D3DXVECTOR2 CChar2D::GetOffsetBlackBoxLU()
 {
 	CFontChar::SChar infoChar = m_pFontChar->Regist(m_wcChar);	// 文字情報
 
-	VECTOR2 tempOffset;	// float変換オフセット格納用
+	D3DXVECTOR2 tempOffset;	// float変換オフセット格納用
 	tempOffset.x = (float)infoChar.offsetBlackBox.lu.x;
 	tempOffset.y = (float)infoChar.offsetBlackBox.lu.y;
 
@@ -309,11 +309,11 @@ VECTOR2 CChar2D::GetOffsetBlackBoxLU()
 //============================================================
 //	ブラックボックスの右下オフセット取得処理
 //============================================================
-VECTOR2 CChar2D::GetOffsetBlackBoxRD()
+D3DXVECTOR2 CChar2D::GetOffsetBlackBoxRD()
 {
 	CFontChar::SChar infoChar = m_pFontChar->Regist(m_wcChar);	// 文字情報
 
-	VECTOR2 tempOffset;	// float変換オフセット格納用
+	D3DXVECTOR2 tempOffset;	// float変換オフセット格納用
 	tempOffset.x = (float)infoChar.offsetBlackBox.rd.x;
 	tempOffset.y = (float)infoChar.offsetBlackBox.rd.y;
 
@@ -332,7 +332,7 @@ std::string CChar2D::GetChar() const
 	wsChar = m_wcChar;
 
 	// マルチバイト変換後の文字列を返す
-	return useful::WideToMultiByte(wsChar);
+	return WideToMultiByte(wsChar);
 }
 
 //============================================================

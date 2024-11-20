@@ -169,6 +169,7 @@
     <ClCompile Include="code\camera_manager.cpp" />
     <ClCompile Include="code\car.cpp" />
     <ClCompile Include="code\car_manager.cpp" />
+    <ClCompile Include="code\char2D.cpp" />
     <ClCompile Include="code\character.cpp" />
     <ClCompile Include="code\collision.cpp" />
     <ClCompile Include="code\container.cpp" />
@@ -231,6 +232,7 @@
     <ClCompile Include="code\PlayerTitle.cpp" />
     <ClCompile Include="code\player_manager.cpp" />
     <ClCompile Include="code\police.cpp" />
+    <ClCompile Include="code\police_AI.cpp" />
     <ClCompile Include="code\police_manager.cpp" />
     <ClCompile Include="code\precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -246,12 +248,16 @@
     <ClCompile Include="code\sample\sample_manager.cpp" />
     <ClCompile Include="code\sample\sample_object.cpp" />
     <ClCompile Include="code\sample\sample_task.cpp" />
+    <ClCompile Include="code\scrollString2D.cpp" />
+    <ClCompile Include="code\scrollText2D.cpp" />
     <ClCompile Include="code\slow.cpp" />
     <ClCompile Include="code\sound.cpp" />
     <ClCompile Include="code\speedmeter.cpp" />
+    <ClCompile Include="code\string2D.cpp" />
     <ClCompile Include="code\task.cpp" />
     <ClCompile Include="code\task_manager.cpp" />
     <ClCompile Include="code\tcp_client.cpp" />
+    <ClCompile Include="code\text2D.cpp" />
     <ClCompile Include="code\texture.cpp" />
     <ClCompile Include="code\title.cpp" />
     <ClCompile Include="code\tutorial.cpp" />
@@ -272,6 +278,7 @@
     <ClInclude Include="code\camera_manager.h" />
     <ClInclude Include="code\car.h" />
     <ClInclude Include="code\car_manager.h" />
+    <ClInclude Include="code\char2D.h" />
     <ClInclude Include="code\character.h" />
     <ClInclude Include="code\container.h" />
     <ClInclude Include="code\deliverystatus.h" />
@@ -333,6 +340,7 @@
     <ClInclude Include="code\PlayerTitle.h" />
     <ClInclude Include="code\player_manager.h" />
     <ClInclude Include="code\police.h" />
+    <ClInclude Include="code\police_AI.h" />
     <ClInclude Include="code\police_manager.h" />
     <ClInclude Include="code\precompile.h" />
     <ClInclude Include="code\protocol_online.h" />
@@ -346,12 +354,16 @@
     <ClInclude Include="code\sample\sample_object.h" />
     <ClInclude Include="code\sample\sample_task.h" />
     <ClInclude Include="code\inspection.h" />
+    <ClInclude Include="code\scrollString2D.h" />
+    <ClInclude Include="code\scrollText2D.h" />
     <ClInclude Include="code\slow.h" />
     <ClInclude Include="code\sound.h" />
     <ClInclude Include="code\speedmeter.h" />
+    <ClInclude Include="code\string2D.h" />
     <ClInclude Include="code\task.h" />
     <ClInclude Include="code\task_manager.h" />
     <ClInclude Include="code\tcp_client.h" />
+    <ClInclude Include="code\text2D.h" />
     <ClInclude Include="code\texture.h" />
     <ClInclude Include="code\title.h" />
     <ClInclude Include="code\tutorial.h" />

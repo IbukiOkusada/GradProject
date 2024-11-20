@@ -1,6 +1,7 @@
 #include "main.h"
 #include <memory>
 #include <mutex>
+
 //=============================================
 //便利関数
 //=============================================
@@ -10,8 +11,30 @@ using namespace std;
 float GetDistance(D3DXVECTOR3 vec1, D3DXVECTOR3 vec2);
 D3DXVECTOR3 VectorToAngles(const D3DXVECTOR3& vector);
 D3DXVECTOR3 AnglesToVector(const D3DXVECTOR3& angles);
-void PathToBaseName(std::string* pPath);
 
+//============================================================
+//	値の最大値制限処理
+//============================================================
+template<class T> bool LimitMaxNum
+(
+	T& rNum,	// 制限数値
+	const T max	// 最大範囲
+)
+{
+	if (rNum > max)
+	{ // 制限数値が最大範囲を超えていた場合
+
+		// 範囲内に補正
+		rNum = max;
+		return true;
+	}
+
+	return false;
+}
+void PathToBaseName(std::string* pPath);
+std::wstring MultiByteToWide(const std::string& rSrcStr);
+float GetTexWidthFromAspect(const float fHeight, const int nTexIdx);
+std::string WideToMultiByte(const std::wstring& rSrcStr);
 void Adjust(D3DXVECTOR3& rot);
 void Adjust(float& rot);
 
@@ -36,7 +59,26 @@ void Adjust(float& rot);
 // POSGRID2関係
 #define GRID2_ZERO	(POSGRID2())	// 0クリア
 #define GRID2_ONE	(POSGRID2(1))	// 1クリア
+//************************************************************
+//	列挙型定義
+//************************************************************
+// 横配置列挙
+enum EAlignX
+{
+	XALIGN_LEFT = 0,	// 左揃え
+	XALIGN_CENTER,		// 中央揃え
+	XALIGN_RIGHT,		// 右揃え
+	XALIGN_MAX,			// この列挙型の総数
+};
 
+// 縦配置列挙
+enum EAlignY
+{
+	YALIGN_TOP = 0,	// 上揃え
+	YALIGN_CENTER,	// 中央揃え
+	YALIGN_BOTTOM,	// 下揃え
+	YALIGN_MAX,		// この列挙型の総数
+};
 //汎用テンプレート
 template <typename T> class CMaster
 {
