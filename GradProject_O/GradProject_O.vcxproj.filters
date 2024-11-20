@@ -477,6 +477,9 @@
     <ClCompile Include="code\text2D.cpp">
       <Filter>UI\text</Filter>
     </ClCompile>
+    <ClCompile Include="code\police_AI.cpp">
+      <Filter>car\police</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -793,6 +796,9 @@
     </ClInclude>
     <ClInclude Include="code\text2D.h">
       <Filter>UI\text</Filter>
+    </ClInclude>
+    <ClInclude Include="code\police_AI.h">
+      <Filter>car\police</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

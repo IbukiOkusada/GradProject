@@ -218,7 +218,6 @@ void CPlayer::Update(void)
 	pRadio->Update();
 	if (m_type == TYPE_ACTIVE)
 	{
-		
 		// プレイヤー操作
 		Controller();
 
@@ -599,12 +598,12 @@ bool CPlayer::Collision(void)
 	m_Info.pRoad = nullptr;
 
 	// 道との判定
-	auto list = CRoadManager::GetInstance()->GetList();
-	for (int i = 0; i < list->GetNum(); i++)
+	auto listRoad = CRoadManager::GetInstance()->GetList();
+	for (int i = 0; i < listRoad->GetNum(); i++)
 	{// 使用されていない状態まで
 
 		// 道確認
-		CRoad* pRoad = list->Get(i);	// 先頭を取得
+		CRoad* pRoad = listRoad->Get(i);	// 先頭を取得
 		if (pRoad == nullptr) { continue; }
 
 		D3DXVECTOR3* pVtx = pRoad->GetVtxPos();
@@ -633,6 +632,19 @@ bool CPlayer::Collision(void)
 		}
 	}
 
+	auto listGimmick = CGimmick::GetList();
+	for (int i = 0; i < listGimmick->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		// 道確認
+		CGimmick* pGimmick = listGimmick->Get(i);	// 先頭を取得
+		if (pGimmick == nullptr) { continue; }
+
+		if (pGimmick->GetType() == CGimmick::TYPE_BRIDGE)
+		{
+			pGimmick->GetPos();
+		}
+	}
 	return false;
 }
 

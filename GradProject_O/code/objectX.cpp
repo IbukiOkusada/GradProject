@@ -47,7 +47,6 @@ CObjectX::~CObjectX()
 //==========================================================
 HRESULT CObjectX::Init(void)
 {
-
 	//ŠeŽí•Ï”‚Ì‰Šú‰»
 	m_Type = TYPE_NORMAL;
 	m_scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);

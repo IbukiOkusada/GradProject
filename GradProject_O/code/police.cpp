@@ -17,6 +17,7 @@
 #include "debugproc.h"
 #include "police_manager.h"
 #include "deltatime.h"
+#include "a_star.h"
 
 // ƒ}ƒNƒ’è‹`
 
@@ -179,10 +180,12 @@ void CPolice::MoveRoad()
 	if (m_Info.bChase)
 	{
 		m_pSiren->Start();
-		if (m_Info.pPlayer != nullptr)
-			SetPosTarget(m_Info.pPlayer->GetPosition());
+
+		ChasePlayer();
+
 		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
 		m_pSiren->SetVolume((2000.0f - dis) * 0.00075f);
+
 		SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
 	}
 	else
@@ -335,13 +338,8 @@ void CPolice::SearchPlayer()
 //==========================================================
 void CPolice::ChasePlayer()
 {
-	CRoadManager* pRoadManager = CRoadManager::GetInstance();
-	auto list = pRoadManager->GetList();
-	
-	for (int i = 0; i < list->GetNum() - 1; i++)
-	{
-		CRoad* pRoad = list->Get(i);
-	}
+	if (m_Info.pPlayer != nullptr)
+		SetPosTarget(m_Info.pPlayer->GetPosition());
 }
 
 //==========================================================
