@@ -30,6 +30,7 @@ public:
 	enum OBJ2D
 	{
 		OBJ2D_TeamLogo = 0,		//チームロゴ
+		OBJ2D_BLACKCOVER,		//黒カバー
 		OBJ2D_TITLELOGO,		//タイトルロゴ
 		OBJ2D_PressEnter,		//プレスエンター
 		OBJ2D_MAX
@@ -39,6 +40,7 @@ public:
 	enum STATE
 	{
 		STATE_TEAMLOGO = 0,	//チームロゴ
+		STATE_PRE,			//仮名
 		STATE_PRESSENTER,	//プレスエンター
 		STATE_CHASING,		//警察がプレイヤーを追跡中
 		STATE_ICETHROW,		//アイスを投げ入れるシーン
@@ -58,12 +60,24 @@ public:
 
 private:
 
+	//チームロゴの際に使う関数
 	void StateLogo(void);
+
+	//仮名の際に使う関数
+	void StatePre(void);
+
+	//プレスエンターステートの時に使う関数
+	void MoveP_E(void);
 	void StateP_E(void);
 	void InitingP_E(void);
-
 	void TitleLogo(void);
 	void MovingLogo(void);
+	void BlackCoverM(void);
+	void SkipMovement(void);
+	void PreMove(void);
+
+	//追跡状態の時の動き
+	void ChaseMovement(void);
 
 	//CFileLoad *m_pFileLoad;					// ファイル読み込みのポインタ
 	CPlayerTitle* m_pPlayer;				//プレイヤーのポインタ
@@ -83,6 +97,7 @@ private:
 	bool m_bIniting;						//オブジェクトの初期化が終わったかどうかのチェック
 	bool m_bCol;							
 	bool m_bNext;							//次に行けるかの是非
+	bool m_bSkipped;							//スキップしたかどうか
 };
 
 #endif

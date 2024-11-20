@@ -39,7 +39,8 @@ namespace
 
 	const float MAX_ALPHA = 1.0f;		//透明度の最大値
 	const float MIN_ALPHA = 0.3f;		//透明度の最小値
-	const int AMO_VALUE = 20;			//色変更時の値
+	const float ALPHA_ZERO = 0.0f;		//透明の時のα値
+
 
 	//const char* FILEPASS = "data\\TXT\\player";	// ファイルのパス
 	//const char* FILEEXT = ".txt";				// ファイルの拡張子
@@ -58,6 +59,7 @@ CTitle::CTitle()
 	m_bPush = false;
 	m_bNext = false;
 	m_bDisplay = false;
+	m_bSkipped = false;
 	m_eState = STATE::STATE_TEAMLOGO;
 	m_bCol = false;
 	m_pPlayer = nullptr;
@@ -92,8 +94,8 @@ HRESULT CTitle::Init(void)
 
 	// サウンド再生
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO);
+	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(320, 160.0f);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\logo_thaw.jpg"));
 
 	return S_OK;
@@ -118,7 +120,7 @@ void CTitle::Update(void)
 		//チームロゴステートだった場合
 	case STATE::STATE_TEAMLOGO:
 
-		//
+		//次への合図がなければ
 		if (!m_bNext)
 		{
 			//キーボード入力かパッド入力があれば
@@ -150,15 +152,23 @@ void CTitle::Update(void)
 		break;
 
 		//プレスエンターステートだった場合
+	case STATE::STATE_PRE:
+
+		StatePre();
+
+		break;
+
+		//プレスエンターステートだった場合
 	case STATE::STATE_PRESSENTER:
 
-		InitingP_E();
-		StateP_E();
+		MoveP_E();
 
 		break;
 
 		//プレスエンターを押した後のステートだった場合
 	case STATE::STATE_CHASING:
+
+		ChaseMovement();
 
 		break;
 
@@ -190,24 +200,28 @@ void CTitle::Draw(void)
 void CTitle::StateLogo(void)
 {
 	D3DXCOLOR TeamCol = m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->GetCol();	// チームロゴの色情報を取得
-	const int COUNT_MAX = 10;											// カウンターの固定値
+	const int nCountMax = 10;											// カウンターの固定値
+	const int nAmoValue = 20;											//色変更時の値
 
 	//ステートがチームロゴだった場合
 	if (m_eState == STATE::STATE_TEAMLOGO)
 	{
 		if(!m_bCol)
 		{
-			TeamCol.a -= MAX_ALPHA / AMO_VALUE;	//透明に近づけていく
+			//透明に近づけていく
+			TeamCol.a -= MAX_ALPHA / nAmoValue;
 
-			if (TeamCol.a <= 0.0f)
-			{//完全に透明になった場合
-				TeamCol.a = 0.0f;	//透明度を透明に
+			//完全に透明になった場合
+			if (TeamCol.a <= ALPHA_ZERO)
+			{
+				//透明度を透明に
+				TeamCol.a = ALPHA_ZERO;
 
 				//超えていたらカウントの初期化と透明終了合図を送る
-				if (m_nCounter >= COUNT_MAX)
+				if (m_nCounter >= nCountMax)
 				{
 					//次のステートに移行する
-					m_eState = STATE::STATE_PRESSENTER;
+					m_eState = STATE::STATE_PRE;
 					m_nCounter = 0;
 				}
 				//超えていなかったらカウント増加
@@ -225,13 +239,13 @@ void CTitle::StateLogo(void)
 void CTitle::StateP_E(void)
 {
 	// カウンターの固定値
-	const int COUNT_MAX = 10;	
+	const int nCountMax = 10;	
 
-	//その場所についていてプレスエンターの文字が表示されていなければ
+	//その場所についているかつプレスエンターの文字が表示されていなければ
 	if (m_pPlayer->GetReached()&&!m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetDraw())
 	{
 		//超えていたら
-		if (m_nCounter >= COUNT_MAX)
+		if (m_nCounter >= nCountMax)
 		{
 			MovingLogo();
 		}
@@ -239,55 +253,85 @@ void CTitle::StateP_E(void)
 		else{m_nCounter++;}
 
 	}
-	//プレスエンターの文字が表示されていたら
+	//その場所についていないかつプレスエンターの文字が表示されていなければ一番目の目的地にプレイヤーを移動させる
+	else if (!m_pPlayer->GetReached() && !m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetDraw())
+	{m_pPlayer->Moving(CPlayerTitle::DEST_FIRST);}
+
+	//プレスエンターの文字が表示されていたらステートを変更
 	else if (m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetDraw())
 	{
-		TitleLogo();
+		m_eState = STATE::STATE_PRESSENTER;
 
-		//キーボード入力かパッド入力があれば
-		if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) || 
-			CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) || 
-			CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0)) 
-		{
-			m_bPush = true;
-		}
-
-		//反応があったら
-		if (m_bPush)
-		{
-			//次のステートに移行する
-			m_eState = STATE::STATE_CHASING;
-		}
-		//押下反応がなかったら
-		else
-		{
-			m_nCounterRanking--;
-			if (m_nCounterRanking <= 0)
-			{
-				//ランキング画面に移行
-				CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING);
-
-			}
-
-		}
+		//左に向くようにする
+		m_pPlayer->SetRotation(VECTOR3_ZERO);
 	}
+}
+//<===============================================
+//プレスエンターでの動き
+//<===============================================
+void CTitle::MoveP_E(void)
+{
+	PreMove();
+
+	//キーボード入力かパッド入力があれば
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
+		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
+		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
+	{
+		m_bPush = true;
+	}
+
+	//反応があったら
+	if (m_bPush)
+	{
+		//次のステートに移行する
+		m_eState = STATE::STATE_CHASING;
+
+		////ランキング画面に移行
+		//CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+	}
+	//押下反応がなかったら
+	else
+	{
+		m_nCounterRanking--;
+		if (m_nCounterRanking <= 0)
+		{
+			//ランキング画面に移行
+			CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING);
+
+		}
+
+	}
+}
+//<===============================================
+//黒カバーの動き
+//<===============================================
+void CTitle::BlackCoverM(void)
+{
+	D3DXCOLOR BCoverCol = m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->GetCol();	// チームロゴの色情報を取得
+	const int nAmoValue = 20;												//色変更時の値
+	BCoverCol.a -= MAX_ALPHA / nAmoValue;									//透明に近づけていく
+
+	if (BCoverCol.a <= 0.0f){BCoverCol.a = ALPHA_ZERO;}
+
+	m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(BCoverCol);
 }
 //<===============================================
 //タイトルロゴの動き
 //<===============================================
 void CTitle::MovingLogo(void)
 {
-	const float SPEED = 0.09f;							//タイトルロゴが動くスピード
+	const float fSpeed = 0.09f;													//タイトルロゴが動くスピード
+	D3DXVECTOR3 TitlePos = m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->GetPosition();	//タイトルロゴの位置
 
 	//描画設定をオンにし、移動用の変数にタイトルロゴの位置を取得させる
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(true);
-	m_TitlePos = m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->GetPosition();
 
 	//目的地まで移動させる
-	m_TitlePos.x += (TITLELOGO_DEST - m_TitlePos.x - 0.0f) * 0.09f;//X軸
+	TitlePos.x += (TITLELOGO_DEST - TitlePos.x - 0.0f) * fSpeed;//X軸
 
 	//目的地に着いたら
-	if (Function::MoveToDest(m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->GetPosition(),
+	if (Function::BoolToDest(m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->GetPosition(),
 		D3DXVECTOR3(TITLELOGO_DEST, 0.0f, 0.0f), 5.0f, false))
 	{
 		//オンになっていなければ描画状態をオンにする
@@ -301,23 +345,73 @@ void CTitle::MovingLogo(void)
 	}
 
 	//
-	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetPosition(m_TitlePos);
+	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetPosition(TitlePos);
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetVtx();
+}
+//<===============================================
+//仮名ステートでの動き
+//<===============================================
+void CTitle::PreMove(void)
+{
+	float PlayerRot = m_pPlayer->GetRotation().y;		//プレイヤーの向きを変える
+	const float fDestRot = -3.14f, fRotMove = 0.05f;		//目的の向きと向きの移動値
+
+	TitleLogo();
+
+	//一番目の目的地にプレイヤーを移動させる
+	m_pPlayer->Moving(CPlayerTitle::DEST_SECOND);
+
+	//その場所についているかつプレスエンターの文字が表示されていなければ
+	if (m_pPlayer->GetReached())
+	{
+		//目的の向きになっていたら
+		if (PlayerRot <= fDestRot) { PlayerRot = fDestRot; }
+
+		//なっていなかったら回転し続ける
+		else { PlayerRot -= fRotMove; }
+
+		//プレイヤーの向きに反映
+		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, PlayerRot, 0.0f));
+	}
+}
+//<===============================================
+//仮名ステートでの動き
+//<===============================================
+void CTitle::StatePre(void)
+{
+	//初期化
+	InitingP_E();
+
+	//透明度が透明になっていなかったら
+	if (!(m_pObject2D[OBJ2D_BLACKCOVER]->GetCol().a <= ALPHA_ZERO)){BlackCoverM();}
+
+	//透明度が透明になっていたら
+	else
+	{
+		//キーボード入力かパッド入力があれば、スキップ情報をtrueにする
+		if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
+			CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
+			CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0)) {m_bSkipped = true;}
+
+		//スキップされていなければ、スキップしていない際の動きを実行
+		if (!m_bSkipped) { StateP_E(); }
+
+		//されていたらスキップした際の動きの処理を実行
+		else { SkipMovement(); }
+	}
 }
 //<===============================================
 //プレスエンターステートでの動き
 //<===============================================
 void CTitle::InitingP_E(void)
 {
-	D3DXCOLOR TeamCol = m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->GetCol();	// チームロゴの色情報を取得
+	const float fLogoLength = (150.0f, 150.0f);								//ロゴの長さ(サイズ)
+	const float fP_ELength = (350.0f, 350.0f);								//プレスエンターの長さ(サイズ)
 
 	//初期化済みではなければ
 	if (!m_bIniting)
 	{
-		//チームロゴを描画しない
-		m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetDraw(false);
-
-		//2つの情報を初期化
+		//2つのbool情報を初期化
 		m_bPush = false;
 		m_bNext = false;
 
@@ -326,25 +420,32 @@ void CTitle::InitingP_E(void)
 		m_pCam->SetPositionR(D3DXVECTOR3(-4000.0f, 95.0f, 260.0f));
 		m_pCam->SetLength(100.0f);
 		m_pCam->SetRotation(D3DXVECTOR3(0.0f, -0.0f, 1.79f));
-		//m_pCam->SetRotation(D3DXVECTOR3(0.0f, -2.1f, 1.79f));
 		m_pCam->SetActive(false);
 
-		//タイトルロゴ文字
+		//<******************************************
+		// 2Dオブジェクトの生成処理
+		//<******************************************
+		//・ブラックカバー
+		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO,6);
+		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+
+		//・タイトルロゴ
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetLength(150.0f, 150.0f);
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetLength(fLogoLength);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\Pre_char000.png"));
 
-		//プレスエンター文字
+		//・プレスエンター
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(PRESSENTER_POS, VECTOR3_ZERO,5);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetLength(150.0f, 150.0f);
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(100.0f,100.0f);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\T_PressEnter000.png"));
 
 		//必要なオブジェクトの生成
 		CMapManager::GetInstance()->Load();
-		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
-		m_pPlayer = CPlayerTitle::Create(D3DXVECTOR3(-4734.0f, 50.0f, -1988.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f),nullptr,nullptr);
+		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), VECTOR3_ZERO, 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
+		m_pPlayer = CPlayerTitle::Create(D3DXVECTOR3(-4734.0f, 50.0f, -1988.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
 
 		//初期化完了の合図をtrueにする
 		m_bIniting = true;
@@ -356,13 +457,14 @@ void CTitle::InitingP_E(void)
 void CTitle::TitleLogo(void)
 {
 	D3DXCOLOR TitleLogoCol = m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetCol();	//チームロゴの色情報を取得
-	const int COUNT_MAX = 50;													//カウンターの固定値
+	const int nCountMax = 25;													//カウンターの固定値
+	const int nAmoValue = 10;													//色変化値
 
 	//色変更完了していなければ
 	if (!m_bCol) 
 	{
 		//透明に近づけていく
-		TitleLogoCol.a += MAX_ALPHA / -AMO_VALUE;
+		TitleLogoCol.a += MAX_ALPHA / -nAmoValue;
 
 		//その値まで行ったら
 		if (TitleLogoCol.a <= MIN_ALPHA)
@@ -370,7 +472,7 @@ void CTitle::TitleLogo(void)
 			TitleLogoCol.a = MIN_ALPHA;	//透明度をその値にする
 
 			//超えていたらカウントの初期化と透明終了合図を送る
-			if (m_nLogoAlpgha >= COUNT_MAX)
+			if (m_nLogoAlpgha >= nCountMax)
 			{
 				//次のステートに移行する
 				m_nLogoAlpgha = 0;
@@ -385,7 +487,7 @@ void CTitle::TitleLogo(void)
 	else
 	{
 		//非透明に近づけていく
-		TitleLogoCol.a += MAX_ALPHA / AMO_VALUE;
+		TitleLogoCol.a += MAX_ALPHA / nAmoValue;
 
 		//最大値まで近づいたら
 		if (TitleLogoCol.a >= MAX_ALPHA)
@@ -394,7 +496,7 @@ void CTitle::TitleLogo(void)
 			TitleLogoCol.a = MAX_ALPHA;	
 
 			//超えていたらカウントの初期化と終了合図を送る
-			if (m_nLogoAlpgha >= COUNT_MAX)
+			if (m_nLogoAlpgha >= nCountMax)
 			{
 				//次のステートに移行する
 				m_nLogoAlpgha = 0;
@@ -407,4 +509,53 @@ void CTitle::TitleLogo(void)
 	}
 	//色設定
 	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetCol(TitleLogoCol);
+}
+//<===============================================
+//追跡ステートに移行した際の動き
+//<===============================================
+void CTitle::ChaseMovement(void)
+{
+	D3DXVECTOR3 CameraRot = m_pCam->GetRotation();		//カメラ向き
+	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
+
+	const float PlayerMove = 25.0f;						//プレイヤーの動く値
+
+	//向き移動の際の移動値と目的向き
+	const float fRotMove = 0.01f, fDestRot = -1.11f;
+
+	//その値にする
+	if (CameraRot.y <= fDestRot){CameraRot.y = fDestRot;}
+
+	//その値に行っていなかったら回転し続ける
+	else{CameraRot.y -= fRotMove;}
+
+	//プレイヤーを移動させる
+	PlayerPos.z += PlayerMove;
+	
+	//カメラの向きとプレイヤーの位置の設定
+	m_pCam->SetRotation(CameraRot);
+	m_pPlayer->SetPosition(PlayerPos);
+}
+//<===============================================
+//スキップした際の際の動き
+//<===============================================
+void CTitle::SkipMovement(void)
+{
+	const float DEST_ROT = 0.40f;						//目的の向き
+
+	//・タイトルロゴ
+	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetPosition(D3DXVECTOR3(TITLELOGO_DEST,TITLELOGO_POS.y, TITLELOGO_POS.z));
+	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetVtx();
+	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(true);
+
+	//・プレスエンター
+	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(true);
+
+	//・プレイヤー
+	m_pPlayer->SetPosition(D3DXVECTOR3(-4734.0f, 50.0f, -250.0f));
+	m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, -3.14f, 0.0f));
+	m_pPlayer->SetReached(true);
+
+	//ステートを変更する
+	m_eState = STATE::STATE_PRESSENTER;
 }
