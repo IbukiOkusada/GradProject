@@ -83,7 +83,7 @@ public:	// 誰でもアクセス可能
 	int Regist(const char* pFileName);
 	int Regist(const SInfo info);				// テクスチャ登録 (生成)
 	LPDIRECT3DTEXTURE9 SetAddress(int nIdx);
-
+	File* GetTexFile(int nIdx) { if (nIdx >= 0 && nIdx < GetNumAll()) { return m_List.Get(nIdx); } return nullptr; }
 	// メンバ関数(取得)
 	int GetNumAll(void) { return m_List.GetNum(); }
 

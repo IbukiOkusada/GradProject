@@ -32,9 +32,9 @@ public:
 	// オーバーライド関数
 	HRESULT Init() override;	// 初期化
 	void Uninit() override;		// 終了
-	void Update(const float fDeltaTime) override;		// 更新
-	void Draw(CShader* pShader = nullptr) override;		// 描画
-	void SetVec3Size(const VECTOR3& rSize) override;	// 大きさ設定
+	void Update() override;		// 更新
+	void Draw() override;		// 描画
+	void SetVec3Size(const D3DXVECTOR3& rSize) ;	// 大きさ設定
 
 	// 静的メンバ関数
 	static CChar2D* Create	// 生成 (マルチバイト文字)
@@ -42,20 +42,20 @@ public:
 		const std::string& rFilePath,		// フォントパス
 		const bool bItalic,					// イタリック
 		const std::string& rChar,			// 指定文字
-		const VECTOR3& rPos = VEC3_ZERO,	// 位置
+		const D3DXVECTOR3& rPos = VECTOR3_ZERO,	// 位置
 		const float fHeight = 100.0f,		// 縦幅
-		const VECTOR3& rRot = VEC3_ZERO,	// 向き
-		const COLOR& rCol = color::White()	// 色
+		const D3DXVECTOR3& rRot = VECTOR3_ZERO,	// 向き
+		const D3DXCOLOR& rCol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)	// 色
 	);
 	static CChar2D* Create	// 生成 (ワイド文字)
 	( // 引数
 		const std::string& rFilePath,		// フォントパス
 		const bool bItalic,					// イタリック
 		const wchar_t wcChar,				// 指定文字
-		const VECTOR3& rPos = VEC3_ZERO,	// 位置
+		const D3DXVECTOR3& rPos = VECTOR3_ZERO,	// 位置
 		const float fHeight = 100.0f,		// 縦幅
-		const VECTOR3& rRot = VEC3_ZERO,	// 向き
-		const COLOR& rCol = color::White()	// 色
+		const D3DXVECTOR3& rRot = VECTOR3_ZERO,	// 向き
+		const D3DXCOLOR& rCol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)// 色
 	);
 
 	// メンバ関数
@@ -67,8 +67,8 @@ public:
 	void SetChar(const std::string& rChar);		// 文字の設定 (マルチバイト文字)
 	void SetChar(const wchar_t wcChar);			// 文字の設定 (ワイド文字)
 	void SetCharHeight(const float fHeight);	// 文字の縦幅設定
-	VECTOR2 GetOffsetBlackBoxLU();				// ブラックボックスの左上オフセット取得
-	VECTOR2 GetOffsetBlackBoxRD();				// ブラックボックスの右下オフセット取得
+	D3DXVECTOR2 GetOffsetBlackBoxLU();				// ブラックボックスの左上オフセット取得
+	D3DXVECTOR2 GetOffsetBlackBoxRD();				// ブラックボックスの右下オフセット取得
 
 	inline bool IsTexEmpty() const		{ return m_bTexEmpty; }	// テクスチャ透明フラグ取得
 	inline wchar_t GetWideChar() const	{ return m_wcChar; }	// 文字取得 (ワイド文字)
