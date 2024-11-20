@@ -31,7 +31,7 @@ class CCarManager;
 class CEnemyManager;
 class CMiniMap;
 class CDeltaTime;
-
+class CFont;
 //===============================================
 // シーンクラスの定義
 //===============================================
@@ -100,6 +100,7 @@ public:	// 誰でもアクセス可能
 	CXFile *GetModelFile(void);
 	CSlow *GetSlow(void);
 	CFade *GetFade(void);
+	CFont *GetFont(void);
 	CDeltaTime *GetDeltaTime(void);
 	void SetMode(CScene::MODE mode);
 	CScene::MODE GetMode(void) { return m_pScene->GetMode(); }
@@ -125,7 +126,7 @@ private:	// 自分だけがアクセス可能
 	CScene* m_pScene;		// シーンのポインタ
 	CFade* m_pFade;			// フェードのポインタ
 	CDeltaTime* m_pDeltaTime;  // タイマーのポインタ
-
+	CFont* m_pFont;
 	static CManager *m_pManager;	// マネージャーのポインタ
 };
 

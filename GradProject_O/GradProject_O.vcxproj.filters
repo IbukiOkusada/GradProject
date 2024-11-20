@@ -163,6 +163,9 @@
     <Filter Include="extension">
       <UniqueIdentifier>{b34a30be-d2b5-4932-b1a9-0c1db8ff6907}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\text">
+      <UniqueIdentifier>{a7856ad4-7fd5-44bb-be4d-e1a767eb3e36}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -458,6 +461,21 @@
     </ClCompile>
     <ClCompile Include="code\extension.cpp">
       <Filter>extension</Filter>
+    </ClCompile>
+    <ClCompile Include="code\char2D.cpp">
+      <Filter>UI\text</Filter>
+    </ClCompile>
+    <ClCompile Include="code\scrollString2D.cpp">
+      <Filter>UI\text</Filter>
+    </ClCompile>
+    <ClCompile Include="code\scrollText2D.cpp">
+      <Filter>UI\text</Filter>
+    </ClCompile>
+    <ClCompile Include="code\string2D.cpp">
+      <Filter>UI\text</Filter>
+    </ClCompile>
+    <ClCompile Include="code\text2D.cpp">
+      <Filter>UI\text</Filter>
     </ClCompile>
     <ClCompile Include="code\police_AI.cpp">
       <Filter>car\police</Filter>
@@ -763,6 +781,21 @@
     </ClInclude>
     <ClInclude Include="code\extension.h">
       <Filter>extension</Filter>
+    </ClInclude>
+    <ClInclude Include="code\char2D.h">
+      <Filter>UI\text</Filter>
+    </ClInclude>
+    <ClInclude Include="code\scrollString2D.h">
+      <Filter>UI\text</Filter>
+    </ClInclude>
+    <ClInclude Include="code\scrollText2D.h">
+      <Filter>UI\text</Filter>
+    </ClInclude>
+    <ClInclude Include="code\string2D.h">
+      <Filter>UI\text</Filter>
+    </ClInclude>
+    <ClInclude Include="code\text2D.h">
+      <Filter>UI\text</Filter>
     </ClInclude>
     <ClInclude Include="code\police_AI.h">
       <Filter>car\police</Filter>

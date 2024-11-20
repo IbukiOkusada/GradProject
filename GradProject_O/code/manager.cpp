@@ -29,6 +29,7 @@
 #include "car_manager.h"
 #include "effekseerControl.h"
 #include "objectsound.h"
+#include "font.h"
 #include "deltatime.h"
 //===============================================
 // 静的メンバ変数
@@ -52,6 +53,7 @@ CManager::CManager()
 	m_pScene = nullptr;			// シーンのポインタ
 	m_pFade = nullptr;			// フェードへのポインタ
 	m_pDeltaTime = nullptr;     // タイマーへのポインタ
+	m_pFont = nullptr;
 }
 
 //===================================================
@@ -174,7 +176,10 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pDeltaTime = DEBUG_NEW CDeltaTime;
 		m_pDeltaTime->Init();
 	}
-
+	if (m_pFont == nullptr)
+	{
+		m_pFont = CFont::Create();
+	}
 	// エフェクシア初期化
 	CEffekseer::GetInstance()->Init();
 	
@@ -303,7 +308,7 @@ void CManager::Uninit(void)
 		// 使用していない状態にする
 		m_pDeltaTime = nullptr;
 	}
-
+	SAFE_UNINIT_DELETE(m_pFont);
 	// 各種マネージャの破棄
 	CListManager::Release();
 	CMasterSound::GetInstance()->Uninit();
@@ -428,7 +433,13 @@ CFade *CManager::GetFade(void)
 {
 	return m_pFade;
 }
-
+//===================================================
+// フォント情報の取得
+//===================================================
+CFont* CManager::GetFont(void)
+{
+	return m_pFont;
+}
 //===================================================
 // タイマー情報の取得
 //===================================================

@@ -25,11 +25,11 @@ namespace
 //============================================================
 //	コンストラクタ
 //============================================================
-CText2D::CText2D() : CObject(CObject::LABEL_UI, CObject::DIM_2D, PRIORITY),
+CText2D::CText2D() : CObject(7),
 	m_pFontChar		(nullptr),			// フォント文字
-	m_pos			(VEC3_ZERO),		// 位置
-	m_rot			(VEC3_ZERO),		// 向き
-	m_col			(color::White()),	// 色
+	m_pos			(VECTOR3_ZERO),		// 位置
+	m_rot			(VECTOR3_ZERO),		// 向き
+	m_col			(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f)),	// 色
 	m_alignX		(XALIGN_CENTER),	// 横配置
 	m_alignY		(YALIGN_CENTER),	// 縦配置
 	m_fCharHeight	(0.0f),				// 文字の縦幅
@@ -54,9 +54,9 @@ HRESULT CText2D::Init()
 {
 	// メンバ変数を初期化
 	m_pFontChar		= nullptr;			// フォント文字
-	m_pos			= VEC3_ZERO;		// 位置
-	m_rot			= VEC3_ZERO;		// 向き
-	m_col			= color::White();	// 色
+	m_pos			= VECTOR3_ZERO;		// 位置
+	m_rot			= VECTOR3_ZERO;		// 向き
+	m_col			= D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);	// 色
 	m_alignX		= XALIGN_CENTER;	// 横配置
 	m_alignY		= YALIGN_CENTER;	// 縦配置
 	m_fCharHeight	= 0.0f;				// 文字の縦幅
@@ -92,46 +92,21 @@ void CText2D::Uninit()
 //============================================================
 void CText2D::Update(const float fDeltaTime)
 {
-	// 相対位置の設定
-	SetPositionRelative();
+
 }
 
 //============================================================
 //	描画処理
 //============================================================
-void CText2D::Draw(CShader* /*pShader*/)
+void CText2D::Draw()
 {
-
+	// 相対位置の設定
+	SetPositionRelative();
 }
 
-//============================================================
-//	優先順位の設定処理
-//============================================================
-void CText2D::SetPriority(const int nPriority)
-{
-	// 自身の優先順位を設定
-	CObject::SetPriority(nPriority);
 
-	for (auto& rList : m_listString)
-	{ // 文字列の格納数分繰り返す
 
-		// 文字列の優先順位を設定
-		rList->SetPriority(nPriority);
-	}
-}
 
-//============================================================
-//	更新状況の設定処理
-//============================================================
-void CText2D::SetEnableUpdate(const bool bUpdate)
-{
-	for (auto& rList : m_listString)
-	{ // 文字列の格納数分繰り返す
-
-		// 文字列の更新状況を設定
-		rList->SetEnableUpdate(bUpdate);
-	}
-}
 
 //============================================================
 //	描画状況の設定処理
@@ -149,7 +124,7 @@ void CText2D::SetEnableDraw(const bool bDraw)
 //============================================================
 //	位置の設定処理
 //============================================================
-void CText2D::SetVec3Position(const VECTOR3& rPos)
+void CText2D::SetVec3Position(const D3DXVECTOR3& rPos)
 {
 	// 引数の位置を設定
 	m_pos = rPos;
@@ -161,7 +136,7 @@ void CText2D::SetVec3Position(const VECTOR3& rPos)
 //============================================================
 //	向きの設定処理
 //============================================================
-void CText2D::SetVec3Rotation(const VECTOR3& rRot)
+void CText2D::SetVec3Rotation(const D3DXVECTOR3& rRot)
 {
 	// 設定する向きを保存
 	m_rot = rRot;
@@ -185,13 +160,13 @@ CText2D* CText2D::Create
 (
 	const std::string& rFilePath,	// フォントパス
 	const bool bItalic,				// イタリック
-	const VECTOR3& rPos,			// 原点位置
+	const D3DXVECTOR3& rPos,			// 原点位置
 	const float fCharHeight,		// 文字縦幅
 	const float fLineHeight,		// 行間縦幅
 	const EAlignX alignX,			// 横配置
 	const EAlignY alignY,			// 縦配置
-	const VECTOR3& rRot,			// 原点向き
-	const COLOR& rCol				// 色
+	const D3DXVECTOR3& rRot,			// 原点向き
+	const D3DXCOLOR& rCol				// 色
 )
 {
 	// テキスト2Dの生成
@@ -248,7 +223,7 @@ CText2D* CText2D::Create
 HRESULT CText2D::PushFrontString(const std::string& rStr)
 {
 	// 文字列をワイド変換
-	std::wstring wsStr = useful::MultiByteToWide(rStr);
+	std::wstring wsStr = MultiByteToWide(rStr);
 
 	// 文字列を先頭に追加
 	if (FAILED(PushFrontString(wsStr)))
@@ -292,7 +267,7 @@ HRESULT CText2D::PushFrontString(const std::wstring& rStr)
 HRESULT CText2D::PushBackString(const std::string& rStr)
 {
 	// 文字列をワイド変換
-	std::wstring wsStr = useful::MultiByteToWide(rStr);
+	std::wstring wsStr = MultiByteToWide(rStr);
 
 	// 文字列を最後尾に追加
 	if (FAILED(PushBackString(wsStr)))
@@ -340,7 +315,7 @@ void CText2D::DeleteString(const int nStrIdx)
 	if (nStrSize <= 0) { assert(false); return; }
 
 	// インデックスが範囲外の場合抜ける
-	if (nStrIdx <= NONE_IDX || nStrIdx >= nStrSize) { assert(false); return; }
+	if (nStrIdx <= -1 || nStrIdx >= nStrSize) { assert(false); return; }
 
 	// イテレーターをインデックス分ずらす
 	auto itr = m_listString.begin();
@@ -380,7 +355,7 @@ void CText2D::SetFont
 )
 {
 	// フォント文字情報を設定
-	CFont* pFont = GET_MANAGER->GetFont();	// フォント情報
+	CFont* pFont = CManager::GetInstance()->GetFont();	// フォント情報
 	m_pFontChar = pFont->Regist(rFilePath, bItalic).pFontChar;
 
 	for (auto& rList : m_listString)
@@ -410,7 +385,7 @@ void CText2D::SetAlpha(const float fAlpha)
 //============================================================
 //	色の設定処理
 //============================================================
-void CText2D::SetColor(const COLOR& rCol)
+void CText2D::SetColor(const D3DXCOLOR& rCol)
 {
 	// 設定する色を保存
 	m_col = rCol;
@@ -498,7 +473,7 @@ CString2D* CText2D::GetString2D(const int nStrIdx) const
 	if (nStrSize <= 0) { assert(false); return nullptr; }
 
 	// インデックスが範囲外の場合抜ける
-	if (nStrIdx <= NONE_IDX || nStrIdx >= nStrSize) { assert(false); return nullptr; }
+	if (nStrIdx <= -1 || nStrIdx >= nStrSize) { assert(false); return nullptr; }
 
 	// 引数インデックスの文字列を返す
 	auto itr = m_listString.begin();	// 先頭イテレーター
@@ -551,11 +526,7 @@ CString2D* CText2D::CreateString2D(const std::wstring& rStr)
 	if (pStr != nullptr)
 	{ // 生成に成功した場合
 
-		// 文字列のラベルを指定なしにする
-		pStr->SetLabel(LABEL_NONE);
-
-		// 文字列の優先順位を自身のものにする
-		pStr->SetPriority(GetPriority());
+	
 	}
 
 	// 文字列クラスを返す
@@ -574,7 +545,7 @@ void CText2D::SetPositionRelative()
 	float fFrontHeight	= m_listString.front()->GetCharHeight() * 0.5f;	// 先頭文字列の縦幅
 	float fStartOffset	= -fTextHeight + fFrontHeight - (fTextHeight * (m_alignY - 1));	// 文字列の開始位置オフセット
 
-	VECTOR3 posStart = VEC3_ZERO;	// 文字の開始位置
+	D3DXVECTOR3 posStart = VECTOR3_ZERO;	// 文字の開始位置
 	posStart.x = m_pos.x + sinf(m_rot.z) * fStartOffset;	// 開始位置X
 	posStart.y = m_pos.y + cosf(m_rot.z) * fStartOffset;	// 開始位置Y
 
