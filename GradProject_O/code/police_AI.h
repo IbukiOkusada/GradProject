@@ -8,10 +8,13 @@
 #define _POLICE_AI_H_		// 二重インクルード防止用マクロを定義
 
 #include "main.h"
+#include "road.h"
+#include "road_manager.h"
 #include <list>
 
 // 前方宣言
 class CRoad;
+class CPolice;
 
 //==========================================================
 // 警察AIのクラス定義
@@ -27,17 +30,13 @@ public:	// 誰でもアクセス可能
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	static CPoliceAI*Create(void);
+	static CPoliceAI* Create(void);
 
 	// メンバ関数(取得)
 
 	// メンバ関数(設定)
 
 protected:
-
-	// 状態関数
-
-	// 状態設定関数
 	
 	// メンバ関数
 
@@ -48,6 +47,8 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 
 	// メンバ変数
+	CPolice* m_pPolice;
+	vector<CRoad::SSearch*> m_searchRoad;
 
 };
 

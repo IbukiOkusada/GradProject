@@ -17,6 +17,7 @@
 
 // 前方宣言
 class CRoad;
+class CPoliceAI;
 
 //==========================================================
 // 警察のクラス定義
@@ -128,10 +129,9 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	SInfo m_Info;					// 自分自身の情報
-	std::list<CRoad*> listRoad;		// 追跡用リスト
-	std::list<CRoad*> listChase;	// 追跡用リスト
 
 	CMasterSound::CObjectSound* m_pSiren;
+	CPoliceAI* m_pPoliceAI;
 	CEffekseer::CEffectData* m_pPatrolLamp;
 };
 

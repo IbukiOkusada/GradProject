@@ -5,16 +5,11 @@
 //
 //==========================================================
 #include "police_AI.h"
-#include "car.h"
-#include "car_manager.h"
 #include "road.h"
 #include "road_manager.h"
-#include "manager.h"
 #include "debugproc.h"
-#include "collision.h"
 #include "player.h"
 #include "player_manager.h"
-#include "debugproc.h"
 #include "police_manager.h"
 #include "deltatime.h"
 #include "a_star.h"
