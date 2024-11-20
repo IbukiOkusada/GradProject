@@ -342,7 +342,7 @@ bool CRoad::GetJunctionRoad(float fRot, CRoad** pGoalOut, CRoad** pGoalPrevOut)
 	// 連結個所から交差点を導き出す
 	{
 		CRoad* pThis = this;
-		pGoalPrevOut = &pThis;
+		*pGoalPrevOut = pThis;
 	}
 	CRoad* pRoad = m_aSearchRoad[dic].pRoad;
 	CRoad* pOld = this;
@@ -353,7 +353,7 @@ bool CRoad::GetJunctionRoad(float fRot, CRoad** pGoalOut, CRoad** pGoalPrevOut)
 		// 交差点なら終了!
 		if (pRoad->GetType() == TYPE::TYPE_T_JUNCTION || pRoad->GetType() == TYPE::TYPE_CROSSING)
 		{
-			pGoalOut = &pRoad;
+			*pGoalOut = pRoad;
 			return true;
 		}
 

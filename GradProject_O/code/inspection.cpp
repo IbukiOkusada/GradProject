@@ -48,10 +48,6 @@ CInstpection::~CInstpection()
 //==========================================================
 HRESULT CInstpection::Init(void)
 {
-	// ò‚Ì¶¬
-	m_Guard.pObj = CObjectX::Create(m_Info.pos, m_Info.rot, "data\\MODEL\\map\\guardrail001.x");
-	m_Guard.pObj->SetScale(D3DXVECTOR3(5.0f, 2.0f, 2.0f));
-
 	// ƒpƒgƒJ[‚ÌÝ’è
 	{
 		// Œü‚«Žæ“¾
@@ -141,6 +137,22 @@ void CInstpection::Update(void)
 				m_pPolice->SetNavi(navi);
 				m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
 				m_pPolice = nullptr;
+			}
+		}
+	}
+	else
+	{
+		// ŒxŽ@‚ª’âŽ~‚µ‚½‚çò¶¬
+		if (m_pPolice != nullptr)
+		{
+			if (m_pPolice->GetState() == CPolice::STATE::STATE_STOP)
+			{
+				if (m_Guard.pObj == nullptr)
+				{
+					// ò‚Ì¶¬
+					m_Guard.pObj = CObjectX::Create(m_Info.pos, m_Info.rot, "data\\MODEL\\map\\fance000.x");
+					m_Guard.pObj->SetScale(D3DXVECTOR3(5.0f, 2.0f, 2.0f));
+				}
 			}
 		}
 	}

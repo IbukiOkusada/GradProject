@@ -10,9 +10,10 @@ SCRIPT
 MODEL_FILENAME = data/MODEL/map/bill_00.x	# [0]ビル
 MODEL_FILENAME = data/MODEL/map/bill_01.x	# [0]ビル
 MODEL_FILENAME = data/MODEL/map/cubebridge.x	# [0]橋
-MODEL_FILENAME = data/MODEL/map/open.x	# [0]オープン看板
+MODEL_FILENAME = data/MODEL/map/open.x		# [0]オープン看板
 MODEL_FILENAME = data/MODEL/map/sign_speed_limit.x	# [0]速度制限看板
 MODEL_FILENAME = data/MODEL/map/sign_stop.x	# [0]停止看板
 MODEL_FILENAME = data/MODEL/map/hotel.x	# [0]ホテル
+MODEL_FILENAME = data/MODEL/map/mix_bill.x	# [0]和風洋風ビル
 
 END_SCRIPT
