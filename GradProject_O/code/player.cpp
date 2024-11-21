@@ -48,11 +48,13 @@
 #include "a_star.h"
 #include "container.h"
 #include "pred_route.h"
+#include "scrollString2D.h"
+#include "scrollText2D.h"
 //===============================================
 // マクロ定義
 //===============================================
 
-namespace 
+namespace
 {
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
 	const float DEATH_INTERVAL = (120.0f);	// 死亡インターバル
@@ -85,6 +87,57 @@ namespace
 	const float CAMERA_ENGINEMULTI = 0.15f;
 	const float NITRO_COUNTER = 6.0f;
 	const float NITRO_COOL = 120.0f;
+	const vector<string> START_TEXT[NUM_TXT]
+	{
+	{">> BOOT SEQUENCE INITIATED.......................................",
+	">> CORE ENGINE ONLINE : FUSION - CYCLE MK.7",
+	">> BATTERY LEVEL : 97 % | RANGE ESTIMATE : 320 KM	",
+	">> NEURAL LINK : SYNCHRONIZED",
+	">> COOLING SYSTEM : INTEGRATED | STATUS : OPTIMAL	",
+	">> MODULE CHECK :									",
+	"-DELIVERY MODULE : ACTIVE							",
+	"- FREEZER UNIT : LOCKED & COLD(-20°C)			   " ,
+	"- AI NAVIGATION : ONLINE							",
+	"",
+	"",
+	"",
+	"WELCOME BACK, RIDER. ALL SYSTEMS GO. READY TO DELIVER."},
+	{
+	">> FREEZER UNIT - STATUS CHECK :										  ",
+	"-TEMPERATURE : -20°C													  ",
+	"- INVENTORY CAPACITY : 50 %											  ",
+	">> CURRENT STOCK :														  ",
+	"-VANILLA BEAM : 12 UNITS												  ",
+	"- NEON STRAWBERRY : 10 UNITS											  ",
+	"- CHROME CHOCO : 15 UNITS												  ",
+	"- CYBER MINT : 8 UNITS													  ",
+	"- GLITCH COCONUT : 5 UNITS												  ",
+	"																		  ",
+	">> WARNING : COOLANT RESERVOIR BELOW 15 % .REPLENISH TO AVOID TEMP SPIKE.",
+	},
+	{
+	">> DELIVERY MANAGEMENT SYSTEM :							   ",
+	">> PENDING DELIVERIES :										   ",
+	"1. CLIENT : SILVER SKY RESORT | ITEM : 6x NEON STRAWBERRY		   ",
+	"STATUS : PACKED & READY | ETA : 15 MIN							   ",
+	"2. CLIENT : AXON PLAZA | ITEM : 3x CYBER MINT, 2x GLITCH COCONUT  ",
+	"STATUS : PENDING | ETA : 35 MIN								   ",
+	"3. CLIENT : DARK CIRCUIT CLUB | ITEM : 10x CHROME CHOCO		   ",
+	"STATUS : PACKED | ETA : 50 MIN									   ",
+	"																   ",
+	">> ROUTE OPTIMIZATION :										   ",
+	"CALCULATING...													   ",
+	"SUGGESTED ROUTE : 1 → 3 → 2 (LOW TRAFFIC ZONES)					",
+	""
+	">> ALERT : HIGHWAY 42 BLOCKED.RECOMMENDED DETOUR VIA SKYLINE LANE.",
+	},
+	{
+	">> ALL MODULES GREEN.NAVIGATION LOCKED.",
+	">> SYSTEM MESSAGE : ICE DELIVERED COLD, HEARTS WARMED. GOOD LUCK OUT THERE, RIDER.			                      ",
+	">> ENGAGE ENGINE IN 3............ 2............ 1............                               ",
+	">> [NEON TRAIL ACTIVATED]                                                                   ",
+	}
+	};
 }
 
 // 前方宣言
@@ -174,13 +227,24 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
 	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
+	m_pSound->SetVolume(0.0f);
 	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
 	m_pSoundBrake->SetVolume(0.0f);
 	pRadio = CRadio::Create();
 	m_pNavi = CNavi::Create();
 	CContainer::Create();
 	m_pPredRoute = CPredRoute::Create(this);
-
+	m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(400.0f, 200.0f, 0.0f),0.0025f,20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
+	m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+	m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+	m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP,VECTOR3_ZERO,D3DXCOLOR(0.0f,1.0f,1.0f,1.0f));
+	for (int i = 0; i < NUM_TXT; i++)
+	{
+		for (int j = 0; j < START_TEXT[i].size(); j++)
+		{
+			m_pFont[i]->PushBackString(START_TEXT[i][j]);
+		}
+	}
 	return S_OK;
 }
 
@@ -211,6 +275,25 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {	
 	DEBUGKEY();
+	for (int i = 0; i < NUM_TXT; i++)
+	{
+		if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE && !m_pFont[i]->GetEnd())
+		{
+			if (i>0)
+			{
+				if (!m_pFont[i - 1]->GetEnd())continue;
+			}
+			m_pFont[i]->SetEnableScroll(true);
+		}
+		else
+		{
+			if (m_pFont[i]->GetNumString() > 0 && m_pFont[i]->GetEnd())
+			{
+				m_pFont[i]->DeleteString(0);
+			}
+		}
+	}
+
 	// 前回の座標を取得
 	m_Info.posOld = GetPosition();
 
