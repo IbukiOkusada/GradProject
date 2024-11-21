@@ -135,7 +135,7 @@ namespace
 	">> ALL MODULES GREEN.NAVIGATION LOCKED.",
 	">> SYSTEM MESSAGE : ICE DELIVERED COLD, HEARTS WARMED. GOOD LUCK OUT THERE, RIDER.			                      ",
 	">> ENGAGE ENGINE IN 3............ 2............ 1............                               ",
-	">> [NEON TRAIL ACTIVATED]                                                                   ",
+	">> [NEON TRAIL ACTIVATED]                        ",
 	}
 	};
 }
