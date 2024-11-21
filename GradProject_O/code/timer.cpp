@@ -170,6 +170,11 @@ void CTimer::CalTime(void)
 	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
 	{
 		m_LimitTime -= m_pDeltaTime->GetDestTime();
+
+		if (m_LimitTime <= 0.0f)
+		{
+			m_LimitTime = 0.0f;
+		}
 	}
 
 	m_LimitTime = m_LimitTime * 100.0f;
