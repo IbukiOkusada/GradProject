@@ -43,7 +43,8 @@ CScrollString2D::~CScrollString2D()
 HRESULT CScrollString2D::Init()
 {
 	// メンバ変数を初期化
-	m_labelSE	= nullptr;	// 文字送り再生SEラベル
+	m_labelSE	= CMasterSound::CObjectSound::Create("data\\SE\\pi.wav",0);	// 文字送り再生SEラベル
+	m_labelSE->Stop();
 	m_nNextIdx	= 0;		// 次表示する文字インデックス
 	m_fNextTime	= 0.0f;		// 次表示するまでの時間
 	m_fCurTime	= 0.0f;		// 現在の待機時間
