@@ -77,6 +77,7 @@ private:
 	void ByteCheck(char *pRecvData, int nRecvByte);
 	void OnlineEnd(void);
 	void AddressLoad(char *pAddrss);
+	void StartIntro(void);  // ゲームスタート時の演出
 	bool EndCheck(void);
 	bool StartDirection(void);
 
@@ -101,7 +102,7 @@ private:
 	float m_fOpenDoorUISin;
 	bool m_bPause;              // ポーズ
 	int m_nTotalDeliveryStatus;  // プレイヤーが配達する数
-	
+	int m_nStartCameraCount;
 };
 
 #endif
