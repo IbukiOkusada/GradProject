@@ -341,6 +341,11 @@ void CGame::Update(void)
     // エディター更新
     if (pMgr != nullptr) { pMgr->Update(); }
 
+    if (pInputKey->GetTrigger(DIK_J))
+    {
+        CPoliceManager::GetInstance()->SetInspection();
+    }
+
 #endif
 
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();

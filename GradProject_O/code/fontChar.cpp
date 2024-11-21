@@ -144,7 +144,7 @@ CFontChar::SChar CFontChar::Regist(const wchar_t wcChar)
 CFontChar* CFontChar::Create(const HFONT hFont, const std::string& rFilePath, const bool bItalic)
 {
 	// フォント文字の生成
-	CFontChar* pFontChar = new CFontChar(hFont, rFilePath, bItalic);
+	CFontChar* pFontChar = DEBUG_NEW CFontChar(hFont, rFilePath, bItalic);
 	if (pFontChar == nullptr)
 	{ // 生成に失敗した場合
 
@@ -195,7 +195,7 @@ BYTE* CFontChar::CreateBitMap(SChar* pChar, HDC hDC, const wchar_t wcChar)
 	}
 
 	// ビットマップのサイズ分メモリ確保
-	BYTE* pBitMap = new BYTE[dwGlyphSize];
+	BYTE* pBitMap = DEBUG_NEW BYTE[dwGlyphSize];
 	if (pBitMap == nullptr)
 	{ // 生成に失敗した場合
 

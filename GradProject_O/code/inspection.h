@@ -8,11 +8,18 @@
 #define _INSTPECTION_H_		// 二重インクルード防止用マクロを定義
 
 #include "task.h"
+#include "effekseerControl.h"
 
 // 前方宣言
 class CAddPolice;
 class CGimmickPoliceStation;
 class CRoad;
+
+// 定数定義
+namespace InstpectionData
+{
+	const int NUM_EFFECT = 2;
+}
 
 //==========================================================
 // 追加警察のクラス定義
@@ -55,12 +62,14 @@ private:
 	// 検問線情報
 	struct SLagerInfo
 	{
+		CEffekseer::CEffectData* apEffect[InstpectionData::NUM_EFFECT];
 		float fTimer;			// タイマー
 		float fRotateTimer;		// 回転タイマー
 		bool bHit;				// 衝突判定
+		float scale;			// 長さスケール
 
 		// コンストラクタ
-		SLagerInfo() : fTimer(0.0f), fRotateTimer(0.0f), bHit(false) {}
+		SLagerInfo() : apEffect(), fTimer(0.0f), fRotateTimer(0.0f), bHit(false), scale(0.0f) {}
 	};
 
 
@@ -91,6 +100,8 @@ private:	// 自分だけがアクセス可能
 	void Away();
 	void LagerSet();
 	void LagerSetRotation();
+	void Start();
+	void Collision();
 
 	// メンバ変数
 	SInfo m_Info;			// 基本情報

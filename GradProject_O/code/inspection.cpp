@@ -24,6 +24,7 @@ namespace
 	const float STOP_TIMER = 3.0f;			// ストップ
 	const float ROTATE_TIMER = 1.0f;		// 回転
 	const float LAGER_TIMER = 3.0f;			// 検問線出るまでの速度
+	const float LAGER_LENGTH = 700.0f;
 }
 
 //==========================================================
@@ -109,6 +110,11 @@ void CInstpection::Uninit(void)
 		}
 	}
 
+	for (int i = 0; i < InstpectionData::NUM_EFFECT; i++)
+	{
+		SAFE_DELETE(m_LagerInfo.apEffect[i]);
+	}
+
 	Release();
 }
 
@@ -125,6 +131,9 @@ void CInstpection::Update(void)
 
 	// 検問線配置
 	LagerSet();
+
+	// 衝突判定
+	Collision();
 }
 
 //==========================================================
@@ -208,6 +217,20 @@ void CInstpection::LagerSet()
 	// タイマーを進める
 	if (m_LagerInfo.fTimer < LAGER_TIMER)
 	{
+		// 初回のみ
+		if (m_LagerInfo.fTimer == 0.0f)
+		{
+			// エフェクトの生成
+			for (int i = 0; i < InstpectionData::NUM_EFFECT; i++)
+			{
+				// 警察が使われていたら
+				if (m_aPoliceInfo[i].pPolice == nullptr) { continue; }
+
+				m_LagerInfo.apEffect[i] = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\marker_laser.efkefc", 
+					m_aPoliceInfo[i].goalpos, VECTOR3_ZERO, VECTOR3_ZERO, 70.0f, true, false);
+			}
+		}
+
 		m_LagerInfo.fTimer += CDeltaTime::GetInstance()->GetDeltaTime();
 
 		if (m_LagerInfo.fTimer >= LAGER_TIMER)
@@ -217,8 +240,7 @@ void CInstpection::LagerSet()
 	}
 
 	// 割合を求める
-	float range = m_LagerInfo.fTimer / LAGER_TIMER;
-	int cnt = static_cast<int>(range * 10.0f);
+	m_LagerInfo.scale = m_LagerInfo.fTimer / LAGER_TIMER;
 
 	for (int i = 0; i < TYPE::TYPE_MAX; i++)
 	{
@@ -228,13 +250,22 @@ void CInstpection::LagerSet()
 		D3DXVECTOR3 nor = posdiff;
 		D3DXVec3Normalize(&nor, &nor);
 
-		// 指定数分エフェクト生成
-		for (int j = 0; j < cnt; j++)
-		{
-			D3DXVECTOR3 pos = pInfo->goalpos + posdiff * (static_cast<float>(j) * 0.1f);
-			pos.y += 10.0f;
-			CParticle3D::Create(pos, nor, CEffect3D::TYPE::TYPE_LASER);
-		}
+		if (i >= InstpectionData::NUM_EFFECT) { continue; }
+		if (m_LagerInfo.apEffect[i] == nullptr) { continue; }
+
+		// 向き
+		float diff = atan2f(m_Info.pos.x - pInfo->goalpos.x, m_Info.pos.z - pInfo->goalpos.z);
+		Adjust(diff);
+		D3DXVECTOR3 rot = VECTOR3_ZERO;
+		rot.y = diff;
+		m_LagerInfo.apEffect[i]->m_rot = rot;
+
+		// スケール
+		m_LagerInfo.apEffect[i]->m_Scale.Z = m_LagerInfo.scale * LAGER_LENGTH;
+
+		// 位置
+		D3DXVECTOR3 pos = pInfo->goalpos + ((m_Info.pos - pInfo->goalpos) * m_LagerInfo.scale);
+		m_LagerInfo.apEffect[i]->m_pos = pos;
 	}
 }
 
@@ -247,6 +278,7 @@ void CInstpection::LagerSetRotation()
 	if (m_LagerInfo.fRotateTimer <= ROTATE_TIMER) {
 		m_LagerInfo.fRotateTimer += CDeltaTime::GetInstance()->GetDeltaTime();
 	}
+
 	float range = m_LagerInfo.fRotateTimer / ROTATE_TIMER;
 	if (range > 1.0f) { range = 1.0f; }
 
@@ -259,12 +291,87 @@ void CInstpection::LagerSetRotation()
 		if (pInfo->pPolice->GetState() != CPolice::STATE::STATE_STOP) { continue; }
 
 		// 差分を求める
-		float diff = atan2f(m_Info.pos.x - pInfo->goalpos.x, m_Info.pos.z - pInfo->goalpos.z) - pInfo->goalrot.y;
+		float diff = atan2f(m_Info.pos.x - pInfo->goalpos.x, m_Info.pos.z - pInfo->goalpos.z);
 		Adjust(diff);
+		float dest = diff - pInfo->goalrot.y;
+		Adjust(dest);
 
 		// 向きを設定
 		D3DXVECTOR3 rot = pInfo->goalrot;
-		rot.y += diff * range;
+		rot.y += dest * range;
 		pInfo->pPolice->SetRotation(rot);
+
+		// 座標も少し調整
+		diff += D3DX_PI;
+		Adjust(diff);
+		D3DXVECTOR3 pos = pInfo->goalpos;
+		pos.x += sinf(diff) * (100.0f * range);
+		pos.z += cosf(diff) * (100.0f * range);
+		pInfo->pPolice->SetPosition(pos);
+	}
+}
+
+//==========================================================
+// 出撃
+//==========================================================
+void CInstpection::Start()
+{
+	for (int i = 0; i < TYPE::TYPE_MAX; i++)
+	{
+		SPoliceInfo* pInfo = &m_aPoliceInfo[i];
+
+		// 警察を切り離す
+		if (pInfo->pPolice != nullptr)
+		{
+			std::vector<CRoad::SSearch*> navi = {};
+			navi.clear();
+			
+			pInfo->pPolice->SetNavi(navi);
+			pInfo->pPolice->SetState(CPolice::STATE::STATE_SEARCH);
+			pInfo->pPolice = nullptr;
+		}
+
+		if (i < InstpectionData::NUM_EFFECT)
+		{
+			SAFE_DELETE(m_LagerInfo.apEffect[i]);
+		}
+	}
+}
+
+//==========================================================
+// 判定
+//==========================================================
+void CInstpection::Collision()
+{
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	if (pPlayer == nullptr) { return; }
+
+	for (int i = 0; i < InstpectionData::NUM_EFFECT; i++)
+	{
+		if (m_LagerInfo.apEffect[i] == nullptr) { continue; }
+
+		// 線分
+		D3DXVECTOR3 vtx1 = m_aPoliceInfo[i].goalpos;
+		D3DXVECTOR3 vtx2 = m_aPoliceInfo[i].goalpos + (m_Info.pos - m_aPoliceInfo[i].goalpos) * m_LagerInfo.scale;
+
+		// プレイヤーの位置
+		D3DXVECTOR3 pos = pPlayer->GetPosition();
+		D3DXVECTOR3 posOld = pPlayer->GetOldPosition();
+
+		// 通り過ぎた
+		if (collision::LineCrossProduct(vtx1, vtx2, &pos, posOld))
+		{
+			// 追跡
+			Start();
+			break;
+		}
+		// 警察が既に出発済み
+		else if (m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_STOP &&
+			m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_NORMAL)
+		{
+			// 追跡
+			Start();
+			break;
+		}
 	}
 }
