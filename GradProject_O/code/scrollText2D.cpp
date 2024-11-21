@@ -44,12 +44,14 @@ CScrollText2D::~CScrollText2D()
 HRESULT CScrollText2D::Init()
 {
 	// メンバ変数を初期化
-//	m_labelSE	= CSound::LABEL_NONE;	// 文字送り再生SEラベル
+	m_labelSE	= CMasterSound::CObjectSound::Create("data\\SE\\c3.wav", 0);	// 文字送り再生SEラベル
+	m_labelSE->Stop();
+	m_labelSE->SetVolume(0.25f);
 	m_nNextIdx	= 0;		// 次表示する文字インデックス
 	m_fNextTime	= 0.0f;		// 次表示するまでの時間
 	m_fCurTime	= 0.0f;		// 現在の待機時間
 	m_bScroll	= false;	// 文字送り状況
-
+	m_bEnd = false;
 	// 全文字情報配列を初期化
 	m_vecChar.clear();
 
@@ -353,7 +355,7 @@ void CScrollText2D::UpdateScroll(const float fDeltaTime)
 
 			// 現在の待機時間を初期化
 			m_fCurTime = 0.0f;
-
+			m_bEnd = true;
 			// 文字送りをOFFにする
 			m_bScroll = false;
 

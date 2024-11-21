@@ -130,5 +130,35 @@ void CParticle3D::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEf
 		}
 
 		break;
+
+	case CEffect3D::TYPE_LASER:	// エフェクト
+
+		for (int nCnt = 0; nCnt < 1; nCnt++)
+		{
+			// 座標の設定
+			pos = Defpos;
+
+			float speed = 5.0f;
+
+			//移動量の設定
+			move.x = nor.x * speed;
+			move.y = 0.0f;
+			move.z = nor.z * speed;
+
+			float colrand = 0.4f;
+
+			//色の設定
+			col = D3DXCOLOR(colrand + 0.6f, colrand, colrand, 1.0f);
+
+			//半径の設定
+			fRadius = 30.0f;
+
+			//寿命の設定
+			fLife = 1.0f;
+
+			CEffect3D::Create(Defpos + move, move, col, fRadius, fLife, type);
+		}
+
+		break;
 	}
 }
