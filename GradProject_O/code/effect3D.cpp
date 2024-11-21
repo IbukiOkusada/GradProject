@@ -10,7 +10,7 @@
 #include "input.h"
 #include "debugproc.h"
 #include "texture.h"
-#include "slow.h"
+#include "deltatime.h"
 #include "game.h"
 #include "meshfield.h"
 #include "billboard.h"
@@ -38,6 +38,7 @@ namespace {
 		CTexture::TYPE_EFFECT,
 		CTexture::TYPE_EFFECT,
 		CTexture::TYPE_WATER,
+		CTexture::TYPE_EFFECT,
 	};
 }
 
@@ -99,7 +100,8 @@ void CEffect3D::Uninit(void)
 //===============================================
 void CEffect3D::Update(void)
 {
-	m_Info.fLife -= CManager::GetInstance()->GetSlow()->Get();
+	float slow = CDeltaTime::GetInstance()->GetSlow();
+	m_Info.fLife -= slow;
 	D3DXVECTOR3 nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 posOld = m_Info.pos;
 	float fHeight = CMeshField::GetHeight(m_Info.pos, posOld);
@@ -114,7 +116,7 @@ void CEffect3D::Update(void)
 
 	D3DXVECTOR3 pos = GetPosition();	// À•W
 
-	pos += m_Info.move * CManager::GetInstance()->GetSlow()->Get();
+	pos += m_Info.move * slow;
 
 	// À•W
 	SetPosition(pos);
@@ -122,21 +124,27 @@ void CEffect3D::Update(void)
 	switch (m_Info.Type)
 	{
 	case TYPE_NONE:
-		m_Info.col.a -= 0.05f * CManager::GetInstance()->GetSlow()->Get();
-		m_Info.fRadius += 0.1f * CManager::GetInstance()->GetSlow()->Get();
+		m_Info.col.a -= 0.05f * slow;
+		m_Info.fRadius += 0.1f * slow;
 		break;
 
 	case TYPE_SMAKE:	// ‰Œ
 
-		m_Info.col.a -= 0.05f * CManager::GetInstance()->GetSlow()->Get();
-		m_Info.fRadius += 0.1f * CManager::GetInstance()->GetSlow()->Get();
+		m_Info.col.a -= 0.05f * slow;
+		m_Info.fRadius += 0.1f * slow;
 
 		break;
 
 	case TYPE_SPLASH:	// ‰Œ
 
-		m_Info.col.a -= 0.01f * CManager::GetInstance()->GetSlow()->Get();
+		m_Info.col.a -= 0.01f * slow;
 		m_Info.move.y += -1.0f;
+
+		break;
+
+	case TYPE_LASER:	// ‰Œ
+
+		m_Info.col.a -= 0.01f * slow;
 
 		break;
 	}
@@ -332,6 +340,15 @@ void CEffect3D::DrawSet(void)
 	break;
 
 	case TYPE_SPLASH:
+	{
+		m_pObjectBilBoard->SetAlphaText(true);
+		m_pObjectBilBoard->SetZTest(false);
+		m_pObjectBilBoard->SetLighting(true);
+		m_pObjectBilBoard->SetFusion(CObjectBillboard::FUSION_ADD);
+	}
+	break;
+
+	case TYPE_LASER:
 	{
 		m_pObjectBilBoard->SetAlphaText(true);
 		m_pObjectBilBoard->SetZTest(false);

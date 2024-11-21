@@ -413,3 +413,29 @@ void CCar::Set()
 		m_pTailLamp->m_rot = m_Info.rot;
 	}
 }
+
+//==========================================================
+// À•WÝ’è
+//==========================================================
+void CCar::SetPosition(const D3DXVECTOR3& pos)
+{ 
+	m_Info.pos = pos; 
+
+	if (m_pObj != nullptr)
+	{
+		m_pObj->SetPosition(m_Info.pos);
+	}
+}
+
+//==========================================================
+// Œü‚«Ý’è
+//==========================================================
+void CCar::SetRotation(const D3DXVECTOR3& rot)
+{ 
+	m_Info.rot = rot;
+
+	if (m_pObj != nullptr)
+	{
+		m_pObj->SetRotation(m_Info.rot);
+	}
+}

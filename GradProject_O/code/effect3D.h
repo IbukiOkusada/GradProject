@@ -26,6 +26,7 @@ public:	// 誰でもアクセス可能な定義
 		TYPE_NONE = 0,			// 通常
 		TYPE_SMAKE,				// 煙
 		TYPE_SPLASH,			// 水があふれる
+		TYPE_LASER,				// 検問線
 		TYPE_MAX
 	}TYPE;
 

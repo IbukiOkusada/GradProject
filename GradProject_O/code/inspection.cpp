@@ -13,13 +13,17 @@
 #include "deltatime.h"
 #include "gimmick_policestation.h"
 #include "a_star.h"
+#include "particle3D.h"
 
 // 無名名前空間を定義
 namespace
 {
-	const float POLICE_SETROT = D3DX_PI * 0.5f;
-	const float POLICE_SETLENGTH = 700.0f;
-	const float TIMER = 10.0f;
+	const float POLICE_SETLENGTH = 700.0f;	// 警察設置距離
+	const float TIMER = 10.0f;				// タイマー
+	const float START_SPEEDDEST = 40.0f;	// スタート
+	const float STOP_TIMER = 3.0f;			// ストップ
+	const float ROTATE_TIMER = 1.0f;		// 回転
+	const float LAGER_TIMER = 3.0f;			// 検問線出るまでの速度
 }
 
 //==========================================================
@@ -28,11 +32,15 @@ namespace
 CInstpection::CInstpection()
 {
 	// 値のクリア
-	m_Guard = SGuardInfo();
 	m_Info = SInfo();
-	m_bHit = false;
 	m_pNearStation = nullptr;
 	m_pRoad = nullptr;
+	m_LagerInfo = SLagerInfo();
+
+	for (int i = 0; i < TYPE::TYPE_MAX; i++)
+	{
+		m_aPoliceInfo[i] = SPoliceInfo();
+	}
 }
 
 //==========================================================
@@ -48,29 +56,39 @@ CInstpection::~CInstpection()
 //==========================================================
 HRESULT CInstpection::Init(void)
 {
-	// パトカーの設定
+	// 座標取得
+	D3DXVECTOR3 pos = m_Info.pos;
+
+	// 生成
+	m_pNearStation = CGimmickPoliceStation::GetNear(GetPosition());
+
+	// 向き取得
+	D3DXVECTOR3 rot = m_Info.rot;
+	rot.y = m_Info.rot.y;
+	Adjust(rot);
+
+	// 出動するパトカーの生成
+	for (int i = 0; i < TYPE::TYPE_MAX; i++)
 	{
-		// 向き取得
-		D3DXVECTOR3 rot = m_Info.rot;
-		rot.y = POLICE_SETROT + m_Info.rot.y;
-		Adjust(rot);
+		if (m_pNearStation != nullptr) { pos = m_pNearStation->GetPos(); }
 
 		// 座標取得
-		D3DXVECTOR3 pos = m_Info.pos;
-		pos.x += sinf(rot.y) * POLICE_SETLENGTH;
-		pos.z += cosf(rot.y) * POLICE_SETLENGTH;
+		D3DXVECTOR3 goalpos = m_Info.pos;
+		goalpos.x += sinf(rot.y) * POLICE_SETLENGTH;
+		goalpos.z += cosf(rot.y) * POLICE_SETLENGTH;
 
-		// 生成
-		m_pNearStation = CGimmickPoliceStation::GetNear(GetPosition());
-		if (m_pNearStation != nullptr) { pos = m_pNearStation->GetPos(); }
-		m_pPolice = CAddPolice::Create(pos, rot, VECTOR3_ZERO);
+		m_aPoliceInfo[i].pPolice = CAddPolice::Create(pos, VECTOR3_ZERO, VECTOR3_ZERO);
+		m_aPoliceInfo[i].goalpos = goalpos;
 
 		// 経路を設定
 		if (m_pRoad != nullptr)
 		{
-			m_pPolice->SetNavi(AStar::AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf()));
-			m_pPolice->SetState(CPolice::STATE::STATE_NORMAL);
+			m_aPoliceInfo[i].pPolice->SetNavi(AStar::AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf()));
+			m_aPoliceInfo[i].pPolice->SetState(CPolice::STATE::STATE_NORMAL);
 		}
+
+		rot.y += D3DX_PI;
+		Adjust(rot.y);
 	}
 
 	return S_OK;
@@ -82,14 +100,13 @@ HRESULT CInstpection::Init(void)
 void CInstpection::Uninit(void)
 {
 	// 警察廃棄
-	if (m_pPolice != nullptr)
+	for (int i = 0; i < TYPE::TYPE_MAX; i++)
 	{
-		m_pPolice = nullptr;
-	}
-
-	if (m_Guard.pObj != nullptr)
-	{
-		m_Guard.pObj = nullptr;
+		if (m_aPoliceInfo[i].pPolice != nullptr)
+		{
+			m_aPoliceInfo[i].pPolice = nullptr;
+			m_aPoliceInfo[i] = SPoliceInfo();
+		}
 	}
 
 	Release();
@@ -100,71 +117,14 @@ void CInstpection::Uninit(void)
 //==========================================================
 void CInstpection::Update(void)
 {
-	if (m_Guard.pObj != nullptr)
-	{
-		if (m_Guard.pObj->GetHit() || m_Guard.pObj->GetHitOld())
-		{
-			m_bHit = true;
-
-			// 当たり判定を無しにする
-			m_Guard.pObj->SetEnableCollision(false);
-
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
-			float rot = atan2f(m_Guard.pObj->GetPosition().x - pPlayer->GetPosition().x, m_Guard.pObj->GetPosition().z - pPlayer->GetPosition().z);
-			float speed = CPlayerManager::GetInstance()->GetTop()->GetEngine();
-
-			// 座標設定
-			m_Guard.targetpos = {
-				m_Guard.pObj->GetPosition().x + sinf(rot) * speed * 500.0f,
-				m_Guard.pObj->GetPosition().y,
-				m_Guard.pObj->GetPosition().z + cosf(rot) * speed * 500.0f,
-			};
-
-			m_Guard.targetrot = {
-				D3DX_PI * 0.5f,
-				rot,
-				0.0f
-			};
-
-			m_Guard.startpos = m_Guard.pObj->GetPosition();
-			m_Guard.startrot = m_Guard.pObj->GetRotation();
-
-			// 警察を切り離す
-			if (m_pPolice != nullptr)
-			{
-				std::vector<CRoad::SSearch*> navi = {};
-				navi.clear();
-				m_pPolice->SetNavi(navi);
-				m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
-				m_pPolice = nullptr;
-			}
-		}
-	}
-	else
-	{
-		// 警察が停止したら柵生成
-		if (m_pPolice != nullptr)
-		{
-			if (m_pPolice->GetState() == CPolice::STATE::STATE_STOP)
-			{
-				if (m_Guard.pObj == nullptr)
-				{
-					// 柵の生成
-					m_Guard.pObj = CObjectX::Create(m_Info.pos, m_Info.rot, "data\\MODEL\\map\\fance000.x");
-					m_Guard.pObj->SetScale(D3DXVECTOR3(5.0f, 2.0f, 2.0f));
-				}
-			}
-		}
-	}
-
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("検問の座標 : [ %f, %f, %f]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 
-	// 衝突していない
-	if (!m_bHit) { return; }
-
 	// 移動
 	Away();
+
+	// 検問線配置
+	LagerSet();
 }
 
 //==========================================================
@@ -195,21 +155,116 @@ CInstpection* CInstpection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& ro
 //==========================================================
 void CInstpection::Away()
 {
-	// 移動した
-	if (m_Guard.pObj == nullptr) { return; }
-	if (!m_bHit) { return; }
+	for (int i = 0; i < TYPE::TYPE_MAX; i++)
+	{
+		SPoliceInfo* pInfo = &m_aPoliceInfo[i];
+		// 停止状態の時だけ動く
+		if (pInfo->pPolice == nullptr) { continue; }
+		if (pInfo->pPolice->GetState() != CPolice::STATE::STATE_STOP) { continue; }
+		if (pInfo->fTimer >= STOP_TIMER) { continue; }
 
-	// 位置更新
-	D3DXVECTOR3 posdiff = m_Guard.targetpos - m_Guard.pObj->GetPosition();
-	D3DXVECTOR3 setpos = m_Guard.pObj->GetPosition() + posdiff * 0.1f;
-	m_Guard.pObj->SetPosition(setpos);
+		// 初回の地点を保存
+		if (pInfo->fTimer == 0.0f) { 
+			pInfo->startpos = pInfo->pPolice->GetPosition();
+			pInfo->goalrot.y = atan2f(pInfo->goalpos.x - pInfo->startpos.x, pInfo->goalpos.z - pInfo->startpos.z);
+			Adjust(pInfo->goalrot.y);
+		}
 
-	// 向き更新
-	D3DXVECTOR3 rotdiff = m_Guard.targetrot - m_Guard.pObj->GetRotation();
-	Adjust(rotdiff);
-	D3DXVECTOR3 setrot = m_Guard.pObj->GetRotation() + rotdiff * 0.1f;
-	Adjust(setrot);
-	m_Guard.pObj->SetRotation(setrot);
+		// タイマーを進行
+		pInfo->fTimer += CDeltaTime::GetInstance()->GetDeltaTime();
+		float range = pInfo->fTimer / STOP_TIMER;
+		if (range >= 1.0f) { range = 1.0f; }
 
-	m_Guard.fTimer += CDeltaTime::GetInstance()->GetDeltaTime();
+		// 移動
+		D3DXVECTOR3 diff = pInfo->goalpos - pInfo->startpos;
+		D3DXVECTOR3 pos = pInfo->startpos + diff * range;
+		pInfo->pPolice->SetPosition(pos);
+
+		// 向き
+		D3DXVECTOR3 rot = pInfo->pPolice->GetRotation();
+		float rotdiff = pInfo->goalrot.y - rot.y;
+		Adjust(rotdiff);
+		rot.y += rotdiff * 0.1f;
+		Adjust(rot);
+		pInfo->pPolice->SetRotation(rot);
+	}
+}
+
+//==========================================================
+// 検問線を配置
+//==========================================================
+void CInstpection::LagerSet()
+{
+	// 停止しているときのみ
+	if (m_aPoliceInfo[TYPE::TYPE_SEARCH_L].fTimer < STOP_TIMER
+		|| m_aPoliceInfo[TYPE::TYPE_SEARCH_R].fTimer < STOP_TIMER)
+	{
+		return;
+	}
+
+	// 回転処理
+	LagerSetRotation();
+
+	// タイマーを進める
+	if (m_LagerInfo.fTimer < LAGER_TIMER)
+	{
+		m_LagerInfo.fTimer += CDeltaTime::GetInstance()->GetDeltaTime();
+
+		if (m_LagerInfo.fTimer >= LAGER_TIMER)
+		{
+			m_LagerInfo.fTimer = LAGER_TIMER;
+		}
+	}
+
+	// 割合を求める
+	float range = m_LagerInfo.fTimer / LAGER_TIMER;
+	int cnt = static_cast<int>(range * 10.0f);
+
+	for (int i = 0; i < TYPE::TYPE_MAX; i++)
+	{
+		SPoliceInfo* pInfo = &m_aPoliceInfo[i];
+
+		D3DXVECTOR3 posdiff = m_Info.pos - pInfo->goalpos;
+		D3DXVECTOR3 nor = posdiff;
+		D3DXVec3Normalize(&nor, &nor);
+
+		// 指定数分エフェクト生成
+		for (int j = 0; j < cnt; j++)
+		{
+			D3DXVECTOR3 pos = pInfo->goalpos + posdiff * (static_cast<float>(j) * 0.1f);
+			pos.y += 10.0f;
+			CParticle3D::Create(pos, nor, CEffect3D::TYPE::TYPE_LASER);
+		}
+	}
+}
+
+//==========================================================
+// 検問時の向き設定
+//==========================================================
+void CInstpection::LagerSetRotation()
+{
+	// タイマーを進行
+	if (m_LagerInfo.fRotateTimer <= ROTATE_TIMER) {
+		m_LagerInfo.fRotateTimer += CDeltaTime::GetInstance()->GetDeltaTime();
+	}
+	float range = m_LagerInfo.fRotateTimer / ROTATE_TIMER;
+	if (range > 1.0f) { range = 1.0f; }
+
+	for (int i = 0; i < TYPE::TYPE_MAX; i++)
+	{
+		SPoliceInfo* pInfo = &m_aPoliceInfo[i];
+
+		// 停止状態の時だけ動く
+		if (pInfo->pPolice == nullptr) { continue; }
+		if (pInfo->pPolice->GetState() != CPolice::STATE::STATE_STOP) { continue; }
+
+		// 差分を求める
+		float diff = atan2f(m_Info.pos.x - pInfo->goalpos.x, m_Info.pos.z - pInfo->goalpos.z) - pInfo->goalrot.y;
+		Adjust(diff);
+
+		// 向きを設定
+		D3DXVECTOR3 rot = pInfo->goalrot;
+		rot.y += diff * range;
+		pInfo->pPolice->SetRotation(rot);
+	}
 }
