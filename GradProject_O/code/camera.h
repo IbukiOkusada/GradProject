@@ -25,9 +25,7 @@ public:	// 誰でもアクセス可能な定義
 	enum MODE
 	{
 		MODE_NORMAL = 0,	// 通常
-		MODE_SLOWGUN,		// スロー角度強制状態
-		MODE_SLOWSHW,		// シャワー
-		MODE_STARTDOOR,     // スタートドア見るよ
+		MODE_FREE,			// 自由
 		MODE_MAX
 	};
 

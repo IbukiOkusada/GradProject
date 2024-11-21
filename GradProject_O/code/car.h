@@ -67,8 +67,8 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(設定)
 	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }
-	void SetPosition(const D3DXVECTOR3& pos) { m_Info.pos = pos; }
-	void SetRotation(const D3DXVECTOR3& rot) { m_Info.rot = rot; }
+	void SetPosition(const D3DXVECTOR3& pos);
+	void SetRotation(const D3DXVECTOR3& rot);
 	void SetPosTarget(const D3DXVECTOR3& pos) { m_Info.posTarget = pos; }
 	void SetSpeed(const float speed) { m_Info.fSpeed = speed; }
 	void SetSpeedDest(const float speedDest) { m_Info.fSpeedDest = speedDest; }
@@ -91,7 +91,7 @@ protected:	// 派生クラスからもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	void Move();
+	virtual void Move();
 	void Rot();
 	bool Collision();
 

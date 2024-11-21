@@ -124,18 +124,8 @@ void CCamera::Update(void)
 		return;
 	}
 
-	if(m_mode != MODE_STARTDOOR)
-	{
-		//視点の移動
-		//MoveV();
-
-		m_OldposR = m_posR;
-		m_OldposV = m_posV;
-		m_Oldrot = m_rot;
-	}
-
 	// エディター中
-	if (CEditManager::GetInstance() != nullptr)
+	if (CEditManager::GetInstance() != nullptr || m_mode == MODE_FREE)
 	{
 
 		MoveV();
@@ -143,10 +133,22 @@ void CCamera::Update(void)
 		MouseCamera();
 	}
 
-	if (m_pAction != nullptr)
+	if (m_pAction != nullptr && m_mode != MODE_FREE)
 	{
 		m_pAction->Update(this);
 	}
+
+#if _DEBUG
+
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CDebugProc::GetInstance()->Print("カメラ操作変更 : [ F8 ]\n");
+
+	if (pKey->GetTrigger(DIK_F8))
+	{
+		m_mode = static_cast<MODE>((m_mode + 1) % MODE_MAX);
+	}
+
+#endif
 
 	//ズーム
 	Zoom();	
@@ -369,11 +371,6 @@ void CCamera::MoveV(void)
 	//	}
 	//}
 
-	if (m_mode == MODE_SLOWGUN)
-	{
-		Slow();
-	}
-
 	//視点設定
 	SetV();
 }
@@ -587,6 +584,7 @@ void CCamera::MouseCamera(void)
 //==========================================================
 void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float fLength)
 {
+	if (m_mode == MODE_FREE) { return; }
 	D3DXVECTOR3 posRDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 目標の注視点
 	D3DXVECTOR3 posVDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 目標の視点
 	D3DXVECTOR3 RDiff = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 注視点の差分

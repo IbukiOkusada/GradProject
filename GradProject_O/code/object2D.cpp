@@ -648,6 +648,11 @@ void CObject2D::SetSize(float fWidth, float fHeight)
 	pVtx[3].pos.x = m_pos.x + fWidth;
 	pVtx[3].pos.y = m_pos.y + fHeight;
 	pVtx[3].pos.z = 0.0f;
+	// 対角線の角度を求める
+	m_fAngle = atan2f(fWidth, fHeight);
+
+	// 対角線の長さを求める
+	m_fLength = sqrtf(fWidth * fWidth + fHeight * fHeight) * 0.5f;
 
 	//頂点バッファをアンロックする
 	m_pVtxBuff->Unlock();

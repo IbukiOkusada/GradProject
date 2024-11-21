@@ -93,6 +93,7 @@ void CChar2D::Update()
 void CChar2D::Draw()
 {
 	// オブジェクト2Dの描画
+	SetVtx();
 	CObject2D::Draw();
 }
 
@@ -203,6 +204,9 @@ CChar2D* CChar2D::Create
 		// フォントを設定
 		pChar2D->SetFont(rFilePath, bItalic);
 
+		// 文字縦幅を設定
+		pChar2D->SetCharHeight(fHeight);
+
 		// 文字を設定
 		pChar2D->SetChar(wcChar);
 
@@ -211,9 +215,6 @@ CChar2D* CChar2D::Create
 
 		// 向きを設定
 		pChar2D->SetRotation(rRot);
-
-		// 文字縦幅を設定
-		pChar2D->SetCharHeight(fHeight);
 
 		// 色を設定
 		pChar2D->SetCol(rCol);

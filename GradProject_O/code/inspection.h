@@ -11,7 +11,6 @@
 
 // 前方宣言
 class CAddPolice;
-class CObjectX;
 class CGimmickPoliceStation;
 class CRoad;
 
@@ -22,33 +21,48 @@ class CInstpection : public CTask
 {
 private:
 
+	// 出動警察種類
+	enum TYPE
+	{
+		TYPE_SEARCH_L = 0,	// 左側監視
+		TYPE_SEARCH_R,		// 右側監視
+		TYPE_MAX
+	};
 
 	// 基本情報構造体
 	struct SInfo
 	{
 		D3DXVECTOR3 pos;	// 座標
 		D3DXVECTOR3 rot;	// 向き
-		D3DXVECTOR3 carpos;	// 車座標
-		D3DXVECTOR3 carrot;	// 車向き
 
 		// コンストラクタ
-		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), carpos(VECTOR3_ZERO), carrot(VECTOR3_ZERO) {}
+		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO) {}
 	};
 
-	// fence用情報
-	struct SGuardInfo
+	// 出勤パトカー情報
+	struct SPoliceInfo
 	{
-		float fTimer;	// 遷移タイマー
-		D3DXVECTOR3 targetpos;	// 目標座標
-		D3DXVECTOR3 targetrot;	// 目標向き
-		D3DXVECTOR3 startpos;	// 開始座標
-		D3DXVECTOR3 startrot;	// 開始向き
-		CObjectX* pObj;	// 描画オブジェクト
+		CAddPolice* pPolice;	// 警察クラスのポインタ
+		D3DXVECTOR3 goalpos;	// ゴール地点の座標
+		D3DXVECTOR3 goalrot;	// ゴール地点の座標
+		D3DXVECTOR3 startpos;	// 開始地点の座標
+		float fTimer;			// 移動タイマー
 
 		// コンストラクタ
-		SGuardInfo() : fTimer(0.0f), targetpos(VECTOR3_ZERO), 
-			targetrot(VECTOR3_ZERO), startpos(VECTOR3_ZERO), startrot(VECTOR3_ZERO), pObj(nullptr) {}
+		SPoliceInfo() : pPolice(nullptr), goalpos(VECTOR3_ZERO), goalrot(VECTOR3_ZERO), startpos(VECTOR3_ZERO), fTimer(0.0f) {}
 	};
+
+	// 検問線情報
+	struct SLagerInfo
+	{
+		float fTimer;			// タイマー
+		float fRotateTimer;		// 回転タイマー
+		bool bHit;				// 衝突判定
+
+		// コンストラクタ
+		SLagerInfo() : fTimer(0.0f), fRotateTimer(0.0f), bHit(false) {}
+	};
+
 
 public:	// 誰でもアクセス可能
 
@@ -75,14 +89,15 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	void Away();
+	void LagerSet();
+	void LagerSetRotation();
 
 	// メンバ変数
-	CAddPolice* m_pPolice;	// 検問場所にいる警察
-	SGuardInfo m_Guard;		// フェンス用
 	SInfo m_Info;			// 基本情報
-	bool m_bHit;			// 一度でも衝突した
+	CRoad* m_pRoad;			// 設置する道
 	CGimmickPoliceStation* m_pNearStation;	// 近い警察署
-	CRoad* m_pRoad;
+	SPoliceInfo m_aPoliceInfo[TYPE_MAX];	// 警察情報
+	SLagerInfo m_LagerInfo;			// 検問線情報
 };
 
 #endif

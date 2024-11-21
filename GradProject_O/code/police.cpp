@@ -286,10 +286,10 @@ void CPolice::SearchPlayer()
 			if (m_Info.bChase)
 			{
 				m_Info.nChaseCount = CHASE_TIME;
-			}
 
-			// èÛë‘ê›íË
-			SetState(STATE::STATE_CHASE);
+				// èÛë‘ê›íË
+				SetState(STATE::STATE_CHASE);
+			}
 		}
 		else if (length < CHASE_END)
 		{// í«ê’èIóπ

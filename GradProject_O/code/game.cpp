@@ -57,6 +57,21 @@ namespace {
     const int DEF_PORT = (22333);
     const int TOTAL_POINT = 3;  // 配達する総数
     const char* ADDRESSFILE	= "data\\TXT\\address.txt";
+    const D3DXVECTOR3 CAMERA_ROT[4] =
+    {
+        D3DXVECTOR3(0.0f, -2.37f, 1.0f),
+        D3DXVECTOR3(0.0f, 2.37f, 1.0f),
+        D3DXVECTOR3(0.0f, 0.46f, 0.7f),
+        D3DXVECTOR3(0.0f, -0.6f, 1.0f),
+    };
+
+    const float CAMERA_LENGHT[4] =
+    {
+        7000.0f,
+        10000.0f,
+        15000.0f,
+        1000.0f,
+    };
 }
 
 //===============================================
@@ -87,6 +102,7 @@ CGame::CGame()
     m_bPause = false;
     m_pPause = nullptr;
     m_nTotalDeliveryStatus = 0;
+    m_nStartCameraCount = 0;
 }
 
 //===============================================
@@ -111,6 +127,7 @@ CGame::CGame(int nNumPlayer)
     m_bPause = false;
     m_pPause = nullptr;
     m_nTotalDeliveryStatus = 0;
+    m_nStartCameraCount = 0;
 
     // 人数設定
     m_nNumPlayer = nNumPlayer;
@@ -196,14 +213,16 @@ HRESULT CGame::Init(void)
         CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     }
 
+    CBridge::Create(D3DXVECTOR3(13000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
+
     if (m_pGoalManager == nullptr)
     {
         m_pGoalManager = new CGoalManager;
     }
 
-    /*CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
+    CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
     CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
-    CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);*/
+    CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
     if (m_pDeliveryStatus == nullptr)
@@ -215,6 +234,9 @@ HRESULT CGame::Init(void)
     {
         m_pGameTimer = CTimer::Create();
     }
+
+    CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
 
     return S_OK;
 }
@@ -302,6 +324,9 @@ void CGame::Update(void)
     {
         m_pGoalManager->Update();
     }
+
+    // 開始時の演出
+    StartIntro();
 
     // エディター関連
 #if _DEBUG
@@ -723,6 +748,28 @@ void CGame::AddressLoad(char *pAddrss)
     else
     {//ファイルが開けなかった場合
         return;
+    }
+}
+
+//===================================================
+// 開始時の演出
+//===================================================
+void CGame::StartIntro(void)
+{
+    if (m_nStartCameraCount >= 4)
+        return;
+
+    CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+
+    if (pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount < 3)
+    {
+        m_nStartCameraCount++;
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, true);
+    }
+    else if(m_nStartCameraCount >= 3)
+    {
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, false);
+        m_nStartCameraCount++;
     }
 }
 
