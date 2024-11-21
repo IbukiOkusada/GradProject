@@ -76,6 +76,7 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(取得)
 	STATE GetState() { return m_stateInfo.state; }
+	CPlayer* GetPlayer() { return m_Info.pPlayer; }
 
 	// メンバ関数(設定)
 	void SetState(const STATE state);

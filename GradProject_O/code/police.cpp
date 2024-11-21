@@ -18,6 +18,7 @@
 #include "police_manager.h"
 #include "deltatime.h"
 #include "a_star.h"
+#include "police_AI.h"
 
 // マクロ定義
 
@@ -36,8 +37,8 @@ namespace
 		(2000.0f),
 		(400.0f),
 	};			// 追跡開始距離
-	const float CHASE_CONTINUE = (2000.0f);		// 追跡継続距離
-	const float CHASE_END = (3000.0f);			// 追跡終了距離
+	const float CHASE_CONTINUE = (20000.0f);		// 追跡継続距離
+	const float CHASE_END = (30000.0f);			// 追跡終了距離
 }
 
 //==========================================================================
@@ -93,6 +94,7 @@ HRESULT CPolice::Init(void)
 	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
 	m_pSiren->Stop();
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car003.x");
+	m_pPoliceAI = CPoliceAI::Create(this);
 	return S_OK;
 }
 
@@ -115,7 +117,7 @@ void CPolice::Update(void)
 {
 	// 停止状態なら動かない
 	if (m_stateInfo.state == STATE::STATE_STOP) { 
-		SearchPlayer();
+		MoveRoad();
 		return;
 	}
 
@@ -187,6 +189,7 @@ void CPolice::MoveRoad()
 		m_pSiren->SetVolume((2000.0f - dis) * 0.00075f);
 
 		SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
+		SetPosTarget(pRoadTarget->GetPosition());
 	}
 	else
 	{
@@ -262,9 +265,6 @@ void CPolice::SearchPlayer()
 			m_Info.bChase = true;
 			m_Info.nChaseCount = CHASE_TIME;
 
-			SetRoadStart(nullptr);
-			SetRoadTarget(nullptr);
-
 			SetSpeedDest(SECURE_SPEEDDEST);
 			SetSpeed(GetSpeed() * SECURE_SPEED);
 
@@ -277,9 +277,6 @@ void CPolice::SearchPlayer()
 			m_Info.bChase = true;
 			m_Info.nChaseCount = CHASE_TIME;
 
-			SetRoadStart(nullptr);
-			SetRoadTarget(nullptr);
-
 			// 状態設定
 			SetState(STATE::STATE_CHASE);
 		}
@@ -289,9 +286,6 @@ void CPolice::SearchPlayer()
 			if (m_Info.bChase)
 			{
 				m_Info.nChaseCount = CHASE_TIME;
-
-				SetRoadStart(nullptr);
-				SetRoadTarget(nullptr);
 			}
 
 			// 状態設定
@@ -303,9 +297,6 @@ void CPolice::SearchPlayer()
 			if (m_Info.bChase)
 			{
 				m_Info.nChaseCount--;
-
-				SetRoadStart(nullptr);
-				SetRoadTarget(nullptr);
 
 				if (m_Info.nChaseCount < 0)
 				{
@@ -338,8 +329,12 @@ void CPolice::SearchPlayer()
 //==========================================================
 void CPolice::ChasePlayer()
 {
-	if (m_Info.pPlayer != nullptr)
-		SetPosTarget(m_Info.pPlayer->GetPosition());
+	m_pPoliceAI->Update();
+
+	if (m_pPoliceAI->GetSearchRoad() != nullptr)
+	{
+		SetRoadTarget(m_pPoliceAI->GetSearchRoad()->pRoad);
+	}
 }
 
 //==========================================================

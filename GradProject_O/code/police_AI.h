@@ -30,9 +30,10 @@ public:	// 誰でもアクセス可能
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	static CPoliceAI* Create(void);
+	static CPoliceAI* Create(CPolice* pPolice);
 
 	// メンバ関数(取得)
+	CRoad::SSearch* GetSearchRoad() { return m_pSearchTarget; }
 
 	// メンバ関数(設定)
 
@@ -45,9 +46,15 @@ protected:
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void SelectRoad(void);
+	void ReachRoad(void);
 
 	// メンバ変数
 	CPolice* m_pPolice;
+	CRoad* m_pRoadStart;		// 移動開始地点
+	CRoad* m_pRoadTarget;		// 目標地点
+	CRoad::SSearch* m_pSearchTarget;
+	float m_fSearchTimer;
 	vector<CRoad::SSearch*> m_searchRoad;
 
 };

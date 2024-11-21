@@ -32,8 +32,13 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 		{// eƒm[ƒh‚ğ’H‚Á‚Ä‡˜‚ğ“ü‚ê‘Ö‚¦‚½‚Ì‚¿•Ô‚·
 
 			std::vector<CRoad::SSearch*> path;
+			CRoad::SSearch* temp;
 
 			while (Current != nullptr) {
+				if (Current->pParent != nullptr)
+				{
+					Current->pParent->pChaild = Current;
+				}
 				path.push_back(Current);
 				Current = Current->pParent;
 			}
@@ -70,7 +75,7 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 }
 
 //==========================================================
-// AStar‚Å‚Ì§ŒÀ•t‚«Œo˜H’Tõ
+// AStar‚Å‚Ì‰ñ”§ŒÀ•t‚«Œo˜H’Tõ
 //==========================================================
 std::vector<CRoad::SSearch*> AStarLimit(CRoad::SSearch* State, CRoad::SSearch* Gole, int nLimitSearch)
 {
@@ -96,6 +101,10 @@ std::vector<CRoad::SSearch*> AStarLimit(CRoad::SSearch* State, CRoad::SSearch* G
 			std::vector<CRoad::SSearch*> path;
 
 			while (Current != nullptr) {
+				if (Current->pParent != nullptr)
+				{
+					Current->pParent->pChaild = Current;
+				}
 				path.push_back(Current);
 				Current = Current->pParent;
 			}
