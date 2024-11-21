@@ -73,7 +73,7 @@ void CScrollText2D::Uninit()
 {
 	// 全文字情報配列をクリア
 	m_vecChar.clear();
-	SAFE_DELETE(m_labelSE)
+	SAFE_UNINIT_DELETE(m_labelSE)
 	// テキスト2Dの終了
 	CText2D::Uninit();
 }
@@ -271,7 +271,7 @@ CScrollText2D* CScrollText2D::Create
 )
 {
 	// 文字送りテキスト2Dの生成
-	CScrollText2D* pScrollText2D = new CScrollText2D;
+	CScrollText2D* pScrollText2D = DEBUG_NEW CScrollText2D;
 	if (pScrollText2D == nullptr)
 	{ // 生成に失敗した場合
 

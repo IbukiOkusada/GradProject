@@ -161,7 +161,7 @@ CScrollString2D* CScrollString2D::Create
 )
 {
 	// •¶š‘—‚è•¶š—ñ2D‚Ì¶¬
-	CScrollString2D* pScrollString2D = new CScrollString2D;
+	CScrollString2D* pScrollString2D = DEBUG_NEW CScrollString2D;
 	if (pScrollString2D == nullptr)
 	{ // ¶¬‚É¸”s‚µ‚½ê‡
 
@@ -231,7 +231,7 @@ CScrollString2D* CScrollString2D::Create
 )
 {
 	// •¶š‘—‚è•¶š—ñ2D‚Ì¶¬
-	CScrollString2D* pScrollString2D = new CScrollString2D;
+	CScrollString2D* pScrollString2D = DEBUG_NEW CScrollString2D;
 	if (pScrollString2D == nullptr)
 	{ // ¶¬‚É¸”s‚µ‚½ê‡
 
