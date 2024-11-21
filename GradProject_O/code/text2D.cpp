@@ -170,7 +170,7 @@ CText2D* CText2D::Create
 )
 {
 	// テキスト2Dの生成
-	CText2D* pText2D = new CText2D;
+	CText2D* pText2D = DEBUG_NEW CText2D;
 	if (pText2D == nullptr)
 	{ // 生成に失敗した場合
 

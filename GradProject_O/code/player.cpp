@@ -237,7 +237,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(400.0f, 200.0f, 0.0f),0.0025f,20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
 	m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
 	m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
-	m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP,VECTOR3_ZERO,D3DXCOLOR(0.0f,1.0f,1.0f,1.0f));
+	m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP,VECTOR3_ZERO,D3DXCOLOR(0.0f,1.0f, 0.0f,1.0f));
 	for (int i = 0; i < NUM_TXT; i++)
 	{
 		for (int j = 0; j < START_TEXT[i].size(); j++)
@@ -263,6 +263,7 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
 	SAFE_UNINIT_DELETE(pRadio);
 	SAFE_UNINIT_DELETE(m_pCollSound);
+
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// ”pŠü
