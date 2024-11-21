@@ -91,7 +91,7 @@ protected:	// 派生クラスからもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	void Move();
+	virtual void Move();
 	void Rot();
 	bool Collision();
 

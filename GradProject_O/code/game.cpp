@@ -196,6 +196,8 @@ HRESULT CGame::Init(void)
         CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
     }
 
+    CBridge::Create(D3DXVECTOR3(13000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5, 0.0f), D3DXVECTOR3(1000.0f, 100.0f, 2000.0f), 600.0f, 600.0f);
+
     if (m_pGoalManager == nullptr)
     {
         m_pGoalManager = new CGoalManager;
