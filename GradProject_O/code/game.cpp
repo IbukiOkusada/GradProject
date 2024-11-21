@@ -57,17 +57,19 @@ namespace {
     const int DEF_PORT = (22333);
     const int TOTAL_POINT = 3;  // 配達する総数
     const char* ADDRESSFILE	= "data\\TXT\\address.txt";
-    const D3DXVECTOR3 CAMERA_ROT[3] =
+    const D3DXVECTOR3 CAMERA_ROT[4] =
     {
         D3DXVECTOR3(0.0f, -2.37f, 1.0f),
         D3DXVECTOR3(0.0f, 2.37f, 1.0f),
+        D3DXVECTOR3(0.0f, 0.46f, 0.7f),
         D3DXVECTOR3(0.0f, -0.6f, 1.0f),
     };
 
-    const float CAMERA_LENGHT[3] =
+    const float CAMERA_LENGHT[4] =
     {
-        5000.0f,
         7000.0f,
+        10000.0f,
+        15000.0f,
         1000.0f,
     };
 }
@@ -233,8 +235,8 @@ HRESULT CGame::Init(void)
         m_pGameTimer = CTimer::Create();
     }
 
-   /* CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], 5000.0f, 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);*/
+    CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
 
     return S_OK;
 }
@@ -324,7 +326,7 @@ void CGame::Update(void)
     }
 
     // 開始時の演出
-    //StartIntro();
+    StartIntro();
 
     // エディター関連
 #if _DEBUG
@@ -754,19 +756,19 @@ void CGame::AddressLoad(char *pAddrss)
 //===================================================
 void CGame::StartIntro(void)
 {
-    if (m_nStartCameraCount >= 3)
+    if (m_nStartCameraCount >= 4)
         return;
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-    if (pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount < 2)
+    if (pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount < 3)
     {
         m_nStartCameraCount++;
         CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, true);
     }
-    else if(m_nStartCameraCount >= 2)
+    else if(m_nStartCameraCount >= 3)
     {
-        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, false);
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, false);
         m_nStartCameraCount++;
     }
 }

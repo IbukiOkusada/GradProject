@@ -14,7 +14,7 @@ namespace AStar
 	// AStar‚Å‚ÌŒo˜H’Tõ
 	std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole);
 
-	// AStar‚Å‚Ì§ŒÀ•t‚«Œo˜H’Tõ
+	// AStar‚Å‚Ì‰ñ”§ŒÀ•t‚«Œo˜H’Tõ
 	std::vector<CRoad::SSearch*> AStarLimit(CRoad::SSearch* State, CRoad::SSearch* Gole, int nCntSearch);
 }
 
