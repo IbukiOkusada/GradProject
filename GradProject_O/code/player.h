@@ -17,6 +17,8 @@
 #include "radio.h"
 #include "navi.h"
 #include "road.h"
+#include "scrollString2D.h"
+#include "scrollText2D.h"
 using namespace std;
 // 前方宣言
 class CWaist;
@@ -29,7 +31,7 @@ class CPredRoute;
 
 // マクロ定義
 #define MAX_ITEM  (1280)  // 所持できるアイテムの最大数
-
+#define NUM_TXT  (4)  
 //==========================================================
 // プレイヤーのクラス定義(派生クラス)
 //==========================================================
@@ -170,6 +172,8 @@ protected:	// 自分だけがアクセス可能
 	float m_fbrakePitch;
 	CRadio* pRadio;
 	CMasterSound::CObjectSound* m_pCollSound;
+	CScrollText2D* m_pFont[NUM_TXT];
+	
 	int m_nNumDeliveryStatus;  // 配達した数
 };
 

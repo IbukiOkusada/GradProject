@@ -58,7 +58,7 @@ public:
 	void Moving(const int nNum);
 
 	//“’…î•ñ‚ÉŠÖ‚·‚éSetEGetŠÖ”
-	bool SetReached(bool bReach) { m_bReached = bReach; }
+	void SetReached(bool bReach) { m_bReached = bReach; }
 	bool GetReached(void) {return m_bReached;}
 
 private:
