@@ -31,6 +31,8 @@
 #include "objectsound.h"
 #include "font.h"
 #include "deltatime.h"
+#include "network.h"
+
 //===============================================
 // 静的メンバ変数
 //===============================================
@@ -54,6 +56,7 @@ CManager::CManager()
 	m_pFade = nullptr;			// フェードへのポインタ
 	m_pDeltaTime = nullptr;     // タイマーへのポインタ
 	m_pFont = nullptr;
+	m_pNetWork = nullptr;
 }
 
 //===================================================
@@ -69,7 +72,6 @@ CManager::~CManager()
 //===================================================
 HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 {
-
 	// レンダラーの生成
 	if (m_pRenderer == nullptr)
 	{// 使用していない場合
@@ -180,6 +182,13 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	{
 		m_pFont = CFont::Create();
 	}
+
+	// ネットワークの生成
+	if (m_pNetWork == nullptr)
+	{
+		m_pNetWork = CNetWork::Create();
+	}
+
 	// エフェクシア初期化
 	CEffekseer::GetInstance()->Init();
 	
@@ -308,6 +317,14 @@ void CManager::Uninit(void)
 		// 使用していない状態にする
 		m_pDeltaTime = nullptr;
 	}
+
+	// ネットワークの生成
+	if (m_pNetWork == nullptr)
+	{
+		m_pNetWork->Release();
+		m_pNetWork = nullptr;
+	}
+
 	SAFE_UNINIT_DELETE(m_pFont);
 	// 各種マネージャの破棄
 	CListManager::Release();

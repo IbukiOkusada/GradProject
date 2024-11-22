@@ -21,11 +21,15 @@ public:	// 誰でもアクセス可能
 	bool Init(const char *pIPAddress, int nPortNum);
 	void BindSock(SOCKET sock);
 	void Uninit(void);
+	bool Reconnect(const char* pIPAddress, int nPortNum);
+
+	// 通信
 	int Send(const char *pSendData, int nSendDataSize);
 	int Recv(char *pRecvData, int nRecvDataSize);
-	void SetIP(char *pIp);
+
+	// メンバ関数(取得)
 	void SetCliePort(int nPort) { m_nClientPort = nPort; }
-	char *GetIP(void) { return &m_aClientIP[0]; }
+	const char *GetIP(void) { return m_ClientIP.c_str(); }
 	int GetPort(void) { return m_nClientPort; }
 	int GetId(void) { return m_nId; }
 	void SetId(int nId) { m_nId = nId; }
@@ -35,7 +39,7 @@ private:	// 自分だけアクセス可能
 
 	// メンバ変数
 	SOCKET m_sock;	// ソケット
-	char m_aClientIP[64];
+	std::string m_ClientIP;
 	int m_nClientPort;
 	int m_nId;
 };

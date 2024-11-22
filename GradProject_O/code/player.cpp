@@ -191,7 +191,7 @@ CPlayer::CPlayer()
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
 	m_pCollSound->Stop();
-	m_nId = CPlayerManager::GetInstance()->GetNum();
+	m_nId = -1;
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 
@@ -311,9 +311,7 @@ void CPlayer::Update(void)
 		// 当たり判定
 		Collision();
 
-		// オンライン送信
-		CManager::GetInstance()->GetScene()->SendPosition(m_Info.pos);
-		CManager::GetInstance()->GetScene()->SendRotation(m_Info.rot);
+		
 	}
 	
 	// マトリックス

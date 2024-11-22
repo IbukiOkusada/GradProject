@@ -33,8 +33,8 @@ public:	// 誰でもアクセス可能
 	int GetNum() { return m_List.size(); }
 	CPlayer* GetPlayer(int nIdx = 0);
 	std::map<int, CPlayer*>* GetList() { return &m_List; }
-	void ListIn(CPlayer* pPlayer);
-	void ListOut(CPlayer* pPlayer);
+	bool ListIn(CPlayer* pPlayer);
+	bool ListOut(CPlayer* pPlayer);
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
 
 private:	// 自分だけがアクセス可能

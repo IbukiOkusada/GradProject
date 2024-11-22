@@ -486,6 +486,9 @@
     <ClCompile Include="code\inspection_manager.cpp">
       <Filter>obstacle\inspection</Filter>
     </ClCompile>
+    <ClCompile Include="code\network.cpp">
+      <Filter>online</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -808,6 +811,9 @@
     </ClInclude>
     <ClInclude Include="code\inspection_manager.h">
       <Filter>obstacle\inspection</Filter>
+    </ClInclude>
+    <ClInclude Include="code\network.h">
+      <Filter>online</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

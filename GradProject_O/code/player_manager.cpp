@@ -83,26 +83,42 @@ void CPlayerManager::Release(void)
 //==========================================================
 // リストに挿入
 //==========================================================
-void CPlayerManager::ListIn(CPlayer* pPlayer)
+bool CPlayerManager::ListIn(CPlayer* pPlayer)
 {
-	if (pPlayer == nullptr) { return; }
+	if (pPlayer == nullptr) { return false; }
 
-	m_List[pPlayer->GetId()] = pPlayer;
+	auto it = m_List.find(pPlayer->GetId());
+
+	// 存在しない
+	if (it == m_List.end())
+	{
+		m_List[pPlayer->GetId()] = pPlayer;
+		return true;
+	}
+
+	return false;
 }
 
 //==========================================================
 // リストから外す
 //==========================================================
-void CPlayerManager::ListOut(CPlayer* pPlayer)
+bool CPlayerManager::ListOut(CPlayer* pPlayer)
 {
-	if (pPlayer == nullptr) { return; }
+	if (pPlayer == nullptr) { return false; }
 
 	auto it = m_List.find(pPlayer->GetId());
 
+	// 見つかった
 	if (it != m_List.end())
 	{
-		m_List.erase(pPlayer->GetId());
+		if (it->second == pPlayer)
+		{
+			m_List.erase(pPlayer->GetId());
+			return true;
+		}
 	}
+
+	return false;
 }
 
 //==========================================================

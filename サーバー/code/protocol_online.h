@@ -1,13 +1,11 @@
 //==========================================================
 //
-// オンライン対戦送受信プロトコル [protocol_online.h]
+// オンライン送受信プロトコル [protocol_online.h]
 // Author : Ibuki Okusada
 //
 //==========================================================
-#ifndef _PROTOCOL_RANKING_H_
-#define _PROTOCOL_RANKING_H_
-
-// マクロ定義
+#ifndef _PROTOCOL_ONLINE_H_
+#define _PROTOCOL_ONLINE_H_
 
 //**********************************************************
 // 送受信用プロトコル列挙を定義
@@ -15,6 +13,8 @@
 namespace NetWork
 {
 	const int MAX_CONNECT = 4;	// 最大接続数
+	const int MAX_COMMAND_DATA = ((sizeof(int) + sizeof(int) + 1024));	// データのマックスサイズ
+	const int MAX_SEND_DATA = 4096;	// 最大データ量
 
 	// コマンド列挙
 	enum COMMAND
