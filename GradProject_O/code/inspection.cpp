@@ -336,6 +336,9 @@ void CInstpection::Start()
 			SAFE_DELETE(m_LagerInfo.apEffect[i]);
 		}
 	}
+
+	// I—¹
+	Uninit();
 }
 
 //==========================================================
@@ -343,7 +346,7 @@ void CInstpection::Start()
 //==========================================================
 void CInstpection::Collision()
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }
 
 	for (int i = 0; i < InstpectionData::NUM_EFFECT; i++)
@@ -363,7 +366,7 @@ void CInstpection::Collision()
 		{
 			// ’ÇÕ
 			Start();
-			break;
+			return;
 		}
 		// Œx@‚ªŠù‚Éo”­Ï‚İ
 		else if (m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_STOP &&
@@ -371,7 +374,14 @@ void CInstpection::Collision()
 		{
 			// ’ÇÕ
 			Start();
-			break;
+			return;
 		}
+	}
+
+	// ŠÔ‚ğŒv‘ª
+	for (int i = 0; i < TYPE::TYPE_MAX; i++)
+	{ 
+		if (m_aPoliceInfo[i].pPolice == nullptr) { return; }
+		//if(m_aPoliceInfo[i].pPolice->GetState() != )
 	}
 }

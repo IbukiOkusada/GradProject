@@ -230,10 +230,10 @@ void CMapManager::LoadModelName(const std::string& filename)
 		{// TEXT_FILENAMEでモデル名読み込み
 
 			// ストリーム作成
-			std::istringstream lineStream(line);
+			std::istringstream lineStr(line);
 
 			// 情報渡す
-			lineStream >>
+			lineStr >>
 				hoge >>
 				hoge >>			// ＝
 				modelname;// モデルファイル名

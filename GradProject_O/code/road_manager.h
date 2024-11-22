@@ -33,6 +33,8 @@ public:	// 誰でもアクセス可能
 	static void Release(void);
 	void ListIn(CRoad* pRoad);
 	void ListOut(CRoad* pRoad);
+	void IdListIn(CRoad* pRoad);
+	void IdListOut(CRoad* pRoad);
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
 	Clist<CRoad::SInfo*>* GetInfoList() { return &m_InfoList; }
 	Clist<CRoad*>* GetList() { if (m_pList == nullptr) { m_pList = m_pList->Create(); }return m_pList; }	// リスト取得
@@ -51,6 +53,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	Clist<CRoad*>* m_pList;
+	std::map<int, CRoad*> m_IdList;	// ID管理のリスト
 	static CRoadManager* m_pInstance;	// インスタンス
 	Clist<CRoad::SInfo*> m_InfoList;
 	

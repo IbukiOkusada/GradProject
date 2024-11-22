@@ -65,11 +65,11 @@ private:
 		CEffekseer::CEffectData* apEffect[InstpectionData::NUM_EFFECT];
 		float fTimer;			// タイマー
 		float fRotateTimer;		// 回転タイマー
-		bool bHit;				// 衝突判定
+		float fEndTimer;		// 終了タイマー
 		float scale;			// 長さスケール
 
 		// コンストラクタ
-		SLagerInfo() : apEffect(), fTimer(0.0f), fRotateTimer(0.0f), bHit(false), scale(0.0f) {}
+		SLagerInfo() : apEffect(), fTimer(0.0f), fRotateTimer(0.0f), scale(0.0f), fEndTimer(0.0f) {}
 	};
 
 
@@ -85,6 +85,7 @@ public:	// 誰でもアクセス可能
 
 	// 静的メンバ関数
 	static CInstpection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad);
+	static CInstpection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdxRoad);
 
 	// メンバ関数(取得)
 	D3DXVECTOR3& GetPosition() { return m_Info.pos; }

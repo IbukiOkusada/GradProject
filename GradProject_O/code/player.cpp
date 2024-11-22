@@ -174,7 +174,6 @@ CPlayer::CPlayer()
 	m_fLifeOrigin = m_fLife;
 	m_fCamera = CAMERA_NORMAL;
 	m_type = TYPE_NONE;
-	m_nId = -1;
 	m_fNitroCool = 0.0f;
 	m_Info.fSlideMove = 0.0f;
 	m_pObj = nullptr;
@@ -192,6 +191,7 @@ CPlayer::CPlayer()
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
 	m_pCollSound->Stop();
+	m_nId = CPlayerManager::GetInstance()->GetNum();
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 

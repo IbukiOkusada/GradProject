@@ -86,7 +86,7 @@ void CNavi::StartNavigation(void)
 {
 	//‹ß‚¢ƒS[ƒ‹‚ğ’Tõ
 	Clist<CGole*>* List = CGole::GetInstance();
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	float fDis = FLT_MAX;
 	m_pGole = nullptr;
 	for (int i = 0; i < List->GetNum(); i++)
@@ -155,7 +155,7 @@ void CNavi::CreateEffect(void)
 //==========================================================
 void CNavi::UpdateNavigation(void)
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	float fDis = FLT_MAX;
 	int nID = 0;
 	for (int i = 0; i < m_Path.size(); i++)

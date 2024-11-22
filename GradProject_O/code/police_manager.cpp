@@ -171,7 +171,7 @@ void CPoliceManager::Warning(CPolice* pPolice)
 //==========================================================
 void CPoliceManager::SetInspection()
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }
 
 	// ƒvƒŒƒCƒ„[‚Ì—\‘ª‚ğæ“¾‚·‚é

@@ -348,7 +348,7 @@ void CGame::Update(void)
 
 #endif
 
-    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
     int nNum = pPlayer->GetNumDeliverStatus();
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
     if (m_nTotalDeliveryStatus <= nNum && pCamera->GetAction()->IsFinish())

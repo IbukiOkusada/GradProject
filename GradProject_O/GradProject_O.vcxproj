@@ -203,6 +203,7 @@
     <ClCompile Include="code\input_keyboard.cpp" />
     <ClCompile Include="code\input_mouse.cpp" />
     <ClCompile Include="code\inspection.cpp" />
+    <ClCompile Include="code\inspection_manager.cpp" />
     <ClCompile Include="code\light.cpp" />
     <ClCompile Include="code\list_manager.cpp" />
     <ClCompile Include="code\main.cpp" />
@@ -374,6 +375,7 @@
     <ClInclude Include="code\edit_handle.h" />
     <ClInclude Include="code\timer.h" />
     <ClInclude Include="code\pred_route.h" />
+    <ClInclude Include="inspection_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

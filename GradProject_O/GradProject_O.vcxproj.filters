@@ -166,6 +166,9 @@
     <Filter Include="UI\text">
       <UniqueIdentifier>{a7856ad4-7fd5-44bb-be4d-e1a767eb3e36}</UniqueIdentifier>
     </Filter>
+    <Filter Include="obstacle\inspection">
+      <UniqueIdentifier>{0f6e0c09-8384-4f59-b6e6-a69e42fd552e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -444,9 +447,6 @@
     <ClCompile Include="code\PlayerTitle.cpp">
       <Filter>player</Filter>
     </ClCompile>
-    <ClCompile Include="code\inspection.cpp">
-      <Filter>obstacle</Filter>
-    </ClCompile>
     <ClCompile Include="code\container.cpp">
       <Filter>UI\container</Filter>
     </ClCompile>
@@ -479,6 +479,12 @@
     </ClCompile>
     <ClCompile Include="code\police_AI.cpp">
       <Filter>car\police</Filter>
+    </ClCompile>
+    <ClCompile Include="code\inspection.cpp">
+      <Filter>obstacle\inspection</Filter>
+    </ClCompile>
+    <ClCompile Include="code\inspection_manager.cpp">
+      <Filter>obstacle\inspection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -764,9 +770,6 @@
     <ClInclude Include="code\PlayerTitle.h">
       <Filter>player</Filter>
     </ClInclude>
-    <ClInclude Include="code\inspection.h">
-      <Filter>obstacle</Filter>
-    </ClInclude>
     <ClInclude Include="code\container.h">
       <Filter>UI\container</Filter>
     </ClInclude>
@@ -799,6 +802,12 @@
     </ClInclude>
     <ClInclude Include="code\police_AI.h">
       <Filter>car\police</Filter>
+    </ClInclude>
+    <ClInclude Include="code\inspection.h">
+      <Filter>obstacle\inspection</Filter>
+    </ClInclude>
+    <ClInclude Include="inspection_manager.h">
+      <Filter>obstacle\inspection</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

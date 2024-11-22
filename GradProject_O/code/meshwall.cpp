@@ -245,7 +245,7 @@ void CMeshWall::SceltonWall(void)
 	int nNumWidth = GetNumWidth();		// •–‡”‚ğæ“¾
 	int nNumHeight = GetNumHeight();	// ‚‚³–‡”‚ğæ“¾
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 
 	// ‹——£‚ğæ‚é
 	{

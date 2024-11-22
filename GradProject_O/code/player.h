@@ -122,6 +122,7 @@ public:	// 誰でもアクセス可能
 	float GetEngine(void) { return m_fEngine; }
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 	float GetLifeOrigin() { return m_fLifeOrigin; }
+	int GetId() { return m_nId; }
 
 protected:	// 自分だけがアクセス可能
 

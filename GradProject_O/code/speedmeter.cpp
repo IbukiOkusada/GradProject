@@ -155,7 +155,7 @@ void CSpeedMeter::Draw(void)
 //==========================================================
 void CSpeedMeter::Needle(void)
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 
 	// ‚Ç‚¿‚ç‚©‚ªg—p‚³‚ê‚Ä‚¢‚È‚¢ê‡ˆ—‚ğ”²‚¯‚é
 	if (m_pNeedle == nullptr || pPlayer == nullptr)

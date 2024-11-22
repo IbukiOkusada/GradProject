@@ -86,9 +86,9 @@ void CGimmickFireHydrant::Update(void)
 	{
 		m_bHit = true;
 		m_pObj->SetEnableCollision(false);
-		D3DXVECTOR3 pos = CPlayerManager::GetInstance()->GetTop()->GetPosition();
+		D3DXVECTOR3 pos = CPlayerManager::GetInstance()->GetPlayer()->GetPosition();
 		float rot = atan2f(GetPos().x - pos.x, GetPos().z - pos.z);
-		float speed = CPlayerManager::GetInstance()->GetTop()->GetEngine();
+		float speed = CPlayerManager::GetInstance()->GetPlayer()->GetEngine();
 
 		// À•Wİ’è
 		m_TargetPos = {
