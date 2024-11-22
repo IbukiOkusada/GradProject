@@ -806,7 +806,7 @@
     <ClInclude Include="code\inspection.h">
       <Filter>obstacle\inspection</Filter>
     </ClInclude>
-    <ClInclude Include="inspection_manager.h">
+    <ClInclude Include="code\inspection_manager.h">
       <Filter>obstacle\inspection</Filter>
     </ClInclude>
   </ItemGroup>

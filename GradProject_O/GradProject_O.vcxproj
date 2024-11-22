@@ -375,7 +375,7 @@
     <ClInclude Include="code\edit_handle.h" />
     <ClInclude Include="code\timer.h" />
     <ClInclude Include="code\pred_route.h" />
-    <ClInclude Include="inspection_manager.h" />
+    <ClInclude Include="code\inspection_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
