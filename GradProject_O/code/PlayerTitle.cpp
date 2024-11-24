@@ -124,8 +124,8 @@ void CPlayerTitle::Update(void)
 
 	//// デバッグ表示
 	//CDebugProc::GetInstance()->Print("プレイヤー :");
-	//CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	CDebugProc::GetInstance()->Print(" プレイヤー向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
+	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	//CDebugProc::GetInstance()->Print(" プレイヤー向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
 }
 //<================================================
 //動きに関する処理

@@ -20,6 +20,7 @@
 #include "map_manager.h"
 #include "meshfield.h"
 #include "PlayerTitle.h"
+#include "PoliceTitle.h"
 #include "goal.h"
 
 //===============================================
@@ -56,12 +57,18 @@ CTitle::CTitle()
 	m_nCounter = 0;
 	m_nLogoAlpgha = 0;
 	m_TitlePos = VECTOR3_ZERO;
+
+	m_eState = STATE::STATE_TEAMLOGO;
+
+	//bool系
 	m_bPush = false;
 	m_bNext = false;
 	m_bDisplay = false;
 	m_bSkipped = false;
-	m_eState = STATE::STATE_TEAMLOGO;
 	m_bCol = false;
+	m_bIniting = false;
+
+	//ポインタ系
 	m_pPlayer = nullptr;
 	m_pCam = nullptr;
 
@@ -71,7 +78,11 @@ CTitle::CTitle()
 		m_pObject2D[nCnt] = nullptr;
 	}
 
-	m_bIniting = false;
+	//配列の初期化
+	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+	{
+		m_apPolice[nCnt] = nullptr;
+	}
 
 }
 
@@ -447,6 +458,11 @@ void CTitle::InitingP_E(void)
 		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), VECTOR3_ZERO, 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 		m_pPlayer = CPlayerTitle::Create(D3DXVECTOR3(-4734.0f, 50.0f, -1988.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
 
+		for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+		{
+			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(-4734.0f + 150.0f * nCnt, 0.0f, -1300.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
+		}
+
 		//初期化完了の合図をtrueにする
 		m_bIniting = true;
 	}
@@ -517,24 +533,30 @@ void CTitle::ChaseMovement(void)
 {
 	D3DXVECTOR3 CameraRot = m_pCam->GetRotation();		//カメラ向き
 	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
-
+	D3DXVECTOR3 aPolicePos[POLICE_MAX] = {};			//警察の位置
 	const float PlayerMove = 25.0f;						//プレイヤーの動く値
+	const float fRotMove = 0.01f, fDestRot = -1.11f;	//向き移動の際の移動値と目的向き
 
-	//向き移動の際の移動値と目的向き
-	const float fRotMove = 0.01f, fDestRot = -1.11f;
-
-	//その値にする
-	if (CameraRot.y <= fDestRot){CameraRot.y = fDestRot;}
-
-	//その値に行っていなかったら回転し続ける
-	else{CameraRot.y -= fRotMove;}
-
-	//プレイヤーを移動させる
+	m_pCam->Pursue(m_pPlayer->GetPosition(), D3DXVECTOR3(0.0f, -0.0f, 1.79f), 1500.0f);
+	//プレイヤーと警察を移動させる
 	PlayerPos.z += PlayerMove;
 	
 	//カメラの向きとプレイヤーの位置の設定
-	m_pCam->SetRotation(CameraRot);
 	m_pPlayer->SetPosition(PlayerPos);
+
+	//<******************************************
+	//警察関連の処理
+	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+	{
+		//警察の位置を取得
+		aPolicePos[nCnt].x = m_apPolice[nCnt]->GetPosition().x;
+		aPolicePos[nCnt].y = m_apPolice[nCnt]->GetPosition().y;
+		aPolicePos[nCnt].z = m_apPolice[nCnt]->GetPosition().z;
+
+		///警察の位置を移動させ、位置を設定する
+		aPolicePos[nCnt].z += PlayerMove;
+		m_apPolice[nCnt]->SetPosition(aPolicePos[nCnt]);
+	}
 }
 //<===============================================
 //スキップした際の際の動き
