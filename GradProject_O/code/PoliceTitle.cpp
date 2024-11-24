@@ -26,7 +26,7 @@ CPoliceTitle::~CPoliceTitle()
 HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 {
 	//ˆÊ’uî•ñ‚ğİ’è
-	CPolice::Init(pos);
+	//CPolice::Init(pos);
 
 	return S_OK;
 }
