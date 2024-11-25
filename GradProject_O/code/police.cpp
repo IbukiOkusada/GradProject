@@ -37,8 +37,8 @@ namespace
 		(2000.0f),
 		(400.0f),
 	};			// ’ÇÕŠJŽn‹——£
-	const float CHASE_CONTINUE = (20000.0f);		// ’ÇÕŒp‘±‹——£
-	const float CHASE_END = (30000.0f);			// ’ÇÕI—¹‹——£
+	const float CHASE_CONTINUE = (200000.0f);		// ’ÇÕŒp‘±‹——£
+	const float CHASE_END = (300000.0f);			// ’ÇÕI—¹‹——£
 }
 
 //==========================================================================
@@ -174,7 +174,7 @@ void CPolice::MoveRoad()
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
-	if (pRoadTarget == nullptr && !m_Info.bChase)
+	if (pRoadTarget == nullptr)
 		SearchRoad();
 
 	SearchPlayer();
@@ -189,7 +189,11 @@ void CPolice::MoveRoad()
 		m_pSiren->SetVolume((2000.0f - dis) * 0.00075f);
 
 		SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
-		SetPosTarget(pRoadTarget->GetPosition());
+
+		if (pRoadTarget != nullptr)
+		{
+			SetPosTarget(pRoadTarget->GetPosition());
+		}
 	}
 	else
 	{
@@ -321,6 +325,8 @@ void CPolice::SearchPlayer()
 			m_Info.bChase = false;
 			m_Info.nChaseCount = 0;
 		}
+
+		m_Info.bChase = true;
 	}
 }
 
@@ -331,7 +337,7 @@ void CPolice::ChasePlayer()
 {
 	m_pPoliceAI->Update();
 
-	if (m_pPoliceAI->GetSearchRoad() != nullptr)
+	if (m_pPoliceAI->GetSearchRoad() != nullptr && m_pPoliceAI->GetSearchRoad()->pRoad != nullptr)
 	{
 		SetRoadTarget(m_pPoliceAI->GetSearchRoad()->pRoad);
 	}
