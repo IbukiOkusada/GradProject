@@ -28,6 +28,7 @@ class CRoad;
 class CBaggage;
 class CMultiCamera;
 class CPredRoute;
+class CContainer;
 
 // マクロ定義
 #define MAX_ITEM  (1280)  // 所持できるアイテムの最大数
@@ -198,6 +199,7 @@ protected:	// 自分だけがアクセス可能
 	CObjectX* m_pObj;		// 描画オブジェクト
 	CBaggage* m_pBaggage;	// 荷物
 	CNavi* m_pNavi;			// ナビ
+	CContainer* m_pContainer;
 	CPredRoute* m_pPredRoute;	// 予測用
 	CEffekseer::CEffectData * m_pTailLamp;
 	CEffekseer::CEffectData* m_pBackdust;

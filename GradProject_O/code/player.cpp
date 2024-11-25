@@ -208,6 +208,7 @@ CPlayer::CPlayer(int nId)
 	m_pBackdust = nullptr;
 	m_pCollSound = nullptr;
 	m_pSoundBrake = nullptr;
+	m_pContainer = nullptr;
 	pRadio = nullptr;
 	m_type = TYPE::TYPE_RECV;
 
@@ -246,7 +247,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
 	
-	CContainer::Create();
+	m_pContainer = CContainer::Create();
 	
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -259,6 +260,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 //===============================================
 void CPlayer::Uninit(void)
 {	
+	SAFE_UNINIT(m_pContainer);
 	SAFE_UNINIT(m_pObj);
 	SAFE_UNINIT(m_pBaggage);
 	SAFE_DELETE(m_pTailLamp);
@@ -393,6 +395,12 @@ void CPlayer::Update(void)
 	}
 	else
 	{
+
+		// 速度によって補正カメラ
+		float engine = m_fEngine;
+		if (engine < CAMERA_ENGINEMULTI) { engine = 0.0f; }
+		else { engine -= CAMERA_ENGINEMULTI; }
+		CDebugProc::GetInstance()->Print("engine [ %f ]", engine);
 		m_fCamera = CAMERA_NORMAL + ENGINE_ADDCAMERA * engine;
 	}
 
@@ -1160,6 +1168,7 @@ void CPlayer::SetStateRecv()
 	// 不必要な情報を廃棄
 	SAFE_UNINIT(m_pNavi);
 	SAFE_UNINIT(m_pPredRoute);
+	SAFE_UNINIT(m_pContainer);
 
 	SAFE_UNINIT_DELETE(m_pSound);
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
