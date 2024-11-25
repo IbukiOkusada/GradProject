@@ -169,6 +169,9 @@
     <Filter Include="obstacle\inspection">
       <UniqueIdentifier>{0f6e0c09-8384-4f59-b6e6-a69e42fd552e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mode\entry">
+      <UniqueIdentifier>{6cd61a25-2827-4e7d-803b-cdfab08e0de4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -491,6 +494,9 @@
     </ClCompile>
     <ClCompile Include="code\PoliceTitle.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\entry.cpp">
+      <Filter>mode\entry</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -817,6 +823,9 @@
     </ClInclude>
     <ClInclude Include="code\network.h">
       <Filter>online</Filter>
+    </ClInclude>
+    <ClInclude Include="code\entry.h">
+      <Filter>mode\entry</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
