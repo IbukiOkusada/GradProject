@@ -189,7 +189,7 @@ CPlayerTitle* CPlayerTitle::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 		pPlayertitle->SetMove(move);
 
 		//“®‚©‚È‚¢ó‘Ô‚É‚·‚é
-		pPlayertitle->SetType(CPlayer::TYPE::TYPE_NONE);
+		pPlayertitle->SetType(CPlayer::TYPE::TYPE_SEND);
 	}
 	//–³‚©‚Á‚½ê‡A’†g‚È‚µ‚ğ•Ô‚·
 	else

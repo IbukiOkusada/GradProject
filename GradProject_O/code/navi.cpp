@@ -87,6 +87,7 @@ void CNavi::StartNavigation(void)
 	//‹ß‚¢ƒS[ƒ‹‚ğ’Tõ
 	Clist<CGole*>* List = CGole::GetInstance();
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+	if (pPlayer == nullptr) { return; }
 	float fDis = FLT_MAX;
 	m_pGole = nullptr;
 	for (int i = 0; i < List->GetNum(); i++)

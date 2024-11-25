@@ -56,12 +56,6 @@ public:
 	void Update(void);
 	void Draw(void);
 	static void SetState(STATE state) { m_state = state; }
-	/*void SendPosition(D3DXVECTOR3& pos);
-	void SendRotation(D3DXVECTOR3& rot);
-	void SendDamage(int nDamage);
-	void SendLife(int nLife);
-	void SendSetUp(void);
-	void SendGoal(void);*/
 	CTime* GetTime(void)override { return m_pTimer; }
 	static void SetNumPlayer(int nNum) { m_nNumPlayer = nNum; }
 	static int GetNumPlayer(void) { return m_nNumPlayer; }
@@ -71,6 +65,10 @@ public:
 	CFileLoad *GetFileLoad(void);
 
 private:
+
+	// メンバ関数
+	void StartIntro(void);  // ゲームスタート時の演出
+	bool StartDirection(void);
 
 	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
 	CPlayer** m_ppPlayer;		// プレイヤーのポインタ
