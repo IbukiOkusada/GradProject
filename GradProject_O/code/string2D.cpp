@@ -167,7 +167,7 @@ CString2D* CString2D::Create
 )
 {
 	// •¶š—ñ2D‚Ì¶¬
-	CString2D* pString2D = new CString2D;
+	CString2D* pString2D = DEBUG_NEW CString2D;
 	if (pString2D == nullptr)
 	{ // ¶¬‚É¸”s‚µ‚½ê‡
 
@@ -233,7 +233,7 @@ CString2D* CString2D::Create
 )
 {
 	// •¶š—ñ2D‚Ì¶¬
-	CString2D* pString2D = new CString2D;
+	CString2D* pString2D = DEBUG_NEW CString2D;
 	if (pString2D == nullptr)
 	{ // ¶¬‚É¸”s‚µ‚½ê‡
 
@@ -331,7 +331,7 @@ HRESULT CString2D::SetString(const std::wstring& rStr)
 	//	V‚µ‚¢•¶š‚ğ¶¬
 	//--------------------------------------------------------
 	// •¶š‚ğŠi”[‚·‚é”z—ñ‚ğ¶¬
-	m_ppChar = new CChar2D*[nCurStrLen];
+	m_ppChar = DEBUG_NEW CChar2D*[nCurStrLen];
 	for (int i = 0; i < nCurStrLen; i++)
 	{ // ¶¬‚·‚é•¶š”•ªŒJ‚è•Ô‚·
 

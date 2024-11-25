@@ -294,7 +294,7 @@ CFontChar::SChar CFont::RegistChar
 CFont* CFont::Create()
 {
 	// フォントの生成
-	CFont* pFont = new CFont;
+	CFont* pFont = DEBUG_NEW CFont;
 	if (pFont == nullptr)
 	{ // 生成に失敗した場合
 

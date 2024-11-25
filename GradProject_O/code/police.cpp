@@ -255,7 +255,7 @@ void CPolice::ReachRoad()
 //==========================================================
 void CPolice::SearchPlayer()
 {
-	m_Info.pPlayer = CPlayerManager::GetInstance()->GetTop();
+	m_Info.pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	
 	if (m_Info.pPlayer != nullptr)
 	{
@@ -356,7 +356,7 @@ void CPolice::Collision()
 //==========================================================
 void CPolice::Break()
 {
-	CPlayer* p = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* p = CPlayerManager::GetInstance()->GetPlayer();
 	p->Damage(p->GetLifeOrigin() * 0.1f);
 }
 

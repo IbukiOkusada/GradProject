@@ -127,7 +127,7 @@ CChar2D* CChar2D::Create
 )
 {
 	// ï∂éö2DÇÃê∂ê¨
-	CChar2D* pChar2D = new CChar2D;
+	CChar2D* pChar2D = DEBUG_NEW CChar2D;
 	if (pChar2D == nullptr)
 	{ // ê∂ê¨Ç…é∏îsÇµÇΩèÍçá
 
@@ -183,7 +183,7 @@ CChar2D* CChar2D::Create
 )
 {
 	// ï∂éö2DÇÃê∂ê¨
-	CChar2D* pChar2D = new CChar2D;
+	CChar2D* pChar2D = DEBUG_NEW CChar2D;
 	if (pChar2D == nullptr)
 	{ // ê∂ê¨Ç…é∏îsÇµÇΩèÍçá
 

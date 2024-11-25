@@ -98,6 +98,7 @@ public:	// 誰でもアクセス可能
 	SSearch* GetSearchSelf()
 	{ return &m_Searchself; }
 	D3DXVECTOR3* GetVtxPos() { return &m_aVtxPos[0]; }
+	int GetIdx() { return m_nIdx; }
 
 	// メンバ関数(設定)
 	void Connect(CRoad* pRoad, const DIRECTION dic);

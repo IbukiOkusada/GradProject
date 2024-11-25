@@ -176,7 +176,6 @@ CPlayer::CPlayer()
 	m_fLifeOrigin = m_fLife;
 	m_fCamera = CAMERA_NORMAL;
 	m_type = TYPE_NONE;
-	m_nId = -1;
 	m_fNitroCool = 0.0f;
 	m_Info.fSlideMove = 0.0f;
 	m_pObj = nullptr;
@@ -194,6 +193,7 @@ CPlayer::CPlayer()
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
 	m_pCollSound->Stop();
+	m_nId = -1;
 	CPlayerManager::GetInstance()->ListIn(this);
 }
 
@@ -239,7 +239,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(400.0f, 200.0f, 0.0f),0.0025f,20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
 	m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
 	m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
-	m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP,VECTOR3_ZERO,D3DXCOLOR(0.0f,1.0f,1.0f,1.0f));
+	m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP,VECTOR3_ZERO,D3DXCOLOR(0.0f,1.0f, 0.0f,1.0f));
 	for (int i = 0; i < NUM_TXT; i++)
 	{
 		for (int j = 0; j < START_TEXT[i].size(); j++)
@@ -265,6 +265,7 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
 	SAFE_UNINIT_DELETE(pRadio);
 	SAFE_UNINIT_DELETE(m_pCollSound);
+
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// 廃棄
@@ -312,9 +313,7 @@ void CPlayer::Update(void)
 		// 当たり判定
 		Collision();
 
-		// オンライン送信
-		CManager::GetInstance()->GetScene()->SendPosition(m_Info.pos);
-		CManager::GetInstance()->GetScene()->SendRotation(m_Info.rot);
+		
 	}
 	
 	// マトリックス

@@ -95,7 +95,7 @@ void CGoalManager::Update(void)
 {
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	int nNum = pPlayer->GetNumDeliverStatus();
 
 	if (m_pGoal == nullptr) { return; }

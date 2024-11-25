@@ -109,10 +109,10 @@ public:	// 誰でもアクセス可能
 	void AddDeliveryCount(void) { m_nNumDeliveryStatus++; }
 	
 	// メンバ関数(取得)
-	D3DXVECTOR3 GetMove(void) { return m_Info.move; }
-	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
-	D3DXVECTOR3 GetRotation(void) { return m_Info.rot; }
-	D3DXVECTOR3 GetOldPosition(void) { return m_Info.posOld; }
+	D3DXVECTOR3& GetMove(void) { return m_Info.move; }
+	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }
+	D3DXVECTOR3& GetRotation(void) { return m_Info.rot; }
+	D3DXVECTOR3& GetOldPosition(void) { return m_Info.posOld; }
 	CRoad* GetRoad(void) { return m_Info.pRoad; }
 	CPlayer* GetNext(void) { return m_pNext; }
 	CObjectX* GetObj() { return m_pObj; }
@@ -122,6 +122,7 @@ public:	// 誰でもアクセス可能
 	float GetEngine(void) { return m_fEngine; }
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 	float GetLifeOrigin() { return m_fLifeOrigin; }
+	int GetId() { return m_nId; }
 
 protected:	// 自分だけがアクセス可能
 

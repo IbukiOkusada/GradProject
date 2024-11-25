@@ -88,7 +88,7 @@ void CGimmickGuardRail::Update(void)
 		{
 			m_bHit = true;
 			m_pObj->SetEnableCollision(false);
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 			D3DXVECTOR3 pos = pPlayer->GetPosition();
 
 			Hit(pos);
@@ -149,7 +149,7 @@ void CGimmickGuardRail::Away()
 void CGimmickGuardRail::Hit(const D3DXVECTOR3& HitPos)
 {
 	float rot = atan2f(GetPos().x - HitPos.x, GetPos().z - HitPos.z);
-	float speed = CPlayerManager::GetInstance()->GetTop()->GetEngine();
+	float speed = CPlayerManager::GetInstance()->GetPlayer()->GetEngine();
 
 	// À•Wİ’è
 	m_TargetPos = {

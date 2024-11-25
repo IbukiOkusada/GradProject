@@ -56,12 +56,12 @@ public:
 	void Update(void);
 	void Draw(void);
 	static void SetState(STATE state) { m_state = state; }
-	void SendPosition(D3DXVECTOR3& pos);
+	/*void SendPosition(D3DXVECTOR3& pos);
 	void SendRotation(D3DXVECTOR3& rot);
 	void SendDamage(int nDamage);
 	void SendLife(int nLife);
 	void SendSetUp(void);
-	void SendGoal(void);
+	void SendGoal(void);*/
 	CTime* GetTime(void)override { return m_pTimer; }
 	static void SetNumPlayer(int nNum) { m_nNumPlayer = nNum; }
 	static int GetNumPlayer(void) { return m_nNumPlayer; }
@@ -72,21 +72,11 @@ public:
 
 private:
 
-	// TCP通信用関数
-	void Online(void);
-	void ByteCheck(char *pRecvData, int nRecvByte);
-	void OnlineEnd(void);
-	void AddressLoad(char *pAddrss);
-	void StartIntro(void);  // ゲームスタート時の演出
-	bool EndCheck(void);
-	bool StartDirection(void);
-
 	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
 	CPlayer** m_ppPlayer;		// プレイヤーのポインタ
 	CMultiCamera **m_ppCamera;	// カメラのポインタ
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
 	CTime *m_pTimer;			// タイマー
-	CClient *m_pClient;			// クライアントのポインタ
 	CGoalManager *m_pGoalManager;  // ゴールマネージャーのポインタ
 
 	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ

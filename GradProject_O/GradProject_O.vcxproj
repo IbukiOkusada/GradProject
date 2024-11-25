@@ -203,6 +203,7 @@
     <ClCompile Include="code\input_keyboard.cpp" />
     <ClCompile Include="code\input_mouse.cpp" />
     <ClCompile Include="code\inspection.cpp" />
+    <ClCompile Include="code\inspection_manager.cpp" />
     <ClCompile Include="code\light.cpp" />
     <ClCompile Include="code\list_manager.cpp" />
     <ClCompile Include="code\main.cpp" />
@@ -218,6 +219,7 @@
     <ClCompile Include="code\model.cpp" />
     <ClCompile Include="code\motion.cpp" />
     <ClCompile Include="code\navi.cpp" />
+    <ClCompile Include="code\network.cpp" />
     <ClCompile Include="code\number.cpp" />
     <ClCompile Include="code\object.cpp" />
     <ClCompile Include="code\object2D.cpp" />
@@ -232,6 +234,7 @@
     <ClCompile Include="code\PlayerTitle.cpp" />
     <ClCompile Include="code\player_manager.cpp" />
     <ClCompile Include="code\police.cpp" />
+    <ClCompile Include="code\PoliceTitle.cpp" />
     <ClCompile Include="code\police_AI.cpp" />
     <ClCompile Include="code\police_manager.cpp" />
     <ClCompile Include="code\precompile.cpp">
@@ -326,6 +329,7 @@
     <ClInclude Include="code\model.h" />
     <ClInclude Include="code\motion.h" />
     <ClInclude Include="code\navi.h" />
+    <ClInclude Include="code\network.h" />
     <ClInclude Include="code\number.h" />
     <ClInclude Include="code\object.h" />
     <ClInclude Include="code\object2D.h" />
@@ -374,6 +378,7 @@
     <ClInclude Include="code\edit_handle.h" />
     <ClInclude Include="code\timer.h" />
     <ClInclude Include="code\pred_route.h" />
+    <ClInclude Include="code\inspection_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

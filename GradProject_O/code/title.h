@@ -18,6 +18,12 @@ class CObject2D;
 
 class CPlayerTitle;
 class CCamera;
+class CPoliceTitle;
+
+namespace
+{
+	const int POLICE_MAX = 3;
+}
 
 //===============================================
 // タイトルクラスの定義(派生クラス)
@@ -79,8 +85,11 @@ private:
 	//追跡状態の時の動き
 	void ChaseMovement(void);
 
-	//CFileLoad *m_pFileLoad;					// ファイル読み込みのポインタ
+	//CFileLoad *m_pFileLoad;				//ファイル読み込みのポインタ
 	CPlayerTitle* m_pPlayer;				//プレイヤーのポインタ
+	CPoliceTitle* m_apPolice[POLICE_MAX];				//警察のポインタ
+
+
 	CObject2D* m_pObject2D[OBJ2D_MAX];		//チームロゴのポインタ
 	STATE m_eState;							//ステート
 	CCamera* m_pCam;

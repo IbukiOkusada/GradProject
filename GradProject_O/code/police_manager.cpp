@@ -171,7 +171,7 @@ void CPoliceManager::Warning(CPolice* pPolice)
 //==========================================================
 void CPoliceManager::SetInspection()
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }
 
 	// プレイヤーの予測を取得する
@@ -189,6 +189,8 @@ void CPoliceManager::SetInspection()
 	D3DXVECTOR3 rot = VECTOR3_ZERO;
 	float targetrot = atan2f(pPrev->GetPosition().x - pRoad->GetPosition().x,
 		pPrev->GetPosition().z - pRoad->GetPosition().z);
+	rot.y = targetrot + D3DX_PI * 0.5f;
+	Adjust(rot.y);
 
 	// 設置
 	D3DXVECTOR3 pos = pRoad->GetPosition();

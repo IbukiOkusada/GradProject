@@ -160,7 +160,7 @@ void CMeter::BootAnimation(void)
 //==========================================================
 void CMeter::Measure(void)
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	float fDelta = CManager::GetInstance()->GetDeltaTime()->GetDeltaTime();
 	float fSpeed = GetDistance(pPlayer->GetMove(), VECTOR3_ZERO);
 	fSpeed = fSpeed * 60.0f * 60.0f *6.0f* fDelta / ONE_METRE;

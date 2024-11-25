@@ -23,6 +23,7 @@ CRoadManager::CRoadManager()
 {
 	// 値のクリア
 	m_pList = nullptr;
+	m_IdList.clear();
 }
 
 //==========================================================
@@ -52,6 +53,7 @@ void CRoadManager::Uninit(void)
 	m_InfoList.Clear();
 
 	ListRelease();
+	m_IdList.clear();
 
 	// インスタンスの廃棄
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
@@ -103,6 +105,23 @@ void CRoadManager::ListIn(CRoad* pRoad)
 // リストから外す
 //==========================================================
 void CRoadManager::ListOut(CRoad* pRoad)
+{
+	GetList()->Delete(pRoad);
+	m_InfoList.Delete(pRoad->GetInfo());
+}
+
+//==========================================================
+// ID管理のリストに挿入
+//==========================================================
+void CRoadManager::IdListIn(CRoad* pRoad)
+{
+	m_IdList[pRoad->GetIdx()];
+}
+
+//==========================================================
+// ID管理のリストに挿入
+//==========================================================
+void CRoadManager::IdListOut(CRoad* pRoad)
 {
 	GetList()->Delete(pRoad);
 	m_InfoList.Delete(pRoad->GetInfo());

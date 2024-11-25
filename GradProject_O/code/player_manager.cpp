@@ -16,9 +16,7 @@ CPlayerManager* CPlayerManager::m_pInstance = nullptr;	// インスタンス
 CPlayerManager::CPlayerManager()
 {
 	// 値のクリア
-	m_pCur = nullptr;
-	m_pTop = nullptr;
-	m_nNum = 0;
+	m_List.clear();
 }
 
 //==========================================================
@@ -85,68 +83,59 @@ void CPlayerManager::Release(void)
 //==========================================================
 // リストに挿入
 //==========================================================
-void CPlayerManager::ListIn(CPlayer* pPlayer)
+bool CPlayerManager::ListIn(CPlayer* pPlayer)
 {
-	if (m_pTop != nullptr)
-	{// 先頭が存在している場合
-		m_pCur->SetNext(pPlayer);	// 現在最後尾のオブジェクトのポインタにつなげる
-		pPlayer->SetPrev(m_pCur);
-		m_pCur = pPlayer;	// 自分自身が最後尾になる
-	}
-	else
-	{// 存在しない場合
-		m_pTop = pPlayer;	// 自分自身が先頭になる
-		m_pCur = pPlayer;	// 自分自身が最後尾になる
+	if (pPlayer == nullptr) { return false; }
+
+	auto it = m_List.find(pPlayer->GetId());
+
+	// 存在しない
+	if (it == m_List.end())
+	{
+		m_List[pPlayer->GetId()] = pPlayer;
+		return true;
 	}
 
-	m_nNum++;
+	return false;
 }
 
 //==========================================================
 // リストから外す
 //==========================================================
-void CPlayerManager::ListOut(CPlayer* pPlayer)
+bool CPlayerManager::ListOut(CPlayer* pPlayer)
 {
-	// リストから自分自身を削除する
-	if (m_pTop == pPlayer)
-	{// 自身が先頭
-		if (pPlayer->GetNext() != nullptr)
-		{// 次が存在している
-			m_pTop = pPlayer->GetNext();	// 次を先頭にする
-			m_pTop->SetPrev(nullptr);	// 次の前のポインタを覚えていないようにする
-		}
-		else
-		{// 存在していない
-			m_pTop = nullptr;	// 先頭がない状態にする
-			m_pCur = nullptr;	// 最後尾がない状態にする
-		}
-	}
-	else if (m_pCur == pPlayer)
-	{// 自身が最後尾
-		if (pPlayer->GetPrev() != nullptr)
-		{// 次が存在している
-			m_pCur = pPlayer->GetPrev();		// 前を最後尾にする
-			m_pCur->SetNext(nullptr);			// 前の次のポインタを覚えていないようにする
-		}
-		else
-		{// 存在していない
-			m_pTop = nullptr;	// 先頭がない状態にする
-			m_pCur = nullptr;	// 最後尾がない状態にする
-		}
-	}
-	else
+	if (pPlayer == nullptr) { return false; }
+
+	auto it = m_List.find(pPlayer->GetId());
+
+	// 見つかった
+	if (it != m_List.end())
 	{
-		if (pPlayer->GetNext() != nullptr)
+		if (it->second == pPlayer)
 		{
-			pPlayer->GetNext()->SetPrev(pPlayer->GetPrev());	// 自身の次に前のポインタを覚えさせる
-		}
-		if (pPlayer->GetPrev() != nullptr)
-		{
-			pPlayer->GetPrev()->SetNext(pPlayer->GetNext());	// 自身の前に次のポインタを覚えさせる
+			m_List.erase(pPlayer->GetId());
+			return true;
 		}
 	}
 
-	m_nNum--;
+	return false;
+}
+
+//==========================================================
+// 指定されたIDのプレイヤー取得
+//==========================================================
+CPlayer* CPlayerManager::GetPlayer(int nIdx)
+{
+	auto it = m_List.find(nIdx);
+
+	// 存在している
+	if (it != m_List.end())
+	{
+		CPlayer* pPlayer = it->second;
+		return pPlayer;
+	}
+
+	return nullptr;
 }
 
 //==========================================================
@@ -154,17 +143,7 @@ void CPlayerManager::ListOut(CPlayer* pPlayer)
 //==========================================================
 bool CPlayerManager::Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage)
 {
-	CPlayer* pPlayer = m_pTop;
 	bool bUse = false;
-
-	//個別判定
-	while (pPlayer != nullptr) {
-		CPlayer* pPlayerNext = pPlayer->GetNext();
-		//if (pPlayer->HitCheck(pos, fRange, fHeight, nDamage)) {
-			//bUse = true;
-		//}
-		pPlayer = pPlayerNext;
-	}
 
 	return bUse;
 }

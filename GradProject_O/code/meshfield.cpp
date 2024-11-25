@@ -438,7 +438,7 @@ float CMeshField::GetHeight(const D3DXVECTOR3& pos, const D3DXVECTOR3& posOld)
 //==========================================================
 void CMeshField::Edit(float *pLength, float *pSpeed)
 {
-	CPlayer *pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer *pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 
 	if (pPlayer == NULL)
 	{

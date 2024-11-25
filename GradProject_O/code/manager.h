@@ -32,6 +32,8 @@ class CEnemyManager;
 class CMiniMap;
 class CDeltaTime;
 class CFont;
+class CNetWork;
+
 //===============================================
 // シーンクラスの定義
 //===============================================
@@ -63,10 +65,6 @@ public:
 	virtual CPlayer *GetPlayer(void) { return NULL; }
 	virtual CFileLoad *GetFileLoad(void) { return NULL; }
 	virtual CTime* GetTime(void) { return nullptr; }
-	virtual void SendPosition(D3DXVECTOR3&) {  }
-	virtual void SendRotation(D3DXVECTOR3&) {  }
-	virtual void SendDamage(int) {  }
-	virtual void SendLife(int) {  }
 	void SetMode(MODE mode) { m_mode = mode; }
 	MODE GetMode(void) { return m_mode; }
 
@@ -127,6 +125,7 @@ private:	// 自分だけがアクセス可能
 	CFade* m_pFade;			// フェードのポインタ
 	CDeltaTime* m_pDeltaTime;  // タイマーのポインタ
 	CFont* m_pFont;
+	CNetWork* m_pNetWork;
 	static CManager *m_pManager;	// マネージャーのポインタ
 };
 

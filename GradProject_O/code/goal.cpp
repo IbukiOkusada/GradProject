@@ -117,7 +117,7 @@ void CGole::Update(void)
 	if (CheckRange() && CheckSpeed() && !m_bEnd)
 	{
 		// カメラアクション入れる
-		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 		m_bEnd = true;
 		m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
 		pPlayer->AddDeliveryCount();
@@ -136,7 +136,7 @@ void CGole::Update(void)
 //==========================================================
 bool CGole::CheckRange()
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer != NULL)
 	{
 		float fDis = GetDistance(m_pos, pPlayer->GetPosition());
@@ -149,7 +149,7 @@ bool CGole::CheckRange()
 //==========================================================
 bool CGole::CheckSpeed()
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetTop();
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer != NULL)
 	{
 		float fDis = GetDistance(VECTOR3_ZERO, pPlayer->GetMove());
