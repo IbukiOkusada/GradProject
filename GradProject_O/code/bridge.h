@@ -33,6 +33,7 @@ public:	// 誰でもアクセス可能
 	void MoveBridge();
 	static CBridge* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale, float fdown,float fup);
 	void SetColMulti(const D3DXCOLOR& col) override;
+	CObjectX* GetObjectX(int Idx);
 
 private:	// 自分だけがアクセス可能
 

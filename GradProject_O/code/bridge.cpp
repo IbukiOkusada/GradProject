@@ -55,6 +55,7 @@ HRESULT CBridge::Init(void)
 		m_pBridge[i] = CObjectX::Create(pos+offset, rot, "data\\MODEL\\map\\cube_bridge.x");
 		scale.z *= 0.5f;
 		m_pBridge[i]->SetScale(scale);
+		m_pBridge[i]->SetEnableCollision(false);
 	}
 
 	SetType(TYPE::TYPE_BRIDGE);
@@ -195,4 +196,17 @@ void CBridge::SetObjScale(const D3DXVECTOR3& scale)
 		if (m_pBridge[i] == nullptr) { continue; }
 		m_pBridge[i]->SetScale(scale);
 	}
+}
+
+//==========================================================
+// オブジェクト取得処理
+//==========================================================
+CObjectX* CBridge::GetObjectX(int Idx)
+{
+	if (Idx >= 0 && Idx < BRIDGE_NUM)
+	{
+		return m_pBridge[Idx];
+	}
+
+	return nullptr;
 }
