@@ -136,7 +136,7 @@ void CPoliceAI::ReachRoad(void)
 		D3DXVECTOR3 posRoad = pRoadTarget->GetPosition();
 		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
 		float length = D3DXVec3Length(&(posRoad - posPolice));
-		if (length < 3000.0f)
+		if (length < 500.0f)
 		{
 			m_pSearchTarget = m_pSearchTarget->pChaild;
 		}
