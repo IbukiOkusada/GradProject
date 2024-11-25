@@ -51,13 +51,14 @@
 #include "scrollString2D.h"
 #include "scrollText2D.h"
 #include "bridge.h"
-
+#include "network.h"
 //===============================================
 // マクロ定義
 //===============================================
 
 namespace
 {
+	const float RECV_INER = (0.5f);			// 受信したデータの慣性
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
 	const float DEATH_INTERVAL = (120.0f);	// 死亡インターバル
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
@@ -142,6 +143,17 @@ namespace
 	};
 }
 
+//===============================================
+// 関数ポインタ
+//===============================================
+// 状態管理
+CPlayer::SETTYPE_FUNC CPlayer::m_SetTypeFunc[] =
+{
+	&CPlayer::SetStateSend,		// 
+	&CPlayer::SetStateRecv,		// 接続した
+	&CPlayer::SetStateActive,	// ID取得
+};
+
 // 前方宣言
 
 //===============================================
@@ -157,14 +169,13 @@ namespace
 //===============================================
 // コンストラクタ(オーバーロード)
 //===============================================
-CPlayer::CPlayer()
+
+CPlayer::CPlayer(int nId)
 {
 	// 値をクリアする
-	m_Info.pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_Info.pRoad = nullptr;
+
+	m_Info = SInfo();
+	m_RecvInfo = SRecvInfo();
 	m_fRotMove = 0.0f;
 	m_fRotDiff = 0.0f;
 	m_fRotDest = 0.0f;
@@ -175,9 +186,10 @@ CPlayer::CPlayer()
 	m_fLife = LIFE;
 	m_fLifeOrigin = m_fLife;
 	m_fCamera = CAMERA_NORMAL;
-	m_type = TYPE_NONE;
+
+	m_type = TYPE_SEND;
 	m_fNitroCool = 0.0f;
-	m_Info.fSlideMove = 0.0f;
+
 	m_pObj = nullptr;
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
@@ -188,13 +200,22 @@ CPlayer::CPlayer()
 	m_fbrakePitch = 0.0f;
 	m_fbrakeVolume = 0.0f;
 	m_nNumDeliveryStatus = 0;
-	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
-	m_pCollSound->Stop();
-	m_nId = -1;
+	
+	m_nId = nId;
 	CPlayerManager::GetInstance()->ListIn(this);
+	m_pAfterburner = nullptr;
+	m_pTailLamp = nullptr;
+	m_pBackdust = nullptr;
+	m_pCollSound = nullptr;
+	m_pSoundBrake = nullptr;
+	m_pContainer = nullptr;
+	pRadio = nullptr;
+	m_type = TYPE::TYPE_RECV;
+
+	for (int i = 0; i < NUM_TXT; i++)
+	{
+		m_pFont[i] = nullptr;
+	}
 }
 
 //===============================================
@@ -212,9 +233,6 @@ HRESULT CPlayer::Init(void)
 {
 	// 腰の生成
 	m_Info.state = STATE_APPEAR;
-	m_type = TYPE_NONE;
-
-
 	
 	return S_OK;
 }
@@ -228,25 +246,12 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
-	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
-	m_pSound->SetVolume(0.0f);
-	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
-	m_pSoundBrake->SetVolume(0.0f);
-	pRadio = CRadio::Create();
-	m_pNavi = CNavi::Create();
-	CContainer::Create();
-	m_pPredRoute = CPredRoute::Create(this);
-	m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(400.0f, 200.0f, 0.0f),0.0025f,20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
-	m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
-	m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
-	m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP,VECTOR3_ZERO,D3DXCOLOR(0.0f,1.0f, 0.0f,1.0f));
-	for (int i = 0; i < NUM_TXT; i++)
-	{
-		for (int j = 0; j < START_TEXT[i].size(); j++)
-		{
-			m_pFont[i]->PushBackString(START_TEXT[i][j]);
-		}
-	}
+	
+	m_pContainer = CContainer::Create();
+	
+	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	return S_OK;
 }
 
@@ -255,6 +260,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 //===============================================
 void CPlayer::Uninit(void)
 {	
+	SAFE_UNINIT(m_pContainer);
 	SAFE_UNINIT(m_pObj);
 	SAFE_UNINIT(m_pBaggage);
 	SAFE_DELETE(m_pTailLamp);
@@ -278,11 +284,14 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {	
 	DEBUGKEY();
+
 	for (int i = 0; i < NUM_TXT; i++)
 	{
+		if (m_pFont[i] == nullptr) { continue; }
 		if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE && !m_pFont[i]->GetEnd())
 		{
-			if (i>0)
+
+			if (i > 0)
 			{
 				if (!m_pFont[i - 1]->GetEnd())continue;
 			}
@@ -300,8 +309,13 @@ void CPlayer::Update(void)
 	// 前回の座標を取得
 	m_Info.posOld = GetPosition();
 
-	StateSet();	
-	pRadio->Update();
+
+	StateSet();
+
+	if (pRadio != nullptr)
+	{
+		pRadio->Update();
+	}
 	if (m_type == TYPE_ACTIVE)
 	{
 		// プレイヤー操作
@@ -313,7 +327,10 @@ void CPlayer::Update(void)
 		// 当たり判定
 		Collision();
 
-		
+	}
+	else if (m_type == TYPE_RECV)
+	{
+		RecvInerSet();
 	}
 	
 	// マトリックス
@@ -331,16 +348,26 @@ void CPlayer::Update(void)
 		m_pObj->SetShadowHeight(GetPosition().y);
 		// エフェクト
 		{
-			m_pTailLamp->m_pos = pos;
-			m_pTailLamp->m_rot = rot;
-			m_pBackdust->m_pos = GetPosition();
-			m_pBackdust->m_rot = m_pObj->GetRotation();
-			m_pBackdust->m_Scale =VECTOR3_ONE* m_fEngine * 300.0f;
 			
-			m_pAfterburner->m_pos = GetPosition();;
-		
-			m_pAfterburner->m_Scale = VECTOR3_ONE * m_fEngine * m_fBrake * 150.0f;
-		
+			if (m_pTailLamp != nullptr)
+			{
+				m_pTailLamp->m_pos = pos;
+				m_pTailLamp->m_rot = rot;
+			}
+
+			if (m_pBackdust != nullptr)
+			{
+				m_pBackdust->m_pos = GetPosition();
+				m_pBackdust->m_rot = m_pObj->GetRotation();
+				m_pBackdust->m_Scale = VECTOR3_ONE * m_fEngine * 300.0f;
+			}
+			
+			
+			if (m_pAfterburner != nullptr)
+			{
+				m_pAfterburner->m_pos = GetPosition();
+				m_pAfterburner->m_Scale = VECTOR3_ONE * m_fEngine * m_fBrake * 150.0f;
+			}
 		}
 		if (m_pDamageEffect != nullptr)
 		{
@@ -350,8 +377,9 @@ void CPlayer::Update(void)
 	}
 
 	// 荷物を所持
-	if (m_pBaggage != nullptr)
+	if (m_pBaggage != nullptr && m_type == TYPE_ACTIVE)
 	{
+
 		D3DXVECTOR3 rot = GetRotation();
 		rot.y -= D3DX_PI * 0.5f;
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
@@ -367,6 +395,7 @@ void CPlayer::Update(void)
 	}
 	else
 	{
+
 		// 速度によって補正カメラ
 		float engine = m_fEngine;
 		if (engine < CAMERA_ENGINEMULTI) { engine = 0.0f; }
@@ -389,6 +418,19 @@ void CPlayer::Update(void)
 		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
 	}
 
+	// 自信の場合
+	if (m_type != TYPE::TYPE_RECV)
+	{
+		CNetWork* pNet = CNetWork::GetInstance();
+
+		// データの送信
+		if (pNet != nullptr)
+		{
+			pNet->SendPlPos(m_Info.pos);
+			pNet->SendPlRot(m_Info.rot);
+		}
+	}
+
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー :");
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
@@ -396,19 +438,21 @@ void CPlayer::Update(void)
 }
 
 //===============================================
-// 生成
+// ID生成
 //===============================================
-CPlayer *CPlayer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, const char *pBodyName, const char *pLegName)
+
+CPlayer* CPlayer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move,
+	const int nId)
 {
-	CPlayer *pPlayer = nullptr;
+	CPlayer* pPlayer = nullptr;
 
 	// オブジェクト2Dの生成
-	pPlayer = DEBUG_NEW CPlayer;
+	pPlayer = DEBUG_NEW CPlayer(nId);
 
 	if (nullptr != pPlayer)
 	{// 生成できた場合
 		// 初期化処理
-		pPlayer->Init(pBodyName, pLegName);
+		pPlayer->Init(nullptr, nullptr);
 
 		// 座標設定
 		pPlayer->SetPosition(pos);
@@ -501,8 +545,12 @@ void CPlayer::Move(void)
 	m_fbrakePitch += (1.0f - m_fbrakePitch) * (m_fEngine * m_fBrake * fHandle) * BRAKE_INER;
 	m_fbrakeVolume -= m_fbrakeVolume* BRAKE_INER;
 	m_fbrakePitch -= m_fbrakePitch *BRAKE_INER;
-	m_pSoundBrake->SetVolume(m_fbrakeVolume * 0.8f);
-	m_pSoundBrake->SetPitch(0.5f + m_fbrakePitch);
+
+	if (m_pSoundBrake != nullptr)
+	{
+		m_pSoundBrake->SetVolume(m_fbrakeVolume * 0.8f);
+		m_pSoundBrake->SetPitch(0.5f + m_fbrakePitch);
+	}
 	float moveY = m_Info.move.y;
 	m_Info.move *= fIner;//移動量の減衰
 	m_Info.move.y = moveY;
@@ -525,10 +573,18 @@ void  CPlayer::Engine(float fThrottle)
 		}
 	}
 	//回転数から音量とピッチを操作
-	m_pSound->SetPitch(0.5f + m_fEngine*1.5f);
-	m_pSound->SetVolume(0.5f + fAccel*100.0f + m_fEngine);
+	
+	if (m_pSound != nullptr)
+	{
+		m_pSound->SetPitch(0.5f + m_fEngine * 1.5f);
+		m_pSound->SetVolume(0.5f + fAccel * 100.0f + m_fEngine);
+	}
 
-	m_pSoundBrake->SetVolume(m_fBrake * m_fEngine * 0.3f);
+	
+	if (m_pSoundBrake != nullptr)
+	{
+		m_pSoundBrake->SetVolume(m_fBrake * m_fEngine * 0.3f);
+	}
 	//加速
 	m_Info.move.z += MOVE * sinf(-m_Info.rot.y) * m_fEngine;
 	m_Info.move.x += MOVE * cosf(-m_Info.rot.y) * m_fEngine;
@@ -686,8 +742,12 @@ bool CPlayer::CollisionObjX(void)
 		if (bCollision)
 		{
 			CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", (m_Info.pos + m_Info.move), VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
-			m_pCollSound->SetVolume(m_fEngine * 2.0f);
-			m_pCollSound->Play();
+
+			if (m_pCollSound != nullptr)
+			{
+				m_pCollSound->SetVolume(m_fEngine * 2.0f);
+				m_pCollSound->Play();
+			}
 			pObjectX->SetHit(true);
 
 			D3DXVECTOR3 vecMoveNor = m_Info.move;
@@ -722,6 +782,7 @@ bool CPlayer::CollisionRoad(void)
 
 		D3DXVECTOR3* pVtx = pRoad->GetVtxPos();
 		D3DXVECTOR3 pos = pRoad->GetPosition();
+		
 		float height = m_Info.pos.y - 0.1f;
 		D3DXVECTOR3 vec1 = pVtx[1] - pVtx[0], vec2 = pVtx[2] - pVtx[0];
 		D3DXVECTOR3 nor0, nor1;
@@ -993,7 +1054,9 @@ void CPlayer::StateSet(void)
 //===============================================
 void CPlayer::SetType(TYPE type)
 {
-	m_type = type;
+	
+	// 状態設定
+	(this->*(m_SetTypeFunc[type]))();
 }
 
 //===============================================
@@ -1065,4 +1128,130 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	m_pBaggage = nullptr;
 
 	return pBag;
+}
+
+//===============================================
+// 受信したデータに慣性をつけて補正
+//===============================================
+void CPlayer::RecvInerSet()
+{
+	// 位置
+	{
+		D3DXVECTOR3 diff = m_RecvInfo.pos - m_Info.pos;
+		D3DXVECTOR3 pos = m_Info.pos + diff * RECV_INER;
+		m_Info.pos = pos;
+	}
+
+	// 向き
+	{
+		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
+		D3DXVECTOR3 rot = m_Info.rot + diff * RECV_INER;
+		m_Info.rot = rot;
+	}
+}
+
+//===============================================
+// 送信情報設定
+//===============================================
+void CPlayer::SetStateSend()
+{
+	m_type = TYPE::TYPE_SEND;
+}
+
+//===============================================
+// 受信状態設定
+//===============================================
+void CPlayer::SetStateRecv()
+{
+	m_type = TYPE::TYPE_RECV;
+
+	// 不必要な情報を廃棄
+	SAFE_UNINIT(m_pNavi);
+	SAFE_UNINIT(m_pPredRoute);
+	SAFE_UNINIT(m_pContainer);
+
+	SAFE_UNINIT_DELETE(m_pSound);
+	SAFE_UNINIT_DELETE(m_pSoundBrake);
+	SAFE_UNINIT_DELETE(pRadio);
+	SAFE_UNINIT_DELETE(m_pCollSound);
+
+	for (int i = 0; i < NUM_TXT; i++)
+	{
+		if (m_pFont[i] == nullptr) { continue; }
+		SAFE_UNINIT(m_pFont[i]);
+	}
+}
+
+//===============================================
+// アクティブ状態設定
+//===============================================
+void CPlayer::SetStateActive()
+{
+	m_type = TYPE::TYPE_ACTIVE;
+
+	// アイドル音の生成
+	if (m_pSound == nullptr)
+	{
+		m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
+		m_pSound->SetVolume(0.0f);
+	}
+
+	// ブレーキ生成
+	if (m_pSoundBrake == nullptr)
+	{
+		m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
+		m_pSoundBrake->SetVolume(0.0f);
+	}
+
+	// ラジオ生成
+	if (pRadio == nullptr)
+	{
+		pRadio = CRadio::Create();
+	}
+
+	// ナビ生成
+	if (m_pNavi == nullptr)
+	{
+		m_pNavi = CNavi::Create();
+	}
+
+	// 予測を生成
+	if (m_pPredRoute == nullptr)
+	{
+		m_pPredRoute = CPredRoute::Create(this);
+	}
+
+	// 衝突seの生成
+	if (m_pCollSound == nullptr)
+	{
+		m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
+		m_pCollSound->Stop();
+	}
+
+	// 文字の生成
+	if (m_pFont[0] == nullptr) {
+		m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+			D3DXVECTOR3(400.0f, 200.0f, 0.0f), 0.0025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
+	}
+	if (m_pFont[1] == nullptr) {
+		m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+			D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+	}
+	if (m_pFont[2] == nullptr) {
+		m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+			D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+	}
+	if (m_pFont[3] == nullptr) {
+		m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+			D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP, VECTOR3_ZERO, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+	}
+
+	for (int i = 0; i < NUM_TXT; i++)
+	{
+		if (m_pFont[i] == nullptr) { continue; }
+		for (int j = 0; j < START_TEXT[i].size(); j++)
+		{
+			m_pFont[i]->PushBackString(START_TEXT[i][j]);
+		}
+	}
 }

@@ -48,6 +48,10 @@ private:
 	void CommandJoin(const int nId, const char* pRecvData, CClient* pClient);
 	void CommandGetId(const int nId, const char* pRecvData, CClient* pClient);
 	void CommandDelete(const int nId, const char* pRecvData, CClient* pClient);
+	void CommandPlPos(const int nId, const char* pRecvData, CClient* pClient);
+	void CommandPlRot(const int nId, const char* pRecvData, CClient* pClient);
+	void CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient);
+	void CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient);
 
 	// メンバ関数
 	HRESULT Init();
@@ -58,7 +62,6 @@ private:
 	void Accept(CServer* pServer);
 	void Send(CServer** ppServer);
 	void Leave(int nId, CClient* pClient);
-	void Join(int nId, CClient* pClient);
 
 	// メンバ変数
 	CClient* m_apClient[NetWork::MAX_CONNECT];	// クライアント

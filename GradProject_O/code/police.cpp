@@ -72,6 +72,7 @@ CPolice::CPolice()
 	// ’l‚ÌƒNƒŠƒA
 	m_Info = SInfo();
 	m_pPatrolLamp = nullptr;
+	m_pSiren = nullptr;
 	m_stateInfo = SState();
 
 	CPoliceManager::GetInstance()->GetList()->Regist(this);

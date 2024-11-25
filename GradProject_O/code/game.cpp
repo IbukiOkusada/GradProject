@@ -166,13 +166,18 @@ HRESULT CGame::Init(void)
     // マップ読み込み
     CMapManager::GetInstance()->Load();
 
+    auto net = CNetWork::GetInstance();
+
+    if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
+    {
+        while (net->GetIdx() == -1)
+        {
+            net->SendGetId();
+        }
+    }
+
     // リスト番号変更
-    CPlayer*pPlayer = CPlayer::Create(D3DXVECTOR3(34.65f, 1.0f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), nullptr, nullptr);
-    auto mgr = CPlayerManager::GetInstance();
-    auto network = CNetWork::GetInstance();
-    mgr->ListOut(pPlayer);
-    pPlayer->BindId(network->GetIdx());
-    mgr->ListIn(pPlayer);
+    CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(34.65f, 1.0f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CNetWork::GetInstance()->GetIdx());
     pPlayer->SetType(CPlayer::TYPE_ACTIVE);
 
     CMeter::Create();
@@ -291,7 +296,7 @@ void CGame::Update(void)
     }
 
     // 開始時の演出
-    //StartIntro();
+    StartIntro();
 
     // エディター関連
 #if _DEBUG
@@ -322,6 +327,24 @@ void CGame::Update(void)
         CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
     }
 
+    auto net = CNetWork::GetInstance();
+    auto mgr = CPlayerManager::GetInstance();
+
+    // 人数確認
+    for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+    {
+        auto player = mgr->GetPlayer(i);
+
+        if (player == nullptr && net->GetConnect(i))
+        {
+           CPlayer::Create(D3DXVECTOR3(34.65f, 1.0f, 1.0f), VECTOR3_ZERO, VECTOR3_ZERO, i);
+        }
+        else if (player != nullptr && !net->GetConnect(i))
+        {
+            player->Uninit();
+        }
+    }
+
     CPoliceManager::GetInstance()->Update();
     CScene::Update();
 }
@@ -348,4 +371,34 @@ CPlayer *CGame::GetPlayer(void)
 CFileLoad *CGame::GetFileLoad(void)
 {
     return m_pFileLoad;
+}
+
+//===================================================
+// 開始時の演出
+//===================================================
+void CGame::StartIntro(void)
+{
+    if (m_nStartCameraCount >= 4)
+        return;
+
+    CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+
+    if (pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount < 3)
+    {
+        m_nStartCameraCount++;
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, true);
+    }
+    else if (m_nStartCameraCount >= 3)
+    {
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, false);
+        m_nStartCameraCount++;
+    }
+}
+
+//===================================================
+// 開始演出
+//===================================================
+bool CGame::StartDirection(void)
+{
+    return false;
 }
