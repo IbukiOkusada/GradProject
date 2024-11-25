@@ -1,1 +1,30 @@
-#pragma once
+//<=================================================
+//タイトルでの警察の動き処理 [PlayerTitle.h]
+//
+//Author : Kazuki Watanabe
+//<=================================================
+#ifndef _POLICETITLE_H_
+#define _POLICETITLE_H_
+
+#include "police.h"
+
+//<========================================
+//プレイヤークラスを継承して定義
+//<========================================
+class CPoliceTitle : public CPolice
+{
+public:
+
+	CPoliceTitle();
+	~CPoliceTitle();
+
+	// メンバ関数
+	HRESULT Init(const D3DXVECTOR3 pos);
+	void Uninit(void);
+	void Update(void);
+	static CPoliceTitle* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move);
+
+
+};
+
+#endif

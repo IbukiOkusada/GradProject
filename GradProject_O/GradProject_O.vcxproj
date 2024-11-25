@@ -234,6 +234,7 @@
     <ClCompile Include="code\PlayerTitle.cpp" />
     <ClCompile Include="code\player_manager.cpp" />
     <ClCompile Include="code\police.cpp" />
+    <ClCompile Include="code\PoliceTitle.cpp" />
     <ClCompile Include="code\police_AI.cpp" />
     <ClCompile Include="code\police_manager.cpp" />
     <ClCompile Include="code\precompile.cpp">

@@ -50,8 +50,8 @@
 #include "pred_route.h"
 #include "scrollString2D.h"
 #include "scrollText2D.h"
+#include "bridge.h"
 #include "network.h"
-
 //===============================================
 // マクロ定義
 //===============================================
@@ -169,9 +169,11 @@ CPlayer::SETTYPE_FUNC CPlayer::m_SetTypeFunc[] =
 //===============================================
 // コンストラクタ(オーバーロード)
 //===============================================
+
 CPlayer::CPlayer(int nId)
 {
 	// 値をクリアする
+
 	m_Info = SInfo();
 	m_RecvInfo = SRecvInfo();
 	m_fRotMove = 0.0f;
@@ -184,8 +186,10 @@ CPlayer::CPlayer(int nId)
 	m_fLife = LIFE;
 	m_fLifeOrigin = m_fLife;
 	m_fCamera = CAMERA_NORMAL;
+
 	m_type = TYPE_SEND;
 	m_fNitroCool = 0.0f;
+
 	m_pObj = nullptr;
 	m_pPrev = nullptr;
 	m_pNext = nullptr;
@@ -196,6 +200,7 @@ CPlayer::CPlayer(int nId)
 	m_fbrakePitch = 0.0f;
 	m_fbrakeVolume = 0.0f;
 	m_nNumDeliveryStatus = 0;
+	
 	m_nId = nId;
 	CPlayerManager::GetInstance()->ListIn(this);
 	m_pAfterburner = nullptr;
@@ -240,7 +245,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
+	
 	CContainer::Create();
+	
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -281,6 +288,7 @@ void CPlayer::Update(void)
 		if (m_pFont[i] == nullptr) { continue; }
 		if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE && !m_pFont[i]->GetEnd())
 		{
+
 			if (i > 0)
 			{
 				if (!m_pFont[i - 1]->GetEnd())continue;
@@ -299,6 +307,7 @@ void CPlayer::Update(void)
 	// 前回の座標を取得
 	m_Info.posOld = GetPosition();
 
+
 	StateSet();
 
 	if (pRadio != nullptr)
@@ -315,6 +324,7 @@ void CPlayer::Update(void)
 
 		// 当たり判定
 		Collision();
+
 	}
 	else if (m_type == TYPE_RECV)
 	{
@@ -336,6 +346,7 @@ void CPlayer::Update(void)
 		m_pObj->SetShadowHeight(GetPosition().y);
 		// エフェクト
 		{
+			
 			if (m_pTailLamp != nullptr)
 			{
 				m_pTailLamp->m_pos = pos;
@@ -349,12 +360,12 @@ void CPlayer::Update(void)
 				m_pBackdust->m_Scale = VECTOR3_ONE * m_fEngine * 300.0f;
 			}
 			
+			
 			if (m_pAfterburner != nullptr)
 			{
 				m_pAfterburner->m_pos = GetPosition();
 				m_pAfterburner->m_Scale = VECTOR3_ONE * m_fEngine * m_fBrake * 150.0f;
 			}
-		
 		}
 		if (m_pDamageEffect != nullptr)
 		{
@@ -382,12 +393,7 @@ void CPlayer::Update(void)
 	}
 	else
 	{
-			// 速度によって補正カメラ
-			float engine = m_fEngine;
-			if (engine < CAMERA_ENGINEMULTI) { engine = 0.0f; }
-			else { engine -= CAMERA_ENGINEMULTI; }
-			CDebugProc::GetInstance()->Print("engine [ %f ]", engine);
-			m_fCamera = CAMERA_NORMAL + ENGINE_ADDCAMERA * engine;
+		m_fCamera = CAMERA_NORMAL + ENGINE_ADDCAMERA * engine;
 	}
 
 	if (CBaggage::GetThrowList()->GetNum() == 0 && m_pBaggage == nullptr)
@@ -426,6 +432,7 @@ void CPlayer::Update(void)
 //===============================================
 // ID生成
 //===============================================
+
 CPlayer* CPlayer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move,
 	const int nId)
 {
@@ -558,12 +565,14 @@ void  CPlayer::Engine(float fThrottle)
 		}
 	}
 	//回転数から音量とピッチを操作
+	
 	if (m_pSound != nullptr)
 	{
 		m_pSound->SetPitch(0.5f + m_fEngine * 1.5f);
 		m_pSound->SetVolume(0.5f + fAccel * 100.0f + m_fEngine);
 	}
 
+	
 	if (m_pSoundBrake != nullptr)
 	{
 		m_pSoundBrake->SetVolume(m_fBrake * m_fEngine * 0.3f);
@@ -651,7 +660,6 @@ void CPlayer::SearchRoad()
 	CRoad* pRoad = list->Get(0);
 	CRoad* pRoadClose = list->Get(0);
 	
-
 	if (pRoad == nullptr) 
 	{
 		return;
@@ -682,6 +690,28 @@ void CPlayer::SearchRoad()
 //===============================================
 bool CPlayer::Collision(void)
 {
+	bool bCollision = false;
+
+	// オブジェクトとの当たり判定
+	if (CollisionObjX())
+		bCollision = true;
+
+	// 道との当たり判定
+	if (CollisionRoad())
+		bCollision = true;
+
+	// ギミックとの当たり判定
+	if (CollisionGimick())
+		bCollision = true;
+
+	return bCollision;
+}
+
+//===============================================
+// オブジェクトとの当たり判定処理
+//===============================================
+bool CPlayer::CollisionObjX(void)
+{
 	auto mgr = CObjectX::GetList();
 	for (int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
@@ -689,7 +719,7 @@ bool CPlayer::Collision(void)
 		CObjectX* pObjectX = mgr->Get(i);	// 先頭を取得
 
 		// 衝突判定を取らない
-		if(!pObjectX->GetEnableCollision()){
+		if (!pObjectX->GetEnableCollision()) {
 			continue;
 		}
 
@@ -704,13 +734,14 @@ bool CPlayer::Collision(void)
 		if (bCollision)
 		{
 			CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", (m_Info.pos + m_Info.move), VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
-			
+
 			if (m_pCollSound != nullptr)
 			{
 				m_pCollSound->SetVolume(m_fEngine * 2.0f);
 				m_pCollSound->Play();
 			}
 			pObjectX->SetHit(true);
+
 			D3DXVECTOR3 vecMoveNor = m_Info.move;
 			D3DXVec3Normalize(&vecMoveNor, &m_Info.move);
 			D3DXVec3Normalize(&pVecCollision, &pVecCollision);
@@ -722,7 +753,15 @@ bool CPlayer::Collision(void)
 		}
 	}
 
-	m_Info.pRoad = nullptr;
+	return false;
+}
+
+//===============================================
+// 道との当たり判定処理
+//===============================================
+bool CPlayer::CollisionRoad(void)
+{
+	//m_Info.pRoad = nullptr;
 
 	// 道との判定
 	auto listRoad = CRoadManager::GetInstance()->GetList();
@@ -735,7 +774,8 @@ bool CPlayer::Collision(void)
 
 		D3DXVECTOR3* pVtx = pRoad->GetVtxPos();
 		D3DXVECTOR3 pos = pRoad->GetPosition();
-		float height = m_Info.pos.y - 0.1f;;
+		
+		float height = m_Info.pos.y - 0.1f;
 		D3DXVECTOR3 vec1 = pVtx[1] - pVtx[0], vec2 = pVtx[2] - pVtx[0];
 		D3DXVECTOR3 nor0, nor1;
 
@@ -759,6 +799,14 @@ bool CPlayer::Collision(void)
 		}
 	}
 
+	return false;
+}
+
+//===============================================
+// ギミックとの当たり判定処理
+//===============================================
+bool CPlayer::CollisionGimick(void)
+{
 	auto listGimmick = CGimmick::GetList();
 	for (int i = 0; i < listGimmick->GetNum(); i++)
 	{// 使用されていない状態まで
@@ -769,9 +817,53 @@ bool CPlayer::Collision(void)
 
 		if (pGimmick->GetType() == CGimmick::TYPE_BRIDGE)
 		{
-			pGimmick->GetPos();
+			CBridge* pBridge = dynamic_cast <CBridge*> (pGimmick);
+
+			for (int bridge = 0; bridge < BRIDGE_NUM; bridge++)
+			{
+				CObjectX* pObjectX = pBridge->GetObjectX(bridge);
+				D3DXVECTOR3 posGimmick = pObjectX->GetPosition();
+				D3DXVECTOR3 rotGimmick = pObjectX->GetRotation();
+				D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
+				D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+				sizeMin.y = 0.0f;
+
+				sizeMax = collision::PosRelativeMtx(VECTOR3_ZERO, rotGimmick, sizeMax);
+				sizeMin = collision::PosRelativeMtx(VECTOR3_ZERO, rotGimmick, sizeMin);
+
+				float height = m_Info.pos.y - 0.1f;
+				D3DXVECTOR3 pVtx[4];
+				pVtx[0] = D3DXVECTOR3(sizeMax.x, sizeMax.y, sizeMax.z);
+				pVtx[1] = D3DXVECTOR3(sizeMin.x, sizeMin.y, sizeMax.z);
+				pVtx[2] = D3DXVECTOR3(sizeMax.x, sizeMax.y, sizeMin.z);
+				pVtx[3] = D3DXVECTOR3(sizeMin.x, sizeMin.y, sizeMin.z);
+
+				D3DXVECTOR3 vec1, vec2;
+				D3DXVECTOR3 nor0, nor1;
+
+				vec1 = pVtx[1] - pVtx[0];
+				vec2 = pVtx[2] - pVtx[0];
+				D3DXVec3Cross(&nor0, &vec1, &vec2);
+				D3DXVec3Normalize(&nor0, &nor0);	// ベクトルを正規化する
+
+				vec1 = pVtx[2] - pVtx[3];
+				vec2 = pVtx[1] - pVtx[3];
+				D3DXVec3Cross(&nor1, &vec1, &vec2);
+				D3DXVec3Normalize(&nor1, &nor1);	// ベクトルを正規化する
+
+				// 判定
+				collision::IsOnSquarePolygon(posGimmick + pVtx[0], posGimmick + pVtx[1], posGimmick + pVtx[2], posGimmick + pVtx[3],
+					nor0, nor1, m_Info.pos, m_Info.posOld, height);
+
+				if (height >= m_Info.pos.y)
+				{
+					m_Info.pos.y = height;
+					m_Info.move.y = 0.0f;
+				}
+			}
 		}
 	}
+
 	return false;
 }
 
@@ -954,6 +1046,7 @@ void CPlayer::StateSet(void)
 //===============================================
 void CPlayer::SetType(TYPE type)
 {
+	
 	// 状態設定
 	(this->*(m_SetTypeFunc[type]))();
 }

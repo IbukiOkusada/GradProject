@@ -163,6 +163,9 @@ protected:	// 自分だけがアクセス可能
 	void Rotate(void);
 	void Adjust(void);
 	bool Collision(void);
+	bool CollisionObjX(void);
+	bool CollisionRoad(void);
+	bool CollisionGimick(void);
 	void Engine(float fThrottle);
 	void SearchRoad(void);
 	void Nitro();
