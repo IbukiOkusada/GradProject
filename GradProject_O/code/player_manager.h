@@ -8,6 +8,7 @@
 #define _PLAYERMANAGER_H_		// 二重インクルード防止用マクロを定義
 
 #include "list_manager.h"
+#include "network.h"
 
 // 前方宣言
 class CPlayer;
@@ -31,7 +32,7 @@ public:	// 誰でもアクセス可能
 	static CPlayerManager* GetInstance(void);
 	static void Release(void);
 	int GetNum() { return m_List.size(); }
-	CPlayer* GetPlayer(int nIdx = 0);
+	CPlayer* GetPlayer(int nIdx = CNetWork::GetInstance()->GetIdx());
 	std::map<int, CPlayer*>* GetList() { return &m_List; }
 	bool ListIn(CPlayer* pPlayer);
 	bool ListOut(CPlayer* pPlayer);

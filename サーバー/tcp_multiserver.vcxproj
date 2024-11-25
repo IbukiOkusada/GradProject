@@ -169,7 +169,6 @@
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\network.h" />
     <ClInclude Include="code\precompile.h" />
-    <ClInclude Include="code\protocol_chat.h" />
     <ClInclude Include="code\protocol_online.h" />
     <ClInclude Include="code\tcp_client.h" />
     <ClInclude Include="code\tcp_listener.h" />

@@ -23,6 +23,10 @@ namespace NetWork
 		COMMAND_JOIN,			// 接続した
 		COMMAND_GETID,			// ID取得
 		COMMAND_DELETE,			// 削除
+		COMMAND_PL_POS,			// プレイヤー座標
+		COMMAND_PL_ROT,			// プレイヤーの向き
+		COMMAND_PL_DAMAGE,		// プレイヤ―ダメージ
+		COMMAND_PL_GOAL,		// プレイヤーゴール
 		COMMAND_MAX
 	};
 }

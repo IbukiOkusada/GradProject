@@ -42,8 +42,8 @@ public:
 	// 操作種類列挙型
 	enum TYPE
 	{
-		TYPE_NONE,		// 操作不可能
-		TYPE_SEND,		// データ送信
+		TYPE_SEND = 0,	// データ送信
+		TYPE_RECV,		// データ受信他操作
 		TYPE_ACTIVE,	// 操作可能
 		TYPE_MAX
 	};
@@ -76,11 +76,25 @@ private:	// 自分だけがアクセス可能な定義
 		STATE state;			// 状態
 		float fStateCounter;	// 状態管理カウンター
 		CRoad* pRoad;			// 最寄りの道
+
+		// コンストラクタ
+		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), move(VECTOR3_ZERO), fSlideMove(0.0f), 
+			posOld(VECTOR3_ZERO), mtxWorld(), state(STATE::STATE_NORMAL), fStateCounter(0.0f), pRoad(nullptr) {}
+	};
+
+	// 受信用情報構造体
+	struct SRecvInfo
+	{
+		D3DXVECTOR3 pos;		// 位置
+		D3DXVECTOR3 rot;		// 向き
+
+		// コンストラクタ
+		SRecvInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO) {}
 	};
 
 public:	// 誰でもアクセス可能
 
-	CPlayer();	// コンストラクタ
+	CPlayer(int nId = -1);
 	~CPlayer();	// デストラクタ
 
 	// メンバ関数
@@ -88,8 +102,8 @@ public:	// 誰でもアクセス可能
 	HRESULT Init(const char *pBodyName, const char *pLegName);	// オーバーロード
 	void Uninit(void);
 	void Update(void);
-	static CPlayer *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move,
-		const char *pBodyName, const char *pLegName);
+	static CPlayer* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move,
+		const int nId);
 
 	// メンバ関数(設定)
 	void SetMove(const D3DXVECTOR3 move) { m_Info.move = move; }
@@ -104,6 +118,10 @@ public:	// 誰でもアクセス可能
 	void SetRotDiff(float fDiff) { m_fRotDest = fDiff; }
 	CBaggage* ThrowBaggage(D3DXVECTOR3* pTarget);
 	void Damage(float fDamage);
+
+	// 受信用情報
+	void SetRecvPosition(const D3DXVECTOR3 pos) { m_RecvInfo.pos = pos; }
+	void SetRecvRotation(const D3DXVECTOR3 rot) { m_RecvInfo.rot = rot; }
 
 	void SetNumDeliveryStatus(int nNum) { m_nNumDeliveryStatus = nNum; }
 	void AddDeliveryCount(void) { m_nNumDeliveryStatus++; }
@@ -126,6 +144,17 @@ public:	// 誰でもアクセス可能
 
 protected:	// 自分だけがアクセス可能
 
+	//=============================
+	// 関数リスト
+	//=============================
+	typedef void(CPlayer::* SETTYPE_FUNC)();
+	static SETTYPE_FUNC m_SetTypeFunc[];
+
+	// 状態設定関数
+	void SetStateSend();
+	void SetStateRecv();
+	void SetStateActive();
+
 	// メンバ関数
 	void SetMatrix(void);
 	void StateSet(void);
@@ -142,10 +171,15 @@ protected:	// 自分だけがアクセス可能
 	void Nitro();
 	void GetBestPath();
 	void DEBUGKEY();
+
+	// 受信用メンバ関数
+	void RecvInerSet();
+
 	// メンバ変数
 	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
 	CPlayer *m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;				// 自分自身の情報
+	SRecvInfo m_RecvInfo;		// 受信情報
 	float m_fRotMove;			// 現在の角度
 	float m_fRotDiff;			// 目的の角度
 	float m_fRotDest;			// 角度計算
@@ -177,7 +211,6 @@ protected:	// 自分だけがアクセス可能
 	CRadio* pRadio;
 	CMasterSound::CObjectSound* m_pCollSound;
 	CScrollText2D* m_pFont[NUM_TXT];
-	
 	int m_nNumDeliveryStatus;  // 配達した数
 };
 

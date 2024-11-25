@@ -17,19 +17,22 @@ namespace
 	const int DEF_PORT = (22333);			// デフォルトのポート番号
 	const std::string ADDRESS_FILENAME =	// アドレスのファイル名
 		"data\\TXT\\address.txt";
-	const int MAX_STRING = (2048);
 }
 
 //===============================================
 // 関数ポインタ
 //===============================================
 // 状態管理
-CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
+CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 {
-	&CNetWork::CommandNone,		// 何もない
-	&CNetWork::CommandJoin,		// 接続した
-	&CNetWork::CommandGetId,	// ID取得
-	&CNetWork::CommandDelete,	// 削除
+	&CNetWork::RecvNone,	// 何もない
+	&CNetWork::RecvJoin,	// 接続した
+	&CNetWork::RecvGetId,	// ID取得
+	&CNetWork::RecvDelete,	// 削除
+	&CNetWork::RecvPlPos,	// プレイヤー座標
+	&CNetWork::RecvPlRot,	// プレイヤー向き
+	&CNetWork::RecvPlDamage,	// プレイヤーダメージ
+	&CNetWork::RecvPlGoal,	// プレイヤーゴール
 };
 
 // 静的メンバ変数
@@ -97,7 +100,6 @@ void CNetWork::Release()
 	}
 }
 
-
 //===============================================
 // 初期化
 //===============================================
@@ -105,17 +107,9 @@ HRESULT CNetWork::Init()
 {
 	// クライアントを作成
 	m_pClient = DEBUG_NEW CClient;
-
-	// 接続
-	if (ReConnect())
-	{
-		m_state = STATE_ONLINE;
-	}
-	else
-	{
-		m_nMyIdx = 0;
-		m_state = STATE_SINGLE;
-	}
+	
+	m_nMyIdx = 0;
+	m_state = STATE_SINGLE;
 
 	return S_OK;
 }
@@ -219,7 +213,7 @@ bool CNetWork::ReConnect()
 		delete m_pClient;
 		m_pClient = nullptr;
 		m_state = STATE_SINGLE;
-		m_nMyIdx = 0;
+		m_nMyIdx = -1;
 		return false; 
 	}
 
@@ -228,6 +222,8 @@ bool CNetWork::ReConnect()
 	// マルチスレッド
 	std::thread th(&CNetWork::Online, this);
 	th.detach();
+
+	SendGetId();
 
 	m_state = STATE_ONLINE;
 	return true;
@@ -238,6 +234,8 @@ bool CNetWork::ReConnect()
 //===============================================
 bool CNetWork::DisConnect()
 {
+	m_bEnd = true;
+
 	// スレッドがなくなったら
 	while (1)
 	{
@@ -250,8 +248,6 @@ bool CNetWork::DisConnect()
 
 	// 終了処理
 	m_pClient->Uninit();
-
-	m_bEnd = true;
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
@@ -270,16 +266,16 @@ void CNetWork::Online(void)
 
 	while (1)
 	{
-		if (m_bEnd == true || m_pClient == nullptr)
+		if (!GetActive())
 		{
 			break;
 		}
 
-		char* pData = DEBUG_NEW char[MAX_STRING];	// 受信用
+		char* pData = DEBUG_NEW char[NetWork::MAX_SEND_DATA];	// 受信用
 
 		// 受信
 		int* pRecvByte = DEBUG_NEW int;
-		*pRecvByte = m_pClient->Recv(&pData[0], MAX_STRING);
+		*pRecvByte = m_pClient->Recv(&pData[0], NetWork::MAX_SEND_DATA);
 
 		// マルチスレッド
 		std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
@@ -337,7 +333,10 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 		}
 
 		// コマンドを実行
-		(this->*(m_CommandFunc[command]))(&nByte, id, &pRecvData[nByte]);
+		if (nByte < *pRecvByte)
+		{
+			(this->*(m_RecvFunc[command]))(&nByte, id, &pRecvData[nByte]);
+		}
 	}
 
 	// データ削除
@@ -368,7 +367,7 @@ void CNetWork::DeleteData(char* pRecvData, int* pRecvByte)
 //===================================================
 void CNetWork::OnlineEnd(void)
 {
-	if (m_pClient != nullptr)
+	if (GetActive())
 	{
 		std::string senddata;
 		senddata.resize(sizeof(int) + 1);
@@ -383,18 +382,33 @@ void CNetWork::OnlineEnd(void)
 }
 
 //===================================================
+// 使用可能確認
+//===================================================
+bool CNetWork::GetActive()
+{
+	if (m_bEnd || m_pClient == nullptr)
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//===================================================
 // 生成プレイヤー
 //===================================================
 CPlayer* CNetWork::CreatePlayer(int nId)
 {
+	m_aPlayerMutex[nId].lock();
+
 	// プレイヤー生成
-	CPlayer* pPlayer = CPlayer::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, nullptr, nullptr);
+	CPlayer* pPlayer = CPlayer::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, nId);
 	auto mgr = CPlayerManager::GetInstance();
 
-	// リストに挿入しなおす
-	mgr->ListOut(pPlayer);
-	pPlayer->BindId(nId);
-	mgr->ListIn(pPlayer);
+	// 受信用プレイヤーに
+	pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
+
+	m_aPlayerMutex[nId].unlock();
 
 	return pPlayer;
 }
@@ -402,7 +416,7 @@ CPlayer* CNetWork::CreatePlayer(int nId)
 //===================================================
 // 何もない
 //===================================================
-void CNetWork::CommandNone(int* pByte, const int nId, const char* pRecvData)
+void CNetWork::RecvNone(int* pByte, const int nId, const char* pRecvData)
 {
 
 }
@@ -410,27 +424,209 @@ void CNetWork::CommandNone(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 // 接続した
 //===================================================
-void CNetWork::CommandJoin(int* pByte, const int nId, const char* pRecvData)
+void CNetWork::RecvJoin(int* pByte, const int nId, const char* pRecvData)
 {
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
 
+	// 接続されたことにする
 	m_aConnect[nId] = true;
 }
 
 //===================================================
 // IDを取得した
 //===================================================
-void CNetWork::CommandGetId(int* pByte, const int nId, const char* pRecvData)
+void CNetWork::RecvGetId(int* pByte, const int nId, const char* pRecvData)
 {
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+
+	// 接続されたことにする
+	m_aConnect[nId] = true;
 	m_nMyIdx = nId;
 }
 
 //===================================================
 // 削除
 //===================================================
-void CNetWork::CommandDelete(int* pByte, const int nId, const char* pRecvData)
+void CNetWork::RecvDelete(int* pByte, const int nId, const char* pRecvData)
 {
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
 
 	m_aConnect[nId] = false;
+}
+
+//===================================================
+// プレイヤーの座標を取得
+//===================================================
+void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
+{
+	if (m_pClient == nullptr) { return; }
+	// 座標に変換
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, pRecvData, sizeof(D3DXVECTOR3));
+
+	// 確認バイト数を加算
+	*pByte += sizeof(D3DXVECTOR3);
+
+	// プレイヤーの存在確認
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
+
+	// 生成していない場合
+	if (pPlayer == nullptr) { 
+		RecvJoin(pByte, nId, pRecvData);
+		return; 
+	}
+
+	// 座標設定
+	pPlayer->SetRecvPosition(pos);
+}
+
+//===================================================
+// プレイヤーの向きを取得
+//===================================================
+void CNetWork::RecvPlRot(int* pByte, const int nId, const char* pRecvData)
+{
+	// 向きに変換
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, pRecvData, sizeof(D3DXVECTOR3));
+
+	// 確認バイト数を加算
+	*pByte += sizeof(D3DXVECTOR3);
+
+	// プレイヤーの存在確認
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
+
+	// 生成していない場合
+	if (pPlayer == nullptr) {
+		RecvJoin(pByte, nId, pRecvData);
+		return;
+	}
+
+	// 座標設定
+	pPlayer->SetRecvRotation(rot);
+}
+
+//===================================================
+// プレイヤーのダメージを取得
+//===================================================
+void CNetWork::RecvPlDamage(int* pByte, const int nId, const char* pRecvData)
+{
+	
+}
+
+//===================================================
+// プレイヤーのゴールを取得
+//===================================================
+void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
+// 何も送信しない
+//===================================================
+void CNetWork::SendNone()
+{
+	if (!GetActive()) { return; }
+}
+
+//===================================================
+// 入室したことを送信
+//===================================================
+void CNetWork::SendJoin()
+{
+	if (!GetActive()) { return; }
+}
+
+//===================================================
+// ID取得を送信
+//===================================================
+void CNetWork::SendGetId()
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_GETID;
+
+	// protocolを挿入
+	memcpy(&aSendData[0], &nProt, sizeof(int));
+
+	// 送信
+	m_pClient->Send(&aSendData[0], sizeof(int));
+}
+
+//===================================================
+// 削除することを送信
+//===================================================
+void CNetWork::SendDelete()
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_DELETE;
+
+	// protocolを挿入
+	memcpy(&aSendData[0], &nProt, sizeof(int));
+
+	// 送信
+	m_pClient->Send(&aSendData[0], sizeof(int));
+
+	DisConnect();
+}
+
+//===================================================
+// プレイヤーの座標送信
+//===================================================
+void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
+	int nProt = NetWork::COMMAND_PL_POS;
+
+	// protocolを挿入
+	memcpy(&aSendData[0], &nProt, sizeof(int));
+
+	// 座標を挿入
+	memcpy(&aSendData[sizeof(int)], &pos, sizeof(D3DXVECTOR3));
+
+	// 送信
+	m_pClient->Send(&aSendData[0], sizeof(int) + sizeof(D3DXVECTOR3));
+}
+
+//===================================================
+// プレイヤーの向き送信
+//===================================================
+void CNetWork::SendPlRot(const D3DXVECTOR3& rot)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
+	int nProt = NetWork::COMMAND_PL_ROT;
+
+	// protocolを挿入
+	memcpy(&aSendData[0], &nProt, sizeof(int));
+
+	// 座標を挿入
+	memcpy(&aSendData[sizeof(int)], &rot, sizeof(D3DXVECTOR3));
+
+	// 送信
+	m_pClient->Send(&aSendData[0], sizeof(int) + sizeof(D3DXVECTOR3));
+}
+
+//===================================================
+// プレイヤーのダメージ後体力送信
+//===================================================
+void CNetWork::SendPlDamage(const float nowlife)
+{
+	if (!GetActive()) { return; }
+}
+
+//===================================================
+// プレイヤーがゴールしたことを送信
+//===================================================
+void CNetWork::SendPlGoal(int nId)
+{
+	if (!GetActive()) { return; }
 }

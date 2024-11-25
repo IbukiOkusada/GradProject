@@ -44,9 +44,6 @@
     <ClInclude Include="code\precompile.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="code\protocol_chat.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="code\protocol_online.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>

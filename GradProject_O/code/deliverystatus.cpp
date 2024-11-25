@@ -239,6 +239,7 @@ void CDeliveryStatus::Number(void)
 		return;
 
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+	if (pPlayer == nullptr) { return; }
 	int nNum = pPlayer->GetNumDeliverStatus();
 
 	m_pCountDeliveryPointNumber->SetIdx(nNum);
