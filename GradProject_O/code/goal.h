@@ -44,11 +44,12 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	bool CheckRange();
-	bool CheckSpeed();
+	bool CheckRange(int nId);
+	bool CheckSpeed(int nId);
 	void ScreenEffect();
 
 	// メンバ変数
+	int m_nId;
 	D3DXVECTOR3 m_pos;				// 座標
 	float m_fRange;					// ゴールの範囲
 	float m_fLimit;					// 速度制限

@@ -253,6 +253,8 @@ void CDeliveryStatus::Gage(void)
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	int nNum = pPlayer->GetNumDeliverStatus();
 
+	if (pPlayer == nullptr) { return; }
+
 	if (nNum <= 0)
 		return;
 
