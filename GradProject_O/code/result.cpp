@@ -20,9 +20,11 @@
 #include "time.h"
 #include "input_gamepad.h"
 #include "input_keyboard.h"
+#include "timer.h"
 
 // 静的メンバ変数
 int CResult::m_nScore = 0;
+float CResult::m_fTime = 0.0f;
 
 //===============================================
 // コンストラクタ
@@ -68,6 +70,8 @@ HRESULT CResult::Init(void)
 	CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
 	pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
 	pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\result.png"));
+
+	m_fTime = CTimer::GetTime();
 
 	//CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT);
 

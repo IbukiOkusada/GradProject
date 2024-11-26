@@ -54,6 +54,8 @@ private:
 	CTime *m_pTime;			// タイマー
 	CObject2D *m_pObjClear;	// clearしたかどうか
 	CPlayer *m_ppPlayer;	// プレイヤーのポインタ
+
+	static float m_fTime;
 	static int m_nScore;
 };
 
