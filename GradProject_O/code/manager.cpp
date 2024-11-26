@@ -25,6 +25,7 @@
 #include "object_manager.h"
 #include "camera_manager.h"
 #include "player_manager.h"
+#include "player.h"
 #include "road_manager.h"
 #include "car_manager.h"
 #include "effekseerControl.h"
@@ -58,6 +59,7 @@ CManager::CManager()
 	m_pDeltaTime = nullptr;     // タイマーへのポインタ
 	m_pFont = nullptr;
 	m_pNetWork = nullptr;
+	m_nDeliveryStatus = 0;
 }
 
 //===================================================

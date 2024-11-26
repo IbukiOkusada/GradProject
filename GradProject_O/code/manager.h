@@ -107,6 +107,11 @@ public:	// 誰でもアクセス可能
 	static CManager *GetInstance(void);
 	static void Release(void);
 
+	void SetDeliveryStatus(int nScore) { m_nDeliveryStatus = nScore; }
+	int GetDeliveryStatus() { return m_nDeliveryStatus; }
+	void SetLife(float nLife) { m_fLife = nLife; }
+	float GetLife() { return m_fLife; }
+
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
@@ -128,6 +133,9 @@ private:	// 自分だけがアクセス可能
 	CFont* m_pFont;
 	CNetWork* m_pNetWork;
 	static CManager *m_pManager;	// マネージャーのポインタ
+
+	int m_nDeliveryStatus;
+	float m_fLife;
 };
 
 
