@@ -36,6 +36,7 @@ CClient::CClient()
 
 	m_bSend = false;
 	memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
+	memset(&m_aTempSendData[0], '\0', sizeof(m_aTempSendData));
 	m_nSendByte = 0;
 	m_bDeath = false;
 }
@@ -138,10 +139,22 @@ void CClient::SetIP(char *pIp)
 //==========================================================
 void CClient::SetData(char *pChar, int nByte)
 {
-	if (m_nSendByte + nByte < NetWork::MAX_COMMAND_DATA)
+	if (!m_bSend)
 	{
-		memcpy(&m_aSendData[m_nSendByte], pChar, nByte);
-		m_nSendByte += nByte;
+		if (m_nSendByte + nByte < NetWork::MAX_COMMAND_DATA)
+		{
+			memcpy(&m_aSendData[m_nSendByte], pChar, nByte);
+			m_nSendByte += nByte;
+		}
+	}
+	else
+	{
+		int nowbyte = strlen(&m_aTempSendData[0]);
+		if (nowbyte + nByte < NetWork::MAX_COMMAND_DATA)
+		{
+			// ‰¼‚É“ü‚ê‚Ä‚¨‚­
+			memcpy(&m_aTempSendData[nowbyte], pChar, nByte);
+		}
 	}
 }
 
@@ -151,5 +164,14 @@ void CClient::SetData(char *pChar, int nByte)
 void CClient::ResetData(void)
 {
 	memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
-	m_nSendByte = 0;
+	m_nSendByte = strlen(&m_aSendData[0]);
+
+	int nowbyte = strlen(&m_aSendData[0]);
+	if (nowbyte < NetWork::MAX_COMMAND_DATA)
+	{
+		// ‰¼‚É“ü‚ê‚Ä‚¨‚­
+		memcpy(&m_aSendData[0], &m_aTempSendData[0], nowbyte);
+	}
+
+	memset(&m_aTempSendData[0], '\0', sizeof(m_aTempSendData));
 }

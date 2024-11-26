@@ -53,6 +53,7 @@ private:	// 自分だけアクセス可能
 	CClient *m_pPrev;	// 前のオブジェクトへのポインタ
 	CClient *m_pNext;	// 次のオブジェクトへのポインタ
 	char m_aSendData[NetWork::MAX_SEND_DATA];	// 送信するデータ
+	char m_aTempSendData[NetWork::MAX_SEND_DATA];	// 送信するデータ
 	char m_aClientIP[64];	// クライアントのIP番号
 	int m_nClientPort;	// クライアントのポート番号
 	int m_nId;			// ID
