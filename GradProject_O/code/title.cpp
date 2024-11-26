@@ -17,11 +17,12 @@
 #include "input_gamepad.h"
 #include "input_keyboard.h"
 #include "object2D.h"
-#include "map_manager.h"
+#include "TitleMap.h"
 #include "meshfield.h"
 #include "PlayerTitle.h"
 #include "PoliceTitle.h"
 #include "goal.h"
+#include "camera_manager.h"
 
 //===============================================
 // 無名名前空間
@@ -114,6 +115,11 @@ HRESULT CTitle::Init(void)
 //<===============================================
 void CTitle::Uninit(void)
 {
+	//カメラの視点の位置を初期化
+	m_pCam->SetPositionR(VECTOR3_ZERO);
+	SAFE_UNINIT(m_pPlayer);
+
+	//CManager::GetInstance()->GetCamera()->SetActive(true);
 	CManager::GetInstance()->GetSound()->Stop();
 }
 
@@ -169,14 +175,14 @@ void CTitle::Update(void)
 		//プレスエンターステートだった場合
 	case STATE::STATE_PRESSENTER:
 
+		DebugCam();
+
 		MoveP_E();
 
 		break;
 
 		//プレスエンターを押した後のステートだった場合
 	case STATE::STATE_CHASING:
-
-		DebugCam();
 
 		ChaseMovement();
 
@@ -415,6 +421,8 @@ void CTitle::StatePre(void)
 //<===============================================
 void CTitle::InitingP_E(void)
 {
+	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };			//プレイヤーの位置
+	const D3DXVECTOR3 PolicePos = { 2476.0f, 0.0f, -550.0f };		//警察位置
 	const float fLogoLength = (150.0f, 150.0f);								//ロゴの長さ(サイズ)
 	const float fP_ELength = (350.0f, 350.0f);								//プレスエンターの長さ(サイズ)
 
@@ -429,11 +437,11 @@ void CTitle::InitingP_E(void)
 		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_TeamLogo]);
 
 		//カメラ初期状態
-		m_pCam = CManager::GetInstance()->GetCamera();
-		m_pCam->SetPositionR(D3DXVECTOR3(-4000.0f, 95.0f, 260.0f));
+		m_pCam = CCameraManager::GetInstance()->GetTop();
+		m_pCam->SetPositionR(D3DXVECTOR3(3200.0f, 95.0f, 260.0f));
 		m_pCam->SetLength(100.0f);
 		m_pCam->SetRotation(D3DXVECTOR3(0.0f, -0.0f, 1.79f));
-		m_pCam->SetActive(false);
+		m_pCam->SetActive(true);
 
 		//<******************************************
 		// 2Dオブジェクトの生成処理
@@ -456,14 +464,15 @@ void CTitle::InitingP_E(void)
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\T_PressEnter000.png"));
 
 		//必要なオブジェクトの生成
-		CMapManager::GetInstance()->Load();
+		CTitleMap::GetInstance()->Load();
 		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), VECTOR3_ZERO, 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
-		m_pPlayer = CPlayerTitle::Create(D3DXVECTOR3(-4734.0f, 50.0f, -1988.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
+		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
 
 		//警察の生成
 		for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
 		{
-			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(-4850.0f + 150.0f * nCnt, 0.0f, -600.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
+			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
+				D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
 		}
 
 		//初期化完了の合図をtrueにする
@@ -556,12 +565,9 @@ void CTitle::ChaseMovement(void)
 
 	ChaseCamera();
 
-	//超えていたらカウントの初期化と透明終了合図を送る
-	if (m_nCounter >= FADE_TIME)
-	{
-		//ゲーム画面に移行する
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
-	}
+	//超えていたらゲーム画面に遷移する
+	if (m_nCounter >= FADE_TIME){CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
+
 	//超えていなかったらカウント増加
 	else { m_nCounter++; }
 }
@@ -575,14 +581,23 @@ void CTitle::ChaseCamera(void)
 	//<************************************************************
 	D3DXVECTOR3 CameraRot = m_pCam->GetRotation();		//カメラ向き
 	D3DXVECTOR3 CameraPos = m_pCam->GetPositionR();		//カメラ位置
-	const float fRotMove = 0.02f, fDestRot = -1.11f;	//向き移動の際の移動値と目的向き
 
-	const float CameraPosDif[2] = { 200.0f,260.0f };	//カメラの補正距離
-	const float CameraDis = 1000.0f;					//カメラの距離
+	//向き移動の際の移動値と目的向き
+	const float fRotMoveY = 0.02f,
+		fRotMoveZ = 0.005f,
+		fDestRotY = -0.66f,
+		fDestRotZ = 1.15f;
+
+	const float CameraPosDif[2] = { 0.0f,190.0f };	//カメラの補正距離
+	float CameraDis = 1150.0f;					//カメラの距離
 
 	//カメラの向きの調整
-	if (CameraRot.y <= fDestRot) { CameraRot.y = fDestRot; }
-	else { CameraRot.y -= fRotMove; }
+	if (CameraRot.y <= fDestRotY) { CameraRot.y = fDestRotY; }
+	else { CameraRot.y -= fRotMoveY; }
+
+	//カメラの向きの調整
+	if (CameraRot.z >= fDestRotZ) { CameraRot.z = fDestRotZ; }
+	else { CameraRot.z += fRotMoveZ; }
 
 	//カメラの設定
 	m_pCam->SetPositionR(D3DXVECTOR3(m_pPlayer->GetPosition().x + CameraPosDif[0],
@@ -597,7 +612,8 @@ void CTitle::ChaseCamera(void)
 //<===============================================
 void CTitle::SkipMovement(void)
 {
-	const float DEST_ROT = 0.40f;						//目的の向き
+	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -250.0f };	//プレイヤーの位置
+	const float DEST_ROT = 0.40f;								//目的の向き
 
 	//・タイトルロゴ
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetPosition(D3DXVECTOR3(TITLELOGO_DEST,TITLELOGO_POS.y, TITLELOGO_POS.z));
@@ -608,7 +624,7 @@ void CTitle::SkipMovement(void)
 	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(true);
 
 	//・プレイヤー
-	m_pPlayer->SetPosition(D3DXVECTOR3(-4734.0f, 50.0f, -250.0f));
+	m_pPlayer->SetPosition(PLAYER_POS);
 	m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, -3.14f, 0.0f));
 	m_pPlayer->SetReached(true);
 
