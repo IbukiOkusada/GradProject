@@ -43,18 +43,15 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	static void SetScore(const int nScore) { m_nScore = nScore; }
 
 private:
 
+	// メンバ関数
+	void AddPlayer(void);  // プレイヤー参加処理
+
 	// メンバ変数
-	CFileLoad* m_pFileLoad;	// ファイル読み込みのポインタ
-	CMeshDome* m_pMeshSky;	// 空用
-	CTime* m_pTime;			// タイマー
-	CObject2D* m_pObjClear;	// clearしたかどうか
-	CPlayer* m_ppPlayer;	// プレイヤーのポインタ
+	CPlayer** m_ppPlayer;	// プレイヤーのポインタ
 	CMultiCamera** m_ppCamera;   // カメラのポインタ
-	static int m_nScore;
 };
 
 #endif
