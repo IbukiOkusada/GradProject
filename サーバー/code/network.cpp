@@ -15,7 +15,7 @@
 namespace
 {
 	const int DEF_PORT = (22333);			// デフォルトのポート番号
-	const float SEND_TIME = 1.0f;			// 送信時間
+	const float SEND_TIME = 1.0f;			// 送信受付時間
 }
 
 //===============================================
