@@ -38,8 +38,6 @@ public:
 	{
 		DEST_FIRST = 0,	//ˆê”Ô–Ú
 		DEST_SECOND,	//“ñ”Ô–Ú
-		DEST_THIRD,		//ŽO”Ô–Ú
-		DEST_FOURTH,	//Žl”Ô–Ú
 		DEST_MAX,
 
 	};

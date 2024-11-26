@@ -107,17 +107,16 @@ private:
 
 	int m_nCounterRanking;					//ランキング自動遷移タイマー
 	int m_nLogoAlpgha;						//タイトルロゴの色変化タイマー
-
 	int m_nCounter;							//汎用カウンター
 
-	D3DXVECTOR3 m_TitlePos;						//タイトルロゴの場所
+	D3DXVECTOR3 m_TitlePos;					//タイトルロゴの場所
 
 	bool m_bPush;							//チュートリアル遷移に必要なボタンが押されているか
 	bool m_bDisplay;						//画面に映すかどうか
 	bool m_bIniting;						//オブジェクトの初期化が終わったかどうかのチェック
 	bool m_bCol;							
 	bool m_bNext;							//次に行けるかの是非
-	bool m_bSkipped;							//スキップしたかどうか
+	bool m_bSkipped;						//スキップしたかどうか
 };
 
 #endif
