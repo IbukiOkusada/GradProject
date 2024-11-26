@@ -6,6 +6,13 @@
 //===============================================
 #include "entry.h"
 #include "camera.h"
+#include "input.h"
+#include "input_gamepad.h"
+#include "input_keyboard.h"
+#include "manager.h"
+#include "fade.h"
+#include "object2D.h"
+#include "texture.h"
 
 //===============================================
 // ’è”’è‹`
@@ -37,7 +44,11 @@ CEntry::~CEntry()
 //===============================================
 HRESULT CEntry::Init(void)
 {
-	//m_ppCamera = DEBUG_NEW CCamera * [4];
+    CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
+    pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\entry.png"));
+
+	//m_ppCamera = DEBUG_NEW CMultiCamera * [4];
 
  //   for (int i = 0; i < 4; i++)
  //   {
@@ -90,7 +101,15 @@ void CEntry::Uninit(void)
 //===============================================
 void CEntry::Update(void)
 {
+    CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+    CInputPad* pPad = CInputPad::GetInstance();
 
+    if (pPad->GetTrigger(CInputPad::BUTTON_A, 0) ||
+        pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
+        pKey->GetTrigger(DIK_RETURN))
+    {
+        CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+    }
 }
 
 //===============================================

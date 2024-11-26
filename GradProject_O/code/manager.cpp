@@ -32,6 +32,7 @@
 #include "font.h"
 #include "deltatime.h"
 #include "network.h"
+#include "entry.h"
 
 //===============================================
 // Ã“Iƒƒ“ƒo•Ï”
@@ -648,6 +649,10 @@ CScene *CScene::Create(MODE mode)
 
 	case MODE_TUTORIAL:
 		pScene = DEBUG_NEW CTutorial;
+		break;
+
+	case MODE_ENTRY:
+		pScene = DEBUG_NEW CEntry;
 		break;
 
 	case MODE_GAME:
