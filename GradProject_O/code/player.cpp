@@ -383,7 +383,10 @@ void CPlayer::Update(void)
 		D3DXVECTOR3 rot = GetRotation();
 		rot.y -= D3DX_PI * 0.5f;
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-		pCamera->Pursue(GetPosition(), rot, m_fCamera);
+		if (pCamera->GetAction()->IsFinish())
+		{
+			pCamera->Pursue(GetPosition(), rot, m_fCamera);
+		}
 	}
 
 	// ƒJƒƒ‰‚Ì‹——£İ’è

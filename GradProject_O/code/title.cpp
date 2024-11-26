@@ -41,11 +41,6 @@ namespace
 	const float MAX_ALPHA = 1.0f;		//透明度の最大値
 	const float MIN_ALPHA = 0.3f;		//透明度の最小値
 	const float ALPHA_ZERO = 0.0f;		//透明の時のα値
-
-
-	//const char* FILEPASS = "data\\TXT\\player";	// ファイルのパス
-	//const char* FILEEXT = ".txt";				// ファイルの拡張子
-	//const int FILEPASS_SIZE = (200);			// ファイルのパスサイズ
 }
 
 //<===============================================
@@ -53,6 +48,7 @@ namespace
 //<===============================================
 CTitle::CTitle()
 {
+	//int関係
 	m_nCounterRanking = 0;
 	m_nCounter = 0;
 	m_nLogoAlpgha = 0;
@@ -71,6 +67,7 @@ CTitle::CTitle()
 	//ポインタ系
 	m_pPlayer = nullptr;
 	m_pCam = nullptr;
+	m_pGoal = nullptr;
 
 	//配列の初期化
 	for (int nCnt = 0; nCnt < OBJ2D_MAX; nCnt++)
@@ -99,11 +96,11 @@ CTitle::~CTitle()
 //<===============================================
 HRESULT CTitle::Init(void)
 {
-	// 遷移タイマー設定
+	//遷移タイマー設定
 	m_nCounter = MOVE_TUTORIAL;
 	m_nCounterRanking = AUTOMOVE_RANKING;
 
-	// サウンド再生
+	//タイトルBGM再生とチームロゴオブジェクトの生成
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(320, 160.0f);
@@ -178,6 +175,8 @@ void CTitle::Update(void)
 
 		//プレスエンターを押した後のステートだった場合
 	case STATE::STATE_CHASING:
+
+		DebugCam();
 
 		ChaseMovement();
 
@@ -283,7 +282,6 @@ void CTitle::StateP_E(void)
 void CTitle::MoveP_E(void)
 {
 	PreMove();
-
 	//キーボード入力かパッド入力があれば
 	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
 		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
@@ -295,22 +293,23 @@ void CTitle::MoveP_E(void)
 	//反応があったら
 	if (m_bPush)
 	{
+		//必要ないので終了処理を挟む(いるかは不明だけど念のためです)
+		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]);
+		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_PressEnter]);
+
 		//次のステートに移行する
 		m_eState = STATE::STATE_CHASING;
-
-		////ランキング画面に移行
-		//CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
 	}
 	//押下反応がなかったら
 	else
 	{
-		m_nCounterRanking--;
-		if (m_nCounterRanking <= 0)
-		{
-			//ランキング画面に移行
-			CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING);
+		//m_nCounterRanking--;
+		//if (m_nCounterRanking <= 0)
+		//{
+		//	//ランキング画面に移行
+		//	CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING);
 
-		}
+		//}
 
 	}
 }
@@ -426,6 +425,9 @@ void CTitle::InitingP_E(void)
 		m_bPush = false;
 		m_bNext = false;
 
+		//必要ないので終了処理を挟む(いるかは不明だけど念のためです)
+		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_TeamLogo]);
+
 		//カメラ初期状態
 		m_pCam = CManager::GetInstance()->GetCamera();
 		m_pCam->SetPositionR(D3DXVECTOR3(-4000.0f, 95.0f, 260.0f));
@@ -458,9 +460,10 @@ void CTitle::InitingP_E(void)
 		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), VECTOR3_ZERO, 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 		m_pPlayer = CPlayerTitle::Create(D3DXVECTOR3(-4734.0f, 50.0f, -1988.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
 
+		//警察の生成
 		for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
 		{
-			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(-4734.0f + 150.0f * nCnt, 0.0f, -1300.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
+			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(-4850.0f + 150.0f * nCnt, 0.0f, -600.0f), D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
 		}
 
 		//初期化完了の合図をtrueにする
@@ -531,16 +534,16 @@ void CTitle::TitleLogo(void)
 //<===============================================
 void CTitle::ChaseMovement(void)
 {
-	D3DXVECTOR3 CameraRot = m_pCam->GetRotation();		//カメラ向き
+	//<*************************************************************
+	//カメラに関する
+	//<*************************************************************
 	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
-	D3DXVECTOR3 aPolicePos[POLICE_MAX] = {};			//警察の位置
 	const float PlayerMove = 25.0f;						//プレイヤーの動く値
-	const float fRotMove = 0.01f, fDestRot = -1.11f;	//向き移動の際の移動値と目的向き
+	const int FADE_TIME = 200;							//ゲーム画面に移行するまでの時間
 
-	m_pCam->Pursue(m_pPlayer->GetPosition(), D3DXVECTOR3(0.0f, -0.0f, 1.79f), 1500.0f);
 	//プレイヤーと警察を移動させる
 	PlayerPos.z += PlayerMove;
-	
+
 	//カメラの向きとプレイヤーの位置の設定
 	m_pPlayer->SetPosition(PlayerPos);
 
@@ -548,15 +551,46 @@ void CTitle::ChaseMovement(void)
 	//警察関連の処理
 	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
 	{
-		//警察の位置を取得
-		aPolicePos[nCnt].x = m_apPolice[nCnt]->GetPosition().x;
-		aPolicePos[nCnt].y = m_apPolice[nCnt]->GetPosition().y;
-		aPolicePos[nCnt].z = m_apPolice[nCnt]->GetPosition().z;
-
-		///警察の位置を移動させ、位置を設定する
-		aPolicePos[nCnt].z += PlayerMove;
-		m_apPolice[nCnt]->SetPosition(aPolicePos[nCnt]);
+		m_apPolice[nCnt]->Chasing();
 	}
+
+	ChaseCamera();
+
+	//超えていたらカウントの初期化と透明終了合図を送る
+	if (m_nCounter >= FADE_TIME)
+	{
+		//ゲーム画面に移行する
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+	}
+	//超えていなかったらカウント増加
+	else { m_nCounter++; }
+}
+//<===============================================
+//追跡ステートの際のカメラの動き
+//<===============================================
+void CTitle::ChaseCamera(void)
+{
+	//<************************************************************
+	//カメラ関係の変数
+	//<************************************************************
+	D3DXVECTOR3 CameraRot = m_pCam->GetRotation();		//カメラ向き
+	D3DXVECTOR3 CameraPos = m_pCam->GetPositionR();		//カメラ位置
+	const float fRotMove = 0.02f, fDestRot = -1.11f;	//向き移動の際の移動値と目的向き
+
+	const float CameraPosDif[2] = { 200.0f,260.0f };	//カメラの補正距離
+	const float CameraDis = 1000.0f;					//カメラの距離
+
+	//カメラの向きの調整
+	if (CameraRot.y <= fDestRot) { CameraRot.y = fDestRot; }
+	else { CameraRot.y -= fRotMove; }
+
+	//カメラの設定
+	m_pCam->SetPositionR(D3DXVECTOR3(m_pPlayer->GetPosition().x + CameraPosDif[0],
+		m_pPlayer->GetPosition().y + CameraPosDif[1],
+		m_pPlayer->GetPosition().z));
+
+	m_pCam->SetLength(CameraDis);
+	m_pCam->SetRotation(CameraRot);
 }
 //<===============================================
 //スキップした際の際の動き
@@ -580,4 +614,30 @@ void CTitle::SkipMovement(void)
 
 	//ステートを変更する
 	m_eState = STATE::STATE_PRESSENTER;
+}
+//<===============================================
+//デバッグ時のカメラの動き
+//<===============================================
+void CTitle::DebugCam(void)
+{
+#ifdef _DEBUG
+	D3DXVECTOR3 CamRot = m_pCam->GetRotation();	//カメラ向き
+	const float fRotMove = 0.01f;				//カメラ向きの移動値
+
+	//<*******************************************************************************
+	//カメラ移動
+	//X軸
+	if (CInputKeyboard::GetInstance()->GetPress(DIK_H)) { CamRot.x -= fRotMove; }
+	if (CInputKeyboard::GetInstance()->GetPress(DIK_B)) { CamRot.x += fRotMove; }
+	//Y軸
+	if (CInputKeyboard::GetInstance()->GetPress(DIK_J)) { CamRot.y -= fRotMove; }
+	if (CInputKeyboard::GetInstance()->GetPress(DIK_N)) { CamRot.y += fRotMove; }
+	//Z軸
+	if (CInputKeyboard::GetInstance()->GetPress(DIK_K)) { CamRot.z -= fRotMove; }
+	if (CInputKeyboard::GetInstance()->GetPress(DIK_M)) { CamRot.z += fRotMove; }
+
+	//カメラ情報設定
+	m_pCam->SetRotation(CamRot);
+#endif
+
 }
