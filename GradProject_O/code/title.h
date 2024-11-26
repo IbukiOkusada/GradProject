@@ -12,17 +12,22 @@
 
 #include "manager.h"
 
+//<**********************************************
+//前方宣言
+//<**********************************************
 class CFileLoad;
-class CTitleEnter;
 class CObject2D;
-
 class CPlayerTitle;
 class CCamera;
 class CPoliceTitle;
+class CGole;
 
+//<**********************************************
+//名前宣言
+//<**********************************************
 namespace
 {
-	const int POLICE_MAX = 3;
+	const int POLICE_MAX = 3;					//警察の数
 }
 
 //===============================================
@@ -84,10 +89,16 @@ private:
 
 	//追跡状態の時の動き
 	void ChaseMovement(void);
+	void ChaseCamera(void);
+
+	//デバッグ用
+	void DebugCam(void);
 
 	//CFileLoad *m_pFileLoad;				//ファイル読み込みのポインタ
 	CPlayerTitle* m_pPlayer;				//プレイヤーのポインタ
-	CPoliceTitle* m_apPolice[POLICE_MAX];				//警察のポインタ
+	CPoliceTitle* m_apPolice[POLICE_MAX];	//警察のポインタ
+	CGole* m_pGoal;							//ゴールのポインタ
+
 
 
 	CObject2D* m_pObject2D[OBJ2D_MAX];		//チームロゴのポインタ
