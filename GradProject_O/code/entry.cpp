@@ -16,6 +16,7 @@
 #include "player.h"
 #include "player_manager.h"
 #include "debugproc.h"
+#include "map_manager.h"
 
 //===============================================
 // 定数定義
@@ -55,9 +56,15 @@ CEntry::~CEntry()
 //===============================================
 HRESULT CEntry::Init(void)
 {
-    /*CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
+   /* CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\entry.png"));*/
+
+    // マップ読み込み
+    CMapManager::GetInstance()->Load();
+
+    // defaultカメラオフ
+    CManager::GetInstance()->GetCamera()->SetDraw(false);
 
 	m_ppCamera = DEBUG_NEW CMultiCamera * [4];
 
@@ -68,7 +75,7 @@ HRESULT CEntry::Init(void)
         m_ppCamera[i]->SetPositionV(D3DXVECTOR3(-874.3f, 1124.15f, 1717.2f));
         m_ppCamera[i]->SetPositionR(D3DXVECTOR3(-320.3f, 1.0f, -91.6f));
         m_ppCamera[i]->SetLength(400.0f);
-        m_ppCamera[i]->SetRotation(D3DXVECTOR3(0.0f, CAMERA_ROT_Y[i], D3DX_PI * 0.41f));
+        m_ppCamera[i]->SetRotation(D3DXVECTOR3(0.0f, CAMERA_ROT_Y[i], D3DX_PI * 0.5f));
 
         D3DVIEWPORT9 viewport;
         //プレイヤー追従カメラの画面位置設定
@@ -104,7 +111,21 @@ HRESULT CEntry::Init(void)
 //===============================================
 void CEntry::Uninit(void)
 {
+    // カメラの破棄
+    if (m_ppCamera != nullptr)
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            if (m_ppCamera[i] == nullptr) { continue; }
+           
+            m_ppCamera[i]->Uninit();
+            delete m_ppCamera[i];
+            m_ppCamera[i] = nullptr;
+        }
 
+        delete[] m_ppCamera;
+        m_ppCamera = nullptr;
+    }
 }
 
 //===============================================
