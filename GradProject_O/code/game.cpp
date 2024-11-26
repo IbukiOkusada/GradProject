@@ -331,17 +331,17 @@ void CGame::Update(void)
     auto mgr = CPlayerManager::GetInstance();
 
     // 人数確認
-    for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+    if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
     {
-        auto player = mgr->GetPlayer(i);
+        for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+        {
+            auto player = mgr->GetPlayer(i);
 
-        if (player == nullptr && net->GetConnect(i))
-        {
-           CPlayer::Create(D3DXVECTOR3(34.65f, 1.0f, 1.0f), VECTOR3_ZERO, VECTOR3_ZERO, i);
-        }
-        else if (player != nullptr && !net->GetConnect(i))
-        {
-            player->Uninit();
+            // 人数が多い
+            if (player != nullptr && !net->GetConnect(i))
+            {
+                player->Uninit();
+            }
         }
     }
 
