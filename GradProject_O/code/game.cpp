@@ -342,6 +342,10 @@ void CGame::Update(void)
             {
                 player->Uninit();
             }
+            else if (player == nullptr && net->GetConnect(i))
+            {
+                CPlayer::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, i);
+            }
         }
     }
 

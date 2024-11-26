@@ -1126,7 +1126,7 @@ void CPlayer::RecvInerSet()
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
 		Adjust(diff);
 
-		D3DXVECTOR3 rot = m_Info.rot + diff * RECV_INER;
+		D3DXVECTOR3 rot = m_Info.rot + diff * (RECV_INER * 0.5f);
 		Adjust(rot);
 		m_Info.rot = rot;
 		Adjust(m_Info.rot);

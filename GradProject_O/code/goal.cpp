@@ -122,19 +122,19 @@ void CGoal::Update(void)
 		int nId = -2;
 
 		// オンラインとシングルで判定を変える
-		if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
-		{
-			// 全員確認
-			for (int i = 0; i < NetWork::MAX_CONNECT; i++)
-			{
-				if (CheckRange(i) && CheckSpeed(i))
-				{
-					nId = i;
-					break;
-				}
-			}
-		}
-		else
+		//if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
+		//{
+		//	// 全員確認
+		//	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+		//	{
+		//		if (CheckRange(i) && CheckSpeed(i))
+		//		{
+		//			nId = i;
+		//			break;
+		//		}
+		//	}
+		//}
+		//else
 		{
 			// 本人確認
 			if (CheckRange(net->GetIdx()) && CheckSpeed(net->GetIdx()))
@@ -147,6 +147,8 @@ void CGoal::Update(void)
 		if (nId >= -1)
 		{
 			SetEnd(nId);
+			// ゴールしたよーを送信
+			net->SendPlGoal(m_nId);
 		}
 	}
 	else

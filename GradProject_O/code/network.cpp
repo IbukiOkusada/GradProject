@@ -123,6 +123,9 @@ void CNetWork::Uninit()
 {
 	m_bEnd = true;
 
+	// 切断
+	DisConnect();
+
 	// クライアントの終了
 	if (m_pClient != nullptr)
 	{
@@ -130,6 +133,15 @@ void CNetWork::Uninit()
 		delete m_pClient;
 		m_pClient = nullptr;
 	}
+
+	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+	{
+
+		m_aConnect[i] = false;
+
+	}
+
+	m_nMyIdx = -1;
 
 	delete this;
 }
@@ -249,11 +261,17 @@ bool CNetWork::DisConnect()
 	}
 
 	// 終了処理
-	m_pClient->Uninit();
+	if (m_pClient != nullptr)
+	{
+		m_pClient->Uninit();
+	}
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
-		m_aConnect[i] = false;
+		if (m_nMyIdx != i)
+		{
+			m_aConnect[i] = false;
+		}
 	}
 
 	return true;
@@ -277,11 +295,19 @@ void CNetWork::Online(void)
 
 		// 受信
 		int* pRecvByte = DEBUG_NEW int;
-		*pRecvByte = m_pClient->Recv(&pData[0], NetWork::MAX_SEND_DATA);
+		*pRecvByte = m_pClient->Recv(pData, NetWork::MAX_SEND_DATA);
 
-		// マルチスレッド
-		std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
-		th.detach();
+		if (*pRecvByte > 0)
+		{
+			// マルチスレッド
+			std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
+			th.detach();
+		}
+		else
+		{
+			DeleteData(pData, pRecvByte);
+			break;
+		}
 	}
 
 	m_nSledCnt--;
@@ -310,7 +336,7 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 	int nByte = 0;	// バイト数
 
 	// 終端文字まで確認する
-	while (nByte < *pRecvByte)
+	while (1)
 	{
 		int id = -1;		// ID
 		int command = NetWork::COMMAND_NONE;	// コマンド番号
@@ -324,7 +350,7 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 		nByte += sizeof(int);
 
 		// コマンドがオーバーした
-		if (command >= NetWork::COMMAND_MAX)
+		if (command >= NetWork::COMMAND_MAX || command < NetWork::COMMAND_NONE)
 		{
 			// データ削除
 			DeleteData(pRecvData, pRecvByte);
@@ -335,9 +361,12 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 		}
 
 		// コマンドを実行
-		if (nByte < *pRecvByte)
+		(this->*(m_RecvFunc[command]))(&nByte, id, &pRecvData[nByte]);
+
+		// 全て見た
+		if (nByte >= *pRecvByte)
 		{
-			(this->*(m_RecvFunc[command]))(&nByte, id, &pRecvData[nByte]);
+			break;
 		}
 	}
 
@@ -369,7 +398,7 @@ void CNetWork::DeleteData(char* pRecvData, int* pRecvByte)
 //===================================================
 void CNetWork::OnlineEnd(void)
 {
-	if (GetActive())
+	if (m_pClient != nullptr)
 	{
 		std::string senddata;
 		senddata.resize(sizeof(int) + 1);
@@ -429,6 +458,7 @@ void CNetWork::RecvNone(int* pByte, const int nId, const char* pRecvData)
 void CNetWork::RecvJoin(int* pByte, const int nId, const char* pRecvData)
 {
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	if (m_nMyIdx < 0) { return; }
 
 	// 接続されたことにする
 	m_aConnect[nId] = true;
