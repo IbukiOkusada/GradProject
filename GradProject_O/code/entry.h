@@ -15,7 +15,7 @@ class CMeshDome;
 class CTime;
 class CCharacter;
 class CObject2D;
-class CCamera;
+class CMultiCamera;
 
 //===============================================
 // エントリークラスの定義(派生クラス)
@@ -53,7 +53,7 @@ private:
 	CTime* m_pTime;			// タイマー
 	CObject2D* m_pObjClear;	// clearしたかどうか
 	CPlayer* m_ppPlayer;	// プレイヤーのポインタ
-	CCamera** m_ppCamera;   // カメラのポインタ
+	CMultiCamera** m_ppCamera;   // カメラのポインタ
 	static int m_nScore;
 };
 
