@@ -24,6 +24,12 @@ public:
 	void Update(void);
 	static CPoliceTitle* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move);
 
+	//
+	void Chasing(void);
+
+private:
+
+	CEffekseer::CEffectData* m_pPatrolLamp;		//テスト用
 
 };
 

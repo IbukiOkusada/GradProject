@@ -5,13 +5,16 @@
 //<=================================================
 #include "PoliceTitle.h"
 #include "debugproc.h"
+#include "manager.h"
+#include "title.h"
+#include "car_manager.h"
 
 //<======================================
 //コンストラクタ
 //<======================================
 CPoliceTitle::CPoliceTitle()
 {
-	
+	m_pPatrolLamp = nullptr;
 }
 //<======================================
 //デストラクタ
@@ -25,8 +28,8 @@ CPoliceTitle::~CPoliceTitle()
 //<======================================
 HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 {
-	//位置情報を設定
-	//CPolice::Init(pos);
+	//位置ありのオブジェクト生成
+	m_pObj = CObjectX::Create(pos, VECTOR3_ZERO, "data\\MODEL\\car003.x");
 
 	return S_OK;
 }
@@ -35,17 +38,44 @@ HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 //<======================================
 void CPoliceTitle::Uninit(void)
 {
-	CPolice::Uninit();
+	//Realese無しだとメモリ破壊が起きる
+	SAFE_DELETE(m_pPatrolLamp);
+	Release();
+
 }
 //<======================================
 //更新処理
 //<======================================
 void CPoliceTitle::Update(void)
 {
+	//唯のデバッグ用
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", 
 		this->GetPosition().x, this->GetPosition().y, this->GetPosition().z);
+}
+//<======================================
+//追いかけている処理
+//<======================================
+void CPoliceTitle::Chasing(void)
+{
+	D3DXVECTOR3 PolicePos = this->GetPosition();		//警察の位置取得
+	const float PoliceMoveZ = 25.0f;					//警察のZ値の移動値
 
-	CCar::Set();
+	//<*******************************************
+	//パトランプ生成
+	if (!m_pPatrolLamp)
+	{
+		m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	}
+
+	//位置と向きを設定
+	m_pPatrolLamp->m_pos = this->GetPosition();
+	m_pPatrolLamp->m_rot = this->GetRotation();
+	//
+	//<*******************************************
+
+	///警察の位置を移動させ、位置を設定する
+	PolicePos.z += PoliceMoveZ;
+	SetPosition(PolicePos);
 }
 //<======================================
 //生成処理

@@ -151,13 +151,13 @@ void CPlayerTitle::Moving(const int nNum)
 		//<********************************
 		//エフェクトを出す
 		//<********************************
-		m_pTailLamp->m_pos = GetPosition();
-		m_pTailLamp->m_rot = GetRotation();
-		m_pBackdust->m_pos = GetPosition();
-		m_pBackdust->m_rot = m_pObj->GetRotation();
-		m_pBackdust->m_Scale = VECTOR3_ONE * m_fEngine * 300.0f;
-		m_pAfterburner->m_pos = GetPosition();
-		m_pAfterburner->m_Scale = VECTOR3_ONE * m_fEngine * m_fBrake * 150.0f;
+		//m_pTailLamp->m_pos = GetPosition();
+		//m_pTailLamp->m_rot = GetRotation();
+		//m_pBackdust->m_pos = GetPosition();
+		//m_pBackdust->m_rot = GetRotation();
+		//m_pBackdust->m_Scale = VECTOR3_ONE * m_fEngine * 300.0f;
+		//m_pAfterburner->m_pos = GetPosition();
+		//m_pAfterburner->m_Scale = VECTOR3_ONE * m_fEngine * m_fBrake * 150.0f;
 	}
 
 }
@@ -187,9 +187,6 @@ CPlayerTitle* CPlayerTitle::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 
 		// 移動量設定
 		pPlayertitle->SetMove(move);
-
-		//動かない状態にする
-		pPlayertitle->SetType(CPlayer::TYPE::TYPE_SEND);
 	}
 	//無かった場合、中身なしを返す
 	else

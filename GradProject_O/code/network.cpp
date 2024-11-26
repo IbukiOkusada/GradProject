@@ -108,7 +108,7 @@ HRESULT CNetWork::Init()
 	// クライアントを作成
 	m_pClient = DEBUG_NEW CClient;
 	
-	m_nMyIdx = 0;
+	m_nMyIdx = -1;
 	m_state = STATE_SINGLE;
 
 	return S_OK;

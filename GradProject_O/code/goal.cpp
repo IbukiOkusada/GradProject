@@ -22,6 +22,7 @@
 #include "character.h"
 #include "motion.h"
 #include "model.h"
+#include "network.h"
 
 namespace
 {
@@ -41,6 +42,7 @@ CGole::CGole()
 	m_bEnd = false;
 	m_pPeople = nullptr;
 	m_pBaggage = nullptr;
+	m_nId = GetInstance()->GetNum();
 	//自身をリストに登録
 	GetInstance()->Regist(this);
 }
@@ -114,17 +116,47 @@ void CGole::Update(void)
 		m_pPeople->Update();
 	}
 
-	if (CheckRange() && CheckSpeed() && !m_bEnd)
+	if (!m_bEnd)
 	{
-		// カメラアクション入れる
-		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-		m_bEnd = true;
-		m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
-		pPlayer->AddDeliveryCount();
-		m_pPeople->GetMotion()->BlendSet(3);
-		SAFE_DELETE(pEffect);
+		auto net = CNetWork::GetInstance();
+		int nId = -2;
+
+		// オンラインとシングルで判定を変える
+		if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
+		{
+			// 全員確認
+			for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+			{
+				if (CheckRange(i) && CheckSpeed(i))
+				{
+					nId = i;
+					break;
+				}
+			}
+		}
+		else
+		{
+			// 本人確認
+			if (CheckRange(net->GetIdx()) && CheckSpeed(net->GetIdx()))
+			{
+				nId = net->GetIdx();
+			}
+		}
+
+		// 誰かがゴール
+		if (nId >= -1)
+		{
+			// カメラアクション入れる
+			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
+			m_bEnd = true;
+			m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
+			pPlayer->AddDeliveryCount();
+			m_pPeople->GetMotion()->BlendSet(3);
+			SAFE_DELETE(pEffect);
+		}
 	}
 
+	// 到着
 	if (m_pBaggage == nullptr) { return; }
 	if (m_pBaggage->GetState() == CBaggage::STATE::STATE_THROW) { return; }
 	m_pBaggage->GetObj()->SetParent(m_pPeople->GetParts(6)->GetMtx());
@@ -134,10 +166,10 @@ void CGole::Update(void)
 //==========================================================
 // 距離のチェック
 //==========================================================
-bool CGole::CheckRange()
+bool CGole::CheckRange(int nId)
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-	if (pPlayer != NULL)
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
+	if (pPlayer != nullptr)
 	{
 		float fDis = GetDistance(m_pos, pPlayer->GetPosition());
 		return (m_fRange >= fDis);
@@ -147,10 +179,10 @@ bool CGole::CheckRange()
 //==========================================================
 // 速度のチェック
 //==========================================================
-bool CGole::CheckSpeed()
+bool CGole::CheckSpeed(int nId)
 {
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-	if (pPlayer != NULL)
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
+	if (pPlayer != nullptr)
 	{
 		float fDis = GetDistance(VECTOR3_ZERO, pPlayer->GetMove());
 		return (m_fLimit >= fDis);
@@ -215,8 +247,6 @@ void CGole::ScreenEffect()
 	else if (pos.x < 0.0f) { pos.x = 0.0f; }
 	if (pos.y > SCREEN_HEIGHT) { pos.y = SCREEN_HEIGHT; }
 	else if (pos.y < 0.0f) { pos.y = 0.0f; }
-
-	CDebugProc::GetInstance()->Print("ゴールの画面座標 : [ %f, %f, %f ] \n", pos.x, pos.y, pos.z);
 
 	CParticle2D::Create(pos, CEffect2D::TYPE_TARGET);
 }
