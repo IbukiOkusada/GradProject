@@ -190,7 +190,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pNetWork = CNetWork::Create();
 
 		// 接続
-		//m_pNetWork->ReConnect();
+		m_pNetWork->ReConnect();
 	}
 
 	// エフェクシア初期化
@@ -356,6 +356,7 @@ void CManager::Update(void)
 	if (m_pDebugProc != nullptr)
 	{// 使用している場合
 		m_pDebugProc->Update();
+		m_pDebugProc->Print("自分自身のID [ %d ]\n", m_pNetWork->GetIdx());
 	}
 
 	// 入力の更新処理
