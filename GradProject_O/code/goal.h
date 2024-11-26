@@ -19,25 +19,26 @@ class CCharacter;
 class CBaggage;
 
 //==========================================================
-// サンプルのクラス定義
+// ゴールのクラス定義
 //==========================================================
-class CGole : public CTask
+class CGoal : public CTask
 {
 
 public:	// 誰でもアクセス可能
 
-	CGole();	// コンストラクタ(オーバーロード)
-	~CGole();	// デストラクタ
+	CGoal();	// コンストラクタ(オーバーロード)
+	~CGoal();	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	static CGole* Create(D3DXVECTOR3 pos,float fRange,float fLimit);
+	static CGoal* Create(D3DXVECTOR3 pos,float fRange,float fLimit);
 
 	CRoad* GetRoad() { return m_pRoad; }
 	D3DXVECTOR3 GetPos() { return m_pos; }
-	static Clist<CGole*>* GetInstance() { if (pList == nullptr) { pList = pList->Create(); }return pList; }		// リスト取得
+	void SetEnd(int nId);
+	static Clist<CGoal*>* GetInstance() { if (pList == nullptr) { pList = pList->Create(); }return pList; }		// リスト取得
 	static void ListRelease() { if (pList != nullptr) { delete pList; pList = nullptr; } }					// リスト解放
 	
 	bool GetEnd() { return m_bEnd; }
@@ -58,7 +59,7 @@ private:	// 自分だけがアクセス可能
 	CRoad * m_pRoad;
 	CBaggage* m_pBaggage;
 	CEffekseer::CEffectData* pEffect;
-	static Clist<CGole*>* pList;	// 自分のリスト*GetInstance()経由でアクセスする事*
+	static Clist<CGoal*>* pList;	// 自分のリスト*GetInstance()経由でアクセスする事*
 };
 
 #endif

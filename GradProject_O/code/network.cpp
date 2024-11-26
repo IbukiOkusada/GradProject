@@ -8,6 +8,7 @@
 #include "tcp_client.h"
 #include "player.h"
 #include "player_manager.h"
+#include "goal.h"
 
 //===============================================
 // –¼‘O‹óŠÔ
@@ -214,6 +215,7 @@ bool CNetWork::ReConnect()
 		m_pClient = nullptr;
 		m_state = STATE_SINGLE;
 		m_nMyIdx = -1;
+		m_bEnd = true;
 		return false; 
 	}
 
@@ -418,7 +420,7 @@ CPlayer* CNetWork::CreatePlayer(int nId)
 //===================================================
 void CNetWork::RecvNone(int* pByte, const int nId, const char* pRecvData)
 {
-
+	
 }
 
 //===================================================
@@ -512,7 +514,7 @@ void CNetWork::RecvPlRot(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPlDamage(int* pByte, const int nId, const char* pRecvData)
 {
-	
+	if (m_pClient == nullptr) { return; }
 }
 
 //===================================================
@@ -520,7 +522,18 @@ void CNetWork::RecvPlDamage(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
 {
+	// ƒS[ƒ‹‚ÌId‚ð“¾‚é
+	int goalid = -1;
+	memcpy(&goalid, pRecvData, sizeof(int));
+	*pByte += 4;
 
+	CGoal* pGoal = CGoal::GetInstance()->Get(goalid);
+
+	if (pGoal == nullptr) {
+		return;
+	}
+
+	pGoal->SetEnd(nId);
 }
 
 //===================================================
@@ -629,4 +642,16 @@ void CNetWork::SendPlDamage(const float nowlife)
 void CNetWork::SendPlGoal(int nId)
 {
 	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_PL_GOAL;
+
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[0], &nProt, sizeof(int));
+
+	// ƒS[ƒ‹‚µ‚½ID‚ð‘}“ü
+	memcpy(&aSendData[sizeof(int)], &nId, sizeof(int));
+
+	// ‘—M
+	m_pClient->Send(&aSendData[0], sizeof(int) + sizeof(int));
 }

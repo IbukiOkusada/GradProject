@@ -32,6 +32,7 @@
 #include "font.h"
 #include "deltatime.h"
 #include "network.h"
+#include "entry.h"
 
 //===============================================
 // 静的メンバ変数
@@ -322,7 +323,7 @@ void CManager::Uninit(void)
 	}
 
 	// ネットワークの生成
-	if (m_pNetWork == nullptr)
+	if (m_pNetWork != nullptr)
 	{
 		m_pNetWork->Release();
 		m_pNetWork = nullptr;
@@ -648,6 +649,10 @@ CScene *CScene::Create(MODE mode)
 
 	case MODE_TUTORIAL:
 		pScene = DEBUG_NEW CTutorial;
+		break;
+
+	case MODE_ENTRY:
+		pScene = DEBUG_NEW CEntry;
 		break;
 
 	case MODE_GAME:

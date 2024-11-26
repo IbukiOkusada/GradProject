@@ -491,7 +491,8 @@ void CPlayer::Controller(void)
 	Rotate();
 
 	// Œü‚«•â³
-	Adjust();
+	m_Info.rot.y += m_fTurnSpeed;
+	Adjust(m_Info.rot.y);
 }
 
 //===============================================
@@ -631,34 +632,6 @@ void CPlayer::Rotate(void)
 	}
 
 	// m_fRotDiff‚Ì’l•Ï‚¦‚Ä‚­‚ê‚ê‚Î•â³‚·‚é‚æ‚ñ
-}
-
-//===============================================
-// ’²®
-//===============================================
-void CPlayer::Adjust(void)
-{
-
-	m_Info.rot.y += m_fTurnSpeed;
-
-	while (1)
-	{
-		if (m_Info.rot.y > D3DX_PI || m_Info.rot.y < -D3DX_PI)
-		{//-3.14`3.14‚Ì”ÍˆÍŠO‚Ìê‡
-			if (m_Info.rot.y > D3DX_PI)
-			{
-				m_Info.rot.y += (-D3DX_PI * 2);
-			}
-			else if (m_Info.rot.y < -D3DX_PI)
-			{
-				m_Info.rot.y += (D3DX_PI * 2);
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
 }
 
 //===============================================
@@ -1148,8 +1121,12 @@ void CPlayer::RecvInerSet()
 	// Œü‚«
 	{
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
+		Adjust(diff);
+
 		D3DXVECTOR3 rot = m_Info.rot + diff * RECV_INER;
+		Adjust(rot);
 		m_Info.rot = rot;
+		Adjust(m_Info.rot);
 	}
 }
 

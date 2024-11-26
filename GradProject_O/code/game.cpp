@@ -200,9 +200,9 @@ HRESULT CGame::Init(void)
         m_pGoalManager = new CGoalManager;
     }
 
-    CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
-    CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
-    CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
+    CGoal::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
+    CGoal::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
+    CGoal::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
     if (m_pDeliveryStatus == nullptr)
@@ -268,7 +268,7 @@ void CGame::Uninit(void)
     CEditManager::Release();
 
     m_state = STATE_LOCAL;
-    CGole::ListRelease();
+    CGoal::ListRelease();
 }
 
 //===============================================

@@ -64,7 +64,7 @@ CGoalManager* CGoalManager::Create(void)
 //==========================================================
 HRESULT CGoalManager::Init(void)
 {
-	m_pGoal = CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
+	m_pGoal = CGoal::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
 
 	return S_OK;
 }
@@ -107,6 +107,6 @@ void CGoalManager::Update(void)
 
 		if (nNum >= 3) { return; }
 
-		m_pGoal = CGole::Create(POS[nNum - 1], 600.0f, 20.0f);
+		m_pGoal = CGoal::Create(POS[nNum - 1], 600.0f, 20.0f);
 	}
 }

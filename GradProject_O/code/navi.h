@@ -50,7 +50,7 @@ private:	// 自分だけがアクセス可能
 	void Reach();
 	void CreateEffect();
 	// メンバ変数
-	CGole* m_pGole;
+	CGoal* m_pGole;
 	int m_IdxPath;
 	std::vector<CRoad::SSearch*> m_Path;
 	Clist<SEffect*> m_Effects;
