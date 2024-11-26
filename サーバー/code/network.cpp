@@ -15,7 +15,7 @@
 namespace
 {
 	const int DEF_PORT = (22333);			// デフォルトのポート番号
-	const float SEND_TIME = 1.0f;			// 送信受付時間
+	const float SEND_TIME = 5.0f;			// 送信受付時間
 }
 
 //===============================================
@@ -246,7 +246,7 @@ void CNetWork::Send(CServer** ppServer)
 
 				if (pClient->GetDeath() == false)
 				{
-					pClient->ResetData();	// データのリセット
+					pClient->ResetData();		// データのリセット
 					pClient->SetSend(false);	// 書き換え可能な状態にする
 				}
 				else
@@ -294,8 +294,6 @@ void CNetWork::Access(CClient* pClient)
 
 	while (1)
 	{
-		D3DXCOLOR col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-		D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		char recvdata[NetWork::MAX_COMMAND_DATA] = {};	// 受信用
 		int command = NetWork::COMMAND_NONE;
 
@@ -460,7 +458,6 @@ void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClie
 
 	// プロトコルを挿入
 	pClient->SetData(&aSendData[0], sizeof(int) * 2 + sizeof(D3DXVECTOR3));
-
 }
 
 //==========================================================
