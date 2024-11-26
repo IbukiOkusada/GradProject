@@ -30,11 +30,11 @@ namespace
 }
 
 // 静的メンバ変数
-Clist<CGole*> * CGole::pList = nullptr;
+Clist<CGoal*> * CGoal::pList = nullptr;
 //==========================================================
 // コンストラクタ
 //==========================================================
-CGole::CGole()
+CGoal::CGoal()
 {
 	pEffect = nullptr;
 	m_fRange = 0.0f;
@@ -50,7 +50,7 @@ CGole::CGole()
 //==========================================================
 // デストラクタ
 //==========================================================
-CGole::~CGole()
+CGoal::~CGoal()
 {
 	//自身をリストから削除
 	GetInstance()->Delete(this);
@@ -63,7 +63,7 @@ CGole::~CGole()
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CGole::Init(void)
+HRESULT CGoal::Init(void)
 {
 	pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\goal_radius.efkefc", m_pos, VECTOR3_ZERO, VECTOR3_ZERO, m_fRange, false, false);
 	float range = static_cast<float>(rand() % 629 - 314) * 0.01f;
@@ -95,7 +95,7 @@ HRESULT CGole::Init(void)
 //==========================================================
 // 終了処理
 //==========================================================
-void CGole::Uninit(void)
+void CGoal::Uninit(void)
 {
 	SAFE_UNINIT(m_pBaggage);
 	SAFE_UNINIT(m_pPeople);
@@ -106,7 +106,7 @@ void CGole::Uninit(void)
 //==========================================================
 // 更新処理
 //==========================================================
-void CGole::Update(void)
+void CGoal::Update(void)
 {
 	// エフェクト表示
 	//ScreenEffect();
@@ -146,14 +146,12 @@ void CGole::Update(void)
 		// 誰かがゴール
 		if (nId >= -1)
 		{
-			// カメラアクション入れる
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
-			m_bEnd = true;
-			m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
-			pPlayer->AddDeliveryCount();
-			m_pPeople->GetMotion()->BlendSet(3);
-			SAFE_DELETE(pEffect);
+			SetEnd(nId);
 		}
+	}
+	else
+	{
+		SAFE_DELETE(pEffect);
 	}
 
 	// 到着
@@ -166,7 +164,7 @@ void CGole::Update(void)
 //==========================================================
 // 距離のチェック
 //==========================================================
-bool CGole::CheckRange(int nId)
+bool CGoal::CheckRange(int nId)
 {
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
 	if (pPlayer != nullptr)
@@ -179,7 +177,7 @@ bool CGole::CheckRange(int nId)
 //==========================================================
 // 速度のチェック
 //==========================================================
-bool CGole::CheckSpeed(int nId)
+bool CGoal::CheckSpeed(int nId)
 {
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
 	if (pPlayer != nullptr)
@@ -192,11 +190,11 @@ bool CGole::CheckSpeed(int nId)
 //==========================================================
 // 生成
 //==========================================================
-CGole* CGole::Create(D3DXVECTOR3 pos, float fRange, float fLimit)
+CGoal* CGoal::Create(D3DXVECTOR3 pos, float fRange, float fLimit)
 {
-	CGole* pGoal = nullptr;
+	CGoal* pGoal = nullptr;
 
-	pGoal = DEBUG_NEW CGole;
+	pGoal = DEBUG_NEW CGoal;
 
 	if (pGoal != nullptr)
 	{
@@ -213,7 +211,7 @@ CGole* CGole::Create(D3DXVECTOR3 pos, float fRange, float fLimit)
 //==========================================================
 // 画面上にエフェクトの表示
 //==========================================================
-void CGole::ScreenEffect()
+void CGoal::ScreenEffect()
 {
 	if (m_bEnd) { return; }
 	if (CDeltaTime::GetInstance()->GetSlow() < 1.0f) { return; }
@@ -249,4 +247,19 @@ void CGole::ScreenEffect()
 	else if (pos.y < 0.0f) { pos.y = 0.0f; }
 
 	CParticle2D::Create(pos, CEffect2D::TYPE_TARGET);
+}
+
+//==========================================================
+// ゴールアクション
+//==========================================================
+void CGoal::SetEnd(int nId)
+{
+	if (m_bEnd) { return; }
+
+	// カメラアクション入れる
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
+	m_bEnd = true;
+	m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
+	pPlayer->AddDeliveryCount();
+	m_pPeople->GetMotion()->BlendSet(3);
 }

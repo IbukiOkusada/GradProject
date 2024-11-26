@@ -8,7 +8,7 @@
 #define _GOAL_MANAGER_H_		// 二重インクルード防止用マクロを定義
 
 // 前方宣言
-class CGole;
+class CGoal;
 
 //==========================================================
 // ゴール管理のクラス定義
@@ -30,7 +30,7 @@ public:
 
 private:
 
-	CGole*m_pGoal;  // ゴールのポインタ
+	CGoal*m_pGoal;  // ゴールのポインタ
 	static CGoalManager *m_pInstance;  // 自身のポインタ
 };
 

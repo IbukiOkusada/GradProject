@@ -162,7 +162,6 @@ protected:	// 自分だけがアクセス可能
 	void Controller(void);
 	void Move(void);
 	void Rotate(void);
-	void Adjust(void);
 	bool Collision(void);
 	bool CollisionObjX(void);
 	bool CollisionRoad(void);

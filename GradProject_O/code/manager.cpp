@@ -322,7 +322,7 @@ void CManager::Uninit(void)
 	}
 
 	// ネットワークの生成
-	if (m_pNetWork == nullptr)
+	if (m_pNetWork != nullptr)
 	{
 		m_pNetWork->Release();
 		m_pNetWork = nullptr;
