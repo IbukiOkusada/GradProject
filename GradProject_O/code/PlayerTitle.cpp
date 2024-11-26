@@ -15,8 +15,8 @@ namespace
 {
 	//目的地の位置
 	const D3DXVECTOR3 DEST_POS[] = 
-	{ D3DXVECTOR3(-4734.0f, 0.0f, 1054.0f), 
-		D3DXVECTOR3(-4734.0f, 0.0f, -200.0f),
+	{ D3DXVECTOR3(2630.0f, 0.0f, 1054.0f),
+		D3DXVECTOR3(2630.0f, 0.0f, -200.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
@@ -60,10 +60,7 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
-	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
-	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
-	m_pSoundBrake->SetVolume(0.0f);
-	pRadio = CRadio::Create();
+	SetMatrix();
 	m_pNavi = CNavi::Create();
 
 	return S_OK;
@@ -87,8 +84,6 @@ void CPlayerTitle::Update(void)
 		m_Info.posOld = GetPosition();
 
 		StateSet();
-		pRadio->Update();
-
 		// マトリックス
 		SetMatrix();
 
