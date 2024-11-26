@@ -33,6 +33,22 @@ namespace
         -D3DX_PI,
         -D3DX_PI * 0.5f,
     };
+
+    const D3DXVECTOR3 CAMERA_POS_V[4] =
+    {
+        D3DXVECTOR3(-874.3f, 1124.15f, 717.2f),
+        D3DXVECTOR3(-1874.3f, 2124.15f, 2000.2f),
+        D3DXVECTOR3(874.3f, 50.15f, -200.2f),
+        D3DXVECTOR3(3000.3f, 1124.15f, -1717.2f),
+    };
+
+    const D3DXVECTOR3 CAMERA_POS_R[4] =
+    {
+        D3DXVECTOR3(-320.3f, 1.0f, -91.6f),
+        D3DXVECTOR3(-320.3f, 1.0f, -91.6f),
+        D3DXVECTOR3(-320.3f, 1.0f, -91.6f),
+        D3DXVECTOR3(-320.3f, 1.0f, -91.6f),
+    };
 }
 
 //===============================================
@@ -72,10 +88,10 @@ HRESULT CEntry::Init(void)
     {
         m_ppCamera[i] = new CMultiCamera;
         m_ppCamera[i]->Init();
-        m_ppCamera[i]->SetPositionV(D3DXVECTOR3(-874.3f, 1124.15f, 1717.2f));
-        m_ppCamera[i]->SetPositionR(D3DXVECTOR3(-320.3f, 1.0f, -91.6f));
-        m_ppCamera[i]->SetLength(400.0f);
-        m_ppCamera[i]->SetRotation(D3DXVECTOR3(0.0f, CAMERA_ROT_Y[i], D3DX_PI * 0.5f));
+        m_ppCamera[i]->SetPositionV(CAMERA_POS_V[i]);
+        m_ppCamera[i]->SetPositionR(CAMERA_POS_R[i]);
+       /* m_ppCamera[i]->SetLength(400.0f);
+        m_ppCamera[i]->SetRotation(D3DXVECTOR3(0.0f, CAMERA_ROT_Y[i], D3DX_PI * 0.5f));*/
 
         D3DVIEWPORT9 viewport;
         //プレイヤー追従カメラの画面位置設定
