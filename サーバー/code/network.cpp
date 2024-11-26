@@ -261,15 +261,19 @@ void CNetWork::Send(CServer** ppServer)
 				}
 			}
 
-			for (int i = 0; i < NetWork::MAX_CONNECT; i++)
-			{// 使用されていない状態まで
-				// データの合成
-				CClient* pClient = m_apClient[i];	// 先頭を取得
 
-				if (pClient == nullptr) { continue; }
+			if (m_nSendByte > 0)
+			{
+				for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+				{// 使用されていない状態まで
+					// データの合成
+					CClient* pClient = m_apClient[i];	// 先頭を取得
 
-				// 送信
-				pClient->Send(&m_aSendData[0], m_nSendByte);
+					if (pClient == nullptr) { continue; }
+
+					// 送信
+					pClient->Send(&m_aSendData[0], m_nSendByte);
+				}
 			}
 
 			// 送信データをクリア
@@ -343,7 +347,21 @@ void CNetWork::Leave(int nId, CClient* pClient)
 //==========================================================
 void CNetWork::CommandNone(const int nId, const char* pRecvData, CClient* pClient)
 {
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2] = {};	// 送信用まとめデータ
 
+	// IDを挿入
+	nProt = NetWork::COMMAND_NONE;
+
+	// IDを挿入
+	memcpy(&aSendData[0], &nId, sizeof(int));
+	memcpy(&aSendData[sizeof(int)], &nProt, sizeof(int));
+
+	// プロトコルを挿入
+	pClient->SetData(&aSendData[0], sizeof(int) * 2);
+
+	// IDを返す
+	CommandGetId(nId, pRecvData, pClient);
 }
 
 //==========================================================
@@ -479,6 +497,11 @@ void CNetWork::CommandPlGoal(const int nId, const char* pRecvData, CClient* pCli
 	// IDを挿入
 	nProt = NetWork::COMMAND_PL_GOAL;
 
+	int id;
+
+	// 座標挿入
+	memcpy(&id, pRecvData, sizeof(int));
+
 	// IDを挿入
 	memcpy(&aSendData[0], &nId, sizeof(int));
 
@@ -486,7 +509,7 @@ void CNetWork::CommandPlGoal(const int nId, const char* pRecvData, CClient* pCli
 	memcpy(&aSendData[sizeof(int)], &nProt, sizeof(int));
 
 	// ゴールID挿入
-	memcpy(&aSendData[sizeof(int) * 2], pRecvData, sizeof(int));
+	memcpy(&aSendData[sizeof(int) * 2], &id, sizeof(int));
 
 	// プロトコルを挿入
 	pClient->SetData(&aSendData[0], sizeof(int) * 2 + sizeof(int));
