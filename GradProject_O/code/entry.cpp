@@ -117,5 +117,6 @@ void CEntry::Update(void)
 //===============================================
 void CEntry::Draw(void)
 {
-
+    // •`‰æˆ—(ƒRƒŒ•K—v‚¾‚æ‚ñ!)
+    CScene::Draw();
 }

@@ -190,14 +190,14 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pNetWork = CNetWork::Create();
 
 		// 接続
-		//CNetWork::GetInstance()->ReConnect();
+		//m_pNetWork->ReConnect();
 	}
 
 	// エフェクシア初期化
 	CEffekseer::GetInstance()->Init();
 	
 	// モードの生成
-	SetMode(CScene::MODE_GAME);
+	SetMode(CScene::MODE_ENTRY);
 
 	return S_OK;
 }

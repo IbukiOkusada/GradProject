@@ -15,7 +15,7 @@
 namespace
 {
 	const int DEF_PORT = (22333);			// デフォルトのポート番号
-	const float SEND_TIME = 2.0f;			// 送信時間
+	const float SEND_TIME = 1.0f;			// 送信時間
 }
 
 //===============================================
@@ -476,5 +476,21 @@ void CNetWork::CommandPlDamage(const int nId, const char* pRecvData, CClient* pC
 //==========================================================
 void CNetWork::CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient)
 {
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(int) + 1] = {};	// 送信用まとめデータ
 
+	// IDを挿入
+	nProt = NetWork::COMMAND_PL_GOAL;
+
+	// IDを挿入
+	memcpy(&aSendData[0], &nId, sizeof(int));
+
+	// コマンド挿入
+	memcpy(&aSendData[sizeof(int)], &nProt, sizeof(int));
+
+	// ゴールID挿入
+	memcpy(&aSendData[sizeof(int) * 2], pRecvData, sizeof(int));
+
+	// プロトコルを挿入
+	pClient->SetData(&aSendData[0], sizeof(int) * 2 + sizeof(int));
 }
