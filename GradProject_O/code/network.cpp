@@ -297,7 +297,7 @@ void CNetWork::Online(void)
 		int* pRecvByte = DEBUG_NEW int;
 		*pRecvByte = m_pClient->Recv(pData, NetWork::MAX_SEND_DATA);
 
-		if (*pRecvByte >= 0)
+		if (*pRecvByte > 0)
 		{
 			// マルチスレッド
 			std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
@@ -458,6 +458,7 @@ void CNetWork::RecvNone(int* pByte, const int nId, const char* pRecvData)
 void CNetWork::RecvJoin(int* pByte, const int nId, const char* pRecvData)
 {
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	if (m_nMyIdx < 0) { return; }
 
 	// 接続されたことにする
 	m_aConnect[nId] = true;

@@ -27,8 +27,6 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	int Send(const char *pSendData, int nSendDataSize);
 	int Recv(char *pRecvData, int nRecvDataSize);
-	static CClient *GetTop(void) { return m_pTop; }
-	CClient *GetNext(void) { return m_pNext; }
 	void SetIP(char *pIp);
 	void SetCliePort(int nPort) { m_nClientPort = nPort; }
 	char *GetIP(void) { return &m_aClientIP[0]; }
@@ -48,16 +46,13 @@ private:	// 自分だけアクセス可能
 
 	// メンバ変数
 	SOCKET m_sock;	// ソケット
-	static CClient *m_pTop;	// 先頭のオブジェクトへのポインタ
-	static CClient *m_pCur;	// 最後尾のオブジェクトへのポインタ
-	CClient *m_pPrev;	// 前のオブジェクトへのポインタ
-	CClient *m_pNext;	// 次のオブジェクトへのポインタ
-	char m_aSendData[NetWork::MAX_SEND_DATA];	// 送信するデータ
-	char m_aTempSendData[NetWork::MAX_SEND_DATA];	// 送信するデータ
+	char m_aSendData[NetWork::MAX_SEND_DATA] = {};	// 送信するデータ
+	char m_aTempSendData[NetWork::MAX_SEND_DATA] = {};	// 送信するデータ
 	char m_aClientIP[64];	// クライアントのIP番号
 	int m_nClientPort;	// クライアントのポート番号
 	int m_nId;			// ID
 	bool m_bSend;		// データ送信中
+	int m_nTempSendByte;	// データ数
 	int m_nSendByte;	// データ数
 	bool m_bDeath;		// 切断しているか否か
 };

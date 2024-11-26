@@ -8,9 +8,6 @@
 #include "tcp_client.h"
 #include <string.h>
 
-CClient *CClient::m_pTop = NULL;	// 先頭のオブジェクトへのポインタ
-CClient *CClient::m_pCur = NULL;	// 最後尾のオブジェクトへのポインタ
-
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -18,26 +15,11 @@ CClient::CClient()
 {
 	// 値をクリアする
 	m_sock = NULL;
-
 	m_nId = -1;
 
-	// 自分自身をリストに追加
-	if (m_pTop != NULL)
-	{// 先頭が存在している場合
-		m_pCur->m_pNext = this;	// 現在最後尾のオブジェクトのポインタにつなげる
-		m_pPrev = m_pCur;
-		m_pCur = this;	// 自分自身が最後尾になる
-	}
-	else
-	{// 存在しない場合
-		m_pTop = this;	// 自分自身が先頭になる
-		m_pCur = this;	// 自分自身が最後尾になる
-	}
-
 	m_bSend = false;
-	memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
-	memset(&m_aTempSendData[0], '\0', sizeof(m_aTempSendData));
 	m_nSendByte = 0;
+	m_nTempSendByte = 0;
 	m_bDeath = false;
 }
 
@@ -64,45 +46,6 @@ void CClient::Uninit(void)
 {
 	// 接続を切断する
 	closesocket(m_sock);	// クライアントとの接続を閉じる
-
-		// リストから自分自身を削除する
-	if (m_pTop == this)
-	{// 自身が先頭
-		if (m_pNext != NULL)
-		{// 次が存在している
-			m_pTop = m_pNext;	// 次を先頭にする
-			m_pNext->m_pPrev = NULL;	// 次の前のポインタを覚えていないようにする
-		}
-		else
-		{// 存在していない
-			m_pTop = NULL;	// 先頭がない状態にする
-			m_pCur = NULL;	// 最後尾がない状態にする
-		}
-	}
-	else if (m_pCur == this)
-	{// 自身が最後尾
-		if (m_pPrev != NULL)
-		{// 次が存在している
-			m_pCur = m_pPrev;			// 前を最後尾にする
-			m_pPrev->m_pNext = NULL;	// 前の次のポインタを覚えていないようにする
-		}
-		else
-		{// 存在していない
-			m_pTop = NULL;	// 先頭がない状態にする
-			m_pCur = NULL;	// 最後尾がない状態にする
-		}
-	}
-	else
-	{
-		if (m_pNext != NULL)
-		{
-			m_pNext->m_pPrev = m_pPrev;	// 自身の次に前のポインタを覚えさせる
-		}
-		if (m_pPrev != NULL)
-		{
-			m_pPrev->m_pNext = m_pNext;	// 自身の前に次のポインタを覚えさせる
-		}
-	}
 }
 
 //==========================================================
@@ -149,11 +92,11 @@ void CClient::SetData(char *pChar, int nByte)
 	}
 	else
 	{
-		int nowbyte = strlen(&m_aTempSendData[0]);
-		if (nowbyte + nByte < NetWork::MAX_COMMAND_DATA)
+		if (m_nTempSendByte + nByte < NetWork::MAX_COMMAND_DATA)
 		{
 			// 仮に入れておく
-			memcpy(&m_aTempSendData[nowbyte], pChar, nByte);
+			memcpy(&m_aTempSendData[m_nTempSendByte], pChar, nByte);
+			m_nTempSendByte += nByte;
 		}
 	}
 }
@@ -164,14 +107,15 @@ void CClient::SetData(char *pChar, int nByte)
 void CClient::ResetData(void)
 {
 	memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
-	m_nSendByte = strlen(&m_aSendData[0]);
+	m_nSendByte = 0;
 
-	int nowbyte = strlen(&m_aSendData[0]);
-	if (nowbyte < NetWork::MAX_COMMAND_DATA)
+	if (m_nTempSendByte > 0)
 	{
 		// 仮に入れておく
-		memcpy(&m_aSendData[0], &m_aTempSendData[0], nowbyte);
+		memcpy(&m_aSendData[0], &m_aTempSendData[0], m_nTempSendByte);
+		m_nSendByte += m_nTempSendByte;
 	}
 
 	memset(&m_aTempSendData[0], '\0', sizeof(m_aTempSendData));
+	m_nTempSendByte = 0;
 }
