@@ -55,7 +55,9 @@ private:
 	CObject2D *m_pObjClear;	// clearしたかどうか
 	CPlayer *m_ppPlayer;	// プレイヤーのポインタ
 
+	static int m_nDeli;
 	static float m_fTime;
+	static float m_fLife;
 	static int m_nScore;
 };
 

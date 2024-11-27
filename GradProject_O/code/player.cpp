@@ -261,6 +261,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 //===============================================
 void CPlayer::Uninit(void)
 {	
+	CManager::GetInstance()->SetDeliveryStatus(m_nNumDeliveryStatus);
+	CManager::GetInstance()->SetLife(m_fLife);
+
 	SAFE_UNINIT(m_pContainer);
 	SAFE_UNINIT(m_pObj);
 	SAFE_UNINIT(m_pBaggage);
