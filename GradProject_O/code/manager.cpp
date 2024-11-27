@@ -32,8 +32,8 @@
 #include "objectsound.h"
 #include "font.h"
 #include "deltatime.h"
-#include "network.h"
 #include "entry.h"
+#include "network.h"
 
 //===============================================
 // 静的メンバ変数
@@ -192,7 +192,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pNetWork = CNetWork::Create();
 
 		// 接続
-		m_pNetWork->ReConnect();
+		//m_pNetWork->ReConnect();
 	}
 
 	// エフェクシア初期化
@@ -359,6 +359,14 @@ void CManager::Update(void)
 	{// 使用している場合
 		m_pDebugProc->Update();
 		m_pDebugProc->Print("自分自身のID [ %d ]\n", m_pNetWork->GetIdx());
+
+		for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+		{
+			if (m_pNetWork->GetConnect(i))
+			{
+				m_pDebugProc->Print("%d番オンラインだよ\n", i);
+			}
+		}
 	}
 
 	// 入力の更新処理
@@ -367,10 +375,21 @@ void CManager::Update(void)
 		m_pInput->Update();
 	}
 
+	// 送信タイミング取得
+	if (m_pNetWork != nullptr)
+	{
+		m_pNetWork->GetTime()->End();
+	}
+
 	if (m_pScene != nullptr)
 	{
 		CEffekseer::GetInstance()->Update();
 		m_pScene->Update();
+	}
+
+	if (m_pNetWork != nullptr)
+	{
+		m_pNetWork->Update();
 	}
 }
 

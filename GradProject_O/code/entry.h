@@ -9,12 +9,7 @@
 
 #include "manager.h"
 
-class CScore;
-class CFileLoad;
-class CMeshDome;
-class CTime;
-class CCharacter;
-class CObject2D;
+class CPlayer;
 class CMultiCamera;
 
 //===============================================

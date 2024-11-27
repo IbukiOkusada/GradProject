@@ -13,7 +13,8 @@
 namespace NetWork
 {
 	const int MAX_CONNECT = 4;	// 最大接続数
-	const int MAX_SEND_DATA = 4096;	// 最大データ量
+	const int MAX_SEND_DATA = ((sizeof(int) + sizeof(int) + 1024));	// 最大データ量
+	const double SEND_MS = 100.0f;	// 常に送るデータの送信フレーム
 
 	// コマンド列挙
 	enum COMMAND
@@ -27,6 +28,28 @@ namespace NetWork
 		COMMAND_PL_DAMAGE,		// プレイヤ―ダメージ
 		COMMAND_PL_GOAL,		// プレイヤーゴール
 		COMMAND_MAX
+	};
+
+	// 時間測定用クラス
+	class CTime
+	{
+		// データ
+		clock_t start;
+		clock_t end;
+
+	public:
+
+		// コンストラクタ
+		CTime() : start(), end() {}
+
+		// メンバ関数
+		void Start() { start = clock(); }	// 開始
+		void End() { end = clock(); }		// 終了
+		bool IsOK()	// 指定時間経過したかどうか
+		{
+			const double time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
+			return time >= SEND_MS;
+		}
 	};
 }
 
