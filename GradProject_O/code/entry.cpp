@@ -28,28 +28,28 @@ namespace
     const int HEIGHT_NUM = 2;  // 縦の分割数
     const int MAX_PLAYER = 4;  // プレイヤーの最大数
 
-    const float CAMERA_ROT_Y[4] =
+    const D3DXVECTOR3 CAMERA_ROT[4] =
     {
-        D3DX_PI,
-        D3DX_PI * 0.5f,
-        -D3DX_PI,
-        -D3DX_PI * 0.5f,
+        D3DXVECTOR3(0.0f, 0.0f, D3DX_PI * 0.5f),
+        D3DXVECTOR3(D3DX_PI, 0.0f, D3DX_PI * 0.5f),
+        D3DXVECTOR3(D3DX_PI * 0.5f, 0.0f, D3DX_PI * 0.5f),
+        D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, D3DX_PI * 0.5f),
     };
 
     const D3DXVECTOR3 CAMERA_POS_V[4] =
     {
-        D3DXVECTOR3(-874.3f, 1124.15f, 717.2f),
-        D3DXVECTOR3(-1874.3f, 2124.15f, 2000.2f),
-        D3DXVECTOR3(874.3f, 50.15f, -200.2f),
-        D3DXVECTOR3(3000.3f, 1124.15f, -1717.2f),
+        D3DXVECTOR3(-874.3f,  5000.0f, 717.2f),
+        D3DXVECTOR3(-1874.3f, 5000.0f, 2000.2f),
+        D3DXVECTOR3(874.3f,  5000.0f, -200.2f),
+        D3DXVECTOR3(3000.3f, 5000.0f, -1717.2f),
     };
 
     const D3DXVECTOR3 CAMERA_POS_R[4] =
     {
-        D3DXVECTOR3(-320.3f, 1.0f, -91.6f),
-        D3DXVECTOR3(-320.3f, 1.0f, -91.6f),
-        D3DXVECTOR3(-320.3f, 1.0f, -91.6f),
-        D3DXVECTOR3(-320.3f, 1.0f, -91.6f),
+       D3DXVECTOR3(320.3f,  10.0f, 91.6f),
+       D3DXVECTOR3(320.3f,  10.0f, -91.6f),
+       D3DXVECTOR3(-320.3f, 10.0f, 91.6f),
+       D3DXVECTOR3(-320.3f, 10.0f, -91.6f),
     };
 }
 
@@ -78,17 +78,24 @@ HRESULT CEntry::Init(void)
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));
 
-    CCameraManager* mgr = CCameraManager::GetInstance();
+    //// マップ読み込み
+    //CMapManager::GetInstance()->Load();
 
+    CCameraManager* mgr = CCameraManager::GetInstance();
+    CCamera* pCamera = mgr->GetTop();
 	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
+
+    mgr->GetTop()->SetDraw(false);
 
     for (int i = 0; i < MAX_PLAYER; i++)
     {
         m_ppCamera[i] = DEBUG_NEW CMultiCamera;
         m_ppCamera[i]->Init();
+        m_ppCamera[i]->SetLength(1000.0f);
         m_ppCamera[i]->SetPositionV(CAMERA_POS_V[i]);
         m_ppCamera[i]->SetPositionR(CAMERA_POS_R[i]);
-
+        m_ppCamera[i]->SetRotation(CAMERA_ROT[i]);
+       
         D3DVIEWPORT9 viewport;
         //プレイヤー追従カメラの画面位置設定
         viewport.X = (DWORD)((SCREEN_WIDTH * 0.5f) * (i % WIDTH_NUM));
@@ -113,8 +120,6 @@ HRESULT CEntry::Init(void)
         viewport.MinZ = 0.0f;
         viewport.MaxZ = 1.0f;
         m_ppCamera[i]->SetViewPort(viewport);
-
-        //mgr->ListIn(pCamera);
     }
   
 	return S_OK;
@@ -165,8 +170,17 @@ void CEntry::Update(void)
 
     for (int i = 0; i < 4; i++)
     {
-        CDebugProc::GetInstance()->Print("かめらの位置[%f, %f, %f]\n", m_ppCamera[i]->GetPositionV());
+        m_ppCamera[i]->Update(); 
+        D3DXVECTOR3 pos = m_ppCamera[i]->GetPositionV();
+
+        D3DXVECTOR3 CamPosV = m_ppCamera[i]->GetPositionV();
+        D3DXVECTOR3 CamPosR = m_ppCamera[i]->GetPositionR();
+        CDebugProc::GetInstance()->Print("カメラ 視点   : [%f, %f, %f]\n", CamPosV.x, CamPosV.y, CamPosV.z);
+        CDebugProc::GetInstance()->Print("カメラ 注視点 : [%f, %f, %f]\n", CamPosR.x, CamPosR.y, CamPosR.z);
+        CDebugProc::GetInstance()->Print("距離 [%f]\n", m_ppCamera[i]->GetLength());
     }
+
+    
 }
 
 //===============================================
@@ -189,11 +203,12 @@ void CEntry::AddPlayer(void)
 
     if (pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
-        if (mgr->GetNum() < PLAYER_MAX) { // 人数が最大ではない場合
+        if (mgr->GetNum() < PLAYER_MAX) 
+        { // 人数が最大ではない場合
 
             int id = mgr->GetNum();
-
-            CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-320.3f, 1.0f, -91.6f), VECTOR3_ZERO, VECTOR3_ZERO, id);
+            
+            CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-320.3f, 1.0f, -91.6f), D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, id);
             mgr->ListIn(pPlayer);
 
         }
