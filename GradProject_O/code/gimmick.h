@@ -65,9 +65,13 @@ public:	// 誰でもアクセス可能
 	static CGimmick* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const TYPE type);
 	TYPE GetType() { return m_Info.type; }
 	void SetType(const TYPE type) { m_Info.type = type; }
+	int GetId() { return m_nId; }
 
 	// 衝突時の判定
 	virtual void SetColMulti(const D3DXCOLOR& col) = 0;
+
+	// オンライン用
+	virtual void Hit(const D3DXVECTOR3& HitPos, const float fSpeed) {}
 
 protected:
 
@@ -84,6 +88,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	SInfo m_Info;
+	int m_nId;
 };
 
 #endif

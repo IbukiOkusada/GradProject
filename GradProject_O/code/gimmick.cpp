@@ -18,6 +18,7 @@ Clist<CGimmick*> CGimmick::m_List = {};
 CGimmick::CGimmick()
 {
 	m_Info = SInfo();
+	m_nId = m_List.GetNum();
 	m_List.Regist(this);
 }
 
