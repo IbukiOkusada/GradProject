@@ -30,27 +30,22 @@ namespace
 
     const D3DXVECTOR3 CAMERA_ROT[4] =
     {
-        D3DXVECTOR3(0.0f, 0.0f, D3DX_PI * 0.5f),
-        D3DXVECTOR3(D3DX_PI, 0.0f, D3DX_PI * 0.5f),
-        D3DXVECTOR3(D3DX_PI * 0.5f, 0.0f, D3DX_PI * 0.5f),
-        D3DXVECTOR3(-D3DX_PI * 0.5f, 0.0f, D3DX_PI * 0.5f),
-    };
-
-    const D3DXVECTOR3 CAMERA_POS_V[4] =
-    {
-        D3DXVECTOR3(-874.3f,  5000.0f, 717.2f),
-        D3DXVECTOR3(-1874.3f, 5000.0f, 2000.2f),
-        D3DXVECTOR3(874.3f,  5000.0f, -200.2f),
-        D3DXVECTOR3(3000.3f, 5000.0f, -1717.2f),
+        D3DXVECTOR3(0.0f,  0.0f,           D3DX_PI * 0.3f),
+        D3DXVECTOR3(0.0f,  D3DX_PI,        D3DX_PI * 0.3f),
+        D3DXVECTOR3(0.0f,  D3DX_PI * 0.5f, D3DX_PI * 0.3f),
+        D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, D3DX_PI * 0.3f),
     };
 
     const D3DXVECTOR3 CAMERA_POS_R[4] =
     {
-       D3DXVECTOR3(320.3f,  10.0f, 91.6f),
-       D3DXVECTOR3(320.3f,  10.0f, -91.6f),
-       D3DXVECTOR3(-320.3f, 10.0f, 91.6f),
-       D3DXVECTOR3(-320.3f, 10.0f, -91.6f),
+        D3DXVECTOR3(-800.0f, 50.0f, 600.0f),
+        D3DXVECTOR3(800.0f,  50.0f, -600.0f),
+        D3DXVECTOR3(800.0f,  50.0f, -600.0f),
+        D3DXVECTOR3(800.0f,  50.0f, 600.0f),
     };
+
+    const D3DXVECTOR3 CAMERA_POS_V = D3DXVECTOR3(320.3f, 2000.0f, 91.6f);
+    const float LENGTH = 500.0f;
 }
 
 //===============================================
@@ -78,8 +73,8 @@ HRESULT CEntry::Init(void)
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));
 
-    //// マップ読み込み
-    //CMapManager::GetInstance()->Load();
+    // マップ読み込み
+   // CMapManager::GetInstance()->Load();
 
     CCameraManager* mgr = CCameraManager::GetInstance();
     CCamera* pCamera = mgr->GetTop();
@@ -91,10 +86,11 @@ HRESULT CEntry::Init(void)
     {
         m_ppCamera[i] = DEBUG_NEW CMultiCamera;
         m_ppCamera[i]->Init();
-        m_ppCamera[i]->SetLength(1000.0f);
-        m_ppCamera[i]->SetPositionV(CAMERA_POS_V[i]);
-        m_ppCamera[i]->SetPositionR(CAMERA_POS_R[i]);
+        m_ppCamera[i]->SetLength(LENGTH);
         m_ppCamera[i]->SetRotation(CAMERA_ROT[i]);
+        m_ppCamera[i]->SetPositionR(D3DXVECTOR3(800.0f, 10.0f, 600.0f));
+        m_ppCamera[i]->SetPositionV(CAMERA_POS_V);
+        
        
         D3DVIEWPORT9 viewport;
         //プレイヤー追従カメラの画面位置設定
@@ -170,9 +166,6 @@ void CEntry::Update(void)
 
     for (int i = 0; i < 4; i++)
     {
-        m_ppCamera[i]->Update(); 
-        D3DXVECTOR3 pos = m_ppCamera[i]->GetPositionV();
-
         D3DXVECTOR3 CamPosV = m_ppCamera[i]->GetPositionV();
         D3DXVECTOR3 CamPosR = m_ppCamera[i]->GetPositionR();
         CDebugProc::GetInstance()->Print("カメラ 視点   : [%f, %f, %f]\n", CamPosV.x, CamPosV.y, CamPosV.z);
@@ -207,10 +200,11 @@ void CEntry::AddPlayer(void)
         { // 人数が最大ではない場合
 
             int id = mgr->GetNum();
-            
-            CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-320.3f, 1.0f, -91.6f), D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, id);
+            D3DXVECTOR3 pos = CAMERA_POS_R[id];
+            D3DXVECTOR3 CamPosR = m_ppCamera[id]->GetPositionR();
+            CPlayer* pPlayer = CPlayer::Create(CamPosR, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, id);
+            pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
             mgr->ListIn(pPlayer);
-
         }
     }
 }
