@@ -192,7 +192,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pNetWork = CNetWork::Create();
 
 		// 接続
-		m_pNetWork->ReConnect();
+		//m_pNetWork->ReConnect();
 	}
 
 	// エフェクシア初期化
