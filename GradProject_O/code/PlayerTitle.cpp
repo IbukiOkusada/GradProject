@@ -7,6 +7,8 @@
 #include "camera.h"
 #include "camera_manager.h"
 #include "debugproc.h"
+#include "objectX.h"
+#include "navi.h"
 
 //<************************************************
 //–¼‘OéŒ¾

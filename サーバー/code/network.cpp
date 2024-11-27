@@ -231,15 +231,24 @@ void CNetWork::Accept(CServer* pServer)
 void CNetWork::Send(CServer** ppServer)
 {
 	auto delta = CDeltaTime::GetInstance();
-	float time = 0.0f;
+	
+	// 計測用
+	NetWork::CTime time;
+	time.Start();
+
 	// サーバーが閉じられるまで繰り返し
 	while (*ppServer != nullptr)
-	{
-		time += delta->GetDeltaTime();
+	{	
+		time.End();
 
-		if (time >= SEND_TIME)
+		// 指定送信時間ごとに
+		if(time.IsOK())
 		{// 送信時間経過
-			time = 0.0f;
+
+			printf("あ");
+
+			// 開始時間リセット
+			time.Start();
 
 			for(int i = 0; i < NetWork::MAX_CONNECT; i++)
 			{// 使用されていない状態まで
@@ -300,7 +309,6 @@ void CNetWork::Send(CServer** ppServer)
 			// 送信データをクリア
 			memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
 			m_nSendByte = 0;
-
 		}
 	}
 }

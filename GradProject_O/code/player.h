@@ -8,27 +8,25 @@
 #define _PLAYER_H_		// 二重インクルード防止用マクロを定義
 
 #include "main.h"
-#include "object.h"
-#include "objectX.h"
 #include "task.h"
 #include "effekseerControl.h"
-#include "convenience.h"
 #include "objectsound.h"
-#include "radio.h"
-#include "navi.h"
 #include "road.h"
-#include "scrollString2D.h"
-#include "scrollText2D.h"
+#include "network.h"
+
 using namespace std;
+
 // 前方宣言
 class CWaist;
 class CCharacter;
 class CObjectX;
-class CRoad;
 class CBaggage;
 class CMultiCamera;
 class CPredRoute;
 class CContainer;
+class CNavi;
+class CScrollText2D;
+class CRadio;
 
 // マクロ定義
 #define MAX_ITEM  (1280)  // 所持できるアイテムの最大数
@@ -96,7 +94,7 @@ private:	// 自分だけがアクセス可能な定義
 public:	// 誰でもアクセス可能
 
 	CPlayer(int nId = -1);
-	~CPlayer();	// デストラクタ
+	virtual ~CPlayer();	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init(void);
@@ -114,8 +112,6 @@ public:	// 誰でもアクセス可能
 	void BindId(int nId) { m_nId = nId; }
 	void SetMotion(int nMotion);
 	void SetDraw(bool bDraw);
-	void SetNext(CPlayer* pNext) { m_pNext = pNext; }
-	void SetPrev(CPlayer* pPrev) { m_pPrev = pPrev; }
 	void SetRotDiff(float fDiff) { m_fRotDest = fDiff; }
 	CBaggage* ThrowBaggage(D3DXVECTOR3* pTarget);
 	void Damage(float fDamage);
@@ -133,11 +129,9 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3& GetRotation(void) { return m_Info.rot; }
 	D3DXVECTOR3& GetOldPosition(void) { return m_Info.posOld; }
 	CRoad* GetRoad(void) { return m_Info.pRoad; }
-	CPlayer* GetNext(void) { return m_pNext; }
 	CObjectX* GetObj() { return m_pObj; }
-	CPlayer* GetPrev(void) { return m_pPrev; }
 	CPredRoute* GetPredRoute() { return m_pPredRoute; }
-	int GetModelIndex(void) { return m_pObj->GetIdx(); }
+	int GetModelIndex(void);
 	float GetEngine(void) { return m_fEngine; }
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 	float GetLifeOrigin() { return m_fLifeOrigin; }
@@ -176,13 +170,12 @@ protected:	// 自分だけがアクセス可能
 	void RecvInerSet();
 
 	// メンバ変数
-	CPlayer *m_pPrev;			// 前のオブジェクトへのポインタ
-	CPlayer *m_pNext;			// 次のオブジェクトへのポインタ
 	SInfo m_Info;				// 自分自身の情報
-	SRecvInfo m_RecvInfo;		// 受信情報
 	float m_fRotMove;			// 現在の角度
 	float m_fRotDiff;			// 目的の角度
 	float m_fRotDest;			// 角度計算
+
+	// 速度計算用
 	float m_fSpeed;				//速度(割合)
 	float m_fBrake;
 	float m_fEngine;
@@ -193,26 +186,35 @@ protected:	// 自分だけがアクセス可能
 	float m_fCamera;
 	float m_fSlowRate = 1.0f;
 	float m_fNitroCool;
-	int m_nId;					// ID
+
+	int m_nId;				// ID
 	TYPE m_type;			// 種類
 	CObjectX* m_pObj;		// 描画オブジェクト
 	CBaggage* m_pBaggage;	// 荷物
 	CNavi* m_pNavi;			// ナビ
 	CContainer* m_pContainer;
 	CPredRoute* m_pPredRoute;	// 予測用
+	std::vector<CRoad::SSearch*> m_pPath;
+	CScrollText2D* m_pFont[NUM_TXT];
+	int m_nNumDeliveryStatus;  // 配達した数
+
+	// えふぇくしあ
 	CEffekseer::CEffectData * m_pTailLamp;
 	CEffekseer::CEffectData* m_pBackdust;
 	CEffekseer::CEffectData* m_pAfterburner;
 	CEffekseer::CEffectData* m_pDamageEffect;
+
+	// サウンド
 	CMasterSound::CObjectSound* m_pSound;
 	CMasterSound::CObjectSound* m_pSoundBrake;
-	std::vector<CRoad::SSearch*> m_pPath;
+	CMasterSound::CObjectSound* m_pCollSound;
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
-	CRadio* pRadio;
-	CMasterSound::CObjectSound* m_pCollSound;
-	CScrollText2D* m_pFont[NUM_TXT];
-	int m_nNumDeliveryStatus;  // 配達した数
+	CRadio* m_pRadio;
+
+	// オンライン関連
+	SRecvInfo m_RecvInfo;		// 受信情報
+	NetWork::CTime m_SendTime;
 };
 
 

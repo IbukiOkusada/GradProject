@@ -357,6 +357,14 @@ void CManager::Update(void)
 	{// 使用している場合
 		m_pDebugProc->Update();
 		m_pDebugProc->Print("自分自身のID [ %d ]\n", m_pNetWork->GetIdx());
+
+		for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+		{
+			if (m_pNetWork->GetConnect(i))
+			{
+				m_pDebugProc->Print("%d番オンラインだよ\n", i);
+			}
+		}
 	}
 
 	// 入力の更新処理
