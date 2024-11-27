@@ -10,8 +10,6 @@
 #include "input.h"
 #include "debugproc.h"
 #include "camera.h"
-#include "Xfile.h"
-#include "slow.h"
 #include "texture.h"
 #include "meshfield.h"
 #include "Xfile.h"
@@ -51,7 +49,11 @@
 #include "scrollString2D.h"
 #include "scrollText2D.h"
 #include "bridge.h"
-#include "network.h"
+#include "navi.h"
+#include "scrollString2D.h"
+#include "scrollText2D.h"
+#include "radio.h"
+
 //===============================================
 // マクロ定義
 //===============================================
@@ -169,7 +171,6 @@ CPlayer::SETTYPE_FUNC CPlayer::m_SetTypeFunc[] =
 //===============================================
 // コンストラクタ(オーバーロード)
 //===============================================
-
 CPlayer::CPlayer(int nId)
 {
 	// 値をクリアする
@@ -191,8 +192,6 @@ CPlayer::CPlayer(int nId)
 	m_fNitroCool = 0.0f;
 
 	m_pObj = nullptr;
-	m_pPrev = nullptr;
-	m_pNext = nullptr;
 	m_pDamageEffect = nullptr;
 	m_pSound = nullptr;
 	m_pBaggage = nullptr;	
@@ -209,7 +208,7 @@ CPlayer::CPlayer(int nId)
 	m_pCollSound = nullptr;
 	m_pSoundBrake = nullptr;
 	m_pContainer = nullptr;
-	pRadio = nullptr;
+	m_pRadio = nullptr;
 	m_type = TYPE::TYPE_RECV;
 
 	for (int i = 0; i < NUM_TXT; i++)
@@ -272,7 +271,7 @@ void CPlayer::Uninit(void)
 	SAFE_DELETE(m_pDamageEffect);
 	SAFE_UNINIT_DELETE(m_pSound);
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
-	SAFE_UNINIT_DELETE(pRadio);
+	SAFE_UNINIT_DELETE(m_pRadio);
 	SAFE_UNINIT_DELETE(m_pCollSound);
 
 	CPlayerManager::GetInstance()->ListOut(this);
@@ -315,9 +314,9 @@ void CPlayer::Update(void)
 
 	StateSet();
 
-	if (pRadio != nullptr)
+	if (m_pRadio != nullptr)
 	{
-		pRadio->Update();
+		m_pRadio->Update();
 	}
 	if (m_type == TYPE_ACTIVE)
 	{
@@ -424,7 +423,7 @@ void CPlayer::Update(void)
 		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
 	}
 
-	// 自信の場合
+	// 自身の場合
 	if (m_type != TYPE::TYPE_RECV)
 	{
 		CNetWork* pNet = CNetWork::GetInstance();
@@ -432,8 +431,11 @@ void CPlayer::Update(void)
 		// データの送信
 		if (pNet != nullptr)
 		{
-			pNet->SendPlPos(m_Info.pos);
-			pNet->SendPlRot(m_Info.rot);
+			if (pNet->GetTime()->IsOK())
+			{
+				pNet->SendPlPos(m_Info.pos);
+				pNet->SendPlRot(m_Info.rot);
+			}
 		}
 	}
 
@@ -1155,7 +1157,7 @@ void CPlayer::SetStateRecv()
 
 	SAFE_UNINIT_DELETE(m_pSound);
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
-	SAFE_UNINIT_DELETE(pRadio);
+	SAFE_UNINIT_DELETE(m_pRadio);
 	SAFE_UNINIT_DELETE(m_pCollSound);
 
 	for (int i = 0; i < NUM_TXT; i++)
@@ -1187,9 +1189,9 @@ void CPlayer::SetStateActive()
 	}
 
 	// ラジオ生成
-	if (pRadio == nullptr)
+	if (m_pRadio == nullptr)
 	{
-		pRadio = CRadio::Create();
+		m_pRadio = CRadio::Create();
 	}
 
 	// ナビ生成
@@ -1237,4 +1239,9 @@ void CPlayer::SetStateActive()
 			m_pFont[i]->PushBackString(START_TEXT[i][j]);
 		}
 	}
+}
+
+int CPlayer::GetModelIndex(void)
+{ 
+	return m_pObj->GetIdx(); 
 }

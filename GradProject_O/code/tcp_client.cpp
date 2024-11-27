@@ -14,6 +14,8 @@ CClient::CClient()
 {
 	// 値をクリアする
 	m_sock = NULL;
+	memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
+	m_nSendByte = 0;
 }
 
 //==========================================================
@@ -131,10 +133,12 @@ void CClient::Uninit(void)
 //==========================================================
 // 送信処理
 //==========================================================
-int CClient::Send(const char *pSendData, int nSendDataSize)
+int CClient::Send()
 {
 	// データ送信
-	int nSendByte = send(m_sock, pSendData, nSendDataSize, 0);	// send関数: データを送信する
+	int nSendByte = send(m_sock, &m_aSendData[0], m_nSendByte, 0);	// send関数: データを送信する
+	memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
+	m_nSendByte = 0;
 
 	return nSendByte;
 }
@@ -147,6 +151,16 @@ int CClient::Recv(char *pRecvData, int nRecvDataSize)
 	int nRecvByte = recv(m_sock, pRecvData, nRecvDataSize, 0);	// recv関数: データを受信する
 
 	return nRecvByte;
+}
+
+//==========================================================
+// 送信データ設定
+//==========================================================
+void CClient::SetData(const char* pSendData, int nSendDataSize)
+{
+	if (m_nSendByte + nSendDataSize < NetWork::MAX_SEND_DATA)
+	memcpy(&m_aSendData[m_nSendByte], pSendData, nSendDataSize);
+	m_nSendByte += nSendDataSize;
 }
 
 //==========================================================
