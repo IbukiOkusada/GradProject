@@ -9,6 +9,7 @@
 #include "player.h"
 #include "player_manager.h"
 #include "goal.h"
+#include "debugproc.h"
 
 //===============================================
 // 名前空間
@@ -144,6 +145,23 @@ void CNetWork::Uninit()
 	m_nMyIdx = -1;
 
 	delete this;
+}
+
+//===============================================
+// 終了
+//===============================================
+void CNetWork::Update()
+{
+	if (m_SendTime.IsOK())
+	{
+		m_SendTime.Start();
+
+		if (m_pClient == nullptr) { return; }
+		m_pClient->Send();
+	}
+
+	if (m_pClient == nullptr) { return; }
+	CDebugProc::GetInstance()->Print("現在のバイト数 [ %d ]\n", m_pClient->GetByte());
 }
 
 //===============================================
@@ -408,7 +426,8 @@ void CNetWork::OnlineEnd(void)
 		memcpy(&senddata[0], &nProt, sizeof(int));
 
 		// 送信
-		m_pClient->Send(senddata.c_str(), sizeof(int));
+		m_pClient->SetData(senddata.c_str(), sizeof(int));
+		m_pClient->Send();
 	}
 }
 
@@ -596,7 +615,7 @@ void CNetWork::SendGetId()
 	memcpy(&aSendData[0], &nProt, sizeof(int));
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int));
+	m_pClient->SetData(&aSendData[0], sizeof(int));
 }
 
 //===================================================
@@ -613,7 +632,7 @@ void CNetWork::SendDelete()
 	memcpy(&aSendData[0], &nProt, sizeof(int));
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int));
+	m_pClient->SetData(&aSendData[0], sizeof(int));
 
 	DisConnect();
 }
@@ -635,7 +654,7 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
 	memcpy(&aSendData[sizeof(int)], &pos, sizeof(D3DXVECTOR3));
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int) + sizeof(D3DXVECTOR3));
+	m_pClient->SetData(&aSendData[0], sizeof(int) + sizeof(D3DXVECTOR3));
 }
 
 //===================================================
@@ -655,7 +674,7 @@ void CNetWork::SendPlRot(const D3DXVECTOR3& rot)
 	memcpy(&aSendData[sizeof(int)], &rot, sizeof(D3DXVECTOR3));
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int) + sizeof(D3DXVECTOR3));
+	m_pClient->SetData(&aSendData[0], sizeof(int) + sizeof(D3DXVECTOR3));
 }
 
 //===================================================
@@ -683,5 +702,5 @@ void CNetWork::SendPlGoal(int nId)
 	memcpy(&aSendData[sizeof(int)], &nId, sizeof(int));
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int) + sizeof(int));
+	m_pClient->SetData(&aSendData[0], sizeof(int) + sizeof(int));
 }

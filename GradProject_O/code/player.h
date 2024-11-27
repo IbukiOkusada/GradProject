@@ -12,7 +12,6 @@
 #include "effekseerControl.h"
 #include "objectsound.h"
 #include "road.h"
-#include "network.h"
 
 using namespace std;
 
@@ -214,7 +213,6 @@ protected:	// 自分だけがアクセス可能
 
 	// オンライン関連
 	SRecvInfo m_RecvInfo;		// 受信情報
-	NetWork::CTime m_SendTime;
 };
 
 

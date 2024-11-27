@@ -245,8 +245,6 @@ void CNetWork::Send(CServer** ppServer)
 		if(time.IsOK())
 		{// 送信時間経過
 
-			printf("あ");
-
 			// 開始時間リセット
 			time.Start();
 
@@ -277,7 +275,7 @@ void CNetWork::Send(CServer** ppServer)
 						pClient = nullptr;
 						m_apClient[i] = nullptr;
 
-						//printf("クライアント切断\n");
+						printf("クライアント切断\n");
 					}
 				}
 			}
@@ -299,11 +297,11 @@ void CNetWork::Send(CServer** ppServer)
 						delete pClient;
 						pClient = nullptr;
 						m_apClient[i] = nullptr;
-						//printf("クライアント切断\n");
+						printf("クライアント切断\n");
 					}
 				}
 
-				//printf("%d バイト送ったよ\n", m_nSendByte);
+				printf("%d バイト送ったよ\n", m_nSendByte);
 			}
 
 			// 送信データをクリア
@@ -321,9 +319,10 @@ void CNetWork::Access(CClient* pClient)
 	int id = pClient->GetId();
 
 	char aSendData[sizeof(int) * 2] = {};	// 送信用
+	int nowbyte = 0;
 
 	// 設定
-	CommandJoin(pClient->GetId(), nullptr, pClient);
+	CommandJoin(pClient->GetId(), nullptr, pClient, &nowbyte);
 
 	while (1)
 	{
@@ -331,29 +330,32 @@ void CNetWork::Access(CClient* pClient)
 		int command = NetWork::COMMAND_NONE;
 
 		// 受信
-		int recvbite = pClient->Recv(&recvdata[0], NetWork::MAX_COMMAND_DATA);
+		int recvbyte = pClient->Recv(&recvdata[0], NetWork::MAX_COMMAND_DATA);
+		nowbyte = 0;
 
-		memcpy(&command, &recvdata[0], sizeof(int));
-
-		if (recvbite <= 0)
+		if (recvbyte <= 0)
 		{
 			if (!pClient->GetDeath())
 			{
 				Leave(pClient->GetId(), pClient);
 			}
-			break;
+			return;
 		}
-		else
+
+		while (1)
 		{
-			if (pClient->GetSend() == true)
-			{
-				continue;
-			}
+			memcpy(&command, &recvdata[0], sizeof(int));
+			nowbyte += sizeof(int);
 
 			// コマンドを実行
-			(this->*(m_CommandFunc[command]))(id, &recvdata[sizeof(int)], pClient);
+			(this->*(m_CommandFunc[command]))(id, &recvdata[nowbyte], pClient, &nowbyte);
 
 			if (command == NetWork::COMMAND_DELETE)
+			{
+				return;
+			}
+
+			if (nowbyte >= recvbyte)
 			{
 				break;
 			}
@@ -381,7 +383,7 @@ void CNetWork::Leave(int nId, CClient* pClient)
 //==========================================================
 // 何もしない
 //==========================================================
-void CNetWork::CommandNone(const int nId, const char* pRecvData, CClient* pClient)
+void CNetWork::CommandNone(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
 	char aSendData[sizeof(int) * 2] = {};	// 送信用まとめデータ
@@ -397,13 +399,13 @@ void CNetWork::CommandNone(const int nId, const char* pRecvData, CClient* pClien
 	pClient->SetData(&aSendData[0], sizeof(int) * 2);
 
 	// IDを返す
-	CommandGetId(nId, pRecvData, pClient);
+	CommandGetId(nId, pRecvData, pClient, pNowByte);
 }
 
 //==========================================================
 // 入室
 //==========================================================
-void CNetWork::CommandJoin(const int nId, const char* pRecvData, CClient* pClient)
+void CNetWork::CommandJoin(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
 	char aSendData[sizeof(int) * 2] = {};	// 送信用まとめデータ
@@ -419,13 +421,13 @@ void CNetWork::CommandJoin(const int nId, const char* pRecvData, CClient* pClien
 	pClient->SetData(&aSendData[0], sizeof(int) * 2);
 
 	// IDを返す
-	CommandGetId(nId, pRecvData, pClient);
+	CommandGetId(nId, pRecvData, pClient, pNowByte);
 }
 
 //==========================================================
 // IDを取得
 //==========================================================
-void CNetWork::CommandGetId(const int nId, const char* pRecvData, CClient* pClient)
+void CNetWork::CommandGetId(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	char aRecv[sizeof(int) * 2] = {};
 	int command = NetWork::COMMAND_GETID;
@@ -441,7 +443,7 @@ void CNetWork::CommandGetId(const int nId, const char* pRecvData, CClient* pClie
 //==========================================================
 // 削除
 //==========================================================
-void CNetWork::CommandDelete(const int nId, const char* pRecvData, CClient* pClient)
+void CNetWork::CommandDelete(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = NetWork::COMMAND_DELETE;	// プロトコル番号
 	char aSendData[sizeof(int) * 2] = {};	// 送信用まとめデータ
@@ -459,7 +461,7 @@ void CNetWork::CommandDelete(const int nId, const char* pRecvData, CClient* pCli
 //==========================================================
 // プレイヤーの座標
 //==========================================================
-void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClient)
+void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
 	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
@@ -468,6 +470,7 @@ void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClie
 
 	// 座標挿入
 	memcpy(&pos, pRecvData, sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
 
 	// IDを挿入
 	nProt = NetWork::COMMAND_PL_POS;
@@ -488,7 +491,7 @@ void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClie
 //==========================================================
 // プレイヤーの向き
 //==========================================================
-void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClient)
+void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
 	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
@@ -497,6 +500,7 @@ void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClie
 	nProt = NetWork::COMMAND_PL_ROT;
 
 	D3DXVECTOR3 rot;
+	*pNowByte += sizeof(D3DXVECTOR3);
 
 	// 座標挿入
 	memcpy(&rot, pRecvData, sizeof(D3DXVECTOR3));
@@ -517,7 +521,7 @@ void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClie
 //==========================================================
 // プレイヤーのダメージ後体力
 //==========================================================
-void CNetWork::CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient)
+void CNetWork::CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 
 }
@@ -525,7 +529,7 @@ void CNetWork::CommandPlDamage(const int nId, const char* pRecvData, CClient* pC
 //==========================================================
 // プレイヤーをゴール
 //==========================================================
-void CNetWork::CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient)
+void CNetWork::CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
 	char aSendData[sizeof(int) * 2 + sizeof(int)] = {};	// 送信用まとめデータ
@@ -537,6 +541,7 @@ void CNetWork::CommandPlGoal(const int nId, const char* pRecvData, CClient* pCli
 
 	// 座標挿入
 	memcpy(&id, pRecvData, sizeof(int));
+	*pNowByte += sizeof(int);
 
 	// IDを挿入
 	memcpy(&aSendData[0], &nId, sizeof(int));

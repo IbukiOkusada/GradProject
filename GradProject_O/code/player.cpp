@@ -171,14 +171,12 @@ CPlayer::SETTYPE_FUNC CPlayer::m_SetTypeFunc[] =
 //===============================================
 // コンストラクタ(オーバーロード)
 //===============================================
-
 CPlayer::CPlayer(int nId)
 {
 	// 値をクリアする
 
 	m_Info = SInfo();
 	m_RecvInfo = SRecvInfo();
-	m_SendTime = NetWork::CTime();
 	m_fRotMove = 0.0f;
 	m_fRotDiff = 0.0f;
 	m_fRotDest = 0.0f;
@@ -429,13 +427,15 @@ void CPlayer::Update(void)
 	if (m_type != TYPE::TYPE_RECV)
 	{
 		CNetWork* pNet = CNetWork::GetInstance();
-		m_SendTime.End();
 
 		// データの送信
-		if (pNet != nullptr && m_SendTime.IsOK())
+		if (pNet != nullptr)
 		{
-			pNet->SendPlPos(m_Info.pos);
-			pNet->SendPlRot(m_Info.rot);
+			if (pNet->GetTime()->IsOK())
+			{
+				pNet->SendPlPos(m_Info.pos);
+				pNet->SendPlRot(m_Info.rot);
+			}
 		}
 	}
 
@@ -1239,9 +1239,6 @@ void CPlayer::SetStateActive()
 			m_pFont[i]->PushBackString(START_TEXT[i][j]);
 		}
 	}
-
-	// 計測時間開始
-	m_SendTime.Start();
 }
 
 int CPlayer::GetModelIndex(void)

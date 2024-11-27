@@ -43,6 +43,7 @@ public:
 	bool ReConnect();
 	bool DisConnect();
 	STATE GetState() { return m_state; }
+	void Update();
 
 	// 送信関数
 	void SendNone();
@@ -59,6 +60,7 @@ public:
 	// メンバ関数(取得)
 	int GetIdx() { return m_nMyIdx; }
 	bool GetConnect(int nIdx = 0) { return m_aConnect[nIdx]; }
+	NetWork::CTime* GetTime() { return &m_SendTime; }
 
 private:
 
@@ -104,6 +106,7 @@ private:
 	mutex m_aPlayerMutex[NetWork::MAX_CONNECT] = {};			// ミューテックス
 	mutex m_mutex;
 	bool m_aConnect[NetWork::MAX_CONNECT];
+	NetWork::CTime m_SendTime;
 
 	// 静的メンバ変数
 	static CNetWork* m_pInstance;	// インスタンス

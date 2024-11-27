@@ -51,7 +51,10 @@
 #include "gimmick_guardrail.h"
 #include "goal_manager.h"
 #include "police_manager.h"
+
+// ネットワーク
 #include "network.h"
+
 // 無名名前空間を定義
 namespace {
     const int MAX_STRING = (2048);

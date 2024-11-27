@@ -32,8 +32,8 @@
 #include "objectsound.h"
 #include "font.h"
 #include "deltatime.h"
-#include "network.h"
 #include "entry.h"
+#include "network.h"
 
 //===============================================
 // 静的メンバ変数
@@ -375,10 +375,21 @@ void CManager::Update(void)
 		m_pInput->Update();
 	}
 
+	// 送信タイミング取得
+	if (m_pNetWork != nullptr)
+	{
+		m_pNetWork->GetTime()->End();
+	}
+
 	if (m_pScene != nullptr)
 	{
 		CEffekseer::GetInstance()->Update();
 		m_pScene->Update();
+	}
+
+	if (m_pNetWork != nullptr)
+	{
+		m_pNetWork->Update();
 	}
 }
 
