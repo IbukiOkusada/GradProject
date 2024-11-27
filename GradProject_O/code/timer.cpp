@@ -21,7 +21,7 @@ namespace NUMBER
 	const float HEIGHT = 60.0f;		// çÇÇ≥
 	const float WIDTH = 30.0f;		// â°ïù
 	const float MAG = 0.7f;			// î{ó¶
-	const float INTERVAL = 60.0f;	// î{ó¶
+	const float INTERVAL = 60.0f;	// ä‘äu
 	const D3DXVECTOR3 POS = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 50.0f, 0.0f);
 }
 
