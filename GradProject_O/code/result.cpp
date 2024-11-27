@@ -25,6 +25,19 @@
 #include "player.h"
 
 
+//==========================================================
+// 定数定義
+//==========================================================
+namespace NUMBER
+{
+	const float HEIGHT = 60.0f;		// 高さ
+	const float WIDTH = 30.0f;		// 横幅
+	const float INTERVAL = 60.0f;	// 間隔
+	const int TIME_OBJ = 3;			// 間隔
+	const int LIFE_OBJ = 3;			// 間隔
+	const D3DXVECTOR3 POS = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 50.0f, 0.0f);
+}
+
 // 静的メンバ変数
 int CResult::m_nScore = 0;
 int CResult::m_nDeli = 0;
@@ -39,6 +52,8 @@ CResult::CResult()
 	m_pMeshSky = NULL;
 	m_pTime = NULL;
 	m_pObjClear = nullptr;
+	m_TimeObj[0] = {};
+	m_LifeObj[0] = {};
 }
 
 //===============================================
@@ -72,13 +87,34 @@ HRESULT CResult::Init(void)
 		CManager::GetInstance()->GetCamera()->SetViewPort(viewport);
 	}
 
-	CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
-	pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
-	pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\result.png"));
+	//CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
+	//pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+	//pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\result.png"));
 
 	m_nDeli = CManager::GetInstance()->GetDeliveryStatus();
 	m_fTime = CTimer::GetTime();
 	m_fLife = CManager::GetInstance()->GetLife();
+
+
+	m_pDeliObject2D = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.2f, 0.0f),
+		NUMBER::WIDTH, NUMBER::HEIGHT);
+	m_pDeliObject2D->SetIdx(m_nDeli);
+
+	for (int Cnt = 0; Cnt < 3; Cnt++)
+	{
+		m_pTimeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + NUMBER::INTERVAL * Cnt, SCREEN_HEIGHT * 0.4f, 0.0f),
+			NUMBER::WIDTH, NUMBER::HEIGHT);
+		Calculation(&m_TimeObj[Cnt], m_fTime, Cnt, NUMBER::TIME_OBJ);
+		m_pTimeObject2D[Cnt]->SetIdx(m_TimeObj[Cnt]);
+	}
+
+	for (int Cnt = 0; Cnt < 3; Cnt++)
+	{
+		m_pLifeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + NUMBER::INTERVAL * Cnt, SCREEN_HEIGHT * 0.6f, 0.0f),
+			NUMBER::WIDTH, NUMBER::HEIGHT);
+		Calculation(&m_LifeObj[Cnt], m_fLife, Cnt, NUMBER::LIFE_OBJ);
+		m_pLifeObject2D[Cnt]->SetIdx(m_LifeObj[Cnt]);
+	}
 
 	//CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT);
 
@@ -90,6 +126,29 @@ HRESULT CResult::Init(void)
 //===============================================
 void CResult::Uninit(void)
 {
+	if (m_pDeliObject2D != NULL)
+	{
+		m_pDeliObject2D->Uninit();
+		m_pDeliObject2D = NULL;
+	}
+
+	for (int Cnt = 0; Cnt < 3; Cnt++)
+	{
+		if (m_pTimeObject2D[Cnt] != NULL)
+		{
+			m_pTimeObject2D[Cnt]->Uninit();
+			m_pTimeObject2D[Cnt] = NULL;
+		}
+	}
+
+	for (int Cnt = 0; Cnt < 3; Cnt++)
+	{
+		if (m_pLifeObject2D[Cnt] != NULL)
+		{
+			m_pLifeObject2D[Cnt]->Uninit();
+			m_pLifeObject2D[Cnt] = NULL;
+		}
+	}
 
 	CRanking::SetScore(m_nScore);
 	m_nScore = 0;
@@ -121,4 +180,44 @@ void CResult::Update(void)
 void CResult::Draw(void)
 {
 	CScene::Draw();
+}
+
+//===============================================
+// ナンバー表示のための計算
+//===============================================
+void CResult::Calculation(int* Obj, float Score, int Cnt, int ObjMax)
+{
+	int nCal = 1;
+	bool bFirst = false;
+
+	if (Cnt == 0)
+	{
+		Cnt++;
+		bFirst = true;
+	}
+
+	for(int nCnt = Cnt; nCnt < ObjMax; nCnt++)
+	{
+		nCal = nCal * 10;
+	}
+
+	if (bFirst == true)
+	{
+		Cnt--;
+	}
+
+	switch (Cnt)
+	{
+	case 0:
+		*Obj = ((int)Score) / nCal;
+		break;
+
+	case NUMBER::LIFE_OBJ - 1:
+		*Obj = ((int)Score) % nCal;
+		break;
+
+	default:
+		*Obj = ((int)Score) % nCal / (nCal / 10);
+		break;
+	}
 }
