@@ -4,6 +4,7 @@
 //Author : Kazuki Watanabe
 //<=================================================
 #include "PlayerTitle.h"
+#include "player_manager.h"
 #include "camera.h"
 #include "camera_manager.h"
 #include "debugproc.h"

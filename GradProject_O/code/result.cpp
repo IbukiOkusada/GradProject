@@ -23,6 +23,7 @@
 #include "timer.h"
 #include "player_manager.h"
 #include "player.h"
+#include "objectX.h"
 #include "map_manager.h"
 
 
@@ -74,8 +75,8 @@ HRESULT CResult::Init(void)
 	//カメラ初期化
 	{
 		CManager::GetInstance()->GetCamera()->SetLength(300.0f);
-		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(0.0f, 33700.77f, -301.94f));
+		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, 1.0f, 1.0f));
+		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f));
 		D3DVIEWPORT9 viewport;
 
 		//プレイヤー追従カメラの画面位置設定
@@ -90,6 +91,11 @@ HRESULT CResult::Init(void)
 
 	// マップ読み込み
 	CMapManager::GetInstance()->Load();
+
+	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
+	m_pObj->SetType(CObject::TYPE_PLAYER);
+	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
+
 
 	m_nDeli = CManager::GetInstance()->GetDeliveryStatus();
 	m_fTime = CTimer::GetTime();

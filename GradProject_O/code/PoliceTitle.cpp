@@ -4,6 +4,7 @@
 //Author : Kazuki Watanabe
 //<=================================================
 #include "PoliceTitle.h"
+#include "police_manager.h"
 #include "debugproc.h"
 #include "manager.h"
 #include "title.h"
@@ -39,6 +40,7 @@ HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 void CPoliceTitle::Uninit(void)
 {
 	//Realese–³‚µ‚¾‚Æƒƒ‚ƒŠ”j‰ó‚ª‹N‚«‚é
+	CPoliceManager::GetInstance()->GetList()->Delete(this);
 	SAFE_DELETE(m_pPatrolLamp);
 	Release();
 
@@ -55,10 +57,9 @@ void CPoliceTitle::Update(void)
 //<======================================
 //’Ç‚¢‚©‚¯‚Ä‚¢‚éˆ—
 //<======================================
-void CPoliceTitle::Chasing(void)
+void CPoliceTitle::Chasing(const float fMoveZ)
 {
 	D3DXVECTOR3 PolicePos = this->GetPosition();		//ŒxŽ@‚ÌˆÊ’uŽæ“¾
-	const float PoliceMoveZ = 25.0f;					//ŒxŽ@‚ÌZ’l‚ÌˆÚ“®’l
 
 	//<*******************************************
 	//ƒpƒgƒ‰ƒ“ƒv¶¬
@@ -74,7 +75,7 @@ void CPoliceTitle::Chasing(void)
 	//<*******************************************
 
 	///ŒxŽ@‚ÌˆÊ’u‚ðˆÚ“®‚³‚¹AˆÊ’u‚ðÝ’è‚·‚é
-	PolicePos.z += PoliceMoveZ;
+	PolicePos.z += fMoveZ;
 	SetPosition(PolicePos);
 }
 //<======================================
