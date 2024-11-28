@@ -16,7 +16,7 @@ CPlayerManager* CPlayerManager::m_pInstance = nullptr;	// インスタンス
 CPlayerManager::CPlayerManager()
 {
 	// 値のクリア
-	m_List.clear();
+	m_List.Clear();
 }
 
 //==========================================================
@@ -87,16 +87,7 @@ bool CPlayerManager::ListIn(CPlayer* pPlayer)
 {
 	if (pPlayer == nullptr) { return false; }
 
-	auto it = m_List.find(pPlayer->GetId());
-
-	// 存在しない
-	if (it == m_List.end())
-	{
-		m_List[pPlayer->GetId()] = pPlayer;
-		return true;
-	}
-
-	return false;
+	return m_List.Regist(pPlayer->GetId(), pPlayer);
 }
 
 //==========================================================
@@ -106,19 +97,7 @@ bool CPlayerManager::ListOut(CPlayer* pPlayer)
 {
 	if (pPlayer == nullptr) { return false; }
 
-	auto it = m_List.find(pPlayer->GetId());
-
-	// 見つかった
-	if (it != m_List.end())
-	{
-		if (it->second == pPlayer)
-		{
-			m_List.erase(pPlayer->GetId());
-			return true;
-		}
-	}
-
-	return false;
+	return m_List.Delete(pPlayer->GetId(), pPlayer);
 }
 
 //==========================================================
@@ -126,16 +105,7 @@ bool CPlayerManager::ListOut(CPlayer* pPlayer)
 //==========================================================
 CPlayer* CPlayerManager::GetPlayer(int nIdx)
 {
-	auto it = m_List.find(nIdx);
-
-	// 存在している
-	if (it != m_List.end())
-	{
-		CPlayer* pPlayer = it->second;
-		return pPlayer;
-	}
-
-	return nullptr;
+	return *m_List.Get(nIdx);
 }
 
 //==========================================================

@@ -510,6 +510,9 @@
     <ClCompile Include="code\player_result.cpp">
       <Filter>player</Filter>
     </ClCompile>
+    <ClCompile Include="code\map_list.cpp">
+      <Filter>system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -850,6 +853,9 @@
     </ClInclude>
     <ClInclude Include="code\player_result.h">
       <Filter>player</Filter>
+    </ClInclude>
+    <ClInclude Include="code\map_list.h">
+      <Filter>system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

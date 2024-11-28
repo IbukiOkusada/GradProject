@@ -198,8 +198,10 @@ void CMapManager::LoadObstacle(const std::string& filename)
 	std::vector<CMapObstacle::SInfo> roaddata(size);
 	File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CMapObstacle::SInfo));
 
+	
 	for (const auto& it : roaddata)
 	{
+		if (it.fileidx >= m_LoadFileName.size()) { return; }
 		CMapObstacle::Create(it);
 	}
 

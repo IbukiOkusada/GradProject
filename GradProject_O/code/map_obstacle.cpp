@@ -19,6 +19,7 @@ CMapObstacle::CMapObstacle(const SInfo& info)
 	//Ž©g‚ðƒŠƒXƒg‚É“o˜^
 	GetInstance()->Regist(this);
 	m_Info = info;
+	m_pObj = nullptr;
 }
 
 //==========================================================

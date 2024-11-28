@@ -200,6 +200,7 @@ bool CEdit_Obj::CursorCollision(CMapObstacle* pObj)
 	// ƒ}ƒEƒXî•ñ
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 	CInputMouse::SRayInfo info = pMouse->GetRayInfo();
+	if (pObj->GetObj() == nullptr) { return false; }
 
 	// °î•ñ
 	D3DXVECTOR3 pos = pObj->GetPosition();
