@@ -233,6 +233,7 @@ bool CNetWork::ReConnect()
 	if (m_state == STATE::STATE_ONLINE) { return true; }
 
 	m_nMyIdx = -1;
+	m_state = STATE_MAX;
 
 	// ƒAƒhƒŒƒX‚ğÄæ“¾
 	LoadAddressFile();
