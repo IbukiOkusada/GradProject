@@ -501,6 +501,12 @@
     <ClCompile Include="code\TitleMap.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\TitleBaggage.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\edit_goal.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
     <ClCompile Include="code\player_result.cpp">
       <Filter>player</Filter>
     </ClCompile>
@@ -835,6 +841,12 @@
     </ClInclude>
     <ClInclude Include="code\TitleMap.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\TitleBaggage.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_goal.h">
+      <Filter>edit</Filter>
     </ClInclude>
     <ClInclude Include="code\player_result.h">
       <Filter>player</Filter>

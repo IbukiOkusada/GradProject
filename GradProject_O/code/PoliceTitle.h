@@ -25,7 +25,7 @@ public:
 	static CPoliceTitle* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move);
 
 	//
-	void Chasing(void);
+	void Chasing(const float fMoveZ);
 
 private:
 

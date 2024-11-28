@@ -246,5 +246,5 @@ void CGimmickFireHydrant::Hit(const D3DXVECTOR3& HitPos, const float fSpeed)
 	};
 
 	if (m_pObj->GetHit() || m_pObj->GetHitOld()) { return; }
-	CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", GetPos(), VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
+	//CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", GetPos(), VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
 }

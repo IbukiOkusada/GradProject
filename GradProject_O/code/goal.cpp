@@ -37,10 +37,9 @@ Clist<CGoal*> * CGoal::pList = nullptr;
 CGoal::CGoal()
 {
 	pEffect = nullptr;
-	m_fRange = 0.0f;
-	m_fLimit = 0.0f;
 	m_bEnd = false;
-	m_pPeople = nullptr;
+	m_People = SPeople();
+	m_Info = SInfo();
 	m_pBaggage = nullptr;
 	m_nId = GetInstance()->GetNum();
 	//自身をリストに登録
@@ -65,27 +64,48 @@ CGoal::~CGoal()
 //==========================================================
 HRESULT CGoal::Init(void)
 {
-	pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\goal_radius.efkefc", m_pos, VECTOR3_ZERO, VECTOR3_ZERO, m_fRange, false, false);
-	float range = static_cast<float>(rand() % 629 - 314) * 0.01f;
-	D3DXVECTOR3 pos = m_pos;
-	pos.x += sinf(range) * 800.0f;
-	pos.z += cosf(range) * 800.0f;
-	m_pPeople = CCharacter::Create(pos, VECTOR3_ZERO, "data\\TXT\\motion_kidsboy.txt");
-	m_pPeople->SetScale(SCALE);
-	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	rot.y = atan2f(pos.x - m_pos.x, pos.z - m_pos.z);
-	m_pPeople->SetRotation(rot);
-
-	Clist<CRoad*>* List = CRoadManager::GetInstance()->GetList();
-	float fDis = FLT_MAX;
-	m_pRoad = nullptr;
-	for (int i = 0; i < List->GetNum(); i++)
+	pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\goal_radius.efkefc", m_Info.pos, VECTOR3_ZERO, VECTOR3_ZERO, m_Info.fRange, false, false);
+	
 	{
-		float F = GetDistance(List->Get(i)->GetPosition(), m_pos);
-		if (F < fDis && List->Get(i)->GetType() !=CRoad::TYPE_NONE)
+		// 最も近い道を取得
+		Clist<CRoad*>* List = CRoadManager::GetInstance()->GetList();
+		float fDis = FLT_MAX;
+		m_pRoad = nullptr;
+		for (int i = 0; i < List->GetNum(); i++)
 		{
-			fDis = F;
-			m_pRoad = List->Get(i);
+			float F = GetDistance(List->Get(i)->GetPosition(), m_Info.pos);
+			if (F < fDis/* && List->Get(i)->GetType() !=CRoad::TYPE_NONE*/)
+			{
+				fDis = F;
+				m_pRoad = List->Get(i);
+			}
+		}
+	}
+
+	float range = atan2f(m_Info.pos.x - m_pRoad->GetPosition().x, m_Info.pos.z - m_pRoad->GetPosition().z);
+	m_People.setpos;
+	m_People.setpos.x += sinf(range) * 800.0f;
+	m_People.setpos.z += cosf(range) * 800.0f;
+	m_People.pChara = CCharacter::Create(m_People.setpos + m_Info.pos, VECTOR3_ZERO, "data\\TXT\\motion_kidsboy.txt");
+	m_People.pChara->SetScale(SCALE);
+	m_People.pChara->SetMtx();
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	rot.y = atan2f(m_People.pChara->GetPosition().x - m_Info.pos.x, m_People.pChara->GetPosition().z - m_Info.pos.z);
+	m_People.pChara->SetRotation(rot);
+
+	{
+		// 最も近い道を取得
+		Clist<CRoad*>* List = CRoadManager::GetInstance()->GetList();
+		float fDis = FLT_MAX;
+		m_pRoad = nullptr;
+		for (int i = 0; i < List->GetNum(); i++)
+		{
+			float F = GetDistance(List->Get(i)->GetPosition(), m_Info.pos);
+			if (F < fDis && List->Get(i)->GetType() !=CRoad::TYPE_NONE)
+			{
+				fDis = F;
+				m_pRoad = List->Get(i);
+			}
 		}
 	}
 
@@ -98,7 +118,7 @@ HRESULT CGoal::Init(void)
 void CGoal::Uninit(void)
 {
 	SAFE_UNINIT(m_pBaggage);
-	SAFE_UNINIT(m_pPeople);
+	SAFE_UNINIT(m_People.pChara);
 	SAFE_DELETE(pEffect);
 	Release();
 }
@@ -111,9 +131,9 @@ void CGoal::Update(void)
 	// エフェクト表示
 	//ScreenEffect();
 
-	if (m_pPeople != nullptr)
+	if (m_People.pChara != nullptr)
 	{
-		m_pPeople->Update();
+		m_People.pChara->Update();
 	}
 
 	if (!m_bEnd)
@@ -159,9 +179,9 @@ void CGoal::Update(void)
 	// 到着
 	if (m_pBaggage == nullptr) { return; }
 	if (m_pBaggage->GetState() == CBaggage::STATE::STATE_THROW) { return; }
-	m_pBaggage->GetObj()->SetParent(m_pPeople->GetParts(6)->GetMtx());
-	m_pPeople->GetMotion()->BlendSet(4);
-	m_pBaggage->SetThrowScale(m_pPeople->GetScale());
+	m_pBaggage->GetObj()->SetParent(m_People.pChara->GetParts(6)->GetMtx());
+	m_People.pChara->GetMotion()->BlendSet(4);
+	m_pBaggage->SetThrowScale(m_People.pChara->GetScale());
 }
 //==========================================================
 // 距離のチェック
@@ -171,8 +191,8 @@ bool CGoal::CheckRange(int nId)
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
 	if (pPlayer != nullptr)
 	{
-		float fDis = GetDistance(m_pos, pPlayer->GetPosition());
-		return (m_fRange >= fDis);
+		float fDis = GetDistance(m_Info.pos, pPlayer->GetPosition());
+		return (m_Info.fRange >= fDis);
 	}
 	return false;
 }
@@ -185,7 +205,7 @@ bool CGoal::CheckSpeed(int nId)
 	if (pPlayer != nullptr)
 	{
 		float fDis = GetDistance(VECTOR3_ZERO, pPlayer->GetMove());
-		return (m_fLimit >= fDis);
+		return (m_Info.fLimit >= fDis);
 	}
 	return false;
 }
@@ -200,9 +220,9 @@ CGoal* CGoal::Create(D3DXVECTOR3 pos, float fRange, float fLimit)
 
 	if (pGoal != nullptr)
 	{
-		pGoal->m_pos = pos;
-		pGoal->m_fRange = fRange;
-		pGoal->m_fLimit = fLimit;
+		pGoal->m_Info.pos = pos;
+		pGoal->m_Info.fRange = fRange;
+		pGoal->m_Info.fLimit = fLimit;
 		// 初期化処理
 		pGoal->Init();
 	}
@@ -232,7 +252,7 @@ void CGoal::ScreenEffect()
 	D3DXMatrixIdentity(&mtxWorld);
 
 	// スクリーン座標取得
-	D3DXVec3Project(&pos, &m_pos, &Viewport, &mtxProjection, &mtxView, &mtxWorld);
+	D3DXVec3Project(&pos, &m_Info.pos, &Viewport, &mtxProjection, &mtxView, &mtxWorld);
 
 	// 画面内なら出さない
 	if(pos.x > 0.0f && pos.x < SCREEN_WIDTH &&
@@ -261,7 +281,22 @@ void CGoal::SetEnd(int nId)
 	// カメラアクション入れる
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
 	m_bEnd = true;
-	m_pBaggage = pPlayer->ThrowBaggage(m_pPeople->GetParts(6)->GetMtxPos());
+	m_pBaggage = pPlayer->ThrowBaggage(m_People.pChara->GetParts(6)->GetMtxPos());
 	pPlayer->AddDeliveryCount();
-	m_pPeople->GetMotion()->BlendSet(3);
+	m_People.pChara->GetMotion()->BlendSet(3);
+}
+
+//==========================================================
+// 座標設定
+//==========================================================
+void CGoal::SetPos(const D3DXVECTOR3& pos)
+{
+	m_Info.pos = pos;
+
+	if (m_People.pChara == nullptr) { return; }
+
+	m_People.pChara->SetPosition(m_Info.pos + m_People.setpos);
+	m_People.pChara->SetMtx();
+
+	pEffect->m_pos = m_Info.pos;
 }

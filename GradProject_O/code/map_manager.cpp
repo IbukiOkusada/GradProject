@@ -10,6 +10,8 @@
 #include "manager.h"
 #include "road_manager.h"
 #include "gimmick.h"
+#include "goal_manager.h"
+#include "goal.h"
 
 namespace
 {
@@ -35,6 +37,14 @@ namespace
 		"data\\FILE\\map\\gimmick.bin",
 		"data\\FILE\\map\\gimmick.bin",
 		"data\\FILE\\map\\gimmick.bin",
+	};
+
+	const std::string GOALFILENAME[CScene::MODE_MAX] = {	// ゴールファイル名
+		"data\\FILE\\map\\goal.bin",
+		"data\\FILE\\map\\goal.bin",
+		"data\\FILE\\map\\goal.bin",
+		"data\\FILE\\map\\goal.bin",
+		"data\\FILE\\map\\goal.bin",
 	};
 
 	const std::string MODELNAMEFILE[CScene::MODE_MAX] = {	// モデル名ファイル
@@ -132,6 +142,9 @@ void CMapManager::Load(void)
 	// 障害物読み込み
 	LoadObstacle(OBSTACLEFILENAME[mode]);
 
+	// ゴール読み込み
+	LoadGoal(GOALFILENAME[mode]);
+
 	// 道連結
 	CRoadManager::GetInstance()->AllConnect();
 }
@@ -192,6 +205,34 @@ void CMapManager::LoadObstacle(const std::string& filename)
 
 	// ファイルを閉じる
 	File.close();
+}
+
+//===============================================
+// ファイル読み込み
+//===============================================
+void CMapManager::LoadGoal(const std::string& filename)
+{
+	// ファイルを開く
+	std::ifstream File(filename, std::ios::binary);
+	if (!File.is_open()) {
+		// 例外処理
+		return;
+	}
+
+	// サイズ読み込み
+	int size = 0;
+	File.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+	// データ読み込み
+	std::vector<CGoal::SInfo> roaddata(size);
+	File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CGoal::SInfo));
+
+	// ファイルを閉じる
+	File.close();
+
+	// ゴールマネージャーで管理
+	CGoalManager::Create();
+	CGoalManager::GetInstance()->SetInfoList(roaddata);
 }
 
 //===============================================
