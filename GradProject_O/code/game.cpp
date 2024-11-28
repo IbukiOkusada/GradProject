@@ -168,6 +168,7 @@ HRESULT CGame::Init(void)
     CMapManager::GetInstance()->Load();
 
     auto net = CNetWork::GetInstance();
+    net->ReConnect();
 
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
     {

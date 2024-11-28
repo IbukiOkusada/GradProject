@@ -40,7 +40,7 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvPlDamage,	// プレイヤーダメージ
 	&CNetWork::RecvPlGoal,	// プレイヤーゴール
 	&CNetWork::RecvGmHit,	// ギミックヒット
-	&CNetWork::RecvNextGoal,	// ギミックヒット
+	&CNetWork::RecvNextGoal,	// 次のゴール設置
 };
 
 // 静的メンバ変数

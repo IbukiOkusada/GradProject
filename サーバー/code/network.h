@@ -53,6 +53,7 @@ private:
 	void CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandGmHit(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandNextGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 
 	// ÉÅÉìÉoä÷êî
 	HRESULT Init();

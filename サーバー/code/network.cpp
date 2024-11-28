@@ -33,6 +33,7 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandPlDamage,	// プレイヤーダメ―ジ
 	&CNetWork::CommandPlGoal,	// プレイヤーゴール
 	&CNetWork::CommandGmHit,	// ギミック衝突
+	&CNetWork::CommandNextGoal,	// 次のゴール
 };
 
 // 静的メンバ変数
@@ -618,4 +619,31 @@ void CNetWork::CommandGmHit(const int nId, const char* pRecvData, CClient* pClie
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// IDを取得
+//==========================================================
+void CNetWork::CommandNextGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	char aRecv[sizeof(int) * 2 + sizeof(int)] = {};
+	int command = NetWork::COMMAND_NEXT_GOAL;
+	int byte = 0;
+
+	// IDを挿入
+	memcpy(&aRecv[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aRecv[byte], &command, sizeof(int));
+	byte += sizeof(int);
+
+	// ゴールIDを挿入
+	memcpy(&aRecv[byte], &command, sizeof(int));
+	byte += sizeof(int);
+	*pNowByte += sizeof(int);
+
+
+	// プロトコルを送信
+	pClient->Send(&aRecv[0], byte);
 }
