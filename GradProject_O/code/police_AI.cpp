@@ -20,7 +20,21 @@
 // 無名名前空間を定義
 namespace
 {
-
+	const float SECURE_SPEEDDEST = (-35.0f);	// 確保時の目標速度
+	const float SECURE_SPEED = (0.8f);			// 確保時の加速倍率
+	const int CHASE_TIME = (300);				// 追跡時間
+	const float CHASE_SECURE = (400.0f);		// 追跡確保距離
+	const float CHASE_BEGIN[CPolice::STATE::STATE_MAX] = {
+		(700.0f),
+		(700.0f),
+		(2000.0f),
+		(400.0f),
+	};			// 追跡開始距離
+	const float CHASE_CONTINUE = (200000.0f);		// 追跡継続距離
+	const float CHASE_END = (300000.0f);			// 追跡終了距離
+	const float CHASE_CROSS = (500.0f);			// 追跡終了距離
+	const float CHASE_NEAR = (2000.0f);			// 追跡終了距離
+	const float CHASE_FAR = (5000.0f);			// 追跡終了距離
 }
 
 //==========================================================
@@ -61,28 +75,220 @@ void CPoliceAI::Uninit(void)
 }
 
 //==========================================================
-// 更新処理
+// 発見処理
 //==========================================================
-void CPoliceAI::Update(void)
+void CPoliceAI::Search(void)
 {
+	// プレイヤーの情報をもっていない場合プレイヤーを取得
+	if (m_pPolice->GetPlayer() == nullptr)
+	{
+		m_pPolice->SetPlayer(CPlayerManager::GetInstance()->GetPlayer());
+	}
+
+	// プレイヤーが存在しないなら抜ける
+	if (m_pPolice->GetPlayer() == nullptr) { return; }
+
+	// プレイヤー情報取得
+	CPlayer* pPlayer = m_pPolice->GetPlayer();
+	D3DXVECTOR3 vecPlayer = pPlayer->GetPosition() - m_pPolice->GetPosition();		// プレイヤーと警察間のベクトル計算
+	float length = D3DXVec3Length(&vecPlayer);										// 距離計算
+	float rotVec = atan2f(vecPlayer.x, vecPlayer.z);								// 角度計算
+	float rotView = fabs(pPlayer->GetRotation().y - rotVec);						// 向いてる方向との差を計算
+
+	// 角度補正
+	if (rotView > D3DX_PI)
+	{
+		rotView -= D3DX_PI * 2.0f;
+	}
+	else if (rotView < -D3DX_PI)
+	{
+		rotView += D3DX_PI * 2.0f;
+	}
+
+	// 距離によって判断
+	if (length < CHASE_CROSS)
+	{// 至近距離
+
+		// 追跡状態に変更
+		m_pPolice->SetChase(true);
+
+		// 追跡状態でなければ抜ける
+		if (!m_pPolice->GetChase()) { return; }
+
+		// 追跡時間を設定
+		m_pPolice->SetChaseCount(CHASE_TIME);
+
+		// 速度を設定
+		m_pPolice->SetSpeedDest(SECURE_SPEEDDEST);
+		m_pPolice->SetSpeed(m_pPolice->GetSpeed() * SECURE_SPEED);
+
+		// 状態設定
+		m_pPolice->SetState(CPolice::STATE::STATE_CHASE);
+	}
+	else if (length < CHASE_NEAR)
+	{// 近距離
+
+		// 視界内に入っているかどうか
+		if (rotView > D3DX_PI * 0.5f && !m_pPolice->GetChase()) { return; }
+
+		// 各状況確認
+		CheckSpeed(pPlayer);
+		CheckTurn(pPlayer);
+		CheckDamage(pPlayer);
+		CheckCollision(pPlayer);
+
+		// 追跡状態でなければ抜ける
+		if (!m_pPolice->GetChase()) { return; }
+
+		// 追跡時間を設定
+		m_pPolice->SetChaseCount(CHASE_TIME);
+
+		// 状態設定
+		m_pPolice->SetState(CPolice::STATE::STATE_CHASE);
+	}
+	else if (length < CHASE_FAR)
+	{// 遠距離
+
+		// 視界内に入っているかどうか
+		if (rotView > D3DX_PI * 0.5f && !m_pPolice->GetChase())
+		{
+			return;
+		}
+
+		// 各状況確認
+		CheckSpeed(pPlayer);
+		CheckSmoke(pPlayer);
+		CheckCollision(pPlayer);
+
+		// 追跡状態でなければ抜ける
+		if (!m_pPolice->GetChase()) { return; }
+
+		// 追跡時間を設定
+		m_pPolice->SetChaseCount(CHASE_TIME);
+
+		// 状態設定
+		m_pPolice->SetState(CPolice::STATE::STATE_CHASE);
+	}
+	else
+	{// 範囲外
+
+		// 追跡状態でなければ抜ける
+		if (!m_pPolice->GetChase()) { return; }
+
+		// 追跡時間を減らす
+		m_pPolice->SetChaseCount(m_pPolice->GetChaseCount() - 1);
+
+		// 追跡時間が0になったら警戒状態に移行
+		if (m_pPolice->GetChaseCount() < 0)
+		{
+			// 全員を警戒状態に
+			m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
+			CPoliceManager::GetInstance()->Warning(m_pPolice);
+
+			// カウントを0に固定
+			m_pPolice->SetChaseCount(0);
+
+			// 追跡状態を解除
+			m_pPolice->SetChase(false);
+		}
+	}
+}
+
+//==========================================================
+// 速度計測処理
+//==========================================================
+void CPoliceAI::CheckSpeed(CPlayer* pPlayer)
+{
+	// プレイヤーが存在しないなら抜ける
+	if (pPlayer == nullptr) { return; }
+
+	 // ニトロを使っている時
+	if (pPlayer->GetState() == CPlayer::STATE_NITRO)
+	{
+		m_pPolice->SetChase(true);
+	}
+}
+
+//==========================================================
+// 旋回確認処理
+//==========================================================
+void CPoliceAI::CheckTurn(CPlayer* pPlayer)
+{
+	// プレイヤーが存在しないなら抜ける
+	if (pPlayer == nullptr) { return; }
+}
+
+//==========================================================
+// 傷確認処理
+//==========================================================
+void CPoliceAI::CheckDamage(CPlayer* pPlayer)
+{
+	// プレイヤーが存在しないなら抜ける
+	if (pPlayer == nullptr) { return; }
+
+	// ライフが一定値以下の時
+	if (pPlayer->GetLife() < 50.0f)
+	{
+		m_pPolice->SetChase(true);
+	}
+}
+
+//==========================================================
+// 煙確認処理
+//==========================================================
+void CPoliceAI::CheckSmoke(CPlayer* pPlayer)
+{
+	// プレイヤーが存在しないなら抜ける
+	if (pPlayer == nullptr) { return; }
+
+	// ライフが一定値以下の時
+	if (pPlayer->GetLife() < 20.0f)
+	{
+		m_pPolice->SetChase(true);
+	}
+}
+
+//==========================================================
+// 事故確認処理
+//==========================================================
+void CPoliceAI::CheckCollision(CPlayer* pPlayer)
+{
+	// プレイヤーが存在しないなら抜ける
+	if (pPlayer == nullptr) { return; }
+}
+
+//==========================================================
+// 追跡処理
+//==========================================================
+void CPoliceAI::Chase(void)
+{
+	// 変数宣言
 	float fDeltaTime = CDeltaTime::GetInstance()->GetDestTime();
 	float fSlow = CDeltaTime::GetInstance()->GetSlow();
 
+	// 目的地選択
 	SelectRoad();
 
-	ReachRoad();
-
+	// 一定時間ごともしくはターゲットが存在しない時
 	if (m_fSearchTimer > 3.0f || m_pSearchTarget == nullptr)
 	{
-		m_searchRoad = AStar::AStar(m_pRoadStart->GetSearchSelf(), m_pRoadTarget->GetSearchSelf());
-
-		if (!m_searchRoad.empty())
+		// 現在地と目的地が別の時
+		if (m_pRoadStart->GetSearchSelf() != m_pRoadTarget->GetSearchSelf())
 		{
-			m_pSearchTarget = m_searchRoad.front();
-		}
+			// 経路探索
+			m_searchRoad = AStar::AStar(m_pRoadStart->GetSearchSelf(), m_pRoadTarget->GetSearchSelf());
 
+			// リストが空でなければ移動先設定
+			if (!m_searchRoad.empty())
+			{
+				m_pSearchTarget = m_searchRoad.front();
+			}
+		}
 		m_fSearchTimer = 0;
 	}
+
+	// 目的地到達判定
+	ReachRoad();
 
 	m_fSearchTimer += fDeltaTime * fSlow;
 }
@@ -112,8 +318,10 @@ CPoliceAI *CPoliceAI::Create(CPolice* pPolice)
 //==========================================================
 void CPoliceAI::SelectRoad(void)
 {
+	// 探索開始地点に現在の目的地を設定
 	m_pRoadStart = m_pPolice->GetRoadTarget();
 
+	// プレイヤーの最寄りの道を目標地点に設定
 	CPlayer* pPlayer = m_pPolice->GetPlayer();
 	if (pPlayer != nullptr)
 	{
@@ -130,10 +338,12 @@ void CPoliceAI::SelectRoad(void)
 //==========================================================
 void CPoliceAI::ReachRoad(void)
 {
+	// 目的地が存在する時
 	if (m_pSearchTarget != nullptr)
 	{
+		// 次の目的地を設定
 		CRoad* pRoadTarget = m_pPolice->GetRoadTarget();
-		D3DXVECTOR3 posRoad = pRoadTarget->GetPosition();
+		D3DXVECTOR3 posRoad = m_pSearchTarget->pRoad->GetPosition();
 		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
 		float length = D3DXVec3Length(&(posRoad - posPolice));
 		if (length < 500.0f)

@@ -49,21 +49,19 @@ public:
 		TYPE_MAX
 	};
 
-
-
-private:	// 自分だけがアクセス可能な定義
-
 	// 状態列挙型
 	enum STATE
 	{
 		STATE_APPEAR = 0,	// 出現状態
 		STATE_NORMAL,		// 通常状態
-		STATE_NITRO	,		// ブースト状態
+		STATE_NITRO,		// ブースト状態
 		STATE_DAMAGE,		// ダメージ状態
 		STATE_DEATH,		// 死亡状態
 		STATE_SPAWN,		// 復活中状態
 		STATE_MAX
 	};
+
+private:	// 自分だけがアクセス可能な定義
 
 	// 情報構造体
 	struct SInfo
@@ -73,6 +71,7 @@ private:	// 自分だけがアクセス可能な定義
 		D3DXVECTOR3 move;		// 移動量
 		float fSlideMove;		// スライディング開始移動量
 		D3DXVECTOR3 posOld;		// 設定位置
+		D3DXVECTOR3 rotOld;		// 過去向き
 		D3DXMATRIX mtxWorld;	// ワールドマトリックス
 		STATE state;			// 状態
 		float fStateCounter;	// 状態管理カウンター
@@ -132,13 +131,16 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }
 	D3DXVECTOR3& GetRotation(void) { return m_Info.rot; }
 	D3DXVECTOR3& GetOldPosition(void) { return m_Info.posOld; }
+	D3DXVECTOR3& GetOldRotation(void) { return m_Info.rotOld; }
 	CRoad* GetRoad(void) { return m_Info.pRoad; }
 	CPlayer* GetNext(void) { return m_pNext; }
 	CObjectX* GetObj() { return m_pObj; }
 	CPlayer* GetPrev(void) { return m_pPrev; }
 	CPredRoute* GetPredRoute() { return m_pPredRoute; }
+	STATE GetState(void) { return m_Info.state; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 	float GetEngine(void) { return m_fEngine; }
+	float GetLife(void) { return m_fLife; }
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 	float GetLifeOrigin() { return m_fLifeOrigin; }
 	int GetId() { return m_nId; }

@@ -27,18 +27,6 @@ namespace
 {
 	const float LENGTH_POINT = (200.0f);		// 到達判定距離
 	const float CHASE_SPEED = (17.0f);			// 追跡時の加速
-	const float SECURE_SPEEDDEST = (-35.0f);	// 確保時の目標速度
-	const float SECURE_SPEED = (0.8f);			// 確保時の加速倍率
-	const int CHASE_TIME = (300);				// 追跡時間
-	const float CHASE_SECURE = (400.0f);		// 追跡確保距離
-	const float CHASE_BEGIN[CPolice::STATE::STATE_MAX] = {
-		(700.0f),
-		(700.0f),
-		(2000.0f),
-		(400.0f),
-	};			// 追跡開始距離
-	const float CHASE_CONTINUE = (200000.0f);		// 追跡継続距離
-	const float CHASE_END = (300000.0f);			// 追跡終了距離
 }
 
 //==========================================================================
@@ -117,7 +105,8 @@ void CPolice::Uninit(void)
 void CPolice::Update(void)
 {
 	// 停止状態なら動かない
-	if (m_stateInfo.state == STATE::STATE_STOP) { 
+	if (m_stateInfo.state == STATE::STATE_STOP) 
+	{ 
 		MoveRoad();
 		return;
 	}
@@ -189,12 +178,21 @@ void CPolice::MoveRoad()
 		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
 		m_pSiren->SetVolume((2000.0f - dis) * 0.00075f);
 
-		SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
-
 		if (pRoadTarget != nullptr)
 		{
+			SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
 			SetPosTarget(pRoadTarget->GetPosition());
 		}
+		else
+		{
+			SetSpeedDest(0.0f);
+			if (m_Info.pPlayer != nullptr)
+			{
+				SetPosTarget(m_Info.pPlayer->GetPosition());
+			}
+		}
+
+		CDebugProc::GetInstance()->Print("追跡中\n");
 	}
 	else
 	{
@@ -207,6 +205,7 @@ void CPolice::MoveRoad()
 			float length = D3DXVec3Length(&(pRoadTarget->GetPosition() - GetPosition()));
 			if (length < LENGTH_POINT)
 				ReachRoad();
+
 			SetPosTarget(pRoadTarget->GetPosition());
 		}
 	}
@@ -234,10 +233,7 @@ void CPolice::ReachRoad()
 		}
 		else
 		{
-			if (pRoadNext == pRoadStart)
-			{
-				continue;
-			}
+			if (pRoadNext == pRoadStart) { continue; }
 		}
 
 		if (pRoadNext != nullptr)
@@ -256,79 +252,7 @@ void CPolice::ReachRoad()
 //==========================================================
 void CPolice::SearchPlayer()
 {
-	m_Info.pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-	
-	if (m_Info.pPlayer != nullptr)
-	{
-		float length = 0.0f;
-		length = D3DXVec3Length(&(GetPosition() - m_Info.pPlayer->GetPosition()));
-		CManager::GetInstance()->GetDebugProc()->Print("車と車の距離 [ %f ]\n", length);
-
-		if (length < CHASE_SECURE)
-		{// 追跡開始
-
-			m_Info.bChase = true;
-			m_Info.nChaseCount = CHASE_TIME;
-
-			SetSpeedDest(SECURE_SPEEDDEST);
-			SetSpeed(GetSpeed() * SECURE_SPEED);
-
-			// 状態設定
-			SetState(STATE::STATE_CHASE);
-		}
-		else if (length < CHASE_BEGIN[m_stateInfo.state])
-		{// 追跡開始
-
-			m_Info.bChase = true;
-			m_Info.nChaseCount = CHASE_TIME;
-
-			// 状態設定
-			SetState(STATE::STATE_CHASE);
-		}
-		else if (length < CHASE_CONTINUE)
-		{// 追跡継続
-
-			if (m_Info.bChase)
-			{
-				m_Info.nChaseCount = CHASE_TIME;
-
-				// 状態設定
-				SetState(STATE::STATE_CHASE);
-			}
-		}
-		else if (length < CHASE_END)
-		{// 追跡終了
-
-			if (m_Info.bChase)
-			{
-				m_Info.nChaseCount--;
-
-				if (m_Info.nChaseCount < 0)
-				{
-					// 全員を警戒状態に
-					SetState(STATE::STATE_SEARCH);
-					CPoliceManager::GetInstance()->Warning(this);
-					m_Info.bChase = false;
-					m_Info.nChaseCount = 0;
-				}
-			}
-		}
-		else
-		{// 追跡強制終了
-
-			// 追跡してた
-			if (m_Info.bChase)
-			{
-				SetState(STATE::STATE_SEARCH);
-				CPoliceManager::GetInstance()->Warning(this);
-			}
-
-			m_Info.bChase = false;
-			m_Info.nChaseCount = 0;
-		}
-
-		m_Info.bChase = true;
-	}
+	m_pPoliceAI->Search();
 }
 
 //==========================================================
@@ -336,11 +260,18 @@ void CPolice::SearchPlayer()
 //==========================================================
 void CPolice::ChasePlayer()
 {
-	m_pPoliceAI->Update();
+	m_pPoliceAI->Chase();
 
-	if (m_pPoliceAI->GetSearchRoad() != nullptr && m_pPoliceAI->GetSearchRoad()->pRoad != nullptr)
+	if (m_pPoliceAI->GetSearchRoad() != nullptr)
 	{
-		SetRoadTarget(m_pPoliceAI->GetSearchRoad()->pRoad);
+		if (m_pPoliceAI->GetSearchRoad()->pRoad != nullptr)
+		{
+			SetRoadTarget(m_pPoliceAI->GetSearchRoad()->pRoad);
+		}
+		else
+		{
+			SetRoadTarget(nullptr);
+		}
 	}
 }
 

@@ -285,10 +285,7 @@ void CCar::SearchRoad()
 	CRoad* pRoad = pRoadManager->GetList()->Get(0);
 	CRoad* pRoadClose = pRoadManager->GetList()->Get(0);
 
-	if (pRoad == nullptr)
-	{
-		return;
-	}
+	if (pRoad == nullptr) { return; }
 
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
@@ -329,14 +326,10 @@ void CCar::ReachRoad()
 		}
 		else
 		{
-			if (pRoadNext == m_Info.pRoadStart)
-			{
-				continue;
-			}
+			if (pRoadNext == m_Info.pRoadStart) { continue; }
 		}
 
-		if (pRoadNext != nullptr)
-			break;
+		if (pRoadNext != nullptr) { break; }
 	}
 
 	m_Info.pRoadStart = m_Info.pRoadTarget;

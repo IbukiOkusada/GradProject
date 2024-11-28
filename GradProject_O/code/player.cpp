@@ -308,7 +308,7 @@ void CPlayer::Update(void)
 
 	// ‘O‰ñ‚ÌÀ•W‚ðŽæ“¾
 	m_Info.posOld = GetPosition();
-
+	m_Info.rotOld = GetRotation();
 
 	StateSet();
 
@@ -443,7 +443,6 @@ void CPlayer::Update(void)
 //===============================================
 // ID¶¬
 //===============================================
-
 CPlayer* CPlayer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move,
 	const int nId)
 {
@@ -730,9 +729,7 @@ bool CPlayer::CollisionObjX(void)
 		CObjectX* pObjectX = mgr->Get(i);	// æ“ª‚ðŽæ“¾
 
 		// Õ“Ë”»’è‚ðŽæ‚ç‚È‚¢
-		if (!pObjectX->GetEnableCollision()) {
-			continue;
-		}
+		if (!pObjectX->GetEnableCollision()) { continue; }
 
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();

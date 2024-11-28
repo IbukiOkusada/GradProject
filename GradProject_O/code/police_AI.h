@@ -15,6 +15,7 @@
 // 前方宣言
 class CRoad;
 class CPolice;
+class CPlayer;
 
 //==========================================================
 // 警察AIのクラス定義
@@ -29,7 +30,9 @@ public:	// 誰でもアクセス可能
 	// メンバ関数
 	HRESULT Init(void);
 	void Uninit(void);
-	void Update(void);
+	void Search(void);
+	void Chase(void);
+
 	static CPoliceAI* Create(CPolice* pPolice);
 
 	// メンバ関数(取得)
@@ -46,6 +49,11 @@ protected:
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void CheckSpeed(CPlayer* pPlayer);
+	void CheckTurn(CPlayer* pPlayer);
+	void CheckDamage(CPlayer* pPlayer);
+	void CheckSmoke(CPlayer* pPlayer);
+	void CheckCollision(CPlayer* pPlayer);
 	void SelectRoad(void);
 	void ReachRoad(void);
 
