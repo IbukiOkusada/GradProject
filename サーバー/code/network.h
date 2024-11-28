@@ -37,21 +37,22 @@ private:
 	//=============================
 	// 関数リスト
 	//=============================
-	typedef void(CNetWork::* COMMAND_FUNC)(const int, const char*, CClient*);
+	typedef void(CNetWork::* COMMAND_FUNC)(const int, const char*, CClient*, int*);
 	static COMMAND_FUNC m_CommandFunc[];
 
 	//=============================
 	// メンバ関数
 	//=============================
 	// コマンド関数
-	void CommandNone(const int nId, const char* pRecvData, CClient* pClient);
-	void CommandJoin(const int nId, const char* pRecvData, CClient* pClient);
-	void CommandGetId(const int nId, const char* pRecvData, CClient* pClient);
-	void CommandDelete(const int nId, const char* pRecvData, CClient* pClient);
-	void CommandPlPos(const int nId, const char* pRecvData, CClient* pClient);
-	void CommandPlRot(const int nId, const char* pRecvData, CClient* pClient);
-	void CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient);
-	void CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient);
+	void CommandNone(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandJoin(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandGetId(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandDelete(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandPlPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandPlRot(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandGmHit(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 
 	// メンバ関数
 	HRESULT Init();

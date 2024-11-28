@@ -8,6 +8,8 @@
 #include "tcp_client.h"
 #include <stdio.h>
 
+int CListener::m_nNum = 0;
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -17,6 +19,7 @@ CListener::CListener()
 	m_sockServer = NULL;
 	m_nClientPort = 0;
 	memset(&m_aClientIP[0], '\0', sizeof(m_aClientIP));
+	m_nNum++;
 }
 
 //==========================================================
@@ -24,7 +27,7 @@ CListener::CListener()
 //==========================================================
 CListener::~CListener()
 {
-
+	
 }
 
 //==========================================================
@@ -59,6 +62,7 @@ void CListener::Uninit(void)
 {
 	// 接続受付用ソケットを閉じる
 	closesocket(m_sockServer);	// closesocket関数 : ソケットを閉じる
+	m_nNum--;
 }
 
 //==========================================================
@@ -85,20 +89,7 @@ SOCKET CListener::Accept(void)
 	printf("IPアドレス: %s\n", &m_aClientIP[0]);
 	printf("ポート番号: %d\n", m_nClientPort);
 
-	CClient *pClient = CClient::GetTop();	// 先頭を取得
-
-	int nCnt = 0;
-
-	while (pClient != NULL)
-	{// 使用されていない状態まで
-
-		CClient *pClientNext = pClient->GetNext();	// 次のオブジェクトへのポインタを取得
-
-		nCnt++;
-		pClient = pClientNext;	// 次のオブジェクトに移動
-	}
-
-	printf("*** 現在%d人接続中***\n", nCnt);
+	printf("*** 現在%d人接続中***\n", m_nNum);
 
 	return sock;
 }

@@ -179,6 +179,7 @@
     <ClCompile Include="code\deltatime.cpp" />
     <ClCompile Include="code\edit.cpp" />
     <ClCompile Include="code\edit_gimmick.cpp" />
+    <ClCompile Include="code\edit_goal.cpp" />
     <ClCompile Include="code\edit_handle.cpp" />
     <ClCompile Include="code\edit_manager.cpp" />
     <ClCompile Include="code\edit_object.cpp" />
@@ -264,12 +265,15 @@
     <ClCompile Include="code\text2D.cpp" />
     <ClCompile Include="code\texture.cpp" />
     <ClCompile Include="code\title.cpp" />
+    <ClCompile Include="code\TitleBaggage.cpp" />
+    <ClCompile Include="code\TitleMap.cpp" />
     <ClCompile Include="code\tutorial.cpp" />
     <ClCompile Include="code\Xfile.cpp" />
     <ClCompile Include="code\road.cpp" />
     <ClCompile Include="code\edit_arrow.cpp" />
     <ClCompile Include="code\map_manager.cpp" />
     <ClCompile Include="code\timer.cpp" />
+    <ClCompile Include="code\player_result.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\add_police.h" />
@@ -288,6 +292,7 @@
     <ClInclude Include="code\deliverystatus.h" />
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\edit_gimmick.h" />
+    <ClInclude Include="code\edit_goal.h" />
     <ClInclude Include="code\edit_scale.h" />
     <ClInclude Include="code\effect2D.h" />
     <ClInclude Include="code\effekseerControl.h" />
@@ -372,6 +377,8 @@
     <ClInclude Include="code\text2D.h" />
     <ClInclude Include="code\texture.h" />
     <ClInclude Include="code\title.h" />
+    <ClInclude Include="code\TitleBaggage.h" />
+    <ClInclude Include="code\TitleMap.h" />
     <ClInclude Include="code\tutorial.h" />
     <ClInclude Include="code\Xfile.h" />
     <ClInclude Include="code\road.h" />
@@ -381,6 +388,7 @@
     <ClInclude Include="code\timer.h" />
     <ClInclude Include="code\pred_route.h" />
     <ClInclude Include="code\inspection_manager.h" />
+    <ClInclude Include="code\player_result.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

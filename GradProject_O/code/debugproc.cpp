@@ -291,6 +291,8 @@ void CDebugProc::Print(const char* fmt, ...)
 
 	va_end(args);
 
+	if (strlen(&m_aStr[0]) + strlen(&aString[0]) >= 2048) { return; }
+
 	// ¡‰ñ‚Ì•¶š
 	strcat(&m_aStr[0], &aString[0]);
 }

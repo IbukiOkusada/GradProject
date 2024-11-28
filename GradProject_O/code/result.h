@@ -15,6 +15,8 @@ class CMeshDome;
 class CTime;
 class CCharacter;
 class CObject2D;
+class CNumber;
+class CObjectX;
 
 #define MAX_RANK	(4)		// ランキングの順位数
 
@@ -47,13 +49,27 @@ public:
 	static void SetScore(const int nScore) { m_nScore = nScore; }
 
 private:
+	void Calculation(int* Obj, float Score, int Cnt, int ObjMax);
 
 	// メンバ変数
-	CFileLoad *m_pFileLoad;	// ファイル読み込みのポインタ
-	CMeshDome *m_pMeshSky;	// 空用
-	CTime *m_pTime;			// タイマー
-	CObject2D *m_pObjClear;	// clearしたかどうか
-	CPlayer *m_ppPlayer;	// プレイヤーのポインタ
+	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
+	CMeshDome *m_pMeshSky;		// 空用
+	CTime *m_pTime;				// タイマー
+	CObject2D *m_pObjClear;		// clearしたかどうか
+	CPlayer *m_ppPlayer;		// プレイヤーのポインタ
+	CObjectX *m_pObj;		// 描画オブジェクト
+
+	CNumber* m_pDeliObject2D;	// 届けた数のオブジェクト
+	CNumber* m_pTimeObject2D[3];// 残りタイムのオブジェクト
+	CNumber* m_pLifeObject2D[3];// 残り体力のオブジェクト
+
+	static int m_nDeli;
+	static float m_fTime;
+	static float m_fLife;
+
+	int m_TimeObj[3];
+	int m_LifeObj[3];
+
 	static int m_nScore;
 };
 

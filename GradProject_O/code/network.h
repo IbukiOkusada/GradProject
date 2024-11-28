@@ -43,6 +43,7 @@ public:
 	bool ReConnect();
 	bool DisConnect();
 	STATE GetState() { return m_state; }
+	void Update();
 
 	// 送信関数
 	void SendNone();
@@ -53,12 +54,14 @@ public:
 	void SendPlRot(const D3DXVECTOR3& rot);
 	void SendPlDamage(const float nowlife);
 	void SendPlGoal(int nId);
+	void SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float fSpeed);
 
 	// メンバ関数(設定)
 
 	// メンバ関数(取得)
 	int GetIdx() { return m_nMyIdx; }
 	bool GetConnect(int nIdx = 0) { return m_aConnect[nIdx]; }
+	NetWork::CTime* GetTime() { return &m_SendTime; }
 
 private:
 
@@ -80,6 +83,7 @@ private:
 	void RecvPlRot(int* pByte, const int nId, const char* pRecvData);
 	void RecvPlDamage(int* pByte, const int nId, const char* pRecvData);
 	void RecvPlGoal(int* pByte, const int nId, const char* pRecvData);
+	void RecvGmHit(int* pByte, const int nId, const char* pRecvData);
 
 	// メンバ関数
 	HRESULT Init();
@@ -104,6 +108,7 @@ private:
 	mutex m_aPlayerMutex[NetWork::MAX_CONNECT] = {};			// ミューテックス
 	mutex m_mutex;
 	bool m_aConnect[NetWork::MAX_CONNECT];
+	NetWork::CTime m_SendTime;
 
 	// 静的メンバ変数
 	static CNetWork* m_pInstance;	// インスタンス

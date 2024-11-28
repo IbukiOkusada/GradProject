@@ -32,6 +32,7 @@ private:	// 自分だけアクセス可能
 	SOCKET m_sockServer; // サーバー用ソケット
 	char m_aClientIP[64];	// IPアドレス
 	int m_nClientPort;		// ポート番号
+	static int m_nNum;
 };
 
 #endif

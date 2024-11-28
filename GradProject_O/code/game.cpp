@@ -51,7 +51,10 @@
 #include "gimmick_guardrail.h"
 #include "goal_manager.h"
 #include "police_manager.h"
+
+// ネットワーク
 #include "network.h"
+
 // 無名名前空間を定義
 namespace {
     const int MAX_STRING = (2048);
@@ -197,12 +200,12 @@ HRESULT CGame::Init(void)
 
     if (m_pGoalManager == nullptr)
     {
-        m_pGoalManager = new CGoalManager;
+        m_pGoalManager = CGoalManager::Create();
     }
 
-    CGole::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
-    CGole::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
-    CGole::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
+    CGoal::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
+    CGoal::Create(D3DXVECTOR3(-8600.0f, 0.0f, -10600.0f), 600.0f, 20.0f);
+    CGoal::Create(D3DXVECTOR3(0.0f, 0.0f, -4000.0f), 600.0f, 20.0f);
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
     if (m_pDeliveryStatus == nullptr)
@@ -253,8 +256,7 @@ void CGame::Uninit(void)
 
     if (m_pGoalManager != nullptr)
     {
-        m_pGoalManager->Uninit();
-        delete m_pGoalManager;
+        m_pGoalManager->Release();
         m_pGoalManager = nullptr;
     }
 
@@ -268,7 +270,7 @@ void CGame::Uninit(void)
     CEditManager::Release();
 
     m_state = STATE_LOCAL;
-    CGole::ListRelease();
+    CGoal::ListRelease();
 }
 
 //===============================================
@@ -341,6 +343,10 @@ void CGame::Update(void)
             if (player != nullptr && !net->GetConnect(i))
             {
                 player->Uninit();
+            }
+            else if (player == nullptr && net->GetConnect(i))
+            {
+                CPlayer::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, i);
             }
         }
     }

@@ -8,6 +8,7 @@
 #include "edit_object.h"
 #include "edit_road.h"
 #include "edit_gimmick.h"
+#include "edit_goal.h"
 
 //==========================================================
 // コンストラクタ
@@ -72,6 +73,10 @@ CEdit* CEdit::Create(const TYPE& type)
 
 	case TYPE_GIMMICK:
 		pEdit = DEBUG_NEW CEdit_Gimmick;
+		break;
+
+	case TYPE_GOAL:
+		pEdit = DEBUG_NEW CEdit_Goal;
 		break;
 
 	default:

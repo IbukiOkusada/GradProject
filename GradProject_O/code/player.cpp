@@ -10,8 +10,6 @@
 #include "input.h"
 #include "debugproc.h"
 #include "camera.h"
-#include "Xfile.h"
-#include "slow.h"
 #include "texture.h"
 #include "meshfield.h"
 #include "Xfile.h"
@@ -51,7 +49,11 @@
 #include "scrollString2D.h"
 #include "scrollText2D.h"
 #include "bridge.h"
-#include "network.h"
+#include "navi.h"
+#include "scrollString2D.h"
+#include "scrollText2D.h"
+#include "radio.h"
+
 //===============================================
 // マクロ定義
 //===============================================
@@ -169,7 +171,6 @@ CPlayer::SETTYPE_FUNC CPlayer::m_SetTypeFunc[] =
 //===============================================
 // コンストラクタ(オーバーロード)
 //===============================================
-
 CPlayer::CPlayer(int nId)
 {
 	// 値をクリアする
@@ -191,8 +192,6 @@ CPlayer::CPlayer(int nId)
 	m_fNitroCool = 0.0f;
 
 	m_pObj = nullptr;
-	m_pPrev = nullptr;
-	m_pNext = nullptr;
 	m_pDamageEffect = nullptr;
 	m_pSound = nullptr;
 	m_pBaggage = nullptr;	
@@ -209,7 +208,8 @@ CPlayer::CPlayer(int nId)
 	m_pCollSound = nullptr;
 	m_pSoundBrake = nullptr;
 	m_pContainer = nullptr;
-	pRadio = nullptr;
+	m_pRadio = nullptr;
+	m_pNavi = nullptr;
 	m_type = TYPE::TYPE_RECV;
 
 	for (int i = 0; i < NUM_TXT; i++)
@@ -247,7 +247,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
 	
-	m_pContainer = CContainer::Create();
+	//m_pContainer = CContainer::Create();
 	
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -260,6 +260,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 //===============================================
 void CPlayer::Uninit(void)
 {	
+	CManager::GetInstance()->SetDeliveryStatus(m_nNumDeliveryStatus);
+	CManager::GetInstance()->SetLife(m_fLife);
+
 	SAFE_UNINIT(m_pContainer);
 	SAFE_UNINIT(m_pObj);
 	SAFE_UNINIT(m_pBaggage);
@@ -269,7 +272,7 @@ void CPlayer::Uninit(void)
 	SAFE_DELETE(m_pDamageEffect);
 	SAFE_UNINIT_DELETE(m_pSound);
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
-	SAFE_UNINIT_DELETE(pRadio);
+	SAFE_UNINIT_DELETE(m_pRadio);
 	SAFE_UNINIT_DELETE(m_pCollSound);
 
 	CPlayerManager::GetInstance()->ListOut(this);
@@ -312,9 +315,9 @@ void CPlayer::Update(void)
 
 	StateSet();
 
-	if (pRadio != nullptr)
+	if (m_pRadio != nullptr)
 	{
-		pRadio->Update();
+		m_pRadio->Update();
 	}
 	if (m_type == TYPE_ACTIVE)
 	{
@@ -421,7 +424,7 @@ void CPlayer::Update(void)
 		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
 	}
 
-	// 自信の場合
+	// 自身の場合
 	if (m_type != TYPE::TYPE_RECV)
 	{
 		CNetWork* pNet = CNetWork::GetInstance();
@@ -429,11 +432,15 @@ void CPlayer::Update(void)
 		// データの送信
 		if (pNet != nullptr)
 		{
-			pNet->SendPlPos(m_Info.pos);
-			pNet->SendPlRot(m_Info.rot);
+			if (pNet->GetTime()->IsOK())
+			{
+				pNet->SendPlPos(m_Info.pos);
+				pNet->SendPlRot(m_Info.rot);
+			}
 		}
 	}
 
+	
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー :");
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
@@ -490,7 +497,8 @@ void CPlayer::Controller(void)
 	Rotate();
 
 	// 向き補正
-	Adjust();
+	m_Info.rot.y += m_fTurnSpeed;
+	Adjust(m_Info.rot.y);
 }
 
 //===============================================
@@ -630,34 +638,6 @@ void CPlayer::Rotate(void)
 	}
 
 	// m_fRotDiffの値変えてくれれば補正するよん
-}
-
-//===============================================
-// 調整
-//===============================================
-void CPlayer::Adjust(void)
-{
-
-	m_Info.rot.y += m_fTurnSpeed;
-
-	while (1)
-	{
-		if (m_Info.rot.y > D3DX_PI || m_Info.rot.y < -D3DX_PI)
-		{//-3.14～3.14の範囲外の場合
-			if (m_Info.rot.y > D3DX_PI)
-			{
-				m_Info.rot.y += (-D3DX_PI * 2);
-			}
-			else if (m_Info.rot.y < -D3DX_PI)
-			{
-				m_Info.rot.y += (D3DX_PI * 2);
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
 }
 
 //===============================================
@@ -897,6 +877,17 @@ void CPlayer::Damage(float fDamage)
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\minor_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
 	}
 }
+
+//===============================================
+// エントリー画面でエフェクトが出ないようにするため
+//===============================================
+void CPlayer::EffectUninit(void)
+{
+	SAFE_DELETE(m_pTailLamp);
+	SAFE_DELETE(m_pBackdust);
+	SAFE_DELETE(m_pAfterburner);
+}
+
 //===============================================
 // 加速
 //===============================================
@@ -1145,8 +1136,12 @@ void CPlayer::RecvInerSet()
 	// 向き
 	{
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
-		D3DXVECTOR3 rot = m_Info.rot + diff * RECV_INER;
+		Adjust(diff);
+
+		D3DXVECTOR3 rot = m_Info.rot + diff * (RECV_INER * 0.5f);
+		Adjust(rot);
 		m_Info.rot = rot;
+		Adjust(m_Info.rot);
 	}
 }
 
@@ -1172,7 +1167,7 @@ void CPlayer::SetStateRecv()
 
 	SAFE_UNINIT_DELETE(m_pSound);
 	SAFE_UNINIT_DELETE(m_pSoundBrake);
-	SAFE_UNINIT_DELETE(pRadio);
+	SAFE_UNINIT_DELETE(m_pRadio);
 	SAFE_UNINIT_DELETE(m_pCollSound);
 
 	for (int i = 0; i < NUM_TXT; i++)
@@ -1204,9 +1199,9 @@ void CPlayer::SetStateActive()
 	}
 
 	// ラジオ生成
-	if (pRadio == nullptr)
+	if (m_pRadio == nullptr)
 	{
-		pRadio = CRadio::Create();
+		m_pRadio = CRadio::Create();
 	}
 
 	// ナビ生成
@@ -1254,4 +1249,9 @@ void CPlayer::SetStateActive()
 			m_pFont[i]->PushBackString(START_TEXT[i][j]);
 		}
 	}
+}
+
+int CPlayer::GetModelIndex(void)
+{ 
+	return m_pObj->GetIdx(); 
 }

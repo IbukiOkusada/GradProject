@@ -25,12 +25,14 @@
 #include "object_manager.h"
 #include "camera_manager.h"
 #include "player_manager.h"
+#include "player.h"
 #include "road_manager.h"
 #include "car_manager.h"
 #include "effekseerControl.h"
 #include "objectsound.h"
 #include "font.h"
 #include "deltatime.h"
+#include "entry.h"
 #include "network.h"
 
 //===============================================
@@ -57,6 +59,7 @@ CManager::CManager()
 	m_pDeltaTime = nullptr;     // タイマーへのポインタ
 	m_pFont = nullptr;
 	m_pNetWork = nullptr;
+	m_nDeliveryStatus = 0;
 }
 
 //===================================================
@@ -189,14 +192,14 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pNetWork = CNetWork::Create();
 
 		// 接続
-		//CNetWork::GetInstance()->ReConnect();
+		//m_pNetWork->ReConnect();
 	}
 
 	// エフェクシア初期化
 	CEffekseer::GetInstance()->Init();
 	
 	// モードの生成
-	SetMode(CScene::MODE_GAME);
+	SetMode(CScene::MODE_RESULT);
 
 	return S_OK;
 }
@@ -322,7 +325,7 @@ void CManager::Uninit(void)
 	}
 
 	// ネットワークの生成
-	if (m_pNetWork == nullptr)
+	if (m_pNetWork != nullptr)
 	{
 		m_pNetWork->Release();
 		m_pNetWork = nullptr;
@@ -355,6 +358,15 @@ void CManager::Update(void)
 	if (m_pDebugProc != nullptr)
 	{// 使用している場合
 		m_pDebugProc->Update();
+		m_pDebugProc->Print("自分自身のID [ %d ]\n", m_pNetWork->GetIdx());
+
+		for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+		{
+			if (m_pNetWork->GetConnect(i))
+			{
+				m_pDebugProc->Print("%d番オンラインだよ\n", i);
+			}
+		}
 	}
 
 	// 入力の更新処理
@@ -363,10 +375,21 @@ void CManager::Update(void)
 		m_pInput->Update();
 	}
 
+	// 送信タイミング取得
+	if (m_pNetWork != nullptr)
+	{
+		m_pNetWork->GetTime()->End();
+	}
+
 	if (m_pScene != nullptr)
 	{
 		CEffekseer::GetInstance()->Update();
 		m_pScene->Update();
+	}
+
+	if (m_pNetWork != nullptr)
+	{
+		m_pNetWork->Update();
 	}
 }
 
@@ -648,6 +671,10 @@ CScene *CScene::Create(MODE mode)
 
 	case MODE_TUTORIAL:
 		pScene = DEBUG_NEW CTutorial;
+		break;
+
+	case MODE_ENTRY:
+		pScene = DEBUG_NEW CEntry;
 		break;
 
 	case MODE_GAME:

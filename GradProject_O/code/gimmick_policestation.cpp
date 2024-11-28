@@ -109,6 +109,7 @@ void CGimmickPoliceStation::Update(void)
 
 	// プレイヤーを確認
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+	if (pPlayer == nullptr) { return; }
 	if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// セーフ
 
 	// 距離判定

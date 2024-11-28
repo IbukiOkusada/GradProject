@@ -4,9 +4,12 @@
 //Author : Kazuki Watanabe
 //<=================================================
 #include "PlayerTitle.h"
+#include "player_manager.h"
 #include "camera.h"
 #include "camera_manager.h"
 #include "debugproc.h"
+#include "objectX.h"
+#include "navi.h"
 
 //<************************************************
 //名前宣言
@@ -15,8 +18,8 @@ namespace
 {
 	//目的地の位置
 	const D3DXVECTOR3 DEST_POS[] = 
-	{ D3DXVECTOR3(-4734.0f, 0.0f, 1054.0f), 
-		D3DXVECTOR3(-4734.0f, 0.0f, -200.0f),
+	{ D3DXVECTOR3(2630.0f, 0.0f, 1054.0f),
+		D3DXVECTOR3(2630.0f, 0.0f, -200.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
@@ -60,11 +63,13 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
-	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
-	m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
-	m_pSoundBrake->SetVolume(0.0f);
-	pRadio = CRadio::Create();
+	SetMatrix();
 	m_pNavi = CNavi::Create();
+
+	//エフェクト生成
+	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 
 	return S_OK;
 }
@@ -87,8 +92,6 @@ void CPlayerTitle::Update(void)
 		m_Info.posOld = GetPosition();
 
 		StateSet();
-		pRadio->Update();
-
 		// マトリックス
 		SetMatrix();
 
@@ -113,6 +116,16 @@ void CPlayerTitle::Update(void)
 			rot.y -= D3DX_PI * 0.5f;
 			//CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 		}
+		//<********************************
+		//エフェクトを出す
+		//<********************************
+		m_pTailLamp->m_pos = GetPosition();
+		m_pTailLamp->m_rot = GetRotation();
+		m_pBackdust->m_pos = GetPosition();
+		m_pBackdust->m_rot = GetRotation();
+		m_pBackdust->m_Scale = VECTOR3_ONE * 50.0f;
+		m_pAfterburner->m_pos = GetPosition();
+		m_pAfterburner->m_Scale = VECTOR3_ONE * m_fBrake * 150.0f;
 	}
 	//デバッグだったら
 	else if (m_eState == STATE_DEBUG)

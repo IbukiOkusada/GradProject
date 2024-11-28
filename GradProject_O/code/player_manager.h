@@ -8,6 +8,8 @@
 #define _PLAYERMANAGER_H_		// 二重インクルード防止用マクロを定義
 
 #include "list_manager.h"
+
+// ネットワーク
 #include "network.h"
 
 // 前方宣言

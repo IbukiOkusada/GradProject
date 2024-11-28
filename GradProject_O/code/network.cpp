@@ -6,8 +6,13 @@
 //===============================================
 #include "network.h"
 #include "tcp_client.h"
-#include "player.h"
+
+// データ受け渡し用
 #include "player_manager.h"
+#include "player.h"
+#include "goal.h"
+#include "gimmick.h"
+#include "debugproc.h"
 
 //===============================================
 // 名前空間
@@ -33,6 +38,7 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvPlRot,	// プレイヤー向き
 	&CNetWork::RecvPlDamage,	// プレイヤーダメージ
 	&CNetWork::RecvPlGoal,	// プレイヤーゴール
+	&CNetWork::RecvGmHit,	// ギミックヒット
 };
 
 // 静的メンバ変数
@@ -122,6 +128,9 @@ void CNetWork::Uninit()
 {
 	m_bEnd = true;
 
+	// 切断
+	DisConnect();
+
 	// クライアントの終了
 	if (m_pClient != nullptr)
 	{
@@ -130,7 +139,33 @@ void CNetWork::Uninit()
 		m_pClient = nullptr;
 	}
 
+	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+	{
+
+		m_aConnect[i] = false;
+
+	}
+
+	m_nMyIdx = -1;
+
 	delete this;
+}
+
+//===============================================
+// 終了
+//===============================================
+void CNetWork::Update()
+{
+	if (m_SendTime.IsOK())
+	{
+		m_SendTime.Start();
+
+		if (m_pClient == nullptr) { return; }
+		m_pClient->Send();
+	}
+
+	if (m_pClient == nullptr) { return; }
+	CDebugProc::GetInstance()->Print("現在のバイト数 [ %d ]\n", m_pClient->GetByte());
 }
 
 //===============================================
@@ -214,6 +249,7 @@ bool CNetWork::ReConnect()
 		m_pClient = nullptr;
 		m_state = STATE_SINGLE;
 		m_nMyIdx = -1;
+		m_bEnd = true;
 		return false; 
 	}
 
@@ -247,11 +283,17 @@ bool CNetWork::DisConnect()
 	}
 
 	// 終了処理
-	m_pClient->Uninit();
+	if (m_pClient != nullptr)
+	{
+		m_pClient->Uninit();
+	}
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
-		m_aConnect[i] = false;
+		if (m_nMyIdx != i)
+		{
+			m_aConnect[i] = false;
+		}
 	}
 
 	return true;
@@ -275,11 +317,19 @@ void CNetWork::Online(void)
 
 		// 受信
 		int* pRecvByte = DEBUG_NEW int;
-		*pRecvByte = m_pClient->Recv(&pData[0], NetWork::MAX_SEND_DATA);
+		*pRecvByte = m_pClient->Recv(pData, NetWork::MAX_SEND_DATA);
 
-		// マルチスレッド
-		std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
-		th.detach();
+		if (*pRecvByte > 0)
+		{
+			// マルチスレッド
+			std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
+			th.detach();
+		}
+		else
+		{
+			DeleteData(pData, pRecvByte);
+			break;
+		}
 	}
 
 	m_nSledCnt--;
@@ -308,7 +358,7 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 	int nByte = 0;	// バイト数
 
 	// 終端文字まで確認する
-	while (nByte < *pRecvByte)
+	while (1)
 	{
 		int id = -1;		// ID
 		int command = NetWork::COMMAND_NONE;	// コマンド番号
@@ -322,7 +372,7 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 		nByte += sizeof(int);
 
 		// コマンドがオーバーした
-		if (command >= NetWork::COMMAND_MAX)
+		if (command >= NetWork::COMMAND_MAX || command < NetWork::COMMAND_NONE)
 		{
 			// データ削除
 			DeleteData(pRecvData, pRecvByte);
@@ -333,9 +383,12 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 		}
 
 		// コマンドを実行
-		if (nByte < *pRecvByte)
+		(this->*(m_RecvFunc[command]))(&nByte, id, &pRecvData[nByte]);
+
+		// 全て見た
+		if (nByte >= *pRecvByte)
 		{
-			(this->*(m_RecvFunc[command]))(&nByte, id, &pRecvData[nByte]);
+			break;
 		}
 	}
 
@@ -367,7 +420,7 @@ void CNetWork::DeleteData(char* pRecvData, int* pRecvByte)
 //===================================================
 void CNetWork::OnlineEnd(void)
 {
-	if (GetActive())
+	if (m_pClient != nullptr)
 	{
 		std::string senddata;
 		senddata.resize(sizeof(int) + 1);
@@ -377,7 +430,8 @@ void CNetWork::OnlineEnd(void)
 		memcpy(&senddata[0], &nProt, sizeof(int));
 
 		// 送信
-		m_pClient->Send(senddata.c_str(), sizeof(int));
+		m_pClient->SetData(senddata.c_str(), sizeof(int));
+		m_pClient->Send();
 	}
 }
 
@@ -418,7 +472,7 @@ CPlayer* CNetWork::CreatePlayer(int nId)
 //===================================================
 void CNetWork::RecvNone(int* pByte, const int nId, const char* pRecvData)
 {
-
+	
 }
 
 //===================================================
@@ -427,6 +481,7 @@ void CNetWork::RecvNone(int* pByte, const int nId, const char* pRecvData)
 void CNetWork::RecvJoin(int* pByte, const int nId, const char* pRecvData)
 {
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	if (m_nMyIdx < 0) { return; }
 
 	// 接続されたことにする
 	m_aConnect[nId] = true;
@@ -468,7 +523,7 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 	*pByte += sizeof(D3DXVECTOR3);
 
 	// プレイヤーの存在確認
-	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT || nId == m_nMyIdx) { return; }
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
 
 	// 生成していない場合
@@ -512,7 +567,7 @@ void CNetWork::RecvPlRot(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPlDamage(int* pByte, const int nId, const char* pRecvData)
 {
-	
+	if (m_pClient == nullptr) { return; }
 }
 
 //===================================================
@@ -520,7 +575,53 @@ void CNetWork::RecvPlDamage(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
 {
+	// ゴールのIdを得る
+	int goalid = -1;
+	memcpy(&goalid, pRecvData, sizeof(int));
+	*pByte += 4;
 
+	CGoal* pGoal = CGoal::GetInstance()->Get(goalid);
+
+	if (pGoal == nullptr) {
+		return;
+	}
+
+	pGoal->SetEnd(nId);
+}
+
+//===================================================
+// ギミックのヒットを取得
+//===================================================
+void CNetWork::RecvGmHit(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// ギミックのIdを得る
+	int gmid = -1;
+	memcpy(&gmid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// 衝突位置を取得
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// 速度を取得
+	float speed = 0.0f;
+	memcpy(&speed, &pRecvData[byte], sizeof(float));
+	*pByte += sizeof(float);
+	byte += sizeof(float);
+
+	CGimmick* pGimmick = CGimmick::GetList()->Get(gmid);
+
+	if (pGimmick == nullptr) {
+		return;
+	}
+
+	// 衝突した状態にする
+	pGimmick->Hit(pos, speed);
 }
 
 //===================================================
@@ -553,7 +654,7 @@ void CNetWork::SendGetId()
 	memcpy(&aSendData[0], &nProt, sizeof(int));
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int));
+	m_pClient->SetData(&aSendData[0], sizeof(int));
 }
 
 //===================================================
@@ -565,12 +666,14 @@ void CNetWork::SendDelete()
 
 	char aSendData[sizeof(int)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_DELETE;
+	int byte = 0;
 
 	// protocolを挿入
-	memcpy(&aSendData[0], &nProt, sizeof(int));
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int));
+	m_pClient->SetData(&aSendData[0], byte);
 
 	DisConnect();
 }
@@ -584,15 +687,18 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
 
 	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PL_POS;
+	int byte = 0;
 
 	// protocolを挿入
-	memcpy(&aSendData[0], &nProt, sizeof(int));
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
 	// 座標を挿入
-	memcpy(&aSendData[sizeof(int)], &pos, sizeof(D3DXVECTOR3));
+	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int) + sizeof(D3DXVECTOR3));
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -602,17 +708,20 @@ void CNetWork::SendPlRot(const D3DXVECTOR3& rot)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) ] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PL_ROT;
+	int byte = 0;
 
 	// protocolを挿入
-	memcpy(&aSendData[0], &nProt, sizeof(int));
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
 	// 座標を挿入
-	memcpy(&aSendData[sizeof(int)], &rot, sizeof(D3DXVECTOR3));
+	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
 
 	// 送信
-	m_pClient->Send(&aSendData[0], sizeof(int) + sizeof(D3DXVECTOR3));
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -621,6 +730,8 @@ void CNetWork::SendPlRot(const D3DXVECTOR3& rot)
 void CNetWork::SendPlDamage(const float nowlife)
 {
 	if (!GetActive()) { return; }
+
+	int byte = 0;
 }
 
 //===================================================
@@ -629,4 +740,50 @@ void CNetWork::SendPlDamage(const float nowlife)
 void CNetWork::SendPlGoal(int nId)
 {
 	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// 送信用
+	int nProt = NetWork::COMMAND_PL_GOAL;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// ゴールしたIDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ギミックに衝突したことを送信
+//===================================================
+void CNetWork::SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float fSpeed)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float) + 1] = {};	// 送信用
+	int nProt = NetWork::COMMAND_GM_HIT;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 衝突したギミックのIDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 衝突した座標を挿入
+	memcpy(&aSendData[byte], &HitPos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// 衝突速度を挿入
+	memcpy(&aSendData[byte], &fSpeed, sizeof(float));
+	byte += sizeof(float);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
 }

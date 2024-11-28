@@ -1,17 +1,9 @@
-//==========================================================
-//
-// タスク管理の処理 [task_manager.cpp]
-// Author : Ibuki Okusada
-//
-//==========================================================
-#include "map_manager.h"
+#include "TitleMap.h"
 #include "road.h"
 #include "map_obstacle.h"
 #include "manager.h"
 #include "road_manager.h"
 #include "gimmick.h"
-#include "goal_manager.h"
-#include "goal.h"
 
 namespace
 {
@@ -31,22 +23,6 @@ namespace
 		"data\\FILE\\map\\obstacle.bin",
 	};
 
-	const std::string GIMMICKFILENAME[CScene::MODE_MAX] = {	// ギミックファイル名
-		"data\\FILE\\map\\gimmick.bin",
-		"data\\FILE\\map\\gimmick.bin",
-		"data\\FILE\\map\\gimmick.bin",
-		"data\\FILE\\map\\gimmick.bin",
-		"data\\FILE\\map\\gimmick.bin",
-	};
-
-	const std::string GOALFILENAME[CScene::MODE_MAX] = {	// ゴールファイル名
-		"data\\FILE\\map\\goal.bin",
-		"data\\FILE\\map\\goal.bin",
-		"data\\FILE\\map\\goal.bin",
-		"data\\FILE\\map\\goal.bin",
-		"data\\FILE\\map\\goal.bin",
-	};
-
 	const std::string MODELNAMEFILE[CScene::MODE_MAX] = {	// モデル名ファイル
 		"data\\TXT\\model_info.txt",
 		"data\\TXT\\model_info.txt",
@@ -57,28 +33,28 @@ namespace
 }
 
 // 静的メンバ変数宣言
-CMapManager* CMapManager::m_pInstance = nullptr;
+CTitleMap* CTitleMap::m_pInstance = nullptr;
 
-//==========================================================
-// コンストラクタ
-//==========================================================
-CMapManager::CMapManager()
+//<==========================================================
+//コンストラクタ
+//<==========================================================
+CTitleMap::CTitleMap()
 {
+	//道のファイルネームをクリアする
 	m_LoadFileName.clear();
-}
 
-//==========================================================
-// デストラクタ
-//==========================================================
-CMapManager::~CMapManager()
+}
+//<==========================================================
+//デストラクタ
+//<==========================================================
+CTitleMap::~CTitleMap()
 {
 
 }
-
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CMapManager::Init(void)
+HRESULT CTitleMap::Init(void)
 {
 	return S_OK;
 }
@@ -86,7 +62,7 @@ HRESULT CMapManager::Init(void)
 //==========================================================
 // 終了処理
 //==========================================================
-void CMapManager::Uninit(void)
+void CTitleMap::Uninit(void)
 {
 	// 親クラスの終了処理
 	CListManager::Uninit();
@@ -98,52 +74,21 @@ void CMapManager::Uninit(void)
 		m_pInstance = nullptr;
 	}
 }
-
-//===============================================
-// インスタンスの取得
-//===============================================
-CMapManager* CMapManager::GetInstance()
-{
-	if (m_pInstance == nullptr)
-	{
-		m_pInstance = DEBUG_NEW CMapManager;
-	}
-
-	return m_pInstance;
-}
-
-//===============================================
-// インスタンスの廃棄
-//===============================================
-void CMapManager::Release(void)
-{
-	if (m_pInstance != nullptr)
-	{
-		m_pInstance->Uninit();
-	}
-}
-
 //===============================================
 // ファイル読み込み
 //===============================================
-void CMapManager::Load(void)
+void CTitleMap::Load(void)
 {
 	CScene::MODE mode = CManager::GetInstance()->GetMode();
 
 	// モデルファイル名読み込み
-	LoadModelName(MODELNAMEFILE[mode]);
+	LoadModelName("data\\TXT\\model_info.txt");
 
 	// 道読み込み
-	LoadRoad(ROADFILENAME[mode]);
-
-	// ギミック読み込み
-	LoadGimmick(GIMMICKFILENAME[mode]);
+	LoadRoad("data\\FILE\\map\\road.bin");
 
 	// 障害物読み込み
-	LoadObstacle(OBSTACLEFILENAME[mode]);
-
-	// ゴール読み込み
-	LoadGoal(GOALFILENAME[mode]);
+	//LoadObstacle("data\\FILE\\map\\obstacle.bin");
 
 	// 道連結
 	CRoadManager::GetInstance()->AllConnect();
@@ -152,7 +97,7 @@ void CMapManager::Load(void)
 //===============================================
 // ファイル読み込み
 //===============================================
-void CMapManager::LoadRoad(const std::string& filename)
+void CTitleMap::LoadRoad(const std::string& filename)
 {
 	// ファイルを開く
 	std::ifstream File(filename, std::ios::binary);
@@ -181,8 +126,10 @@ void CMapManager::LoadRoad(const std::string& filename)
 //===============================================
 // ファイル読み込み
 //===============================================
-void CMapManager::LoadObstacle(const std::string& filename)
+void CTitleMap::LoadObstacle(const std::string& filename)
 {
+	CMapObstacle* C = nullptr;
+
 	// ファイルを開く
 	std::ifstream File(filename, std::ios::binary);
 	if (!File.is_open()) {
@@ -208,37 +155,9 @@ void CMapManager::LoadObstacle(const std::string& filename)
 }
 
 //===============================================
-// ファイル読み込み
-//===============================================
-void CMapManager::LoadGoal(const std::string& filename)
-{
-	// ファイルを開く
-	std::ifstream File(filename, std::ios::binary);
-	if (!File.is_open()) {
-		// 例外処理
-		return;
-	}
-
-	// サイズ読み込み
-	int size = 0;
-	File.read(reinterpret_cast<char*>(&size), sizeof(size));
-
-	// データ読み込み
-	std::vector<CGoal::SInfo> roaddata(size);
-	File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CGoal::SInfo));
-
-	// ファイルを閉じる
-	File.close();
-
-	// ゴールマネージャーで管理
-	CGoalManager::Create();
-	CGoalManager::GetInstance()->SetInfoList(roaddata);
-}
-
-//===============================================
 // モデル名ファイル読み込み
 //===============================================
-void CMapManager::LoadModelName(const std::string& filename)
+void CTitleMap::LoadModelName(const std::string& filename)
 {
 	// ファイルを開く
 	std::ifstream File(filename);
@@ -288,35 +207,6 @@ void CMapManager::LoadModelName(const std::string& filename)
 		{
 			break;
 		}
-	}
-
-	// ファイルを閉じる
-	File.close();
-}
-
-//===============================================
-// ギミック読み込み
-//===============================================
-void CMapManager::LoadGimmick(const std::string& filename)
-{
-	// ファイルを開く
-	std::ifstream File(filename, std::ios::binary);
-	if (!File.is_open()) {
-		// 例外処理
-		return;
-	}
-
-	// サイズ読み込み
-	int size = 0;
-	File.read(reinterpret_cast<char*>(&size), sizeof(size));
-
-	// データ読み込み
-	std::vector<CGimmick::SInfo> roaddata(size);
-	File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CGimmick::SInfo));
-
-	for (const auto& it : roaddata)
-	{
-		CGimmick::Create(it.pos, it.rot, it.scale, it.type);
 	}
 
 	// ファイルを閉じる

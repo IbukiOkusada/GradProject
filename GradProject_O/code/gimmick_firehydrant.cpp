@@ -14,6 +14,8 @@
 #include "particle3D.h"
 #include "player.h"
 #include "player_manager.h"
+#include "network.h"
+#include "effekseerControl.h"
 
 // 定数定義
 namespace
@@ -84,24 +86,12 @@ void CGimmickFireHydrant::Update(void)
 	// 衝突した
 	if (m_pObj->GetHit() || m_pObj->GetHitOld())
 	{
-		m_bHit = true;
-		m_pObj->SetEnableCollision(false);
 		D3DXVECTOR3 pos = CPlayerManager::GetInstance()->GetPlayer()->GetPosition();
-		float rot = atan2f(GetPos().x - pos.x, GetPos().z - pos.z);
 		float speed = CPlayerManager::GetInstance()->GetPlayer()->GetEngine();
+		Hit(pos, speed);
 
-		// 座標設定
-		m_TargetPos = {
-			GetPos().x + sinf(rot) * speed * 500.0f,
-			GetPos().y,
-			GetPos().z + cosf(rot) * speed * 500.0f,
-		};
-
-		m_TargetRot = {
-			0.0f,
-			rot,
-			D3DX_PI * 0.5f
-		};
+		// ネットワークでの衝突送信
+		CNetWork::GetInstance()->SendGmHit(GetId(), pos, speed);
 	}
 
 	// 吹っ飛び
@@ -229,4 +219,32 @@ void CGimmickFireHydrant::SetObjScale(const D3DXVECTOR3& scale)
 	if (m_pObj == nullptr) { return; }
 
 	m_pObj->SetScale(scale);
+}
+
+//==========================================================
+// 吹っ飛び
+//==========================================================
+void CGimmickFireHydrant::Hit(const D3DXVECTOR3& HitPos, const float fSpeed)
+{
+	if (m_bHit) { return; }
+
+	m_bHit = true;
+	m_pObj->SetEnableCollision(false);
+	float rot = atan2f(GetPos().x - HitPos.x, GetPos().z - HitPos.z);
+
+	// 座標設定
+	m_TargetPos = {
+		GetPos().x + sinf(rot) * fSpeed * 500.0f,
+		GetPos().y,
+		GetPos().z + cosf(rot) * fSpeed * 500.0f,
+	};
+
+	m_TargetRot = {
+		0.0f,
+		rot,
+		D3DX_PI * 0.5f
+	};
+
+	if (m_pObj->GetHit() || m_pObj->GetHitOld()) { return; }
+	//CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", GetPos(), VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
 }
