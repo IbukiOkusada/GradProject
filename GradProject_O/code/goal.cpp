@@ -126,6 +126,8 @@ void CGoal::Update(void)
 	// エフェクト表示
 	//ScreenEffect();
 
+	CDebugProc::GetInstance()->Print("\nゴール座標 [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+
 	if (m_People.pChara != nullptr)
 	{
 		m_People.pChara->Update();

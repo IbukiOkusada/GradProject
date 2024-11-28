@@ -639,11 +639,11 @@ void CNetWork::CommandNextGoal(const int nId, const char* pRecvData, CClient* pC
 	byte += sizeof(int);
 
 	// ゴールIDを挿入
-	memcpy(&aRecv[byte], &command, sizeof(int));
+	memcpy(&aRecv[byte], pRecvData, sizeof(int));
 	byte += sizeof(int);
 	*pNowByte += sizeof(int);
 
 
 	// プロトコルを送信
-	pClient->Send(&aRecv[0], byte);
+	pClient->SetData(&aRecv[0], byte);
 }
