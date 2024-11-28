@@ -65,6 +65,11 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 	SetMatrix();
 	m_pNavi = CNavi::Create();
 
+	//エフェクト生成
+	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+
 	return S_OK;
 }
 //<================================================
@@ -110,6 +115,16 @@ void CPlayerTitle::Update(void)
 			rot.y -= D3DX_PI * 0.5f;
 			//CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 		}
+		//<********************************
+		//エフェクトを出す
+		//<********************************
+		m_pTailLamp->m_pos = GetPosition();
+		m_pTailLamp->m_rot = GetRotation();
+		m_pBackdust->m_pos = GetPosition();
+		m_pBackdust->m_rot = GetRotation();
+		m_pBackdust->m_Scale = VECTOR3_ONE * 50.0f;
+		m_pAfterburner->m_pos = GetPosition();
+		m_pAfterburner->m_Scale = VECTOR3_ONE * m_fBrake * 150.0f;
 	}
 	//デバッグだったら
 	else if (m_eState == STATE_DEBUG)
