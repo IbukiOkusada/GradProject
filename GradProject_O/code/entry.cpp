@@ -18,13 +18,14 @@
 #include "player_manager.h"
 #include "debugproc.h"
 #include "map_manager.h"
+#include "objectX.h"
 
 //===============================================
 // 定数定義
 //===============================================
 namespace
 {
-    const int WIDTH_NUM = 2;   // 横の分割数
+    const int WIDTH_NUM = 4;   // 横の分割数
     const int HEIGHT_NUM = 2;  // 縦の分割数
     const int MAX_PLAYER = 4;  // プレイヤーの最大数
 
@@ -74,10 +75,9 @@ HRESULT CEntry::Init(void)
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));
 
     // マップ読み込み
-   // CMapManager::GetInstance()->Load();
+    //CMapManager::GetInstance()->Load();
 
     CCameraManager* mgr = CCameraManager::GetInstance();
-    CCamera* pCamera = mgr->GetTop();
 	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
 
     mgr->GetTop()->SetDraw(false);
@@ -91,13 +91,12 @@ HRESULT CEntry::Init(void)
         m_ppCamera[i]->SetPositionR(D3DXVECTOR3(800.0f, 10.0f, 600.0f));
         m_ppCamera[i]->SetPositionV(CAMERA_POS_V);
         
-       
         D3DVIEWPORT9 viewport;
         //プレイヤー追従カメラの画面位置設定
-        viewport.X = (DWORD)((SCREEN_WIDTH * 0.5f) * (i % WIDTH_NUM));
-        viewport.Y = (DWORD)((SCREEN_HEIGHT * 0.5f) * (i / WIDTH_NUM));
+        viewport.X = (DWORD)((SCREEN_WIDTH / 4.0f) * (i % WIDTH_NUM));
+        viewport.Y = (DWORD)(SCREEN_HEIGHT * 0.7f);
 
-        if constexpr (MAX_PLAYER < WIDTH_NUM) {
+        /*if constexpr (MAX_PLAYER < WIDTH_NUM) {
             viewport.Width = (DWORD)(SCREEN_WIDTH * 1.0f);
         }
         else
@@ -111,7 +110,10 @@ HRESULT CEntry::Init(void)
         else
         {
             viewport.Height = (DWORD)(SCREEN_HEIGHT * 0.5f);
-        }
+        }*/
+
+        viewport.Width = (DWORD)(SCREEN_WIDTH / 4.0f);
+        viewport.Height = (DWORD)(SCREEN_HEIGHT * 0.4f);
 
         viewport.MinZ = 0.0f;
         viewport.MaxZ = 1.0f;
@@ -172,8 +174,6 @@ void CEntry::Update(void)
         CDebugProc::GetInstance()->Print("カメラ 注視点 : [%f, %f, %f]\n", CamPosR.x, CamPosR.y, CamPosR.z);
         CDebugProc::GetInstance()->Print("距離 [%f]\n", m_ppCamera[i]->GetLength());
     }
-
-    
 }
 
 //===============================================
@@ -181,6 +181,12 @@ void CEntry::Update(void)
 //===============================================
 void CEntry::Draw(void)
 {
+    auto mgr = CPlayerManager::GetInstance();
+    CPlayer* pPlayer = mgr->GetPlayer();
+
+    
+
+
     // 描画処理(コレ必要だよん!) ← 感謝感激雨あられ
     CScene::Draw();
 }
@@ -196,14 +202,17 @@ void CEntry::AddPlayer(void)
 
     if (pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
-        if (mgr->GetNum() < PLAYER_MAX) 
+        if (mgr->GetNum() < MAX_PLAYER)
         { // 人数が最大ではない場合
 
             int id = mgr->GetNum();
             D3DXVECTOR3 pos = CAMERA_POS_R[id];
             D3DXVECTOR3 CamPosR = m_ppCamera[id]->GetPositionR();
             CPlayer* pPlayer = CPlayer::Create(CamPosR, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, id);
+            pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
             pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
+            pPlayer->GetObj()->SetCamera(m_ppCamera[id]);
+            pPlayer->EffectUninit();
             mgr->ListIn(pPlayer);
         }
     }

@@ -121,6 +121,8 @@ public:	// 誰でもアクセス可能
 
 	void SetNumDeliveryStatus(int nNum) { m_nNumDeliveryStatus = nNum; }
 	void AddDeliveryCount(void) { m_nNumDeliveryStatus++; }
+
+	void EffectUninit(void);
 	
 	// メンバ関数(取得)
 	D3DXVECTOR3& GetMove(void) { return m_Info.move; }
