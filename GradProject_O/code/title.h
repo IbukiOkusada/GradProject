@@ -103,6 +103,7 @@ private:
 
 	//選択
 	void InitingSelect(void);
+	void Sizing(void);
 	void Selecting(void);
 	void SelectYesNO(void);
 	void SelectCol(void);
@@ -135,6 +136,7 @@ private:
 	bool m_bCol;							//色変更しているかどうか		
 	bool m_bNext;							//次に行けるかの是非
 	bool m_bSkipped;						//スキップしたかどうか
+	bool m_bSizing;							//サイズ調整が完了したかどうか
 };
 
 #endif

@@ -36,6 +36,7 @@ namespace
 	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.9f, 0.0f };		//プレスエンターの座標位置
 	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.1f, 0.0f };				//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
+	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };										//フレームの目標値
 
 	//<************************************************
 	//int型
@@ -95,6 +96,7 @@ CTitle::CTitle()
 	m_bSkipped = false;
 	m_bCol = false;
 	m_bIniting = false;
+	m_bSizing = false;
 
 	//ポインタ系
 	m_pPlayer = nullptr;
@@ -322,6 +324,9 @@ void CTitle::StateP_E(void)
 //<===============================================
 void CTitle::MoveP_E(void)
 {
+	//初期化
+	if (m_bIniting) { m_bIniting = false; }
+
 	PreMove();
 	//キーボード入力かパッド入力があれば
 	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
@@ -673,105 +678,137 @@ void CTitle::SkipMovement(void)
 void CTitle::InitingSelect(void)
 {
 	const D3DXVECTOR3 NUMCHAR_POS = D3DXVECTOR3(625.0f, 100.0f, 0.0f);		//"何人ですか"の位置
-	const D3DXVECTOR3 NUMBER_POS = D3DXVECTOR3(625.0f, 325.0f, 0.0f);		//数字の位置
 	const D3DXVECTOR3 CHECK_POS = D3DXVECTOR3(625.0f, 450.0f, 0.0f);		//"何人ですか"の位置
 	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(505.0f, 525.0f, 0.0f);		//数字の位置
 	const D3DXVECTOR3 NO_POS = D3DXVECTOR3(YES_POS.x + 150.0f, YES_POS.y, 0.0f);		//"何人ですか"の位置
 
-	//生成されていなかったら
-	if (!m_pObject2D[OBJ2D::OBJ2D_FRAME])
+	//初期化されていなかったら
+	if (!m_bIniting)
 	{
+		//bool型の情報定義
+		m_bIniting = true;
 		m_bPush = false;
 
 		//生成し、情報を設定する
 		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(500.0f, 320.0f);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(true);
 		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
-	}
-	//生成されていなかったら
-	if (!m_pObject2D[OBJ2D::OBJ2D_NUMCHAR])
-	{
-		//生成し、情報を設定する
-		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(NUMCHAR_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(150.0f, 75.0f);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_NUMCHAR]));
-	}
 
-	//生成されていなかったら
-	if (!m_pObject2D[OBJ2D::OBJ2D_CHECK])
-	{
 		//生成し、情報を設定する
-		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(CHECK_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(125.0f, 75.0f);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_CHECK]));
-	}
-	//生成されていなかったら
-	if (!m_apYesNoObj[SELECT::SELECT_YES])
-	{
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(NUMCHAR_POS, VECTOR3_ZERO, 6);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(150.0f, 75.0f);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(false);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_NUMCHAR]));
+
 		//生成し、情報を設定する
+		m_pObject2D[OBJ2D::OBJ2D_CHECK] = CObject2D::Create(CHECK_POS, VECTOR3_ZERO, 6);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(125.0f, 75.0f);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_CHECK]));
+
+		//選択肢(はい)
 		m_apYesNoObj[SELECT_YES] = CObject2D::Create(YES_POS, VECTOR3_ZERO, 6);
 		m_apYesNoObj[SELECT_YES]->SetSize(100.0f, 50.0f);
 		m_apYesNoObj[SELECT_YES]->SetDraw(false);
 		m_apYesNoObj[SELECT_YES]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_NAME[SELECT::SELECT_YES]));
-	}
-	//生成されていなかったら
-	if (!m_apYesNoObj[SELECT::SELECT_NO])
-	{
-		//生成し、情報を設定する
+		//選択肢(いいえ)
 		m_apYesNoObj[SELECT_NO] = CObject2D::Create(NO_POS, VECTOR3_ZERO, 6);
 		m_apYesNoObj[SELECT_NO]->SetSize(100.0f, 50.0f);
 		m_apYesNoObj[SELECT_NO]->SetDraw(false);
 		m_apYesNoObj[SELECT_NO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_NAME[SELECT::SELECT_NO]));
+
+	}
+}
+//<===============================================
+//フレームのサイズ調整
+//<===============================================
+void CTitle::Sizing(void)
+{
+	D3DXVECTOR3 FrameSize = m_pObject2D[OBJ2D::OBJ2D_FRAME]->GetSize();		//フレームサイズ
+	const float fSpeed = 0.09f;												//スピード
+
+	//X軸
+	if (FrameSize.x >= FRAME_DEST.x) { FrameSize.x = FRAME_DEST.x; }
+	else { FrameSize.x += (FRAME_DEST.x - FrameSize.x - 0.0f) * fSpeed; }
+
+	//Y軸
+	if (FrameSize.y >= FRAME_DEST.y) { FrameSize.y = FRAME_DEST.y; }
+	else { FrameSize.y += (FRAME_DEST.y - FrameSize.y - 0.0f) * fSpeed; }
+
+	//目的地に着いたら
+	if (Function::BoolToDest(m_pObject2D[OBJ2D::OBJ2D_FRAME]->GetSize(),
+		D3DXVECTOR3(FRAME_DEST), 1.0f, false))
+	{
+		//サイズ調整完了合図を設定
+		m_bSizing = true;
 	}
 
-	//ナンバー生成
-	if (!m_pNum) { m_pNum = CNumber::Create(NUMBER_POS, 150.0f, 100.0f); }
+	//サイズを設定
+	m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(FrameSize.x,FrameSize.y);
 }
 //<===============================================
 //人数選択の際の処理
 //<===============================================
 void CTitle::Selecting(void)
 {
+	const D3DXVECTOR3 NUMBER_POS = D3DXVECTOR3(625.0f, 325.0f, 0.0f);		//数字の位置
+	const int ONE_PLAYER = 1,MAX_PLAYER = 4;								//プレイヤーの数
+
 	//初期化
 	InitingSelect();
 
-	//反応があったら
-	if (m_bPush)
+	//サイズ調整が終わっていたら
+	if (m_bSizing)
 	{
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(true);
-		m_apYesNoObj[SELECT_YES]->SetDraw(true);
-		m_apYesNoObj[SELECT_NO]->SetDraw(true);
+		//ナンバー生成と"何人か"の文字生成
+		if (!m_pNum) { m_pNum = CNumber::Create(NUMBER_POS, 150.0f, 100.0f); }
+		if (!m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->GetDraw()) { m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(true); }
 
-		SelectYesNO();
+		//反応があったら
+		if (m_bPush)
+		{
+			m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(true);
+			m_apYesNoObj[SELECT_YES]->SetDraw(true);
+			m_apYesNoObj[SELECT_NO]->SetDraw(true);
+
+			SelectYesNO();
+		}
+		//無ければ
+		else
+		{
+			//キーボード入力かパッド入力があれば
+			if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
+				CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
+				CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
+			{
+				m_bPush = true;
+			}
+
+			//人数選択をする
+			if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW)) { m_nNumSelect += 1; }
+			else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW)) { m_nNumSelect -= 1; }
+
+			//もし人数の最大値まで行っていたら
+			if (m_nNumSelect >= MAX_PLAYER) { m_nNumSelect = MAX_PLAYER; }
+
+			//人数の最小値まで行っていたら
+			else if (m_nNumSelect <= 0) { m_nNumSelect = ONE_PLAYER; }
+
+			//描画設定を変更
+			m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
+			m_apYesNoObj[SELECT_YES]->SetDraw(false);
+			m_apYesNoObj[SELECT_NO]->SetDraw(false);
+
+			//今の人数番号を設定
+			m_pNum->SetIdx(m_nNumSelect);
+		}
 	}
-	//無ければ
+	//終っていなかったら、サイズ調整を行う
 	else
 	{
-		//キーボード入力かパッド入力があれば
-		if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
-			CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
-			CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
-		{
-			m_bPush = true;
-		}
-
-		//人数選択をする
-		if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW)) { m_nNumSelect += 1; }
-		else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW)) { m_nNumSelect -= 1; }
-
-		//もし人数の最大値まで行っていたら
-		if (m_nNumSelect >= 4) { m_nNumSelect = 4; }
-
-		//人数の最小値まで行っていたら
-		else if (m_nNumSelect <= 0) { m_nNumSelect = 1; }
-
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(false);
-		m_apYesNoObj[SELECT_YES]->SetDraw(false);
-		m_apYesNoObj[SELECT_NO]->SetDraw(false);
+		Sizing();
 	}
-
-	m_pNum->SetIdx(m_nNumSelect);
 }
 //<===============================================
 //選択肢(YesNo洗濯)
@@ -804,14 +841,14 @@ void CTitle::SelectCol(void)
 	//"YES"を選択している時
 	if (m_nSelect == SELECT::SELECT_YES)
 	{
-		//色変更
+		//"YES"を選択状態、"NO"を非選択状態
 		ColChange(m_apYesNoObj[SELECT::SELECT_YES]);
 		m_apYesNoObj[SELECT::SELECT_NO]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 	//"NO"を選択している時
 	else if (m_nSelect == SELECT::SELECT_NO)
 	{
-		//色変更
+		//"YES"を非選択状態、"NO"を選択状態
 		ColChange(m_apYesNoObj[SELECT::SELECT_NO]);
 		m_apYesNoObj[SELECT::SELECT_YES]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
