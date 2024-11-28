@@ -93,7 +93,6 @@ CGame::CGame()
     m_ppPlayer = nullptr;
     m_pFileLoad = nullptr;
     m_pMeshDome = nullptr;
-    m_pTimer = nullptr;
     m_pGoalManager = nullptr;
 
     m_pDeliveryStatus = nullptr;
@@ -117,7 +116,6 @@ CGame::CGame(int nNumPlayer)
     m_ppPlayer = nullptr;
     m_pFileLoad = nullptr;
     m_pMeshDome = nullptr;
-    m_pTimer = nullptr;
     m_pGoalManager = nullptr;
   
     m_pDeliveryStatus = nullptr;
@@ -261,6 +259,10 @@ void CGame::Uninit(void)
         m_pGoalManager = nullptr;
     }
 
+    // ネットワーク切断
+    auto net = CNetWork::GetInstance();
+    net->DisConnect();
+
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
 
@@ -323,10 +325,17 @@ void CGame::Update(void)
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
     int nNum = pPlayer->GetNumDeliverStatus();
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    if (m_nTotalDeliveryStatus <= nNum && pCamera->GetAction()->IsFinish())
+    if (m_nTotalDeliveryStatus <= nNum && pCamera->GetAction()->IsFinish() && CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_SINGLE)
     {// 配達する総数以上かつカメラの演出が終了している
 
         CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+    }
+    else if (m_pGameTimer != nullptr)
+    {
+        if (m_pGameTimer->GetTime() <= 0.0f)
+        {
+            CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+        }
     }
 
     auto net = CNetWork::GetInstance();

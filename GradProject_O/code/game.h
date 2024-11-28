@@ -56,7 +56,6 @@ public:
 	void Update(void);
 	void Draw(void);
 	static void SetState(STATE state) { m_state = state; }
-	CTime* GetTime(void)override { return m_pTimer; }
 	static void SetNumPlayer(int nNum) { m_nNumPlayer = nNum; }
 	static int GetNumPlayer(void) { return m_nNumPlayer; }
 	
@@ -74,7 +73,6 @@ private:
 	CPlayer** m_ppPlayer;		// プレイヤーのポインタ
 	CMultiCamera **m_ppCamera;	// カメラのポインタ
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
-	CTime *m_pTimer;			// タイマー
 	CGoalManager *m_pGoalManager;  // ゴールマネージャーのポインタ
 
 	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ
