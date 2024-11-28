@@ -209,6 +209,7 @@ CPlayer::CPlayer(int nId)
 	m_pSoundBrake = nullptr;
 	m_pContainer = nullptr;
 	m_pRadio = nullptr;
+	m_pNavi = nullptr;
 	m_type = TYPE::TYPE_RECV;
 
 	for (int i = 0; i < NUM_TXT; i++)
@@ -246,7 +247,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
 	
-	m_pContainer = CContainer::Create();
+	//m_pContainer = CContainer::Create();
 	
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -439,6 +440,7 @@ void CPlayer::Update(void)
 		}
 	}
 
+	
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー :");
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
@@ -878,6 +880,17 @@ void CPlayer::Damage(float fDamage)
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\minor_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
 	}
 }
+
+//===============================================
+// エントリー画面でエフェクトが出ないようにするため
+//===============================================
+void CPlayer::EffectUninit(void)
+{
+	SAFE_DELETE(m_pTailLamp);
+	SAFE_DELETE(m_pBackdust);
+	SAFE_DELETE(m_pAfterburner);
+}
+
 //===============================================
 // 加速
 //===============================================
