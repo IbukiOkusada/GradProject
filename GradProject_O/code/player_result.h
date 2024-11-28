@@ -37,7 +37,8 @@ public:
 	void Moving();
 
 private:
-
+	
+	void MovePattern();
 
 };
 
