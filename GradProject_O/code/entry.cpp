@@ -211,7 +211,6 @@ void CEntry::AddPlayer(void)
             CPlayer* pPlayer = CPlayer::Create(CamPosR, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, id);
             pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
             pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
-            pPlayer->GetObj()->SetCamera(m_ppCamera[id]);
             pPlayer->EffectUninit();
             mgr->ListIn(pPlayer);
         }
