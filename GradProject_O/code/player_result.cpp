@@ -13,19 +13,20 @@
 //==========================================================
 // 定数定義
 //==========================================================
-namespace
+namespace POS
 {
-	//目的地の位置
-	const D3DXVECTOR3 DEST_POS[] =
-	{ D3DXVECTOR3(2630.0f, 0.0f, 1054.0f),
-		D3DXVECTOR3(2630.0f, 0.0f, -200.0f),
-		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
-		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
-		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(1200.0f, 0.0f, 6000.0f);
+}
 
-	};
+namespace ROTATION
+{
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f);
+}
 
-	const float DEST_DIFF = 5.0f;										//距離の差
+namespace MOVE
+{
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(17.0f, 0.0f, 0.0f);
 }
 
 //==========================================================
@@ -34,6 +35,7 @@ namespace
 CPlayerResult::CPlayerResult()
 {
 }
+
 //==========================================================
 // デストラクタ
 //==========================================================
@@ -41,6 +43,7 @@ CPlayerResult::~CPlayerResult()
 {
 
 }
+
 //==========================================================
 // 初期化処理
 //==========================================================
@@ -50,16 +53,15 @@ HRESULT CPlayerResult::Init(void)
 
 	return S_OK;
 }
+
 //==========================================================
 // 初期化処理(オーバーロード)
 //==========================================================
 HRESULT CPlayerResult::Init(const char* pBodyName, const char* pLegName)
 {
-	//コンテナだけいらないのでこのような形にしました
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
-	SetMatrix();
 	SetMatrix();
 
 	//エフェクト生成
@@ -67,8 +69,26 @@ HRESULT CPlayerResult::Init(const char* pBodyName, const char* pLegName)
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 
+	//カメラ初期化
+	{
+		CManager::GetInstance()->GetCamera()->SetLength(300.0f);
+		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, 0.8f, 1.2f));
+		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(800.0f, 300.0f, 800.0f));
+		D3DVIEWPORT9 viewport;
+
+		//プレイヤー追従カメラの画面位置設定
+		viewport.X = 0;
+		viewport.Y = 0;
+		viewport.Width = (DWORD)(SCREEN_WIDTH * 1.0f);
+		viewport.Height = (DWORD)(SCREEN_HEIGHT * 1.0f);
+		viewport.MinZ = 0.0f;
+		viewport.MaxZ = 1.0f;
+		CManager::GetInstance()->GetCamera()->SetViewPort(viewport);
+	}
+
 	return S_OK;
 }
+
 //==========================================================
 // 終了処理
 //==========================================================
@@ -76,11 +96,14 @@ void CPlayerResult::Uninit(void)
 {
 	CPlayer::Uninit();
 }
+
 //==========================================================
 // 更新処理
 //==========================================================
 void CPlayerResult::Update(void)
 {
+	MovePattern();
+
 	//====================================
 	//エフェクトを出す
 	//====================================
@@ -97,6 +120,7 @@ void CPlayerResult::Update(void)
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 }
+
 //==========================================================
 // 動きに関する処理
 //==========================================================
@@ -104,39 +128,54 @@ void CPlayerResult::Moving()
 {
 
 }
+
 //==========================================================
 // 生成処理
 //==========================================================
 CPlayerResult* CPlayerResult::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move
 	, const char* pBodyName, const char* pLegName)
 {
-	//生成のためのオブジェクト
-	CPlayerResult* pPlayertitle = DEBUG_NEW CPlayerResult;
+	CPlayerResult* pPlayerResult = DEBUG_NEW CPlayerResult;
 
-	//中身があったら
-	if (pPlayertitle)
-	{
+	if (pPlayerResult)
+	{// 生成できた場合
 		// 初期化処理
-		pPlayertitle->Init(pBodyName, pLegName);
+		pPlayerResult->Init(pBodyName, pLegName);
 
 		// 座標設定
-		pPlayertitle->SetPosition(pos);
+		pPlayerResult->SetPosition(pos);
 
 		// 向き設定
-		pPlayertitle->SetRotation(rot);
+		pPlayerResult->SetRotation(rot);
 
-		//いるかは分からない
-		pPlayertitle->m_fRotDest = rot.y;
+		pPlayerResult->m_fRotDest = rot.y;
 
 		// 移動量設定
-		pPlayertitle->SetMove(move);
+		pPlayerResult->SetMove(move);
 	}
-	//無かった場合、中身なしを返す
 	else
 	{
 		return nullptr;
 	}
 
-	//その情報を返す
-	return pPlayertitle;
+	return pPlayerResult;
+}
+
+//==========================================================
+// 動きに関する処理
+//==========================================================
+void CPlayerResult::MovePattern()
+{
+	D3DXVECTOR3 PosCamera = CManager::GetInstance()->GetCamera()->GetPositionR();
+
+	SetMove(MOVE::PATTERN_1);
+	SetRotation(ROTATION::PATTERN_1);
+
+	m_Info.pos += m_Info.move;
+	PosCamera += m_Info.move;
+
+	m_pObj->SetPosition(GetPosition());
+	m_pObj->SetRotation(GetRotation());
+
+	CManager::GetInstance()->GetCamera()->SetPositionR(PosCamera);
 }

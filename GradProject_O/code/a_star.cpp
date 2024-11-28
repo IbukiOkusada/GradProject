@@ -32,7 +32,6 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 		{// 親ノードを辿って順序を入れ替えたのち返す
 
 			std::vector<CRoad::SSearch*> path;
-			CRoad::SSearch* temp;
 
 			while (Current != nullptr) 
 			{
@@ -97,7 +96,6 @@ std::vector<CRoad::SSearch*> AStarPolice(CRoad::SSearch* State, CRoad::SSearch* 
 		{// 親ノードを辿って順序を入れ替えたのち返す
 
 			std::vector<CRoad::SSearch*> path;
-			CRoad::SSearch* temp;
 
 			while (Current != nullptr) 
 			{

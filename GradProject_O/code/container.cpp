@@ -50,7 +50,7 @@ HRESULT CContainer::Init(void)
 	}
 	for (int i = 0; i < LOVE_NUM; i++)
 	{
-		m_pLove[i] = CObject2D::Create(m_pos+(OFFSET_LOVE*(1-(i*2))), VECTOR3_ZERO, 7);
+		m_pLove[i] = CObject2D::Create(m_pos+(OFFSET_LOVE*(1.0f-(i*2.0f))), VECTOR3_ZERO, 7);
 		m_pLove[i]->SetSize(117.0f, 8.0f);
 		m_pLove[i]->BindTexture(pTexture->Regist("data\\TEXTURE\\UI\\love.png"));
 		m_pLove[i]->SetFusion(CObject2D::FUSION_ADD);

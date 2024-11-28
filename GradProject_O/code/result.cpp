@@ -25,6 +25,7 @@
 #include "player.h"
 #include "objectX.h"
 #include "map_manager.h"
+#include "player_result.h"
 
 
 //==========================================================
@@ -38,6 +39,11 @@ namespace NUMBER
 	const int TIME_OBJ = 3;			// 間隔
 	const int LIFE_OBJ = 3;			// 間隔
 	const D3DXVECTOR3 POS = D3DXVECTOR3(SCREEN_WIDTH * 0.5f, 50.0f, 0.0f);
+}
+
+namespace PLAYER
+{
+	D3DXVECTOR3 POS = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 // 静的メンバ変数
@@ -75,8 +81,8 @@ HRESULT CResult::Init(void)
 	//カメラ初期化
 	{
 		CManager::GetInstance()->GetCamera()->SetLength(300.0f);
-		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, 1.0f, 1.0f));
-		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(1000.0f, 1000.0f, 1000.0f));
+		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 		D3DVIEWPORT9 viewport;
 
 		//プレイヤー追従カメラの画面位置設定
@@ -92,21 +98,20 @@ HRESULT CResult::Init(void)
 	// マップ読み込み
 	CMapManager::GetInstance()->Load();
 
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
-	m_pObj->SetType(CObject::TYPE_PLAYER);
-	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
+	m_pPlayer = CPlayerResult::Create(PLAYER::POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), VECTOR3_ZERO, nullptr, nullptr);
 
-
+	// 今回のスコアを取得
 	m_nDeli = CManager::GetInstance()->GetDeliveryStatus();
 	m_fTime = CTimer::GetTime();
 	m_fLife = CManager::GetInstance()->GetLife();
 
-
+	// 届けた数のオブジェクト生成
 	m_pDeliObject2D = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.2f, 0.0f),
 		NUMBER::WIDTH,
 		NUMBER::HEIGHT);
 	m_pDeliObject2D->SetIdx(m_nDeli);
 
+	// 残りタイムのオブジェクト生成
 	for (int Cnt = 0; Cnt < 3; Cnt++)
 	{
 		m_pTimeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + NUMBER::INTERVAL * Cnt, SCREEN_HEIGHT * 0.4f, 0.0f),
@@ -116,6 +121,7 @@ HRESULT CResult::Init(void)
 		m_pTimeObject2D[Cnt]->SetIdx(m_TimeObj[Cnt]);
 	}
 
+	// 残り体力のオブジェクト生成
 	for (int Cnt = 0; Cnt < 3; Cnt++)
 	{
 		m_pLifeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + NUMBER::INTERVAL * Cnt, SCREEN_HEIGHT * 0.6f, 0.0f),

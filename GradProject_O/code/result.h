@@ -17,6 +17,7 @@ class CCharacter;
 class CObject2D;
 class CNumber;
 class CObjectX;
+class CPlayerResult;
 
 #define MAX_RANK	(4)		// ランキングの順位数
 
@@ -56,8 +57,7 @@ private:
 	CMeshDome *m_pMeshSky;		// 空用
 	CTime *m_pTime;				// タイマー
 	CObject2D *m_pObjClear;		// clearしたかどうか
-	CPlayer *m_ppPlayer;		// プレイヤーのポインタ
-	CObjectX *m_pObj;		// 描画オブジェクト
+	CPlayerResult* m_pPlayer;	// リザルトプレイヤーのポインタ
 
 	CNumber* m_pDeliObject2D;	// 届けた数のオブジェクト
 	CNumber* m_pTimeObject2D[3];// 残りタイムのオブジェクト

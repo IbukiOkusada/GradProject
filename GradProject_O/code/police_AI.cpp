@@ -14,6 +14,7 @@
 #include "police_manager.h"
 #include "deltatime.h"
 #include "a_star.h"
+#include "pred_route.h"
 
 // マクロ定義
 
@@ -294,17 +295,32 @@ void CPoliceAI::Chase(void)
 }
 
 //==========================================================
-// 生成
+// 生成処理
 //==========================================================
-CPoliceAI *CPoliceAI::Create(CPolice* pPolice)
+CPoliceAI *CPoliceAI::Create(CPolice* pPolice, TYPE type)
 {
 	CPoliceAI *pPoliceAI = nullptr;
 
-	pPoliceAI = DEBUG_NEW CPoliceAI;
+	switch (type)
+	{
+
+	case TYPE_NORMAL:
+		pPoliceAI = DEBUG_NEW CPoliceAINomal;
+		break;
+
+	case TYPE_ELITE:
+		pPoliceAI = DEBUG_NEW CPoliceAIElite;
+		break;
+
+	default:
+		pPoliceAI = DEBUG_NEW CPoliceAI;
+		break;
+	}
 
 	if (pPoliceAI != nullptr)
 	{
 		pPoliceAI->m_pPolice = pPolice;
+		pPoliceAI->m_type = type;
 
 		// 初期化処理
 		pPoliceAI->Init();
@@ -334,7 +350,47 @@ void CPoliceAI::SelectRoad(void)
 }
 
 //==========================================================
-// 目標地点到達時処理処理
+// 移動ルート用の道選択処理
+//==========================================================
+void CPoliceAINomal::SelectRoad(void)
+{
+	// 探索開始地点に現在の目的地を設定
+	m_pRoadStart = m_pPolice->GetRoadTarget();
+
+	// プレイヤーの最寄りの道を目標地点に設定
+	CPlayer* pPlayer = m_pPolice->GetPlayer();
+	if (pPlayer != nullptr)
+	{
+		m_pRoadTarget = pPlayer->GetRoad();
+	}
+	else
+	{
+		m_pRoadTarget = m_pPolice->GetRoadTarget();
+	}
+}
+
+//==========================================================
+// 移動ルート用の道選択処理
+//==========================================================
+void CPoliceAIElite::SelectRoad(void)
+{
+	// 探索開始地点に現在の目的地を設定
+	m_pRoadStart = m_pPolice->GetRoadTarget();
+
+	// プレイヤーの最寄りの道を目標地点に設定
+	CPlayer* pPlayer = m_pPolice->GetPlayer();
+	if (pPlayer != nullptr)
+	{
+		m_pRoadTarget = pPlayer->GetPredRoute()->GetPredRoad();
+	}
+	else
+	{
+		m_pRoadTarget = m_pPolice->GetRoadTarget();
+	}
+}
+
+//==========================================================
+// 目標地点到達時処理
 //==========================================================
 void CPoliceAI::ReachRoad(void)
 {
@@ -342,7 +398,6 @@ void CPoliceAI::ReachRoad(void)
 	if (m_pSearchTarget != nullptr)
 	{
 		// 次の目的地を設定
-		CRoad* pRoadTarget = m_pPolice->GetRoadTarget();
 		D3DXVECTOR3 posRoad = m_pSearchTarget->pRoad->GetPosition();
 		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
 		float length = D3DXVec3Length(&(posRoad - posPolice));
