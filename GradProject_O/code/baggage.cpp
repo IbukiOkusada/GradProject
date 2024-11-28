@@ -116,9 +116,12 @@ void CBaggage::Uninit(void)
 		m_List.Delete(this);
 	}
 	
-	if (m_ThrowList.Find(this) != nullptr)
+	if (m_state == STATE::STATE_THROW)
 	{
-		m_ThrowList.Delete(this);
+		if (m_ThrowList.Find(this) != nullptr)
+		{
+			m_ThrowList.Delete(this);
+		}
 	}
 
 	Release();

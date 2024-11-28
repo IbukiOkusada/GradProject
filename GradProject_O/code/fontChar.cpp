@@ -83,6 +83,37 @@ CFontChar::SChar CFontChar::Regist(const wchar_t wcChar)
 	if (itr != m_mapChar.end())
 	{ // 生成済みの場合
 
+		CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャ情報
+
+		// テクスチャが読み込み直し必要
+		if (itr->second.nTexIdx >= pTexture->GetNumAll())
+		{
+			int nAbsOffset = std::abs(itr->second.glyph.gmptGlyphOrigin.x);	// 原点オフセットの絶対値
+			int nPlusSize = nAbsOffset * 4;	// テクスチャ横幅の大きさ加算量
+
+			POSGRID2 sizeAlignBlackBox;	// アライメントを考慮したブラックボックスの大きさ
+			sizeAlignBlackBox.x = (itr->second.glyph.gmBlackBoxX + 3) / 4 * 4;	// ブラックボックス横幅
+			sizeAlignBlackBox.y = itr->second.glyph.gmBlackBoxY;					// ブラックボックス縦幅
+
+			POSGRID2 offsetOrigin;	// 原点のオフセット
+			offsetOrigin.x = itr->second.glyph.gmptGlyphOrigin.x + nAbsOffset + 1;			// 原点オフセットX
+			offsetOrigin.y = itr->second.text.tmAscent - itr->second.glyph.gmptGlyphOrigin.y + 1;	// 原点オフセットY
+
+			POSGRID2 sizeTexture;	// テクスチャの大きさ
+			sizeTexture.x = sizeAlignBlackBox.x + nPlusSize + 2;	// テクスチャ横幅
+			sizeTexture.y = (int)itr->second.text.tmHeight + 2;			// テクスチャ縦幅
+
+			itr->second.nTexIdx = pTexture->Regist(CTexture::SInfo
+			( // 引数
+				sizeTexture.x,		// テクスチャ横幅
+				sizeTexture.y,		// テクスチャ縦幅
+				1,					// ミップマップレベル
+				0,					// 性質・確保オプション
+				D3DFMT_A8R8G8B8,	// ピクセルフォーマット
+				D3DPOOL_MANAGED		// 格納メモリ
+			));
+		}
+
 		// 読込済みのフォント文字情報を返す
 		return itr->second;
 	}
