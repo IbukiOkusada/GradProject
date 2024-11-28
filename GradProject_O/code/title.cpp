@@ -796,6 +796,7 @@ void CTitle::Selecting(void)
 				CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
 			{
 				m_bPush = true;
+				m_nSelect = SELECT::SELECT_YES;
 			}
 
 			//l”‘I‘ğ‚ğ‚·‚é
