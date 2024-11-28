@@ -7,6 +7,7 @@
 #define _TITLEMAP_H_
 
 #include "list_manager.h"
+#include "task.h"
 
 //<=================================================
 //タイトルマネージャー継承
@@ -52,5 +53,4 @@ private:	// 自分だけがアクセス可能
 	std::vector<std::string> m_LoadFileName;
 	static CTitleMap* m_pInstance;
 };
-
 #endif

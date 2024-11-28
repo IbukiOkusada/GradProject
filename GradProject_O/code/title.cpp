@@ -24,6 +24,8 @@
 #include "goal.h"
 #include "camera_manager.h"
 #include "number.h"
+#include "TitleBaggage.h"
+#include "debugproc.h"
 
 //===============================================
 // 無名名前空間
@@ -85,7 +87,8 @@ CTitle::CTitle()
 	m_nLogoAlpgha = 0;
 	m_nNumSelect = 1;
 	m_nSelect = SELECT_YES;
-	m_TitlePos = VECTOR3_ZERO;
+
+	m_fDis = 0.0f;
 
 	m_eState = STATE::STATE_TEAMLOGO;
 
@@ -165,9 +168,10 @@ void CTitle::Uninit(void)
 	m_pCam->SetPositionR(VECTOR3_ZERO);
 	CManager::GetInstance()->GetSound()->Stop();
 
+	//オブジェクト破棄
+	SAFE_UNINIT(m_pNum);
 	SAFE_UNINIT(m_pPlayer);
 }
-
 //<===============================================
 //更新処理
 //<===============================================
@@ -620,7 +624,6 @@ void CTitle::ChaseMovement(void)
 
 		//アイスステートに移行し、変数の設定をする
 		m_eState = STATE::STATE_ICETHROW; 
-		m_pCam->SetPositionR(D3DXVECTOR3(m_pPlayer->GetPosition()));
 		m_nCounter = 0; 
 	}
 }
@@ -900,15 +903,22 @@ void CTitle::DebugCam(void)
 //<===============================================
 void CTitle::IceMovement(void)
 {
+	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();				//プレイヤー位置
+	const int FADE_TIME = 200;										//ゲーム画面に移行するまでの時間
+	const int FADE_TIME_HARF = 65;									//ゲーム画面に移行するまでの時間の半減値
+
 	//<*************************************************************
-	//カメラに関する
+	//float型
 	//<*************************************************************
-	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
-	const float PlayerMove = 50.0f;						//プレイヤーの動く値
-	const int FADE_TIME = 100;							//ゲーム画面に移行するまでの時間
+	const float PlayerMove = 50.0f;								//プレイヤーの動く値
+	const float CamHeightDis = 150.0f;							//高さの差
+	const float fDisMax = 700.0f;								//距離の最大値
+	const float fMoveValue = 10.0f;								//距離移動の際の値
+
+	m_pPlayer->BaggageMove();
 
 	//カメラの設定
-	m_pCam->SetRotation(D3DXVECTOR3(0.0f, -1.57f, 1.57f));
+	m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
 
 	//プレイヤーと警察を移動させる
 	PlayerPos.z += PlayerMove;
@@ -923,9 +933,23 @@ void CTitle::IceMovement(void)
 		m_apPolice[nCnt]->Chasing(PlayerMove);
 	}
 
+	//カメラの位置を設定
+	m_pCam->SetPositionR(D3DXVECTOR3
+	(m_pPlayer->GetTitleGoal()->GetPos().x - m_fDis,
+		m_pPlayer->GetTitleGoal()->GetPos().y+ CamHeightDis,
+		m_pPlayer->GetTitleGoal()->GetPos().z));
+
 	//超えていたらゲーム画面に遷移する
 	if (m_nCounter >= FADE_TIME) { CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME); }
 
 	//超えていなかったらカウント増加
 	else { m_nCounter++; }
+
+	//半分ぐらいの値になっていたら
+	if (m_nCounter >= FADE_TIME_HARF)
+	{
+		//距離が一定値になったらその値にし、なっていなかったら近づける
+		if (m_fDis >= fDisMax) { m_fDis = fDisMax; }
+		else { m_fDis += fMoveValue; }
+	}
 }

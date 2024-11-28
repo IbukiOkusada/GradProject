@@ -79,8 +79,6 @@ void CTitleMap::Uninit(void)
 //===============================================
 void CTitleMap::Load(void)
 {
-	CScene::MODE mode = CManager::GetInstance()->GetMode();
-
 	// モデルファイル名読み込み
 	LoadModelName("data\\TXT\\model_info.txt");
 
@@ -128,8 +126,6 @@ void CTitleMap::LoadRoad(const std::string& filename)
 //===============================================
 void CTitleMap::LoadObstacle(const std::string& filename)
 {
-	CMapObstacle* C = nullptr;
-
 	// ファイルを開く
 	std::ifstream File(filename, std::ios::binary);
 	if (!File.is_open()) {
