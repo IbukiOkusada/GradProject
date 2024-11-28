@@ -457,7 +457,6 @@ CPlayer* CNetWork::CreatePlayer(int nId)
 
 	// プレイヤー生成
 	CPlayer* pPlayer = CPlayer::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, nId);
-	auto mgr = CPlayerManager::GetInstance();
 
 	// 受信用プレイヤーに
 	pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);

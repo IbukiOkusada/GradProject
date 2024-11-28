@@ -137,7 +137,7 @@ bool CRoadManager::Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight
 	//ŒÂ•Ê”»’è
 	for (int i = 0; i < GetList()->GetNum(); i++)
 	{
-		CRoad* pRoad = GetList()->Get(i);
+		//CRoad* pRoad = GetList()->Get(i);
 		//if (pRoad->HitCheck(pos, fRange, fHeight, nDamage)) {
 			//bUse = true;
 		//}

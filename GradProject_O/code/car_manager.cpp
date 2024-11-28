@@ -111,7 +111,7 @@ bool CCarManager::Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight,
 	//ŒÂ•Ê”»’è
 	for (int i = 0; i < GetList()->GetNum(); i++)
 	{
-		CCar* pCar = GetList()->Get(i);
+		//CCar* pCar = GetList()->Get(i);
 		//if (pCar->HitCheck(pos, fRange, fHeight, nDamage)) {
 			//bUse = true;
 		//}

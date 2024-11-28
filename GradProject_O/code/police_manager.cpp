@@ -130,7 +130,7 @@ bool CPoliceManager::Hit(D3DXVECTOR3& pos, const float fRange, const float fHeig
 	//ŒÂ•Ê”»’è
 	for (int i = 0; i < GetList()->GetNum(); i++)
 	{
-		CPolice* pPolice = GetList()->Get(i);
+		//CPolice* pPolice = GetList()->Get(i);
 		//if (pPolice->HitCheck(pos, fRange, fHeight, nDamage)) {
 			//bUse = true;
 		//}
