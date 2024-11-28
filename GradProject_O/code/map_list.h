@@ -31,7 +31,7 @@ public:
 	// 取得系関数
 	std::list<T*>& GetList();		// リストを取得
 	int GetNum();					// リストのサイズ取得
-	T* Get(int nId);				// IDから本体を取得
+	T Get(int nId);				// IDから本体を取得
 	int Get(T data);				// データからIDを取得
 	Cmaplist<T>::Iteretor DataFind(T data);			// データから検索
 	bool IdFind(int nId);			// IDから検索
@@ -202,13 +202,13 @@ int Cmaplist<T>::Get(T data)
 // IDからデータを取得
 //===============================================
 template <typename T>
-T* Cmaplist<T>::Get(int nId)
+T Cmaplist<T>::Get(int nId)
 {
 	Iteretor it = m_list.find(nId);
 
 	if (it != m_list.end())
 	{
-		return &(it->second);
+		return it->second;
 	}
 
 	return nullptr;

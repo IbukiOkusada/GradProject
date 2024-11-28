@@ -100,7 +100,7 @@ bool CGoalManager::ListOut(CGoal* pGoal)
 //==========================================================
 CGoal* CGoalManager::GetGoal(int nIdx)
 {
-	auto it = *m_List.Get(nIdx);
+	auto it = m_List.Get(nIdx);
 	return it;
 }
 
@@ -147,6 +147,7 @@ void CGoalManager::Update(void)
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+	if (pPlayer == nullptr) { return; }
 	int nNum = pPlayer->GetNumDeliverStatus();
 
 	CDebugProc::GetInstance()->Print("ƒS[ƒ‹‚Ì¶¬” [ %d ] : Œ»İ‚Ì”z’u” [ %d ]\n",m_nNumCreate, m_List.GetNum());

@@ -105,7 +105,7 @@ bool CPlayerManager::ListOut(CPlayer* pPlayer)
 //==========================================================
 CPlayer* CPlayerManager::GetPlayer(int nIdx)
 {
-	return *m_List.Get(nIdx);
+	return m_List.Get(nIdx);
 }
 
 //==========================================================

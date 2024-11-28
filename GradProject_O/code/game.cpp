@@ -172,9 +172,14 @@ HRESULT CGame::Init(void)
 
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
     {
-        while (net->GetIdx() == -1 && net->GetState() == CNetWork::STATE::STATE_SINGLE)
+        while (1)
         {
             net->SendGetId();
+
+            if (net->GetIdx() != -1)
+            {
+                break;
+            }
         }
     }
 
