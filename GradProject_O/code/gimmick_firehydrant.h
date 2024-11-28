@@ -31,7 +31,7 @@ public:	// 誰でもアクセス可能
 	static CGimmickFireHydrant* Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 scale);
 	
 	// 衝突時の判定
-	virtual void Hit(const D3DXVECTOR3& HitPos) {}
+	virtual void Hit(const D3DXVECTOR3& HitPos, const float fSpeed) override;
 	void SetColMulti(const D3DXCOLOR& col) override;
 
 private:	// 自分だけがアクセス可能

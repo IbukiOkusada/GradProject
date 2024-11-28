@@ -15,7 +15,7 @@ namespace NetWork
 	const int MAX_CONNECT = 4;	// 最大接続数
 	const int MAX_COMMAND_DATA = ((sizeof(int) + sizeof(int) + 1024));	// データのマックスサイズ
 	const int MAX_SEND_DATA = ((sizeof(int) + sizeof(int) + 1024));	// 最大データ量
-	const double SEND_MS = 100.0f;	// 常に送るデータの送信フレーム
+	const double SEND_MS = 50.0f;	// 常に送るデータの送信フレーム
 
 	// コマンド列挙
 	enum COMMAND
@@ -28,6 +28,7 @@ namespace NetWork
 		COMMAND_PL_ROT,			// プレイヤーの向き
 		COMMAND_PL_DAMAGE,		// プレイヤ―ダメージ
 		COMMAND_PL_GOAL,		// プレイヤーゴール
+		COMMAND_GM_HIT,			// ギミックに衝突
 		COMMAND_MAX
 	};
 
