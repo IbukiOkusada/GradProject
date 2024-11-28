@@ -8,6 +8,7 @@
 #define _GOAL_MANAGER_H_		// 二重インクルード防止用マクロを定義
 
 #include "goal.h"
+#include "map_list.h"
 
 //==========================================================
 // ゴール管理のクラス定義
@@ -35,7 +36,7 @@ public:
 	}
 	std::vector<CGoal::SInfo>* GetInfoList() { return &m_InfoList; }
 	CGoal* GetGoal(int nIdx);
-	std::map<int, CGoal*>* GetList() { return &m_List; }
+	Cmaplist<CGoal*>& GetList() { return m_List; }
 	int GetCreateIdx() { return m_nNumCreate; }
 	int GetNextIdx() { return m_nNextIdx; }
 
@@ -50,7 +51,7 @@ private:
 	CGoal* m_pGoal;		// ゴールのポインタ
 	CGoal* m_pGoalOld;  // 前回のゴールのポインタ
 	static CGoalManager *m_pInstance;  // 自身のポインタ
-	std::map<int, CGoal*> m_List;	// リスト
+	Cmaplist<CGoal*> m_List;
 };
 
 #endif

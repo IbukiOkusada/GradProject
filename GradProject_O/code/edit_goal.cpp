@@ -51,10 +51,10 @@ HRESULT CEdit_Goal::Init(void)
 	auto mgr = CGoalManager::GetInstance()->GetList();
 
 	// ゴールをすべて削除して改めて生成する
-	for (auto ite = mgr->begin(); ite != mgr->end();)
+	for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd();)
 	{
 			ite->second->Uninit();
-			ite = mgr->begin();
+			ite = mgr.GetBegin();
 	}
 
 	auto list = CGoalManager::GetInstance()->GetInfoList();
@@ -164,7 +164,7 @@ void CEdit_Goal::ClickCheck()
 	auto mgr = CGoalManager::GetInstance()->GetList();
 
 	// ゴールを全て確認
-	for (auto ite = mgr->begin(); ite != mgr->end(); ite++)
+	for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd(); ite++)
 	{
 		CGoal* pGoal = ite->second;
 
@@ -357,7 +357,7 @@ void CEdit_Goal::Save()
 	auto mgr = CGoalManager::GetInstance()->GetList();
 
 	// ゴールを全て確認
-	for (auto ite = mgr->begin(); ite != mgr->end(); ite++)
+	for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd(); ite++)
 	{
 		savedata.push_back(*ite->second->GetInfo());
 	}

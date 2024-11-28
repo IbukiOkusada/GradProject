@@ -13,6 +13,9 @@
 template <typename T> class Cmaplist
 {
 public:
+
+	// ヘッダーで使えるように名前を付ける! Iteretorって名前でiteretorを使いますよ
+	using Iteretor = typename std::map<int, T>::iterator;
 	
 	Cmaplist();
 	~Cmaplist();
@@ -28,15 +31,17 @@ public:
 	// 取得系関数
 	std::list<T*>& GetList();		// リストを取得
 	int GetNum();					// リストのサイズ取得
-	T* Get(int nId);					// IDから本体を取得
-	int* Get(T data);				// データからIDを取得
-	T DataFind(T data);				// データから検索
+	T* Get(int nId);				// IDから本体を取得
+	int Get(T data);				// データからIDを取得
+	Cmaplist<T>::Iteretor DataFind(T data);			// データから検索
 	bool IdFind(int nId);			// IDから検索
+	Cmaplist<T>::Iteretor GetBegin();	// 先頭取得
+	Cmaplist<T>::Iteretor GetEnd();		// 終端取得
 
 private:
 
 	// メンバ変数
-	std::map<int, T> m_list;	// 本体
+	std::map<int, T> m_list;	// リスト本体
 };
 
 //===============================================
@@ -57,6 +62,23 @@ Cmaplist<T>::~Cmaplist()
 
 }
 
+//===============================================
+// 先頭を取得
+//===============================================
+template <typename T>
+typename Cmaplist<T>::Iteretor Cmaplist<T>::GetBegin()
+{
+	return m_list.begin();
+}
+
+//===============================================
+// 終端を取得
+//===============================================
+template <typename T>
+typename Cmaplist<T>::Iteretor Cmaplist<T>::GetEnd()
+{
+	return m_list.end();
+}
 
 //===============================================
 // リストに挿入
@@ -165,17 +187,15 @@ int Cmaplist<T>::GetNum()
 // データからIDを取得
 //===============================================
 template <typename T>
-int* Cmaplist<T>::Get(T data)
+int Cmaplist<T>::Get(T data)
 {
-	for (int i = 0; i < GetNum(); i++)
+	Iteretor it = DataFind(data);
+	if (it != m_list.end())
 	{
-		if (T == m_list[i])
-		{
-			return m_list[i].first;
-		}
+		return it.first;;
 	}
 
-	return nullptr;
+	return -1;
 }
 
 //===============================================
@@ -184,7 +204,7 @@ int* Cmaplist<T>::Get(T data)
 template <typename T>
 T* Cmaplist<T>::Get(int nId)
 {
-	std::map<int, T>::iterator it = m_list.find(nId);
+	Iteretor it = m_list.find(nId);
 
 	if (it != m_list.end())
 	{
@@ -198,17 +218,9 @@ T* Cmaplist<T>::Get(int nId)
 // データが存在しているかをデータから確認する
 //===============================================
 template <typename T>
-T Cmaplist<T>::DataFind(T data)
+typename Cmaplist<T>::Iteretor Cmaplist<T>::DataFind(T data)
 {
-	for (int i = 0; i < GetNum(); i++)
-	{
-		if (T == m_list[i])
-		{
-			return m_list[i].second;
-		}
-	}
-
-	return nullptr;
+	return find_if(m_list.begin(), m_list.end(), data);
 }
 
 //===============================================
@@ -217,7 +229,7 @@ T Cmaplist<T>::DataFind(T data)
 template <typename T>
 bool Cmaplist<T>::IdFind(int nId)
 {
-	std::map<int, T>::iterator it = m_list.find(nId);
+	Iteretor it = m_list.find(nId);
 
 	if (it != m_list.end())
 	{
@@ -226,7 +238,6 @@ bool Cmaplist<T>::IdFind(int nId)
 
 	return false;
 }
-
 
 #endif // !_List_H_
 

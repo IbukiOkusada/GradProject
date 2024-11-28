@@ -36,7 +36,7 @@ CGoalManager::CGoalManager()
 	m_pGoalOld = nullptr;
 	m_pInstance = this;
 	m_InfoList.clear();
-	m_List.clear();
+	m_List.Clear();
 	m_nOldIdx = 0;
 	m_nNumCreate = 0;
 	m_nNextIdx = 0;
@@ -82,17 +82,7 @@ void CGoalManager::Release()
 bool CGoalManager::ListIn(CGoal* pGoal)
 {
 	if (pGoal == nullptr) { return false; }
-
-	auto it = m_List.find(pGoal->GetId());
-
-	// 存在しない
-	if (it == m_List.end())
-	{
-		m_List[pGoal->GetId()] = pGoal;
-		return true;
-	}
-
-	return false;
+	return m_List.Regist(pGoal->GetId(), pGoal);
 }
 
 //==========================================================
@@ -102,19 +92,7 @@ bool CGoalManager::ListOut(CGoal* pGoal)
 {
 	if (pGoal == nullptr) { return false; }
 
-	auto it = m_List.find(pGoal->GetId());
-
-	// 見つかった
-	if (it != m_List.end())
-	{
-		if (it->second == pGoal)
-		{
-			m_List.erase(pGoal->GetId());
-			return true;
-		}
-	}
-
-	return false;
+	return m_List.Delete(pGoal->GetId(), pGoal);
 }
 
 //==========================================================
@@ -122,15 +100,8 @@ bool CGoalManager::ListOut(CGoal* pGoal)
 //==========================================================
 CGoal* CGoalManager::GetGoal(int nIdx)
 {
-	auto it = m_List.find(nIdx);
-
-	// 見つかった
-	if (it != m_List.end())
-	{
-		return it->second;
-	}
-
-	return nullptr;
+	auto it = *m_List.Get(nIdx);
+	return it;
 }
 
 //==========================================================
@@ -178,7 +149,7 @@ void CGoalManager::Update(void)
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	int nNum = pPlayer->GetNumDeliverStatus();
 
-	CDebugProc::GetInstance()->Print("ゴールの生成数 [ %d ] : 現在の配置数 [ %d ]\n",m_nNumCreate, m_List.size());
+	CDebugProc::GetInstance()->Print("ゴールの生成数 [ %d ] : 現在の配置数 [ %d ]\n",m_nNumCreate, m_List.GetNum());
 
 	if (m_pGoal == nullptr) { return; }
 }

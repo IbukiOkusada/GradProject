@@ -94,7 +94,7 @@ void CNavi::StartNavigation(void)
 	auto mgr = CGoalManager::GetInstance()->GetList();
 
 	// ゴールを全て確認
-	for (auto ite = mgr->begin(); ite != mgr->end(); ite++)
+	for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd(); ite++)
 	{
 		CGoal* pGoal = ite->second;
 		if (!pGoal->GetEnd())
