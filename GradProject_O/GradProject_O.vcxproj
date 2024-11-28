@@ -271,6 +271,7 @@
     <ClCompile Include="code\edit_arrow.cpp" />
     <ClCompile Include="code\map_manager.cpp" />
     <ClCompile Include="code\timer.cpp" />
+    <ClCompile Include="code\player_result.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\add_police.h" />
@@ -383,6 +384,7 @@
     <ClInclude Include="code\timer.h" />
     <ClInclude Include="code\pred_route.h" />
     <ClInclude Include="code\inspection_manager.h" />
+    <ClInclude Include="code\player_result.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -501,6 +501,9 @@
     <ClCompile Include="code\TitleMap.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\player_result.cpp">
+      <Filter>player</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -832,6 +835,9 @@
     </ClInclude>
     <ClInclude Include="code\TitleMap.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\player_result.h">
+      <Filter>player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
