@@ -77,9 +77,14 @@ public:	// 誰でもアクセス可能
 	// メンバ関数(取得)
 	STATE GetState() { return m_stateInfo.state; }
 	CPlayer* GetPlayer() { return m_Info.pPlayer; }
+	bool GetChase() { return m_Info.bChase; }
+	int GetChaseCount() { return m_Info.nChaseCount; }
 
 	// メンバ関数(設定)
 	void SetState(const STATE state);
+	void SetPlayer(CPlayer* pPlayer) { m_Info.pPlayer = pPlayer; }
+	void SetChase(bool bChase) { m_Info.bChase = bChase; }
+	void SetChaseCount(int bChaseCount) { m_Info.nChaseCount = bChaseCount; }
 
 protected:
 

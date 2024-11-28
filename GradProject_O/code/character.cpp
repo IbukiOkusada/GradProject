@@ -502,7 +502,7 @@ void CCharacter::SetChangeMatCol(const D3DXCOLOR& col)
 	mat.Ambient = col;
 	mat.Diffuse = col;
 	mat.Emissive = col;
-	mat.Power = col;
+	mat.Power = (float)col;
 	mat.Specular = col;
 
 	if (m_ppParts != NULL)

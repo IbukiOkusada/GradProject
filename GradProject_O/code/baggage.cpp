@@ -111,8 +111,15 @@ void CBaggage::Uninit(void)
 		m_pObj = nullptr;
 	}
 
-	m_List.Delete(this);
-	m_ThrowList.Delete(this);
+	if (m_List.Find(this) != nullptr)
+	{
+		m_List.Delete(this);
+	}
+	
+	if (m_ThrowList.Find(this) != nullptr)
+	{
+		m_ThrowList.Delete(this);
+	}
 
 	Release();
 }
@@ -196,7 +203,12 @@ void CBaggage::Throw()
 
 	// ŽžŠÔI—¹
 	if (m_time.fNow >= m_time.fEnd) {
-		m_ThrowList.Delete(this);
+		
+		if (m_ThrowList.Find(this) != nullptr)
+		{
+			m_ThrowList.Delete(this);
+		}
+
 		m_pos = VECTOR3_ZERO;
 		CDeltaTime::GetInstance()->SetSlow(1.0f);
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();

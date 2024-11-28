@@ -136,6 +136,10 @@ void CRoad::Connect(CRoad* pRoad, const DIRECTION dic)
 	{
 		m_apConnectLength[dic] = D3DXVec3Length(&(m_Info.pos - pRoad->GetPosition()));
 	}
+	else
+	{
+		m_apConnectLength[dic] = FLT_MAX;
+	}
 }
 
 //==========================================================

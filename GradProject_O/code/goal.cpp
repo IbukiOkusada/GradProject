@@ -5,6 +5,7 @@
 //
 //==========================================================
 #include "goal.h"
+#include "goal_manager.h"
 #include "player_manager.h"
 #include "player.h"
 #include "convenience.h"
@@ -29,21 +30,19 @@ namespace
 	const D3DXVECTOR3 SCALE = D3DXVECTOR3(2.0f, 2.0f, 2.0f);
 }
 
-// 静的メンバ変数
-Clist<CGoal*> * CGoal::pList = nullptr;
 //==========================================================
 // コンストラクタ
 //==========================================================
-CGoal::CGoal()
+CGoal::CGoal(int nId)
 {
+	m_nId = nId;
 	pEffect = nullptr;
 	m_bEnd = false;
 	m_People = SPeople();
 	m_Info = SInfo();
 	m_pBaggage = nullptr;
-	m_nId = GetInstance()->GetNum();
-	//自身をリストに登録
-	GetInstance()->Regist(this);
+	
+	CGoalManager::GetInstance()->ListIn(this);
 }
 
 //==========================================================
@@ -51,12 +50,7 @@ CGoal::CGoal()
 //==========================================================
 CGoal::~CGoal()
 {
-	//自身をリストから削除
-	GetInstance()->Delete(this);
-	if (GetInstance()->Empty())
-	{//リストの中身が空ならリストを破棄
-		ListRelease();
-	}
+	
 }
 
 //==========================================================
@@ -117,6 +111,7 @@ HRESULT CGoal::Init(void)
 //==========================================================
 void CGoal::Uninit(void)
 {
+	CGoalManager::GetInstance()->ListOut(this);
 	SAFE_UNINIT(m_pBaggage);
 	SAFE_UNINIT(m_People.pChara);
 	SAFE_DELETE(pEffect);
@@ -166,9 +161,19 @@ void CGoal::Update(void)
 		// 誰かがゴール
 		if (nId >= -1)
 		{
+			auto mgr = CGoalManager::GetInstance();
 			SetEnd(nId);
 			// ゴールしたよーを送信
 			net->SendPlGoal(m_nId);
+
+			// 次のゴール番号を送信
+			net->SendNextGoal(mgr->GetNextIdx());
+
+			// シングルプレイなら次のゴールを生成
+			if (net->GetState() == CNetWork::STATE::STATE_SINGLE)
+			{
+				mgr->GoalCreate(mgr->GetNextIdx());
+			}
 		}
 	}
 	else
@@ -212,11 +217,11 @@ bool CGoal::CheckSpeed(int nId)
 //==========================================================
 // 生成
 //==========================================================
-CGoal* CGoal::Create(D3DXVECTOR3 pos, float fRange, float fLimit)
+CGoal* CGoal::Create(D3DXVECTOR3 pos, float fRange, float fLimit, int nId)
 {
 	CGoal* pGoal = nullptr;
 
-	pGoal = DEBUG_NEW CGoal;
+	pGoal = DEBUG_NEW CGoal(nId);
 
 	if (pGoal != nullptr)
 	{

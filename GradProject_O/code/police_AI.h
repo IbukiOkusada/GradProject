@@ -15,6 +15,7 @@
 // 前方宣言
 class CRoad;
 class CPolice;
+class CPlayer;
 
 //==========================================================
 // 警察AIのクラス定義
@@ -23,14 +24,24 @@ class CPoliceAI
 {
 public:	// 誰でもアクセス可能
 
+	// AIタイプ列挙型
+	enum TYPE
+	{
+		TYPE_NORMAL = 0,	// 通常
+		TYPE_ELITE,			// 回り込み型
+		TYPE_MAX
+	};
+
 	CPoliceAI();	// コンストラクタ
-	virtual ~CPoliceAI();	// デストラクタ
+	~CPoliceAI();	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init(void);
 	void Uninit(void);
-	void Update(void);
-	static CPoliceAI* Create(CPolice* pPolice);
+	void Search(void);
+	void Chase(void);
+
+	static CPoliceAI* Create(CPolice* pPolice, TYPE type = TYPE_NORMAL);
 
 	// メンバ関数(取得)
 	CRoad::SSearch* GetSearchRoad() { return m_pSearchTarget; }
@@ -40,23 +51,38 @@ public:	// 誰でもアクセス可能
 protected:
 	
 	// メンバ関数
-
-	// メンバ変数
-
-private:	// 自分だけがアクセス可能
-
-	// メンバ関数
-	void SelectRoad(void);
-	void ReachRoad(void);
+	virtual void SelectRoad(void);
+	virtual void ReachRoad(void);
 
 	// メンバ変数
 	CPolice* m_pPolice;
 	CRoad* m_pRoadStart;		// 移動開始地点
 	CRoad* m_pRoadTarget;		// 目標地点
+
+private:	// 自分だけがアクセス可能
+
+	// メンバ関数
+	void CheckSpeed(CPlayer* pPlayer);
+	void CheckTurn(CPlayer* pPlayer);
+	void CheckDamage(CPlayer* pPlayer);
+	void CheckSmoke(CPlayer* pPlayer);
+	void CheckCollision(CPlayer* pPlayer);
+
+	// メンバ変数
 	CRoad::SSearch* m_pSearchTarget;
 	float m_fSearchTimer;
 	vector<CRoad::SSearch*> m_searchRoad;
+	TYPE m_type;
+};
 
+class CPoliceAINomal : public CPoliceAI
+{
+	void SelectRoad(void) override;
+};
+
+class CPoliceAIElite : public CPoliceAI
+{
+	void SelectRoad(void) override;
 };
 
 #endif

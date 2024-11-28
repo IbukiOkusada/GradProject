@@ -13,6 +13,7 @@
 #include "a_star.h"
 #include "goal.h"
 #include "road_manager.h"
+#include "goal_manager.h"
 // マクロ定義
 namespace
 {
@@ -85,20 +86,24 @@ void CNavi::Update(void)
 void CNavi::StartNavigation(void)
 {
 	//近いゴールを探索
-	Clist<CGoal*>* List = CGoal::GetInstance();
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }
 	float fDis = FLT_MAX;
 	m_pGole = nullptr;
-	for (int i = 0; i < List->GetNum(); i++)
+
+	auto mgr = CGoalManager::GetInstance()->GetList();
+
+	// ゴールを全て確認
+	for (auto ite = mgr->begin(); ite != mgr->end(); ite++)
 	{
-		if (!List->Get(i)->GetEnd())
+		CGoal* pGoal = ite->second;
+		if (!pGoal->GetEnd())
 		{
-			float F = GetDistance(List->Get(i)->GetPos(), pPlayer->GetPosition());
+			float F = GetDistance(pGoal->GetPos(), pPlayer->GetPosition());
 			if (F < fDis)
 			{
 				fDis = F;
-				m_pGole = List->Get(i);
+				m_pGole = pGoal;
 			}
 		}
 		
