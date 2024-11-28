@@ -28,6 +28,7 @@ namespace NetWork
 		COMMAND_PL_DAMAGE,		// プレイヤ―ダメージ
 		COMMAND_PL_GOAL,		// プレイヤーゴール
 		COMMAND_GM_HIT,			// ギミックに衝突
+		COMMAND_NEXT_GOAL,		// 次のゴール生成
 		COMMAND_MAX
 	};
 

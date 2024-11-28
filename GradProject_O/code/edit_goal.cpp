@@ -48,17 +48,20 @@ HRESULT CEdit_Goal::Init(void)
 {
 	m_fMoveLength = MIN_LENGTH;
 
+	auto mgr = CGoalManager::GetInstance()->GetList();
+
 	// ゴールをすべて削除して改めて生成する
-	for (int i = 0; i < CGoal::GetInstance()->GetNum(); i++)
+	for (auto ite = mgr->begin(); ite != mgr->end();)
 	{
-		CGoal::GetInstance()->Get(i)->Uninit();
+			ite->second->Uninit();
+			ite = mgr->begin();
 	}
 
 	auto list = CGoalManager::GetInstance()->GetInfoList();
 	for (int i = 0; i < list->size(); i++)
 	{
 		auto it = (*list)[i];
-		CGoal::Create(it.pos, it.fRange, it.fLimit);
+		CGoal::Create(it.pos, it.fRange, it.fLimit, i);
 	}
 
 	return S_OK;
@@ -140,7 +143,7 @@ void CEdit_Goal::Update(void)
 void CEdit_Goal::ClickCheck()
 {
 	CInputMouse* pMouse = CInputMouse::GetInstance();
-	auto list = CGoal::GetInstance();
+	auto list = CGoalManager::GetInstance()->GetList();
 
 	// 入力があれば確認する
 	if (!pMouse->GetTrigger(CInputMouse::BUTTON_LBUTTON)) 
@@ -158,11 +161,12 @@ void CEdit_Goal::ClickCheck()
 	}
 
 	m_pSelect = nullptr;
+	auto mgr = CGoalManager::GetInstance()->GetList();
 
 	// ゴールを全て確認
-	for (int i = 0; i < list->GetNum(); i++)
+	for (auto ite = mgr->begin(); ite != mgr->end(); ite++)
 	{
-		CGoal* pGoal = list->Get(i);
+		CGoal* pGoal = ite->second;
 
 		// 衝突した
 		if (CursorCollision(pGoal))
@@ -342,7 +346,6 @@ void CEdit_Goal::Save()
 	// 入力確認
 	if (!pKey->GetTrigger(DIK_F7)) { return; }
 
-	auto pMgr = CGoal::GetInstance();
 	// ファイルを開く
 	std::ofstream File(FILENAME, std::ios::binary);
 	if (!File.is_open()) {
@@ -351,9 +354,12 @@ void CEdit_Goal::Save()
 
 	std::vector<CGoal::SInfo> savedata;
 
-	for (int i = 0; i < pMgr->GetNum(); i++)
+	auto mgr = CGoalManager::GetInstance()->GetList();
+
+	// ゴールを全て確認
+	for (auto ite = mgr->begin(); ite != mgr->end(); ite++)
 	{
-		savedata.push_back(*pMgr->Get(i)->GetInfo());
+		savedata.push_back(*ite->second->GetInfo());
 	}
 
 	int size = savedata.size();
@@ -409,5 +415,5 @@ void CEdit_Goal::Create()
 	setpos = static_cast<int>(pos.z);
 	pos.z -= setpos % movelength;
 
-	CGoal::Create(pos, 600.0f, 20.0f);
+	CGoal::Create(pos, 600.0f, 20.0f, 0);
 }
