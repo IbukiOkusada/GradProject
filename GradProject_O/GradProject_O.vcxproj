@@ -179,6 +179,7 @@
     <ClCompile Include="code\deltatime.cpp" />
     <ClCompile Include="code\edit.cpp" />
     <ClCompile Include="code\edit_gimmick.cpp" />
+    <ClCompile Include="code\edit_goal.cpp" />
     <ClCompile Include="code\edit_handle.cpp" />
     <ClCompile Include="code\edit_manager.cpp" />
     <ClCompile Include="code\edit_object.cpp" />
@@ -289,6 +290,7 @@
     <ClInclude Include="code\deliverystatus.h" />
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\edit_gimmick.h" />
+    <ClInclude Include="code\edit_goal.h" />
     <ClInclude Include="code\edit_scale.h" />
     <ClInclude Include="code\effect2D.h" />
     <ClInclude Include="code\effekseerControl.h" />

@@ -100,34 +100,8 @@ void CCharacter::Uninit(void)
 //===================================================
 void CCharacter::Update(void)
 {
-	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	//計算用マトリックス
-	D3DXMATRIX mtxParent;			// 親のマトリックス情報
-
-	//ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&m_mtxWorld);
-
-	SetRotation(m_rot);
-
-	// スケールの反映
-	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
-
-	//向きを反映
-	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
-
-	//位置を反映
-	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
-
-	if (m_ParentMtx != NULL)
-	{// 覚えている場合
-		mtxParent = *m_ParentMtx;
-
-		//パーツのマトリックスと親のマトリックスをかけ合わせる
-		D3DXMatrixMultiply(&m_mtxWorld,
-			&m_mtxWorld, &mtxParent);
-	}
+	// マトリックス設定
+	SetMtx();
 
 	if (m_pMotion != NULL)
 	{// モーションを使用している場合
@@ -580,5 +554,40 @@ void CCharacter::SetScale(const D3DXVECTOR3& scale)
 			partsscale.z *= m_scale.z;
 			m_ppParts[nCnt]->SetScale(partsscale);*/
 		}
+	}
+}
+
+//==========================================================
+// マトリックス設定
+//==========================================================
+void CCharacter::SetMtx()
+{
+	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	//計算用マトリックス
+	D3DXMATRIX mtxParent;			// 親のマトリックス情報
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxWorld);
+
+	SetRotation(m_rot);
+
+	// スケールの反映
+	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
+
+	//向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+	//位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
+	if (m_ParentMtx != NULL)
+	{// 覚えている場合
+		mtxParent = *m_ParentMtx;
+
+		//パーツのマトリックスと親のマトリックスをかけ合わせる
+		D3DXMatrixMultiply(&m_mtxWorld,
+			&m_mtxWorld, &mtxParent);
 	}
 }

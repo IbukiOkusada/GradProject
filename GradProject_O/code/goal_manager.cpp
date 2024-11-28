@@ -34,6 +34,7 @@ CGoalManager::CGoalManager()
 	m_pGoal = nullptr;
 
 	m_pInstance = this;
+	m_InfoList.clear();
 }
 
 //==========================================================
@@ -49,14 +50,25 @@ CGoalManager::~CGoalManager()
 //==========================================================
 CGoalManager* CGoalManager::Create(void)
 {
-	CGoalManager* pGoalManager = DEBUG_NEW CGoalManager;
-
-	if (pGoalManager != nullptr)
+	if (m_pInstance == nullptr)
 	{
-		pGoalManager->Init();
+		m_pInstance = DEBUG_NEW CGoalManager;
+		m_pInstance->Init();
 	}
 
-	return pGoalManager;
+	return m_pInstance;
+}
+
+//==========================================================
+// âï˙
+//==========================================================
+void CGoalManager::Release()
+{
+	if (m_pInstance != nullptr)
+	{
+		m_pInstance->Uninit();
+		m_pInstance = nullptr;
+	}
 }
 
 //==========================================================
@@ -64,7 +76,7 @@ CGoalManager* CGoalManager::Create(void)
 //==========================================================
 HRESULT CGoalManager::Init(void)
 {
-	m_pGoal = CGoal::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
+	//m_pGoal = CGoal::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
 
 	return S_OK;
 }
@@ -81,11 +93,15 @@ void CGoalManager::Uninit(void)
 		m_pGoal = nullptr;
 	}
 
+	m_InfoList.clear();
+
 	// é©êgÇÃîjä¸
 	if (m_pInstance != nullptr)
 	{
 		m_pInstance = nullptr;
 	}
+
+	delete this;
 }
 
 //==========================================================
