@@ -23,6 +23,7 @@
 #include "timer.h"
 #include "player_manager.h"
 #include "player.h"
+#include "map_manager.h"
 
 
 //==========================================================
@@ -73,8 +74,8 @@ HRESULT CResult::Init(void)
 	//カメラ初期化
 	{
 		CManager::GetInstance()->GetCamera()->SetLength(300.0f);
-		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(1.0f, -D3DX_PI * 0.5f, 2.63f));
-		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(0.0f, 137.77f, -301.94f));
+		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(0.0f, 33700.77f, -301.94f));
 		D3DVIEWPORT9 viewport;
 
 		//プレイヤー追従カメラの画面位置設定
@@ -87,9 +88,8 @@ HRESULT CResult::Init(void)
 		CManager::GetInstance()->GetCamera()->SetViewPort(viewport);
 	}
 
-	//CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
-	//pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
-	//pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\result.png"));
+	// マップ読み込み
+	CMapManager::GetInstance()->Load();
 
 	m_nDeli = CManager::GetInstance()->GetDeliveryStatus();
 	m_fTime = CTimer::GetTime();
@@ -97,13 +97,15 @@ HRESULT CResult::Init(void)
 
 
 	m_pDeliObject2D = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.2f, 0.0f),
-		NUMBER::WIDTH, NUMBER::HEIGHT);
+		NUMBER::WIDTH,
+		NUMBER::HEIGHT);
 	m_pDeliObject2D->SetIdx(m_nDeli);
 
 	for (int Cnt = 0; Cnt < 3; Cnt++)
 	{
 		m_pTimeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + NUMBER::INTERVAL * Cnt, SCREEN_HEIGHT * 0.4f, 0.0f),
-			NUMBER::WIDTH, NUMBER::HEIGHT);
+			NUMBER::WIDTH,
+			NUMBER::HEIGHT);
 		Calculation(&m_TimeObj[Cnt], m_fTime, Cnt, NUMBER::TIME_OBJ);
 		m_pTimeObject2D[Cnt]->SetIdx(m_TimeObj[Cnt]);
 	}
@@ -111,7 +113,8 @@ HRESULT CResult::Init(void)
 	for (int Cnt = 0; Cnt < 3; Cnt++)
 	{
 		m_pLifeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f + NUMBER::INTERVAL * Cnt, SCREEN_HEIGHT * 0.6f, 0.0f),
-			NUMBER::WIDTH, NUMBER::HEIGHT);
+			NUMBER::WIDTH,
+			NUMBER::HEIGHT);
 		Calculation(&m_LifeObj[Cnt], m_fLife, Cnt, NUMBER::LIFE_OBJ);
 		m_pLifeObject2D[Cnt]->SetIdx(m_LifeObj[Cnt]);
 	}
