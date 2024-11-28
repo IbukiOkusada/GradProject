@@ -11,6 +11,7 @@
 #include "camera_manager.h"
 #include "player.h"
 #include "player_manager.h"
+#include "debugproc.h"
 
 //==========================================================
 // 静的メンバ変数
@@ -32,9 +33,13 @@ namespace
 CGoalManager::CGoalManager()
 {
 	m_pGoal = nullptr;
-
+	m_pGoalOld = nullptr;
 	m_pInstance = this;
 	m_InfoList.clear();
+	m_List.clear();
+	m_nOldIdx = 0;
+	m_nNumCreate = 0;
+	m_nNextIdx = 0;
 }
 
 //==========================================================
@@ -72,11 +77,70 @@ void CGoalManager::Release()
 }
 
 //==========================================================
+// リスト管理に入れる
+//==========================================================
+bool CGoalManager::ListIn(CGoal* pGoal)
+{
+	if (pGoal == nullptr) { return false; }
+
+	auto it = m_List.find(pGoal->GetId());
+
+	// 存在しない
+	if (it == m_List.end())
+	{
+		m_List[pGoal->GetId()] = pGoal;
+		return true;
+	}
+
+	return false;
+}
+
+//==========================================================
+// リスト管理に含める
+//==========================================================
+bool CGoalManager::ListOut(CGoal* pGoal)
+{
+	if (pGoal == nullptr) { return false; }
+
+	auto it = m_List.find(pGoal->GetId());
+
+	// 見つかった
+	if (it != m_List.end())
+	{
+		if (it->second == pGoal)
+		{
+			m_List.erase(pGoal->GetId());
+			return true;
+		}
+	}
+
+	return false;
+}
+
+//==========================================================
+// ゴールを取得
+//==========================================================
+CGoal* CGoalManager::GetGoal(int nIdx)
+{
+	auto it = m_List.find(nIdx);
+
+	// 見つかった
+	if (it != m_List.end())
+	{
+		return it->second;
+	}
+
+	return nullptr;
+}
+
+//==========================================================
 // 初期化処理
 //==========================================================
 HRESULT CGoalManager::Init(void)
 {
-	//m_pGoal = CGoal::Create(D3DXVECTOR3(10000.0f, 0.0f, 12500.0f), 600.0f, 20.0f);
+	if (m_InfoList.size() <= 0) { return E_FAIL; }
+
+	GoalCreate(m_nOldIdx);
 
 	return S_OK;
 }
@@ -114,15 +178,40 @@ void CGoalManager::Update(void)
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	int nNum = pPlayer->GetNumDeliverStatus();
 
+	CDebugProc::GetInstance()->Print("ゴールの生成数 [ %d ] : 現在の配置数 [ %d ]\n",m_nNumCreate, m_List.size());
+
 	if (m_pGoal == nullptr) { return; }
+}
 
-	if (m_pGoal->GetEnd() && pCamera->GetAction()->IsFinish())
+//==========================================================
+// ゴールの生成
+//==========================================================
+void CGoalManager::GoalCreate(int nId)
+{
+	// 前回が存在する
+	if (m_pGoalOld != nullptr)
 	{
-		m_pGoal->Uninit();
-		m_pGoal = nullptr;
+		m_pGoalOld->Uninit();
+		m_pGoalOld = nullptr;
+	}
 
-		if (nNum >= 3) { return; }
+	// 前回覚えなおし
+	m_pGoalOld = m_pGoal;
 
-		m_pGoal = CGoal::Create(POS[nNum - 1], 600.0f, 20.0f);
+	// 新しく生成
+	auto it = m_InfoList[nId];
+	m_pGoal = CGoal::Create(it.pos, it.fRange, it.fLimit, m_nNumCreate);
+	m_nOldIdx = nId;
+	m_nNumCreate++;
+
+	// 次の番号を設定
+	while(1)
+	{
+		m_nNextIdx = rand() % m_InfoList.size();
+
+		if (m_InfoList.size() <= 1 || m_nNextIdx != m_nOldIdx)
+		{
+			break;
+		}
 	}
 }

@@ -13,6 +13,7 @@
 #include "goal.h"
 #include "gimmick.h"
 #include "debugproc.h"
+#include "goal_manager.h"
 
 //===============================================
 // 名前空間
@@ -39,6 +40,7 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvPlDamage,	// プレイヤーダメージ
 	&CNetWork::RecvPlGoal,	// プレイヤーゴール
 	&CNetWork::RecvGmHit,	// ギミックヒット
+	&CNetWork::RecvNextGoal,	// ギミックヒット
 };
 
 // 静的メンバ変数
@@ -579,7 +581,7 @@ void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
 	memcpy(&goalid, pRecvData, sizeof(int));
 	*pByte += 4;
 
-	CGoal* pGoal = CGoal::GetInstance()->Get(goalid);
+	CGoal* pGoal = CGoalManager::GetInstance()->GetGoal(goalid);
 
 	if (pGoal == nullptr) {
 		return;
@@ -621,6 +623,21 @@ void CNetWork::RecvGmHit(int* pByte, const int nId, const char* pRecvData)
 
 	// 衝突した状態にする
 	pGimmick->Hit(pos, speed);
+}
+
+//===================================================
+// 次のゴールを生成
+//===================================================
+void CNetWork::RecvNextGoal(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 次に生成するゴールのIDを得る
+	int goalid = -1;
+	memcpy(&goalid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+
+	CGoalManager::GetInstance()->GoalCreate(goalid);
 }
 
 //===================================================
@@ -782,6 +799,29 @@ void CNetWork::SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float f
 	// 衝突速度を挿入
 	memcpy(&aSendData[byte], &fSpeed, sizeof(float));
 	byte += sizeof(float);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 次のゴール情報番号を送信
+//===================================================
+void CNetWork::SendNextGoal(const int nId)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// 送信用
+	int nProt = NetWork::COMMAND_NEXT_GOAL;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// ゴールしたIDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
 	// 送信
 	m_pClient->SetData(&aSendData[0], byte);

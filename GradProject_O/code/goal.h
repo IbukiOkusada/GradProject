@@ -51,18 +51,16 @@ private:
 
 public:	// 誰でもアクセス可能
 
-	CGoal();	// コンストラクタ(オーバーロード)
+	CGoal(int nId);	// コンストラクタ(オーバーロード)
 	~CGoal();	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	static CGoal* Create(D3DXVECTOR3 pos,float fRange,float fLimit);
+	static CGoal* Create(D3DXVECTOR3 pos,float fRange,float fLimit, int nId);
 
 	void SetEnd(int nId);
-	static Clist<CGoal*>* GetInstance() { if (pList == nullptr) { pList = pList->Create(); }return pList; }		// リスト取得
-	static void ListRelease() { if (pList != nullptr) { delete pList; pList = nullptr; } }					// リスト解放
 	
 	// 設定
 	void SetPos(const D3DXVECTOR3& pos);
@@ -74,6 +72,7 @@ public:	// 誰でもアクセス可能
 	bool GetEnd() { return m_bEnd; }
 	CEffekseer::CEffectData* GetEffect() { return pEffect; }
 	float GetRange() { return m_Info.fRange; }
+	int GetId() { return m_nId; }
 
 private:	// 自分だけがアクセス可能
 
@@ -84,13 +83,12 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	int m_nId;
-	bool m_bEnd;					// 終了地点
+	bool m_bEnd;	// 終了地点
 	SInfo m_Info;
 	CRoad * m_pRoad;
 	CBaggage* m_pBaggage;
 	CEffekseer::CEffectData* pEffect;
-	SPeople m_People;				// 人の情報
-	static Clist<CGoal*>* pList;	// 自分のリスト*GetInstance()経由でアクセスする事*
+	SPeople m_People;	// 人の情報
 };
 
 #endif

@@ -55,6 +55,7 @@ public:
 	void SendPlDamage(const float nowlife);
 	void SendPlGoal(int nId);
 	void SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float fSpeed);
+	void SendNextGoal(const int nId);
 
 	// ƒƒ“ƒoŠÖ”(İ’è)
 
@@ -84,6 +85,7 @@ private:
 	void RecvPlDamage(int* pByte, const int nId, const char* pRecvData);
 	void RecvPlGoal(int* pByte, const int nId, const char* pRecvData);
 	void RecvGmHit(int* pByte, const int nId, const char* pRecvData);
+	void RecvNextGoal(int* pByte, const int nId, const char* pRecvData);
 
 	// ƒƒ“ƒoŠÖ”
 	HRESULT Init();
