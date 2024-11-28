@@ -23,25 +23,55 @@
 #include "PoliceTitle.h"
 #include "goal.h"
 #include "camera_manager.h"
+#include "number.h"
 
 //===============================================
 // 無名名前空間
 //===============================================
 namespace 
 {
+	//<************************************************
+	//D3DXVECTOR3型
+	//<************************************************ 
 	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.9f, 0.0f };		//プレスエンターの座標位置
 	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.1f, 0.0f };				//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
+	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };										//フレームの目標値
 
+	//<************************************************
+	//int型
+	//<************************************************ 
+	const int AUTOMOVE_RANKING = 1000;															//ランキング自動遷移時間
+	const int MOVE_LOGO = 120;																	//次のステートに遷移するまでの時間
+
+	//<************************************************
+	//float型
+	//<************************************************ 
+	const float MAX_ALPHA = 1.0f;																//透明度の最大値
+	const float MIN_ALPHA = 0.3f;																//透明度の最小値
+	const float ALPHA_ZERO = 0.0f;																//透明の時のα値
 	const float TITLELOGO_DEST = SCREEN_WIDTH * 0.5f;											//タイトルロゴの目標位置
 
-	const int AUTOMOVE_RANKING = 1000;	// ランキング自動遷移時間
-	const int MOVE_TUTORIAL = 120;		// チュートリアルに遷移するまでの時間
-	const int ENEMY_NUM = 3;					//演出用敵(パトカー)出現数
-
-	const float MAX_ALPHA = 1.0f;		//透明度の最大値
-	const float MIN_ALPHA = 0.3f;		//透明度の最小値
-	const float ALPHA_ZERO = 0.0f;		//透明の時のα値
+	//<************************************************
+	//テクスチャの名前関連
+	//<************************************************ 
+	//オブジェクト2Dに使うテクスチャの名前
+	const char* TEX_NAME[CTitle::OBJ2D_MAX] = 
+	{
+		"data\\TEXTURE\\logo_thaw.jpg",			//チームロゴ
+		"",										//黒カバー
+		"data\\TEXTURE\\Pre_char000.png",		//タイトルロゴ
+		"data\\TEXTURE\\T_PressEnter000.png",	//プレスエンター
+		"",										//選択肢
+		"data\\TEXTURE\\T_PressEnter001.png",	//"何人選択しますか"の文字
+		"data\\TEXTURE\\T_PressEnter002.png",	//確認メッセージ
+	};				
+	//選択肢に使うテクスチャの名前
+	const char* SELECT_NAME[CTitle::SELECT_MAX] =
+	{
+		"data\\TEXTURE\\GameOver-Yes.png",	//はい
+		"data\\TEXTURE\\GameOver-No.png",	//いいえ
+	};
 }
 
 //<===============================================
@@ -53,6 +83,8 @@ CTitle::CTitle()
 	m_nCounterRanking = 0;
 	m_nCounter = 0;
 	m_nLogoAlpgha = 0;
+	m_nNumSelect = 1;
+	m_nSelect = SELECT_YES;
 	m_TitlePos = VECTOR3_ZERO;
 
 	m_eState = STATE::STATE_TEAMLOGO;
@@ -64,16 +96,24 @@ CTitle::CTitle()
 	m_bSkipped = false;
 	m_bCol = false;
 	m_bIniting = false;
+	m_bSizing = false;
 
 	//ポインタ系
 	m_pPlayer = nullptr;
 	m_pCam = nullptr;
 	m_pGoal = nullptr;
+	m_pNum = nullptr;
 
 	//配列の初期化
 	for (int nCnt = 0; nCnt < OBJ2D_MAX; nCnt++)
 	{
 		m_pObject2D[nCnt] = nullptr;
+	}
+
+	//配列の初期化
+	for (int nCnt = 0; nCnt < SELECT::SELECT_MAX; nCnt++)
+	{
+		m_apYesNoObj[nCnt] = nullptr;
 	}
 
 	//配列の初期化
@@ -98,14 +138,14 @@ CTitle::~CTitle()
 HRESULT CTitle::Init(void)
 {
 	//遷移タイマー設定
-	m_nCounter = MOVE_TUTORIAL;
+	m_nCounter = MOVE_LOGO;
 	m_nCounterRanking = AUTOMOVE_RANKING;
 
 	//タイトルBGM再生とチームロゴオブジェクトの生成
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(320, 160.0f);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\logo_thaw.jpg"));
+	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_TeamLogo]));
 
 	return S_OK;
 }
@@ -117,9 +157,6 @@ void CTitle::Uninit(void)
 {
 	//カメラの視点の位置を初期化
 	m_pCam->SetPositionR(VECTOR3_ZERO);
-	SAFE_UNINIT(m_pPlayer);
-
-	//CManager::GetInstance()->GetCamera()->SetActive(true);
 	CManager::GetInstance()->GetSound()->Stop();
 }
 
@@ -287,6 +324,9 @@ void CTitle::StateP_E(void)
 //<===============================================
 void CTitle::MoveP_E(void)
 {
+	//初期化
+	if (m_bIniting) { m_bIniting = false; }
+
 	PreMove();
 	//キーボード入力かパッド入力があれば
 	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
@@ -372,7 +412,7 @@ void CTitle::PreMove(void)
 	float PlayerRot = m_pPlayer->GetRotation().y;		//プレイヤーの向きを変える
 	const float fDestRot = -3.14f, fRotMove = 0.05f;		//目的の向きと向きの移動値
 
-	TitleLogo();
+	ColChange(m_pObject2D[OBJ2D_PressEnter]);
 
 	//一番目の目的地にプレイヤーを移動させる
 	m_pPlayer->Moving(CPlayerTitle::DEST_SECOND);
@@ -422,7 +462,7 @@ void CTitle::StatePre(void)
 void CTitle::InitingP_E(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };			//プレイヤーの位置
-	const D3DXVECTOR3 PolicePos = { 2476.0f, 0.0f, -550.0f };		//警察位置
+	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };		//警察位置
 	const float fLogoLength = (150.0f, 150.0f);								//ロゴの長さ(サイズ)
 	const float fP_ELength = (350.0f, 350.0f);								//プレスエンターの長さ(サイズ)
 
@@ -438,7 +478,7 @@ void CTitle::InitingP_E(void)
 
 		//カメラ初期状態
 		m_pCam = CCameraManager::GetInstance()->GetTop();
-		m_pCam->SetPositionR(D3DXVECTOR3(3200.0f, 95.0f, 260.0f));
+		m_pCam->SetPositionR(D3DXVECTOR3(3350.0f, 95.0f, 260.0f));
 		m_pCam->SetLength(100.0f);
 		m_pCam->SetRotation(D3DXVECTOR3(0.0f, -0.0f, 1.79f));
 		m_pCam->SetActive(true);
@@ -455,13 +495,13 @@ void CTitle::InitingP_E(void)
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetLength(fLogoLength);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\Pre_char000.png"));
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_TITLELOGO]));
 
 		//・プレスエンター
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(PRESSENTER_POS, VECTOR3_ZERO,5);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(100.0f,100.0f);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\T_PressEnter000.png"));
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_PressEnter]));
 
 		//必要なオブジェクトの生成
 		CTitleMap::GetInstance()->Load();
@@ -480,11 +520,11 @@ void CTitle::InitingP_E(void)
 	}
 }
 //<===============================================
-//タイトルロゴの動き
+//色変更処理
 //<===============================================
-void CTitle::TitleLogo(void)
+void CTitle::ColChange(CObject2D* pObj2D)
 {
-	D3DXCOLOR TitleLogoCol = m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetCol();	//チームロゴの色情報を取得
+	D3DXCOLOR TitleLogoCol = pObj2D->GetCol();									//そのオブジェクトの色情報を取得
 	const int nCountMax = 25;													//カウンターの固定値
 	const int nAmoValue = 10;													//色変化値
 
@@ -536,7 +576,7 @@ void CTitle::TitleLogo(void)
 		}
 	}
 	//色設定
-	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetCol(TitleLogoCol);
+	pObj2D->SetCol(TitleLogoCol);
 }
 //<===============================================
 //追跡ステートに移行した際の動き
@@ -549,6 +589,9 @@ void CTitle::ChaseMovement(void)
 	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
 	const float PlayerMove = 25.0f;						//プレイヤーの動く値
 	const int FADE_TIME = 200;							//ゲーム画面に移行するまでの時間
+
+	Selecting();
+	ChaseCamera();
 
 	//プレイヤーと警察を移動させる
 	PlayerPos.z += PlayerMove;
@@ -563,13 +606,11 @@ void CTitle::ChaseMovement(void)
 		m_apPolice[nCnt]->Chasing();
 	}
 
-	ChaseCamera();
+	////超えていたらゲーム画面に遷移する
+	//if (m_nCounter >= FADE_TIME) {CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
 
-	//超えていたらゲーム画面に遷移する
-	if (m_nCounter >= FADE_TIME){CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
-
-	//超えていなかったらカウント増加
-	else { m_nCounter++; }
+	////超えていなかったらカウント増加
+	//else { m_nCounter++; }
 }
 //<===============================================
 //追跡ステートの際のカメラの動き
@@ -588,7 +629,7 @@ void CTitle::ChaseCamera(void)
 		fDestRotY = -0.66f,
 		fDestRotZ = 1.15f;
 
-	const float CameraPosDif[2] = { 0.0f,190.0f };	//カメラの補正距離
+	const float CameraPosDif[2] = { 0.0f,210.0f };	//カメラの補正距離
 	float CameraDis = 1150.0f;					//カメラの距離
 
 	//カメラの向きの調整
@@ -630,6 +671,188 @@ void CTitle::SkipMovement(void)
 
 	//ステートを変更する
 	m_eState = STATE::STATE_PRESSENTER;
+}
+//<===============================================
+//人数選択に使う変数の初期化
+//<===============================================
+void CTitle::InitingSelect(void)
+{
+	const D3DXVECTOR3 NUMCHAR_POS = D3DXVECTOR3(625.0f, 100.0f, 0.0f);		//"何人ですか"の位置
+	const D3DXVECTOR3 CHECK_POS = D3DXVECTOR3(625.0f, 450.0f, 0.0f);		//"何人ですか"の位置
+	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(505.0f, 525.0f, 0.0f);		//数字の位置
+	const D3DXVECTOR3 NO_POS = D3DXVECTOR3(YES_POS.x + 150.0f, YES_POS.y, 0.0f);		//"何人ですか"の位置
+
+	//初期化されていなかったら
+	if (!m_bIniting)
+	{
+		//bool型の情報定義
+		m_bIniting = true;
+		m_bPush = false;
+
+		//生成し、情報を設定する
+		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO, 6);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(true);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
+
+		//生成し、情報を設定する
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(NUMCHAR_POS, VECTOR3_ZERO, 6);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(150.0f, 75.0f);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(false);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_NUMCHAR]));
+
+		//生成し、情報を設定する
+		m_pObject2D[OBJ2D::OBJ2D_CHECK] = CObject2D::Create(CHECK_POS, VECTOR3_ZERO, 6);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(125.0f, 75.0f);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_CHECK]));
+
+		//選択肢(はい)
+		m_apYesNoObj[SELECT_YES] = CObject2D::Create(YES_POS, VECTOR3_ZERO, 6);
+		m_apYesNoObj[SELECT_YES]->SetSize(100.0f, 50.0f);
+		m_apYesNoObj[SELECT_YES]->SetDraw(false);
+		m_apYesNoObj[SELECT_YES]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_NAME[SELECT::SELECT_YES]));
+		//選択肢(いいえ)
+		m_apYesNoObj[SELECT_NO] = CObject2D::Create(NO_POS, VECTOR3_ZERO, 6);
+		m_apYesNoObj[SELECT_NO]->SetSize(100.0f, 50.0f);
+		m_apYesNoObj[SELECT_NO]->SetDraw(false);
+		m_apYesNoObj[SELECT_NO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_NAME[SELECT::SELECT_NO]));
+
+	}
+}
+//<===============================================
+//フレームのサイズ調整
+//<===============================================
+void CTitle::Sizing(void)
+{
+	D3DXVECTOR3 FrameSize = m_pObject2D[OBJ2D::OBJ2D_FRAME]->GetSize();		//フレームサイズ
+	const float fSpeed = 0.09f;												//スピード
+
+	//X軸
+	if (FrameSize.x >= FRAME_DEST.x) { FrameSize.x = FRAME_DEST.x; }
+	else { FrameSize.x += (FRAME_DEST.x - FrameSize.x - 0.0f) * fSpeed; }
+
+	//Y軸
+	if (FrameSize.y >= FRAME_DEST.y) { FrameSize.y = FRAME_DEST.y; }
+	else { FrameSize.y += (FRAME_DEST.y - FrameSize.y - 0.0f) * fSpeed; }
+
+	//目的地に着いたら
+	if (Function::BoolToDest(m_pObject2D[OBJ2D::OBJ2D_FRAME]->GetSize(),
+		D3DXVECTOR3(FRAME_DEST), 1.0f, false))
+	{
+		//サイズ調整完了合図を設定
+		m_bSizing = true;
+	}
+
+	//サイズを設定
+	m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(FrameSize.x,FrameSize.y);
+}
+//<===============================================
+//人数選択の際の処理
+//<===============================================
+void CTitle::Selecting(void)
+{
+	const D3DXVECTOR3 NUMBER_POS = D3DXVECTOR3(625.0f, 325.0f, 0.0f);		//数字の位置
+	const int ONE_PLAYER = 1,MAX_PLAYER = 4;								//プレイヤーの数
+
+	//初期化
+	InitingSelect();
+
+	//サイズ調整が終わっていたら
+	if (m_bSizing)
+	{
+		//ナンバー生成と"何人か"の文字生成
+		if (!m_pNum) { m_pNum = CNumber::Create(NUMBER_POS, 150.0f, 100.0f); }
+		if (!m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->GetDraw()) { m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(true); }
+
+		//反応があったら
+		if (m_bPush)
+		{
+			m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(true);
+			m_apYesNoObj[SELECT_YES]->SetDraw(true);
+			m_apYesNoObj[SELECT_NO]->SetDraw(true);
+
+			SelectYesNO();
+		}
+		//無ければ
+		else
+		{
+			//キーボード入力かパッド入力があれば
+			if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
+				CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
+				CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
+			{
+				m_bPush = true;
+			}
+
+			//人数選択をする
+			if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW)) { m_nNumSelect += 1; }
+			else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW)) { m_nNumSelect -= 1; }
+
+			//もし人数の最大値まで行っていたら
+			if (m_nNumSelect >= MAX_PLAYER) { m_nNumSelect = MAX_PLAYER; }
+
+			//人数の最小値まで行っていたら
+			else if (m_nNumSelect <= 0) { m_nNumSelect = ONE_PLAYER; }
+
+			//描画設定を変更
+			m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
+			m_apYesNoObj[SELECT_YES]->SetDraw(false);
+			m_apYesNoObj[SELECT_NO]->SetDraw(false);
+
+			//今の人数番号を設定
+			m_pNum->SetIdx(m_nNumSelect);
+		}
+	}
+	//終っていなかったら、サイズ調整を行う
+	else
+	{
+		Sizing();
+	}
+}
+//<===============================================
+//選択肢(YesNo洗濯)
+//<===============================================
+void CTitle::SelectYesNO(void)
+{
+	//人数選択をする
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW)) { m_nSelect = (m_nSelect + 1) % SELECT_MAX; }
+	else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW)) { m_nSelect = (m_nSelect + (SELECT_MAX - 1)) % SELECT_MAX; }
+
+	//キーボード入力かパッド入力があれば
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
+		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
+		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
+	{
+		//"YES"を選択したとき、ゲーム画面に移行する
+		if (m_nSelect == SELECT::SELECT_YES){CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
+
+		//"NO"を選択したとき、押下情報を元に戻す
+		else if (m_nSelect == SELECT::SELECT_NO){m_bPush = false;}
+	}
+
+	SelectCol();
+}
+//<===============================================
+//選択している際の色
+//<===============================================
+void CTitle::SelectCol(void)
+{	
+	//"YES"を選択している時
+	if (m_nSelect == SELECT::SELECT_YES)
+	{
+		//"YES"を選択状態、"NO"を非選択状態
+		ColChange(m_apYesNoObj[SELECT::SELECT_YES]);
+		m_apYesNoObj[SELECT::SELECT_NO]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	}
+	//"NO"を選択している時
+	else if (m_nSelect == SELECT::SELECT_NO)
+	{
+		//"YES"を非選択状態、"NO"を選択状態
+		ColChange(m_apYesNoObj[SELECT::SELECT_NO]);
+		m_apYesNoObj[SELECT::SELECT_YES]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	}
+
 }
 //<===============================================
 //デバッグ時のカメラの動き

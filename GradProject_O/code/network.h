@@ -54,6 +54,7 @@ public:
 	void SendPlRot(const D3DXVECTOR3& rot);
 	void SendPlDamage(const float nowlife);
 	void SendPlGoal(int nId);
+	void SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float fSpeed);
 
 	// ÉÅÉìÉoä÷êî(ê›íË)
 
@@ -82,6 +83,7 @@ private:
 	void RecvPlRot(int* pByte, const int nId, const char* pRecvData);
 	void RecvPlDamage(int* pByte, const int nId, const char* pRecvData);
 	void RecvPlGoal(int* pByte, const int nId, const char* pRecvData);
+	void RecvGmHit(int* pByte, const int nId, const char* pRecvData);
 
 	// ÉÅÉìÉoä÷êî
 	HRESULT Init();

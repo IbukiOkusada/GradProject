@@ -14,6 +14,8 @@
 #include "particle3D.h"
 #include "player.h"
 #include "player_manager.h"
+#include "network.h"
+#include "effekseerControl.h"
 
 // 定数定義
 namespace
@@ -86,12 +88,14 @@ void CGimmickGuardRail::Update(void)
 	{
 		if (m_pObj->GetHit() || m_pObj->GetHitOld())
 		{
-			m_bHit = true;
-			m_pObj->SetEnableCollision(false);
 			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 			D3DXVECTOR3 pos = pPlayer->GetPosition();
+			float speed = CPlayerManager::GetInstance()->GetPlayer()->GetEngine();
 
-			Hit(pos);
+			Hit(pos, speed);
+
+			// ネットワークでの衝突送信
+			CNetWork::GetInstance()->SendGmHit(GetId(), pos, speed);
 		}
 	}
 
@@ -146,16 +150,19 @@ void CGimmickGuardRail::Away()
 //==========================================================
 // 衝突
 //==========================================================
-void CGimmickGuardRail::Hit(const D3DXVECTOR3& HitPos)
+void CGimmickGuardRail::Hit(const D3DXVECTOR3& HitPos, const float fSpeed)
 {
+	if (m_bHit) { return; }
+
+	m_bHit = true;
+	m_pObj->SetEnableCollision(false);
 	float rot = atan2f(GetPos().x - HitPos.x, GetPos().z - HitPos.z);
-	float speed = CPlayerManager::GetInstance()->GetPlayer()->GetEngine();
 
 	// 座標設定
 	m_TargetPos = {
-		GetPos().x + sinf(rot) * speed * 500.0f,
+		GetPos().x + sinf(rot) * fSpeed * 500.0f,
 		GetPos().y,
-		GetPos().z + cosf(rot) * speed * 500.0f,
+		GetPos().z + cosf(rot) * fSpeed * 500.0f,
 	};
 
 	m_TargetRot = {
@@ -163,6 +170,9 @@ void CGimmickGuardRail::Hit(const D3DXVECTOR3& HitPos)
 		rot,
 		0.0f
 	};
+
+	if (m_pObj->GetHit() || m_pObj->GetHitOld()) { return; }
+	CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", GetPos(), VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
 }
 
 //==========================================================

@@ -88,7 +88,7 @@ void CTitleMap::Load(void)
 	LoadRoad("data\\FILE\\map\\road.bin");
 
 	// áŠQ•¨“Ç‚Ýž‚Ý
-	LoadObstacle("data\\FILE\\map\\obstacle.bin");
+	//LoadObstacle("data\\FILE\\map\\obstacle.bin");
 
 	// “¹˜AŒ‹
 	CRoadManager::GetInstance()->AllConnect();
