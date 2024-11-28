@@ -108,6 +108,9 @@ private:
 	void SelectYesNO(void);
 	void SelectCol(void);
 
+	//アイスステート
+	void IceMovement(void);
+
 	//デバッグ用
 	void DebugCam(void);
 
@@ -137,6 +140,7 @@ private:
 	bool m_bNext;							//次に行けるかの是非
 	bool m_bSkipped;						//スキップしたかどうか
 	bool m_bSizing;							//サイズ調整が完了したかどうか
+	bool m_bSelected;						//セレクトされたかどうか
 };
 
 #endif

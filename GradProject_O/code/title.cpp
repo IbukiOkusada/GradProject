@@ -80,8 +80,8 @@ namespace
 CTitle::CTitle()
 {
 	//int関係
-	m_nCounterRanking = 0;
-	m_nCounter = 0;
+	m_nCounter = MOVE_LOGO;
+	m_nCounterRanking = AUTOMOVE_RANKING;
 	m_nLogoAlpgha = 0;
 	m_nNumSelect = 1;
 	m_nSelect = SELECT_YES;
@@ -97,6 +97,7 @@ CTitle::CTitle()
 	m_bCol = false;
 	m_bIniting = false;
 	m_bSizing = false;
+	m_bSelected = false;
 
 	//ポインタ系
 	m_pPlayer = nullptr;
@@ -137,15 +138,20 @@ CTitle::~CTitle()
 //<===============================================
 HRESULT CTitle::Init(void)
 {
-	//遷移タイマー設定
-	m_nCounter = MOVE_LOGO;
-	m_nCounterRanking = AUTOMOVE_RANKING;
+	const D3DXVECTOR3 CAMERA_POS = { 3350.0f, 95.0f, 260.0f };				//カメラの初期位置
 
 	//タイトルBGM再生とチームロゴオブジェクトの生成
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(320, 160.0f);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_TeamLogo]));
+
+	//カメラ初期状態
+	m_pCam = CCameraManager::GetInstance()->GetTop();
+	m_pCam->SetPositionR(CAMERA_POS);
+	m_pCam->SetLength(100.0f);
+	m_pCam->SetRotation(D3DXVECTOR3(0.0f, -0.0f, 1.79f));
+	m_pCam->SetActive(true);
 
 	return S_OK;
 }
@@ -158,6 +164,8 @@ void CTitle::Uninit(void)
 	//カメラの視点の位置を初期化
 	m_pCam->SetPositionR(VECTOR3_ZERO);
 	CManager::GetInstance()->GetSound()->Stop();
+
+	SAFE_UNINIT(m_pPlayer);
 }
 
 //<===============================================
@@ -227,6 +235,9 @@ void CTitle::Update(void)
 
 		//アイスを投げ入れるステートだった場合
 	case STATE::STATE_ICETHROW:
+
+		DebugCam();
+		IceMovement();
 
 		break;
 
@@ -462,7 +473,7 @@ void CTitle::StatePre(void)
 void CTitle::InitingP_E(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };			//プレイヤーの位置
-	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };		//警察位置
+	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };				//警察位置
 	const float fLogoLength = (150.0f, 150.0f);								//ロゴの長さ(サイズ)
 	const float fP_ELength = (350.0f, 350.0f);								//プレスエンターの長さ(サイズ)
 
@@ -470,19 +481,12 @@ void CTitle::InitingP_E(void)
 	if (!m_bIniting)
 	{
 		//2つのbool情報を初期化
+		m_bIniting = true;
 		m_bPush = false;
 		m_bNext = false;
 
 		//必要ないので終了処理を挟む(いるかは不明だけど念のためです)
 		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_TeamLogo]);
-
-		//カメラ初期状態
-		m_pCam = CCameraManager::GetInstance()->GetTop();
-		m_pCam->SetPositionR(D3DXVECTOR3(3350.0f, 95.0f, 260.0f));
-		m_pCam->SetLength(100.0f);
-		m_pCam->SetRotation(D3DXVECTOR3(0.0f, -0.0f, 1.79f));
-		m_pCam->SetActive(true);
-
 		//<******************************************
 		// 2Dオブジェクトの生成処理
 		//<******************************************
@@ -514,9 +518,6 @@ void CTitle::InitingP_E(void)
 			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
 				D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
 		}
-
-		//初期化完了の合図をtrueにする
-		m_bIniting = true;
 	}
 }
 //<===============================================
@@ -603,14 +604,25 @@ void CTitle::ChaseMovement(void)
 	//警察関連の処理
 	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
 	{
-		m_apPolice[nCnt]->Chasing();
+		m_apPolice[nCnt]->Chasing(PlayerMove);
 	}
 
-	////超えていたらゲーム画面に遷移する
-	//if (m_nCounter >= FADE_TIME) {CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
+	//選択判定があれば
+	if (m_bSelected) 
+	{ 
+		//いらないオブジェクトの破棄
+		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_FRAME]);
+		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]);
+		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_CHECK]);
+		SAFE_UNINIT(m_apYesNoObj[SELECT_YES]);
+		SAFE_UNINIT(m_apYesNoObj[SELECT_NO]);
+		SAFE_UNINIT(m_pNum);
 
-	////超えていなかったらカウント増加
-	//else { m_nCounter++; }
+		//アイスステートに移行し、変数の設定をする
+		m_eState = STATE::STATE_ICETHROW; 
+		m_pCam->SetPositionR(D3DXVECTOR3(m_pPlayer->GetPosition()));
+		m_nCounter = 0; 
+	}
 }
 //<===============================================
 //追跡ステートの際のカメラの動き
@@ -693,7 +705,7 @@ void CTitle::InitingSelect(void)
 		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO, 6);
 		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);
 		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(true);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.5f));
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f));
 
 		//生成し、情報を設定する
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(NUMCHAR_POS, VECTOR3_ZERO, 6);
@@ -764,6 +776,7 @@ void CTitle::Selecting(void)
 		//ナンバー生成と"何人か"の文字生成
 		if (!m_pNum) { m_pNum = CNumber::Create(NUMBER_POS, 150.0f, 100.0f); }
 		if (!m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->GetDraw()) { m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(true); }
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.6f));
 
 		//反応があったら
 		if (m_bPush)
@@ -824,8 +837,9 @@ void CTitle::SelectYesNO(void)
 		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
 		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
 	{
+		
 		//"YES"を選択したとき、ゲーム画面に移行する
-		if (m_nSelect == SELECT::SELECT_YES){CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
+		if (m_nSelect == SELECT::SELECT_YES){m_bSelected = true;}
 
 		//"NO"を選択したとき、押下情報を元に戻す
 		else if (m_nSelect == SELECT::SELECT_NO){m_bPush = false;}
@@ -879,4 +893,38 @@ void CTitle::DebugCam(void)
 	m_pCam->SetRotation(CamRot);
 #endif
 
+}
+//<===============================================
+//アイスステート時の動き
+//<===============================================
+void CTitle::IceMovement(void)
+{
+	//<*************************************************************
+	//カメラに関する
+	//<*************************************************************
+	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
+	const float PlayerMove = 50.0f;						//プレイヤーの動く値
+	const int FADE_TIME = 100;							//ゲーム画面に移行するまでの時間
+
+	//カメラの設定
+	m_pCam->SetRotation(D3DXVECTOR3(0.0f, -1.57f, 1.57f));
+
+	//プレイヤーと警察を移動させる
+	PlayerPos.z += PlayerMove;
+
+	//カメラの向きとプレイヤーの位置の設定
+	m_pPlayer->SetPosition(PlayerPos);
+
+	//<******************************************
+	//警察関連の処理
+	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+	{
+		m_apPolice[nCnt]->Chasing(PlayerMove);
+	}
+
+	//超えていたらゲーム画面に遷移する
+	if (m_nCounter >= FADE_TIME) { CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME); }
+
+	//超えていなかったらカウント増加
+	else { m_nCounter++; }
 }
