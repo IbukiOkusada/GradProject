@@ -43,10 +43,13 @@ private:
 
 	// メンバ関数
 	void AddPlayer(void);  // プレイヤー参加処理
+	void DecreasePlayer(void);  // プレイヤー参加取り消し処理
 
 	// メンバ変数
 	CPlayer** m_ppPlayer;	// プレイヤーのポインタ
 	CMultiCamera** m_ppCamera;   // カメラのポインタ
+
+	bool m_IsFinish;  // チュートリアルが終了しているかどうか
 };
 
 #endif

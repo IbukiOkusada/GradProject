@@ -29,6 +29,13 @@ public:	// 誰でもアクセス可能な定義
 		MODE_MAX
 	};
 
+	enum DRAWSTATE
+	{
+		NORMAL,
+		PLAYER_ONLY,
+		MAX
+	};
+
 public:	// 誰でもアクセス可能
 	CCamera();	// コンストラクタ
 	virtual ~CCamera();	// デストラクタ
@@ -42,6 +49,7 @@ public:	// 誰でもアクセス可能
 	void Setting(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot);
 	void SetRot(const D3DXVECTOR3 rot);
 	void SetMode(MODE mode) { m_mode = mode; }
+	void SetDrawState(DRAWSTATE state) { m_DrawState = state; }
 	void SetOldRot(D3DXVECTOR3 rot) { m_SlowOldRot = rot; }
 	void MoveV(void);
 	void SetV(void);
@@ -76,6 +84,7 @@ public:	// 誰でもアクセス可能
 	CCamera *GetNext(void) { return m_pNext; }
 	CCamera *GetPrev(void) { return m_pPrev; }
 	MODE GetMode(void) { return m_mode; }
+	DRAWSTATE GetDrawState(void) { return m_DrawState; }
 	bool GetDraw(void) const { return m_bDraw; }
 	float GetLength(void) { return m_fLength; }
 	CCameraAction* GetAction() { return m_pAction; }
@@ -111,6 +120,7 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_GoalPos;  // ゴールの位置
 	CCameraAction* m_pAction;	// アクション用ポインタ
 	MODE m_mode;				// モード
+	DRAWSTATE m_DrawState;
 	float m_fMulScore;		// スコア倍率
 	float m_fLength;			// 視点と注視点の距離
 	float m_fZoom;				// ズーム率

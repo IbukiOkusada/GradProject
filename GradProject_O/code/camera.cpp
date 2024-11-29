@@ -89,6 +89,7 @@ HRESULT CCamera::Init(void)
 	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 	m_rot.z = MIN_CAMERA_ROTZ;
 	m_mode = MODE_NORMAL;
+	m_DrawState = NORMAL;
 	m_nZoomCount = 0;
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_GoalPos = D3DXVECTOR3(-660.0f, 100.0f, 1300.0f);

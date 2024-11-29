@@ -262,7 +262,5 @@ bool Function::BoolToDest(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, cons
 
 	}
 
-
-
 	return false;
 }
