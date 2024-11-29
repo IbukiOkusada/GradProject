@@ -56,7 +56,7 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 
 			CRoad::SSearch* neighbor = Current->pRoad->GetSearchRoad((CRoad::DIRECTION)i);
 
-			if (std::find(CloseList.begin(), CloseList.end(), neighbor) != CloseList.end() || !neighbor->bActive) continue;
+			if (std::find(CloseList.begin(), CloseList.end(), neighbor) != CloseList.end() || !neighbor->bActive) { continue; }
 			
 			// コスト計算
 			neighbor->fGCost = D3DXVec3Length(&(neighbor->pos - Current->pos));
@@ -74,37 +74,39 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 	return {};
 }
 
-// AStarでの経路探索
-std::vector<CRoad::SSearch*> AStarPolice(CRoad::SSearch* State, CRoad::SSearch* Gole)
+//==========================================================
+// AStarでの警察用経路探索
+//==========================================================
+std::vector<CRoad*> AStarPolice(CRoad* Start, CRoad* Goal)
 {
-	std::vector<CRoad::SSearch*> OpenList;//探索候補リスト
-	std::vector<CRoad::SSearch*> CloseList;//探索終了リスト
+	std::vector < CRoad::SInfoSearch * > OpenList;//探索候補リスト
+	std::vector<CRoad::SInfoSearch*> CloseList;//探索終了リスト
 
-	State->fGCost = 0.0f;
-	State->fHCost = D3DXVec3Length(&(State->pos - Gole->pos));
-	State->fFCost = State->fGCost + State->fHCost;
-	OpenList.push_back(State);
+	Start->GetInfoSearch()->fGCost = 0.0f;
+	Start->GetInfoSearch()->fHCost = D3DXVec3Length(&(Start->GetPosition() - Goal->GetPosition()));
+	Start->GetInfoSearch()->fFCost = Start->GetInfoSearch()->fGCost + Start->GetInfoSearch()->fHCost;
+	OpenList.push_back(Start->GetInfoSearch());
 
 	// オープンリストが空になるまで探索
 	while (!OpenList.empty())
 	{
-		CRoad::SSearch* Current;		// 現在の参照ノード
+		CRoad::SInfoSearch* Current;		// 現在の参照ノード
 		Current = *std::min_element(OpenList.begin(), OpenList.end(),
-			[](CRoad::SSearch* a, CRoad::SSearch* b) { return a->fFCost < b->fFCost; });		// 総計コストが最少のノードを選ぶ
+			[](CRoad::SInfoSearch* a, CRoad::SInfoSearch* b) { return a->fFCost < b->fFCost; });		// 総計コストが最少のノードを選ぶ
 
-		if (Current->pRoad == Gole->pRoad)		// ゴール到達時
+		if (Current->pRoad == Goal)		// ゴール到達時
 		{// 親ノードを辿って順序を入れ替えたのち返す
 
-			std::vector<CRoad::SSearch*> path;
+			std::vector<CRoad*> path;
 
 			while (Current != nullptr) 
 			{
 				if (Current->pParent != nullptr)
 				{
-					Current->pParent->pChaild = Current;
+					//Current->pParent->GetInfoSearch()->pChaild = Current->pRoad;
 				}
-				path.push_back(Current);
-				Current = Current->pParent;
+				path.push_back(Current->pRoad);
+				Current = Current->pParent->GetInfoSearch();
 			}
 
 			std::reverse(path.begin(), path.end());
@@ -118,23 +120,22 @@ std::vector<CRoad::SSearch*> AStarPolice(CRoad::SSearch* State, CRoad::SSearch* 
 		for (int i = 0; i < CRoad::DIC_MAX; i++)
 		{// 隣接ノードをコスト計算の後オープンリストに追加
 
-			if (Current->pRoad->GetConnectRoad((CRoad::DIRECTION)i) == nullptr)
-				continue;
+			if (Current->pRoad->GetConnectRoad((CRoad::DIRECTION)i) == nullptr) { continue; }
 
-			CRoad::SSearch* neighbor = Current->pRoad->GetSearchRoad((CRoad::DIRECTION)i);
+			CRoad::SInfoSearch* neighborInfo = Current->pRoad->GetInfoSearchDic((CRoad::DIRECTION)i);
 
-			if (std::find(CloseList.begin(), CloseList.end(), neighbor) != CloseList.end()) continue;
+			if (std::find(CloseList.begin(), CloseList.end(), neighborInfo) != CloseList.end()) { continue; }
 
 			// コスト計算
-			neighbor->fGCost = Current->pRoad->GetConnectLength((CRoad::DIRECTION)i);
-			neighbor->fHCost = D3DXVec3Length(&(neighbor->pRoad->GetPosition() - Gole->pos));
-			neighbor->fFCost = neighbor->fGCost + neighbor->fHCost;
-			neighbor->pParent = Current;
+			neighborInfo->fGCost = Current->pRoad->GetConnectLength((CRoad::DIRECTION)i);
+			neighborInfo->fHCost = D3DXVec3Length(&(neighborInfo->pRoad->GetPosition() - Goal->GetPosition()));
+			neighborInfo->fFCost = neighborInfo->fGCost + neighborInfo->fHCost;
+			neighborInfo->pParent = Current->pRoad;
 
 			// オープンリストに追加
-			if (std::find(OpenList.begin(), OpenList.end(), neighbor) == OpenList.end())
+			if (std::find(OpenList.begin(), OpenList.end(), neighborInfo) == OpenList.end())
 			{
-				OpenList.push_back(neighbor);
+				OpenList.push_back(neighborInfo);
 			}
 		}
 	}
@@ -190,7 +191,7 @@ std::vector<CRoad::SSearch*> AStarLimit(CRoad::SSearch* State, CRoad::SSearch* G
 
 			CRoad::SSearch* neighbor = Current->pRoad->GetSearchRoad((CRoad::DIRECTION)i);
 
-			if (std::find(CloseList.begin(), CloseList.end(), neighbor) != CloseList.end() || !neighbor->bActive) continue;
+			if (std::find(CloseList.begin(), CloseList.end(), neighbor) != CloseList.end() || !neighbor->bActive) { continue; }
 
 			// コスト計算
 			neighbor->fGCost = Current->pRoad->GetConnectLength((CRoad::DIRECTION)i);

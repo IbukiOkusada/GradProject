@@ -34,7 +34,8 @@ CRoad::CRoad(const SInfo& info)
 
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)
 	{
-		m_apConnectRoad[i] = nullptr;
+		m_aInfoSearch[i].pRoad = nullptr;
+		m_aInfoSearch[i].pConnectRoad = nullptr;
 		m_aSearchRoad[i] = SSearch();
 	}
 
@@ -62,6 +63,7 @@ HRESULT CRoad::Init(void)
 	m_pObj->BindTexture(pTex->Regist(FILENAME[TYPE_CROSSING]));
 	m_Searchself.pos = m_Info.pos;
 	m_Searchself.pRoad = this;
+	m_aInfoSearchSelf.pRoad = this;
 	for (int i = 0; i < 4; i++)
 	{
 		m_aVtxPos[i] = VECTOR3_ZERO;
@@ -77,7 +79,7 @@ void CRoad::Uninit(void)
 	// 連結道路の記憶を廃棄
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)
 	{
-		m_apConnectRoad[i] = nullptr;
+		m_aInfoSearch[i].pConnectRoad = nullptr;
 		m_aSearchRoad[i] = SSearch();
 	}
 
@@ -130,15 +132,15 @@ void CRoad::Connect(CRoad* pRoad, const DIRECTION dic)
 	// 範囲外確認
 	if (dic < DIRECTION::DIC_UP || dic >= DIRECTION::DIC_MAX) { return; }
 
-	m_apConnectRoad[dic] = pRoad;
+	m_aInfoSearch[dic].pConnectRoad = pRoad;
 
 	if (pRoad != nullptr)
 	{
-		m_apConnectLength[dic] = D3DXVec3Length(&(m_Info.pos - pRoad->GetPosition()));
+		m_aInfoSearch[dic].pConnectLength = D3DXVec3Length(&(m_Info.pos - pRoad->GetPosition()));
 	}
 	else
 	{
-		m_apConnectLength[dic] = FLT_MAX;
+		m_aInfoSearch[dic].pConnectLength = FLT_MAX;
 	}
 }
 
@@ -174,7 +176,7 @@ void CRoad::BindTexture()
 	// 総数確認
 	for (int i = 0; i < DIC_MAX; i++)
 	{
-		if (m_apConnectRoad[i] == nullptr) { continue; }
+		if (m_aInfoSearch[i].pConnectRoad == nullptr) { continue; }
 		num++;
 	}
 
@@ -183,8 +185,8 @@ void CRoad::BindTexture()
 
 	// 直線かどうかを確認
 	if (num == 2 && 
-		((m_apConnectRoad[DIC_UP] != nullptr && m_apConnectRoad[DIC_DOWN] != nullptr) || 
-		(m_apConnectRoad[DIC_LEFT] != nullptr && m_apConnectRoad[DIC_RIGHT] != nullptr)))
+		((m_aInfoSearch[DIC_UP].pConnectRoad != nullptr && m_aInfoSearch[DIC_DOWN].pConnectRoad != nullptr) ||
+		(m_aInfoSearch[DIC_LEFT].pConnectRoad != nullptr && m_aInfoSearch[DIC_RIGHT].pConnectRoad != nullptr)))
 	{
 		m_Type = TYPE_NONE;
 	}
@@ -213,15 +215,15 @@ void CRoad::Rotation(TYPE type)
 	{
 	case CRoad::TYPE_STOP:
 	{
-		if (m_apConnectRoad[DIC_UP] != nullptr)
+		if (m_aInfoSearch[DIC_UP].pConnectRoad != nullptr)
 		{
 			m_Info.rot.y = D3DX_PI;
 		}
-		else if (m_apConnectRoad[DIC_LEFT] != nullptr)
+		else if (m_aInfoSearch[DIC_LEFT].pConnectRoad != nullptr)
 		{
 			m_Info.rot.y = D3DX_PI * 0.5f;
 		}
-		else if (m_apConnectRoad[DIC_RIGHT] != nullptr)
+		else if (m_aInfoSearch[DIC_RIGHT].pConnectRoad != nullptr)
 		{
 			m_Info.rot.y = -D3DX_PI * 0.5f;
 		}
@@ -229,7 +231,7 @@ void CRoad::Rotation(TYPE type)
 		break;
 	case CRoad::TYPE_NONE:
 	{
-		if (m_apConnectRoad[DIC_LEFT] != nullptr && m_apConnectRoad[DIC_RIGHT] != nullptr)
+		if (m_aInfoSearch[DIC_LEFT].pConnectRoad != nullptr && m_aInfoSearch[DIC_RIGHT].pConnectRoad != nullptr)
 		{
 			m_Info.rot.y = D3DX_PI * 0.5f;
 		}
@@ -237,24 +239,24 @@ void CRoad::Rotation(TYPE type)
 		break;
 	case CRoad::TYPE_CURVE:
 	{
-		if (m_apConnectRoad[DIC_UP] != nullptr)
+		if (m_aInfoSearch[DIC_UP].pConnectRoad != nullptr)
 		{
-			if (m_apConnectRoad[DIC_LEFT] != nullptr)
+			if (m_aInfoSearch[DIC_LEFT].pConnectRoad != nullptr)
 			{
 				m_Info.rot.y = D3DX_PI;
 			}
-			else if (m_apConnectRoad[DIC_RIGHT] != nullptr)
+			else if (m_aInfoSearch[DIC_RIGHT].pConnectRoad != nullptr)
 			{
 				m_Info.rot.y = -D3DX_PI * 0.5f;
 			}
 		}
-		else if (m_apConnectRoad[DIC_DOWN] != nullptr)
+		else if (m_aInfoSearch[DIC_DOWN].pConnectRoad != nullptr)
 		{
-			if (m_apConnectRoad[DIC_LEFT] != nullptr)
+			if (m_aInfoSearch[DIC_LEFT].pConnectRoad != nullptr)
 			{
 				m_Info.rot.y = D3DX_PI * 0.5f;
 			}
-			else if (m_apConnectRoad[DIC_RIGHT] != nullptr)
+			else if (m_aInfoSearch[DIC_RIGHT].pConnectRoad != nullptr)
 			{
 				m_Info.rot.y = 0.0f;
 			}
@@ -263,19 +265,19 @@ void CRoad::Rotation(TYPE type)
 		break;
 	case CRoad::TYPE_T_JUNCTION:
 	{
-		if (m_apConnectRoad[DIC_UP] == nullptr)
+		if (m_aInfoSearch[DIC_UP].pConnectRoad == nullptr)
 		{
 			m_Info.rot.y = D3DX_PI * 0.5f;
 		}
-		else if (m_apConnectRoad[DIC_DOWN] == nullptr)
+		else if (m_aInfoSearch[DIC_DOWN].pConnectRoad == nullptr)
 		{
 			m_Info.rot.y = -D3DX_PI * 0.5f;
 		}
-		else if (m_apConnectRoad[DIC_LEFT] == nullptr)
+		else if (m_aInfoSearch[DIC_LEFT].pConnectRoad == nullptr)
 		{
 			m_Info.rot.y = 0.0f;
 		}
-		else if (m_apConnectRoad[DIC_RIGHT] == nullptr)
+		else if (m_aInfoSearch[DIC_RIGHT].pConnectRoad == nullptr)
 		{
 			m_Info.rot.y = D3DX_PI;
 		}
