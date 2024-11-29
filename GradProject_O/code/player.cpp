@@ -955,6 +955,10 @@ void CPlayer::DEBUGKEY(void)
 	{
 		GetBestPath();
 	}
+	if (pInputKey->GetTrigger(DIK_RETURN))
+	{
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+	}
 }
 #else
 void CPlayer::DEBUGKEY(void){}
