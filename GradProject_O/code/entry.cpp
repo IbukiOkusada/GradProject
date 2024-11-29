@@ -188,6 +188,16 @@ void CEntry::Update(void)
     // プレイヤー参加取り消し処理
     DecreasePlayer();
 
+    if (m_IsFinish)
+    {
+       auto net = CNetWork::GetInstance();
+
+       if (net->GetTime()->IsOK())
+       {
+           net->SendTutorialOk();
+       }
+    }
+
     CScene::Update();
 
     CPlayerManager* mgr = CPlayerManager::GetInstance();
@@ -217,15 +227,14 @@ void CEntry::Draw(void)
 //===============================================
 void CEntry::AddPlayer(void)
 {
-   
+    CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+    CInputPad* pPad = CInputPad::GetInstance();
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
 
-   
     // 人数確認
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
-    {
-        
+    { 
         for (int i = 0; i < NetWork::MAX_CONNECT; i++)
         {
             auto player = mgr->GetPlayer(i);
@@ -242,14 +251,17 @@ void CEntry::AddPlayer(void)
                 pPlayer->EffectUninit();
             }
 
-            D3DXVECTOR3 pos = m_ppCamera[num]->GetPositionR();
-            CObjectX* pObj = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[num].y, 0.0f), "data\\MODEL\\flyingscooter.x");
+            D3DXVECTOR3 pos = m_ppCamera[i]->GetPositionR();
+            CObjectX* pObj = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), "data\\MODEL\\flyingscooter.x");
             pObj->SetType(CObject::TYPE::TYPE_PLAYER);
             pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
-
-            // チュートリアルを終了していることにする
-            m_IsFinish = true;
         }
+    }
+
+    if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
+    {
+        // チュートリアルを終了していることにする
+        m_IsFinish = true;
     }
 }
 
@@ -258,10 +270,8 @@ void CEntry::AddPlayer(void)
 //===============================================
 void CEntry::DecreasePlayer(void)
 {
-    
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
-
 
     // 人数確認
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
