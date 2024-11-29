@@ -61,12 +61,21 @@ public:
 		STATE_ICETHROW,		//アイスを投げ入れるシーン
 		STATE_MAX
 	};
-	//選択肢
+
+	//シングルかマルチかの選択肢
 	enum SELECT
 	{
-		SELECT_YES = 0,
-		SELECT_NO,
+		SELECT_SINGLE = 0,		//シングル
+		SELECT_MULTI,			//マルチ
 		SELECT_MAX
+	};
+
+	//選択肢
+	enum SELECT_YN
+	{
+		SELECT_YN_YES = 0,
+		SELECT_YN_NO,
+		SELECT_YN_MAX
 	};
 
 	// メンバ関数
@@ -104,6 +113,7 @@ private:
 	void InitingSelect(void);
 	void Sizing(void);
 	void Selecting(void);
+	void SelectSingleMulti(void);
 	void SelectYesNO(void);
 	void SelectCol(void);
 
@@ -113,39 +123,48 @@ private:
 	//デバッグ用
 	void DebugCam(void);
 
-	CPlayerTitle* m_pPlayer;				//プレイヤーのポインタ
-	CPoliceTitle* m_apPolice[POLICE_MAX];	//警察のポインタ
-	CGole* m_pGoal;							//ゴールのポインタ
+	//<************************************
+	//Get系関数
+	//<************************************
+	//シングルとマルチどっちが選択されているかの取得関数
+	int GetSelectSingleMulti(void) { return m_nSelect; }		
 
-	CObject2D* m_pObject2D[OBJ2D_MAX];		//オブジェクト2Dのポインタ
-	CObject2D* m_apYesNoObj[SELECT_MAX];		//選択肢のポインタ
-	CNumber* m_pNum;						//人数選択の際
 
-	STATE m_eState;							//ステート
+	STATE m_eState;								//ステート
+	//<************************************
+	//ポインタ型
+	//<************************************
+	CPlayerTitle* m_pPlayer;					//プレイヤーのポインタ
+	CPoliceTitle* m_apPolice[POLICE_MAX];		//警察のポインタ
+	CGole* m_pGoal;								//ゴールのポインタ
+
+	CObject2D* m_pObject2D[OBJ2D_MAX];			//オブジェクト2Dのポインタ
+	CObject2D* m_apSelect[SELECT::SELECT_MAX];	//シングルとマルチの選択肢のポインタ
+	CObject2D* m_apYesNoObj[SELECT_YN_MAX];		//YESとNOの選択肢のポインタ
 	CCamera* m_pCam;
 
 	//<************************************
 	//int型
 	//<************************************
-	int m_nCounterRanking;					//ランキング自動遷移タイマー
-	int m_nLogoAlpgha;						//タイトルロゴの色変化タイマー
-	int m_nCounter;							//汎用カウンター
-	int m_nNumSelect;						//人数選択の際に使います
-	int m_nSelect;							//何が選択されているか
+	int m_nCounterRanking;						//ランキング自動遷移タイマー
+	int m_nLogoAlpgha;							//タイトルロゴの色変化タイマー
+	int m_nCounter;								//汎用カウンター
+	int m_nSelect;								//シングルとマルチどちらが選択されているか
+	int m_nSelectYN;							//YESとNOどっちが選択されているか
 
-	float m_fDis;							//距離変数
+	float m_fDis;								//距離変数
 
 	//<************************************
 	//bool型
 	//<************************************
-	bool m_bPush;							//チュートリアル遷移に必要なボタンが押されているか
-	bool m_bDisplay;						//画面に映すかどうか
-	bool m_bIniting;						//オブジェクトの初期化が終わったかどうかのチェック
-	bool m_bCol;							//色変更しているかどうか		
-	bool m_bNext;							//次に行けるかの是非
-	bool m_bSkipped;						//スキップしたかどうか
-	bool m_bSizing;							//サイズ調整が完了したかどうか
-	bool m_bSelected;						//セレクトされたかどうか
+	bool m_bPush;								//チュートリアル遷移に必要なボタンが押されているか
+	bool m_bDisplay;							//画面に映すかどうか
+	bool m_bIniting;							//オブジェクトの初期化が終わったかどうかのチェック
+	bool m_bCol;								//色変更しているかどうか		
+	bool m_bNext;								//次に行けるかの是非
+	bool m_bSkipped;							//スキップしたかどうか
+	bool m_bSizing;								//サイズ調整が完了したかどうか
+	bool m_bSelected;							//セレクトされたかどうか
 };
 
 #endif
