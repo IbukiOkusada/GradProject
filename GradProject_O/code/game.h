@@ -65,6 +65,16 @@ public:
 
 private:
 
+	//=============================
+	// 関数リスト
+	//=============================
+	typedef void(CGame::* CREATE_PL_FUNC)();
+	static CREATE_PL_FUNC m_CreatePlayerFunc[];
+
+	// 状態設定関数
+	void CreateSinglePlayer();
+	void CreateMultiPlayer();
+
 	// メンバ関数
 	void StartIntro(void);  // ゲームスタート時の演出
 	bool StartDirection(void);
