@@ -74,6 +74,27 @@ HRESULT CEntry::Init(void)
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));*/
 
+    auto net = CNetWork::GetInstance();
+    net->ReConnect();
+
+    if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
+    {
+        while (1)
+        {
+            net->SendGetId();
+
+            if (net->GetIdx() != -1)
+            {
+                break;
+            }
+        }
+    }
+    else
+    {
+        CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+        return E_FAIL;
+    }
+
     // マップ読み込み
     CMapManager::GetInstance()->Load();
 
@@ -194,22 +215,26 @@ void CEntry::Draw(void)
 //===============================================
 void CEntry::AddPlayer(void)
 {
-    CInputKeyboard* pKey = CInputKeyboard::GetInstance();
-    CInputPad* pPad = CInputPad::GetInstance();
-    CPlayerManager* mgr = CPlayerManager::GetInstance();
-    int num = mgr->GetNum();
+    auto net = CNetWork::GetInstance();
+    auto mgr = CPlayerManager::GetInstance();
 
-    if (pPad->GetTrigger(CInputPad::BUTTON_A, num))
+    // 人数確認
+    if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
     {
-        if (num < MAX_PLAYER)
-        { // 人数が最大ではない場合
+        for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+        {
+            auto player = mgr->GetPlayer(i);
 
-            D3DXVECTOR3 pos = m_ppCamera[num]->GetPositionR();
-            CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[num].y, 0.0f), VECTOR3_ZERO, num);
-            pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
-            pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
-            //pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
-            pPlayer->EffectUninit();
+            // 人数が多い
+            if (player == nullptr && net->GetConnect(i))
+            {
+                D3DXVECTOR3 pos = m_ppCamera[i]->GetPositionR();
+                CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), VECTOR3_ZERO, i);
+                pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
+                pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
+                //pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
+                pPlayer->EffectUninit();
+            }
         }
     }
 }
@@ -219,15 +244,21 @@ void CEntry::AddPlayer(void)
 //===============================================
 void CEntry::DecreasePlayer(void)
 {
-    CInputKeyboard* pKey = CInputKeyboard::GetInstance();
-    CInputPad* pPad = CInputPad::GetInstance();
-    CPlayerManager* mgr = CPlayerManager::GetInstance();
-    int id = mgr->GetNum() - 1;
+    auto net = CNetWork::GetInstance();
+    auto mgr = CPlayerManager::GetInstance();
 
-    if (id < 0) { return; }
-
-    if (pPad->GetTrigger(CInputPad::BUTTON_B, id))
+    // 人数確認
+    if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
     {
-        mgr->GetPlayer(id)->Uninit();
+        for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+        {
+            auto player = mgr->GetPlayer(i);
+
+            // 人数が多い
+            if (player != nullptr && !net->GetConnect(i))
+            {
+                player->Uninit();
+            }
+        }
     }
 }

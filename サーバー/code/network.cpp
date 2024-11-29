@@ -34,6 +34,10 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandPlGoal,	// プレイヤーゴール
 	&CNetWork::CommandGmHit,	// ギミック衝突
 	&CNetWork::CommandNextGoal,	// 次のゴール
+	&CNetWork::CommandGameStartOk,	// ゲーム開始可能になったよ
+	&CNetWork::CommandGameStart,	// ゲーム開始
+	&CNetWork::CommandTutorialOk,	// ゲーム開始可能になったよ
+	&CNetWork::CommandTutorialEnd,	// ゲーム開始
 };
 
 // 静的メンバ変数
@@ -48,13 +52,16 @@ CNetWork::CNetWork()
 	m_bEnd = false;
 	m_nSendByte = 0;
 	m_nSledCnt = 0;
+	m_nConnectCnt = 0;
 	m_pServer = nullptr;
+	m_ServerFlag = SFlagInfo();
 
 	memset(m_aSendData, NULL, sizeof(m_aSendData));
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
 		m_apClient[i] = nullptr;
+		m_aFlag[i] = SFlagInfo();
 	}
 }
 
@@ -213,16 +220,11 @@ void CNetWork::Accept(CServer* pServer)
 			std::thread th(&CNetWork::Access, this, pClient);
 			th.detach();
 
+			// フラグ初期化
+			m_aFlag[i] = SFlagInfo();
+
 			m_apClient[i] = pClient;
-
-			/*printf("接続中 :");
-			for (int j = 0; j < NetWork::MAX_CONNECT; j++)
-			{
-				if (m_apClient[j] == nullptr) { continue; }
-				printf("%d, ", j);
-			}
-
-			printf("\n");*/
+			m_nConnectCnt++;
 		}
 	}
 }
@@ -276,7 +278,7 @@ void CNetWork::Send(CServer** ppServer)
 						delete pClient;
 						pClient = nullptr;
 						m_apClient[i] = nullptr;
-
+						m_nConnectCnt--;
 						printf("クライアント切断\n");
 					}
 				}
@@ -295,6 +297,7 @@ void CNetWork::Send(CServer** ppServer)
 					// 送信
 					if (pClient->Send(&m_aSendData[0], m_nSendByte) <= 0)
 					{
+						m_nConnectCnt--;
 						pClient->Uninit();
 						delete pClient;
 						pClient = nullptr;
@@ -309,6 +312,10 @@ void CNetWork::Send(CServer** ppServer)
 			// 送信データをクリア
 			memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
 			m_nSendByte = 0;
+
+			// フラグをリセット
+			if (m_ServerFlag.bStart) { m_ServerFlag.bStart = false; }
+			if (m_ServerFlag.bTutorial) { m_ServerFlag.bTutorial = false; }
 		}
 	}
 }
@@ -643,6 +650,128 @@ void CNetWork::CommandNextGoal(const int nId, const char* pRecvData, CClient* pC
 	byte += sizeof(int);
 	*pNowByte += sizeof(int);
 
+
+	// プロトコルを送信
+	pClient->SetData(&aRecv[0], byte);
+}
+
+//==========================================================
+// ゲーム開始準備完了
+//==========================================================
+void CNetWork::CommandGameStartOk(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	// フラグオン
+	m_aFlag[nId].bStart = true;
+
+	CommandGameStart(nId, pRecvData, pClient, pNowByte);
+}
+
+//==========================================================
+// IDを取得
+//==========================================================
+void CNetWork::CommandGameStart(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	if (m_ServerFlag.bStart) { return; }
+
+	int cnt = 0;
+
+	// フラグ確認
+	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+	{
+		if (m_apClient[i] != nullptr && m_aFlag[i].bStart)
+		{
+			cnt++;
+		}
+	}
+
+	// 総数より多い
+	if (cnt >= m_nConnectCnt)
+	{
+		m_ServerFlag.bStart = true;
+
+		// リセット
+		for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+		{
+			m_aFlag[i].bStart = false;
+		}
+	}
+	else
+	{
+		return;
+	}
+
+	char aRecv[sizeof(int) * 2] = {};
+	int command = NetWork::COMMAND_GAMESTART;
+	int byte = 0;
+
+	// IDを挿入
+	memcpy(&aRecv[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aRecv[byte], &command, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを送信
+	pClient->SetData(&aRecv[0], byte);
+}
+
+//==========================================================
+// チュートリアルOK
+//==========================================================
+void CNetWork::CommandTutorialOk(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	// フラグオン
+	m_aFlag[nId].bTutorial = true;
+
+	CommandTutorialEnd(nId, pRecvData, pClient, pNowByte);
+}
+
+//==========================================================
+// チュートリアル終了
+//==========================================================
+void CNetWork::CommandTutorialEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	if (m_ServerFlag.bTutorial) { return; }
+
+	int cnt = 0;
+
+	// フラグ確認
+	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+	{
+		if (m_apClient[i] != nullptr && m_aFlag[i].bTutorial)
+		{
+			cnt++;
+		}
+	}
+
+	// 総数より多い
+	if (cnt >= m_nConnectCnt)
+	{
+		m_ServerFlag.bTutorial = true;
+
+		// リセット
+		for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+		{
+			m_aFlag[i].bTutorial = false;
+		}
+	}
+	else
+	{
+		return;
+	}
+
+	char aRecv[sizeof(int) * 2] = {};
+	int command = NetWork::COMMAND_TUTORIALEND;
+	int byte = 0;
+
+	// IDを挿入
+	memcpy(&aRecv[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aRecv[byte], &command, sizeof(int));
+	byte += sizeof(int);
 
 	// プロトコルを送信
 	pClient->SetData(&aRecv[0], byte);

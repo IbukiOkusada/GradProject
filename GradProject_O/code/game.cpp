@@ -180,19 +180,6 @@ HRESULT CGame::Init(void)
 
     auto net = CNetWork::GetInstance();
 
-    if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
-    {
-        while (1)
-        {
-            net->SendGetId();
-
-            if (net->GetIdx() != -1)
-            {
-                break;
-            }
-        }
-    }
-
     // プレイヤー生成
     (this->*(m_CreatePlayerFunc[net->GetState()]))();
 
@@ -305,7 +292,11 @@ void CGame::Update(void)
 
     if (m_pGameTimer != nullptr)
     {
-        m_pGameTimer->Update();
+        auto player = CPlayerManager::GetInstance()->GetPlayer();
+        if (player->GetType() == CPlayer::TYPE::TYPE_ACTIVE)
+        {
+            m_pGameTimer->Update();
+        }
     }
 
     // ゴールマネージャーの更新

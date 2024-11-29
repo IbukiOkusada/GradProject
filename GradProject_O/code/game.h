@@ -36,7 +36,7 @@ public:
 
 	enum STATE
 	{
-		STATE_LOCAL = 0,	// ローカル通信
+		STATE_LOCAL = 0,		// ローカル通信
 		STATE_ONLINE,		// TCPオンライン
 		STATE_END,
 		STATE_PAUSE,

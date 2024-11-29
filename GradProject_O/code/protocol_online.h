@@ -29,6 +29,10 @@ namespace NetWork
 		COMMAND_PL_GOAL,		// プレイヤーゴール
 		COMMAND_GM_HIT,			// ギミックに衝突
 		COMMAND_NEXT_GOAL,		// 次のゴール生成
+		COMMAND_GAMESTART_OK,	// ゲーム準備完了
+		COMMAND_GAMESTART,		// ゲーム開始
+		COMMAND_TUTORIAL_OK,	// チュートリアル準備完了
+		COMMAND_TUTORIALEND,	// エントリー終了
 		COMMAND_MAX
 	};
 
