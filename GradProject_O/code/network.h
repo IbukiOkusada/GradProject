@@ -56,6 +56,8 @@ public:
 	void SendPlGoal(int nId);
 	void SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float fSpeed);
 	void SendNextGoal(const int nId);
+	void SendGameStartOk();
+	void SendTutorialOk();
 
 	// ÉÅÉìÉoä÷êî(ê›íË)
 
@@ -86,6 +88,10 @@ private:
 	void RecvPlGoal(int* pByte, const int nId, const char* pRecvData);
 	void RecvGmHit(int* pByte, const int nId, const char* pRecvData);
 	void RecvNextGoal(int* pByte, const int nId, const char* pRecvData);
+	void RecvGameStartOk(int* pByte, const int nId, const char* pRecvData);
+	void RecvGameStart(int* pByte, const int nId, const char* pRecvData);
+	void RecvTutoriaoOk(int* pByte, const int nId, const char* pRecvData);
+	void RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData);
 
 	// ÉÅÉìÉoä÷êî
 	HRESULT Init();

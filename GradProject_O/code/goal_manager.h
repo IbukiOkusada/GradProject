@@ -46,6 +46,7 @@ private:
 
 	int m_nNextIdx;
 	int m_nOldIdx;
+	int m_nNowIdx;
 	int m_nNumCreate;
 	std::vector<CGoal::SInfo> m_InfoList;
 	CGoal* m_pGoal;		// ゴールのポインタ

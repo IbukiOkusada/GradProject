@@ -94,8 +94,17 @@ void CObjectManager::Draw(void)
 
 		if (pCamera->GetDraw()) {	// 描画する場合
 
-			// リストの全描画
-			DrawAll();
+			if (pCamera->GetDrawState() == CCamera::DRAWSTATE::PLAYER_ONLY)
+			{
+				// プレイヤーだけ描画
+				DrawOnlyPlayer();
+			}
+			else
+			{
+				// リストの全描画
+				DrawAll();
+			}
+			
 			//DrawOneDimension(TYPE_3D);
 		}
 
@@ -147,6 +156,34 @@ void CObjectManager::DrawAll(void)
 
 			// 描画処理
 			if (pObject->GetDraw())
+			{
+				pObject->Draw();
+			}
+
+			pObject = pObjectNext;	// 次のオブジェクトに移動
+		}
+	}
+}
+
+//===============================================
+// プレイヤーのみ描画
+//===============================================
+void CObjectManager::DrawOnlyPlayer(void)
+{
+	// 死亡フラグをチェック
+	DeathCheck();
+
+	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
+	{
+		CObject* pObject = m_apTop[nCntPri];	// 先頭を取得
+
+		while (pObject != nullptr)
+		{// 使用されていない状態まで
+
+			CObject* pObjectNext = pObject->GetNext();	// 次のオブジェクトへのポインタを取得
+
+			// 描画処理
+			if (pObject->GetDraw() && pObject->GetType() == CObject::TYPE::TYPE_PLAYER)
 			{
 				pObject->Draw();
 			}

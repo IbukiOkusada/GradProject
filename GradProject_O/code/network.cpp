@@ -14,6 +14,8 @@
 #include "gimmick.h"
 #include "debugproc.h"
 #include "goal_manager.h"
+#include "manager.h"
+#include "fade.h"
 
 //===============================================
 // 名前空間
@@ -41,6 +43,10 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvPlGoal,	// プレイヤーゴール
 	&CNetWork::RecvGmHit,	// ギミックヒット
 	&CNetWork::RecvNextGoal,	// 次のゴール設置
+	&CNetWork::RecvGameStartOk,	// 次のゴール設置
+	&CNetWork::RecvGameStart,	// 次のゴール設置
+	&CNetWork::RecvTutoriaoOk,	// 次のゴール設置
+	&CNetWork::RecvTutorialEnd,	// 次のゴール設置
 };
 
 // 静的メンバ変数
@@ -642,6 +648,50 @@ void CNetWork::RecvNextGoal(int* pByte, const int nId, const char* pRecvData)
 }
 
 //===================================================
+// 開始可能なのを受信
+//===================================================
+void CNetWork::RecvGameStartOk(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
+// ゲーム開始可能
+//===================================================
+void CNetWork::RecvGameStart(int* pByte, const int nId, const char* pRecvData)
+{
+	// プレイヤーの存在確認
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+
+	// 生成していない場合
+	if (pPlayer == nullptr) {
+		return;
+	}
+
+	// 座標設定
+	pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
+}
+
+//===================================================
+// チュートリアル終了
+//===================================================
+void CNetWork::RecvTutoriaoOk(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
+// チュートリアル終了
+//===================================================
+void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
+{
+	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
+	{
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
+	}
+}
+
+//===================================================
 // 何も送信しない
 //===================================================
 void CNetWork::SendNone()
@@ -822,6 +872,44 @@ void CNetWork::SendNextGoal(const int nId)
 
 	// ゴールしたIDを挿入
 	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ゲーム開始可能なのを送信
+//===================================================
+void CNetWork::SendGameStartOk()
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// 送信用
+	int nProt = NetWork::COMMAND_GAMESTART_OK;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// チュートリアルOK
+//===================================================
+void CNetWork::SendTutorialOk()
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// 送信用
+	int nProt = NetWork::COMMAND_TUTORIAL_OK;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
 	byte += sizeof(int);
 
 	// 送信

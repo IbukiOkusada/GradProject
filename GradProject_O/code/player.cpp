@@ -424,22 +424,8 @@ void CPlayer::Update(void)
 		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
 	}
 
-	// 自身の場合
-	if (m_type != TYPE::TYPE_RECV)
-	{
-		CNetWork* pNet = CNetWork::GetInstance();
-
-		// データの送信
-		if (pNet != nullptr)
-		{
-			if (pNet->GetTime()->IsOK())
-			{
-				pNet->SendPlPos(m_Info.pos);
-				pNet->SendPlRot(m_Info.rot);
-			}
-		}
-	}
-
+	// オンラインデータ送信
+	SendData();
 	
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー :");
@@ -955,6 +941,10 @@ void CPlayer::DEBUGKEY(void)
 	{
 		GetBestPath();
 	}
+	if (pInputKey->GetTrigger(DIK_RETURN))
+	{
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+	}
 }
 #else
 void CPlayer::DEBUGKEY(void){}
@@ -1251,7 +1241,37 @@ void CPlayer::SetStateActive()
 	}
 }
 
+//===============================================
+// モデルインデックス取得
+//===============================================
 int CPlayer::GetModelIndex(void)
 { 
 	return m_pObj->GetIdx(); 
+}
+
+//===============================================
+// データ送信
+//===============================================
+void CPlayer::SendData()
+{
+	// 受信型以外の場合
+	if (m_type == TYPE::TYPE_RECV) { return; }
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	// データの送信
+	if (pNet != nullptr) { return; }
+
+	if (pNet->GetTime()->IsOK())
+	{
+		pNet->SendPlPos(m_Info.pos);
+		pNet->SendPlRot(m_Info.rot);
+
+		if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME)
+		{
+			if (m_type == TYPE::TYPE_SEND)
+			{
+				pNet->SendGameStartOk();
+			}
+		}
+	}
 }

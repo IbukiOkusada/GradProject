@@ -18,7 +18,17 @@ class CServer;
 //===============================================
 class CNetWork
 {
-public:
+private:
+
+	// フラグまとめ
+	struct SFlagInfo
+	{
+		bool bStart;	// 開始
+		bool bTutorial;	// チュートリアル
+
+		// コンストラクタ
+		SFlagInfo() : bStart(false), bTutorial(false) {}
+	};
 
 private:
 
@@ -54,6 +64,10 @@ private:
 	void CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandGmHit(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandNextGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandGameStartOk(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandGameStart(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandTutorialOk(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandTutorialEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 
 	// メンバ関数
 	HRESULT Init();
@@ -69,9 +83,15 @@ private:
 	CClient* m_apClient[NetWork::MAX_CONNECT];	// クライアント
 	char m_aSendData[NetWork::MAX_SEND_DATA] = {};	// 送信データ
 	int m_nSendByte;	// 送信データ量
-	int m_nSledCnt;			// スレッド数
-	bool m_bEnd;			// 終了した
-	CServer* m_pServer;		// サーバー
+	int m_nSledCnt;		// スレッド数
+	bool m_bEnd;		// 終了した
+	CServer* m_pServer;	// サーバー
+	int m_nConnectCnt;	// 接続数
+	bool m_bStart;		// 開始フラグ
+
+	// フラグ関連
+	SFlagInfo m_aFlag[NetWork::MAX_CONNECT];	// クライアントそれぞれのフラグ
+	SFlagInfo m_ServerFlag;	// サーバーのフラグ
 
 	// 静的メンバ変数
 	static CNetWork* m_pInstance;	// インスタンス

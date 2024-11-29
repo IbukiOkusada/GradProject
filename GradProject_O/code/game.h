@@ -36,7 +36,7 @@ public:
 
 	enum STATE
 	{
-		STATE_LOCAL = 0,	// ローカル通信
+		STATE_LOCAL = 0,		// ローカル通信
 		STATE_ONLINE,		// TCPオンライン
 		STATE_END,
 		STATE_PAUSE,
@@ -64,6 +64,16 @@ public:
 	CFileLoad *GetFileLoad(void);
 
 private:
+
+	//=============================
+	// 関数リスト
+	//=============================
+	typedef void(CGame::* CREATE_PL_FUNC)();
+	static CREATE_PL_FUNC m_CreatePlayerFunc[];
+
+	// 状態設定関数
+	void CreateSinglePlayer();
+	void CreateMultiPlayer();
 
 	// メンバ関数
 	void StartIntro(void);  // ゲームスタート時の演出
