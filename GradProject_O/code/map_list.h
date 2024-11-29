@@ -24,14 +24,14 @@ public:
 	bool Regist(int nId, T data);	// リストに連結
 	bool Delete(int nId, T data);	// リストに連結
 	bool Delete(int nId);			// IDから削除
-	bool Delete(T* data);			// データから削除
+	bool Delete(T data);			// データから削除
 	bool Empty();					// リストが空かを確認
 	void Clear();					// リストを空にする
 
 	// 取得系関数
-	std::list<T*>& GetList();		// リストを取得
+	std::map<int, T>& GetList();		// リストを取得
 	int GetNum();					// リストのサイズ取得
-	T Get(int nId);				// IDから本体を取得
+	T Get(int nId);					// IDから本体を取得
 	int Get(T data);				// データからIDを取得
 	Cmaplist<T>::Iteretor DataFind(T data);			// データから検索
 	bool IdFind(int nId);			// IDから検索
@@ -117,10 +117,8 @@ bool Cmaplist<T>::Delete(int nId, T data)
 template <typename T>
 bool Cmaplist<T>::Delete(int nId)
 {
-	int* pId = IdFind(nId);
-
 	// 見つかった
-	if (*pId != m_list.end())
+	if (IdFind(nId))
 	{
 		m_list.erase(nId);
 		return true;
@@ -133,7 +131,7 @@ bool Cmaplist<T>::Delete(int nId)
 // リストから削除(データのみ)
 //===============================================
 template <typename T>
-bool Cmaplist<T>::Delete(T* data)
+bool Cmaplist<T>::Delete(T data)
 {
 	T* pData = DataFind(T);
 
@@ -169,7 +167,7 @@ void Cmaplist<T>::Clear()
 // リストを取得
 //===============================================
 template <typename T>
-std::list<T*>& Cmaplist<T>::GetList()
+std::map<int, T>& Cmaplist<T>::GetList()
 {
 	return m_list;
 }
@@ -220,7 +218,12 @@ T Cmaplist<T>::Get(int nId)
 template <typename T>
 typename Cmaplist<T>::Iteretor Cmaplist<T>::DataFind(T data)
 {
-	return find_if(m_list.begin(), m_list.end(), data);
+	return find_if(
+		m_list.begin(),
+		m_list.end(),
+		[&data](const std::pair<int, T>& pair) {// 値が一致するかを判定
+			return pair.second == data;}
+	);
 }
 
 //===============================================
@@ -231,6 +234,7 @@ bool Cmaplist<T>::IdFind(int nId)
 {
 	Iteretor it = m_list.find(nId);
 
+	// 存在している
 	if (it != m_list.end())
 	{
 		return true;

@@ -424,7 +424,7 @@ void CPlayer::Update(void)
 		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
 	}
 
-	// ©g‚Ìê‡
+	// óMŒ^ˆÈŠO‚Ìê‡
 	if (m_type != TYPE::TYPE_RECV)
 	{
 		CNetWork* pNet = CNetWork::GetInstance();
