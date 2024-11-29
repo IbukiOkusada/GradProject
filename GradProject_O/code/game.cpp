@@ -444,13 +444,17 @@ void CGame::CreateMultiPlayer(void)
         if (!net->GetConnect(i)) { continue; }
 
         CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-3034.65f, 1.0f, 1.0f + 20.0f * i),
-            VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());
+            VECTOR3_ZERO, VECTOR3_ZERO, i);
 
         // プレイヤー自身
         if (i == net->GetIdx())
         {
             pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
             pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
+        }
+        else
+        {
+            pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
         }
     }
 }

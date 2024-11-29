@@ -19,7 +19,6 @@ CListener::CListener()
 	m_sockServer = NULL;
 	m_nClientPort = 0;
 	memset(&m_aClientIP[0], '\0', sizeof(m_aClientIP));
-	m_nNum++;
 }
 
 //==========================================================
@@ -88,7 +87,7 @@ SOCKET CListener::Accept(void)
 	printf("*** クライアントと接続しました!!! ***\n");
 	printf("IPアドレス: %s\n", &m_aClientIP[0]);
 	printf("ポート番号: %d\n", m_nClientPort);
-
+	m_nNum++;
 	printf("*** 現在%d人接続中***\n", m_nNum);
 
 	return sock;

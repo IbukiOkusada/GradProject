@@ -288,23 +288,27 @@ void CPlayer::Update(void)
 {	
 	DEBUGKEY();
 
-	for (int i = 0; i < NUM_TXT; i++)
+	// 
+	if (m_type == TYPE::TYPE_ACTIVE)
 	{
-		if (m_pFont[i] == nullptr) { continue; }
-		if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE && !m_pFont[i]->GetEnd())
+		for (int i = 0; i < NUM_TXT; i++)
 		{
+			if (m_pFont[i] == nullptr) { continue; }
+			if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE && !m_pFont[i]->GetEnd())
+			{
 
-			if (i > 0)
-			{
-				if (!m_pFont[i - 1]->GetEnd())continue;
+				if (i > 0)
+				{
+					if (!m_pFont[i - 1]->GetEnd())continue;
+				}
+				m_pFont[i]->SetEnableScroll(true);
 			}
-			m_pFont[i]->SetEnableScroll(true);
-		}
-		else
-		{
-			if (m_pFont[i]->GetNumString() > 0 && m_pFont[i]->GetEnd())
+			else
 			{
-				m_pFont[i]->DeleteString(0);
+				if (m_pFont[i]->GetNumString() > 0 && m_pFont[i]->GetEnd())
+				{
+					m_pFont[i]->DeleteString(0);
+				}
 			}
 		}
 	}
@@ -428,7 +432,7 @@ void CPlayer::Update(void)
 	SendData();
 	
 	// デバッグ表示
-	CDebugProc::GetInstance()->Print("プレイヤー :");
+	CDebugProc::GetInstance()->Print("プレイヤー : 種類 [ %d ] : ", m_type);
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
 }
@@ -1172,84 +1176,87 @@ void CPlayer::SetStateRecv()
 //===============================================
 void CPlayer::SetStateActive()
 {
+	if (m_type != TYPE::TYPE_ACTIVE)
+	{
+		// アイドル音の生成
+		if (m_pSound == nullptr)
+		{
+			m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
+			m_pSound->SetVolume(0.0f);
+		}
+
+		// ブレーキ生成
+		if (m_pSoundBrake == nullptr)
+		{
+			m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
+			m_pSoundBrake->SetVolume(0.0f);
+		}
+
+		// ラジオ生成
+		if (m_pRadio == nullptr)
+		{
+			m_pRadio = CRadio::Create();
+		}
+
+		// ナビ生成
+		if (m_pNavi == nullptr)
+		{
+			m_pNavi = CNavi::Create();
+		}
+
+		// 予測を生成
+		if (m_pPredRoute == nullptr)
+		{
+			m_pPredRoute = CPredRoute::Create(this);
+		}
+
+		// 衝突seの生成
+		if (m_pCollSound == nullptr)
+		{
+			m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
+			m_pCollSound->Stop();
+		}
+
+		// 文字の生成
+		if (m_pFont[0] == nullptr) {
+			m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+				D3DXVECTOR3(400.0f, 200.0f, 0.0f), 0.0025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
+
+			for (int j = 0; j < START_TEXT[0].size(); j++)
+			{
+				m_pFont[0]->PushBackString(START_TEXT[0][j]);
+			}
+		}
+		if (m_pFont[1] == nullptr) {
+			m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+				D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+
+			for (int j = 0; j < START_TEXT[1].size(); j++)
+			{
+				m_pFont[1]->PushBackString(START_TEXT[1][j]);
+			}
+		}
+		if (m_pFont[2] == nullptr) {
+			m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+				D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+
+			for (int j = 0; j < START_TEXT[2].size(); j++)
+			{
+				m_pFont[2]->PushBackString(START_TEXT[2][j]);
+			}
+		}
+		if (m_pFont[3] == nullptr) {
+			m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+				D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP, VECTOR3_ZERO, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+
+			for (int j = 0; j < START_TEXT[3].size(); j++)
+			{
+				m_pFont[3]->PushBackString(START_TEXT[3][j]);
+			}
+		}
+	}
+
 	m_type = TYPE::TYPE_ACTIVE;
-
-	// アイドル音の生成
-	if (m_pSound == nullptr)
-	{
-		m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
-		m_pSound->SetVolume(0.0f);
-	}
-
-	// ブレーキ生成
-	if (m_pSoundBrake == nullptr)
-	{
-		m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
-		m_pSoundBrake->SetVolume(0.0f);
-	}
-
-	// ラジオ生成
-	if (m_pRadio == nullptr)
-	{
-		m_pRadio = CRadio::Create();
-	}
-
-	// ナビ生成
-	if (m_pNavi == nullptr)
-	{
-		m_pNavi = CNavi::Create();
-	}
-
-	// 予測を生成
-	if (m_pPredRoute == nullptr)
-	{
-		m_pPredRoute = CPredRoute::Create(this);
-	}
-
-	// 衝突seの生成
-	if (m_pCollSound == nullptr)
-	{
-		m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
-		m_pCollSound->Stop();
-	}
-
-	// 文字の生成
-	if (m_pFont[0] == nullptr) {
-		m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
-			D3DXVECTOR3(400.0f, 200.0f, 0.0f), 0.0025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
-
-		for (int j = 0; j < START_TEXT[0].size(); j++)
-		{
-			m_pFont[0]->PushBackString(START_TEXT[0][j]);
-		}
-	}
-	if (m_pFont[1] == nullptr) {
-		m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
-			D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
-
-		for (int j = 0; j < START_TEXT[1].size(); j++)
-		{
-			m_pFont[1]->PushBackString(START_TEXT[1][j]);
-		}
-	}
-	if (m_pFont[2] == nullptr) {
-		m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
-			D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
-
-		for (int j = 0; j < START_TEXT[2].size(); j++)
-		{
-			m_pFont[2]->PushBackString(START_TEXT[2][j]);
-		}
-	}
-	if (m_pFont[3] == nullptr) {
-		m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
-			D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP, VECTOR3_ZERO, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
-		
-		for (int j = 0; j < START_TEXT[3].size(); j++)
-		{
-			m_pFont[3]->PushBackString(START_TEXT[3][j]);
-		}
-	}
 }
 
 //===============================================

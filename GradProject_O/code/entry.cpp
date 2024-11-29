@@ -98,7 +98,7 @@ HRESULT CEntry::Init(void)
     }
     else
     {
-        return E_FAIL;
+        
     }
 
     // É}ÉbÉvì«Ç›çûÇ›
@@ -111,6 +111,12 @@ HRESULT CEntry::Init(void)
     CCameraManager* mgr = CCameraManager::GetInstance();
 	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
     m_ppObj = new CObjectX * [MAX_PLAYER];
+
+    for (int i = 0; i < MAX_PLAYER; i++)
+    {
+        m_ppCamera[i] = nullptr;
+        m_ppObj[i] = nullptr;
+    }
 
     //mgr->GetTop()->SetDraw(false);
 
@@ -185,7 +191,6 @@ void CEntry::Uninit(void)
             if (m_ppObj[i] == nullptr) { continue; }
 
             m_ppObj[i]->Uninit();
-            delete m_ppObj[i];
             m_ppObj[i] = nullptr;
         }
 
@@ -263,7 +268,13 @@ void CEntry::AddPlayer(void)
                 D3DXVECTOR3 pos = m_ppCamera[i]->GetPositionR();
                 CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), VECTOR3_ZERO, i);
                 pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
-                pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
+                pPlayer->SetRecvPosition(pos);
+
+                if (i == net->GetIdx())
+                {
+                    pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
+                }
+
                 //pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
                 pPlayer->EffectUninit();
 
@@ -284,7 +295,6 @@ void CEntry::AddPlayer(void)
 
         if (m_IsFinish)
         {
-            auto net = CNetWork::GetInstance();
             net->SendTutorialOk();
         }
         else
