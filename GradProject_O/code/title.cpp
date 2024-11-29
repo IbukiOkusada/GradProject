@@ -35,7 +35,7 @@ namespace
 	//<************************************************
 	//D3DXVECTOR3型
 	//<************************************************ 
-	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.9f, 0.0f };		//プレスエンターの座標位置
+	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.9f, 0.0f };		//プレスエンターの座標位置
 	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.1f, 0.0f };				//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
 	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };										//フレームの目標値
@@ -447,10 +447,21 @@ void CTitle::MovingLogo(void)
 //<===============================================
 void CTitle::PreMove(void)
 {
-	float PlayerRot = m_pPlayer->GetRotation().y;		//プレイヤーの向きを変える
-	const float fDestRot = -3.14f, fRotMove = 0.05f;		//目的の向きと向きの移動値
+	D3DXVECTOR3 P_EPos = m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetPosition();	//プレスエンターの位置
 
-	ColChange(m_pObject2D[OBJ2D_PressEnter]);
+	float PlayerRot = m_pPlayer->GetRotation().y;								//プレイヤーの向きを変える
+	const float fDestRot = -3.14f, fRotMove = 0.05f;							//目的の向きと向きの移動値
+	const float fSpeed = 0.09f;													//速度
+
+	//目的地まで移動させる
+	P_EPos.x += (TITLELOGO_DEST - P_EPos.x - 0.0f) * fSpeed;//X軸
+
+	//目的地に着いたら
+	if (Function::BoolToDest(m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetPosition(),
+		D3DXVECTOR3(TITLELOGO_DEST, 0.0f, 0.0f), 3.0f, false))
+	{
+		ColChange(m_pObject2D[OBJ2D_PressEnter]);
+	}
 
 	//一番目の目的地にプレイヤーを移動させる
 	m_pPlayer->Moving(CPlayerTitle::DEST_SECOND);
@@ -467,6 +478,9 @@ void CTitle::PreMove(void)
 		//プレイヤーの向きに反映
 		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, PlayerRot, 0.0f));
 	}
+	//
+	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetPosition(P_EPos);
+	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetVtx();
 }
 //<===============================================
 //仮名ステートでの動き
@@ -501,7 +515,7 @@ void CTitle::InitingP_E(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };			//プレイヤーの位置
 	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };				//警察位置
-	const float fLogoLength = (150.0f, 150.0f);								//ロゴの長さ(サイズ)
+	const float fLogoLength = 150.0f;								//ロゴの長さ(サイズ)
 	const float fP_ELength = (350.0f, 350.0f);								//プレスエンターの長さ(サイズ)
 
 	//初期化済みではなければ
@@ -524,13 +538,13 @@ void CTitle::InitingP_E(void)
 
 		//・タイトルロゴ
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetLength(fLogoLength);
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(250.0f,100.0f);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_TITLELOGO]));
 
 		//・プレスエンター
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(PRESSENTER_POS, VECTOR3_ZERO,5);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(100.0f,100.0f);
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(250.0f, 100.0f);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_PressEnter]));
 
@@ -704,6 +718,9 @@ void CTitle::SkipMovement(void)
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(true);
 
 	//・プレスエンター
+	//・タイトルロゴ
+	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetPosition(D3DXVECTOR3(TITLELOGO_DEST, PRESSENTER_POS.y, PRESSENTER_POS.z));
+	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetVtx();
 	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(true);
 
 	//・プレイヤー
