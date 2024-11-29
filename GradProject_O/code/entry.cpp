@@ -70,17 +70,17 @@ CEntry::~CEntry()
 //===============================================
 HRESULT CEntry::Init(void)
 {
-    CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
+    /*CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), VECTOR3_ZERO);
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
-    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));
+    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));*/
 
     // マップ読み込み
-    //CMapManager::GetInstance()->Load();
+    CMapManager::GetInstance()->Load();
 
     CCameraManager* mgr = CCameraManager::GetInstance();
 	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
 
-    mgr->GetTop()->SetDraw(false);
+    //mgr->GetTop()->SetDraw(false);
 
     for (int i = 0; i < MAX_PLAYER; i++)
     {
@@ -90,7 +90,7 @@ HRESULT CEntry::Init(void)
         m_ppCamera[i]->SetRotation(CAMERA_ROT[i]);
         m_ppCamera[i]->SetPositionR(D3DXVECTOR3(800.0f, 10.0f, 600.0f));
         m_ppCamera[i]->SetPositionV(CAMERA_POS_V);
-        
+        m_ppCamera[i]->SetDrawState(CCamera::DRAWSTATE::PLAYER_ONLY);
         D3DVIEWPORT9 viewport;
         //プレイヤー追従カメラの画面位置設定
         viewport.X = (DWORD)((SCREEN_WIDTH / 4.0f) * (i % WIDTH_NUM));
@@ -131,7 +131,7 @@ void CEntry::Uninit(void)
     // カメラの破棄
     if (m_ppCamera != nullptr)
     {
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < MAX_PLAYER; i++)
         {
             if (m_ppCamera[i] == nullptr) { continue; }
            
@@ -159,14 +159,18 @@ void CEntry::Update(void)
         CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
     }
 
+    // プレイヤー参加処理
     AddPlayer();
+
+    // プレイヤー参加取り消し処理
+    DecreasePlayer();
 
     CScene::Update();
 
     CPlayerManager* mgr = CPlayerManager::GetInstance();
     CDebugProc::GetInstance()->Print("プレイヤーの数[%d]\n", mgr->GetNum());
 
-    for (int i = 0; i < 4; i++)
+    for (int i = 0; i < MAX_PLAYER; i++)
     {
         D3DXVECTOR3 CamPosV = m_ppCamera[i]->GetPositionV();
         D3DXVECTOR3 CamPosR = m_ppCamera[i]->GetPositionR();
@@ -181,12 +185,6 @@ void CEntry::Update(void)
 //===============================================
 void CEntry::Draw(void)
 {
-    auto mgr = CPlayerManager::GetInstance();
-    CPlayer* pPlayer = mgr->GetPlayer();
-
-    
-
-
     // 描画処理(コレ必要だよん!) ← 感謝感激雨あられ
     CScene::Draw();
 }
@@ -199,20 +197,37 @@ void CEntry::AddPlayer(void)
     CInputKeyboard* pKey = CInputKeyboard::GetInstance();
     CInputPad* pPad = CInputPad::GetInstance();
     CPlayerManager* mgr = CPlayerManager::GetInstance();
+    int num = mgr->GetNum();
 
-    if (pPad->GetTrigger(CInputPad::BUTTON_A, 0))
+    if (pPad->GetTrigger(CInputPad::BUTTON_A, num))
     {
-        if (mgr->GetNum() < MAX_PLAYER)
+        if (num < MAX_PLAYER)
         { // 人数が最大ではない場合
 
-            int id = mgr->GetNum();
-            D3DXVECTOR3 pos = CAMERA_POS_R[id];
-            D3DXVECTOR3 CamPosR = m_ppCamera[id]->GetPositionR();
-            CPlayer* pPlayer = CPlayer::Create(CamPosR, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, id);
+            D3DXVECTOR3 pos = m_ppCamera[num]->GetPositionR();
+            CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[num].y, 0.0f), VECTOR3_ZERO, num);
             pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
             pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
+            //pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
             pPlayer->EffectUninit();
-            mgr->ListIn(pPlayer);
         }
+    }
+}
+
+//===============================================
+// プレイヤー参加取り消し処理
+//===============================================
+void CEntry::DecreasePlayer(void)
+{
+    CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+    CInputPad* pPad = CInputPad::GetInstance();
+    CPlayerManager* mgr = CPlayerManager::GetInstance();
+    int id = mgr->GetNum() - 1;
+
+    if (id < 0) { return; }
+
+    if (pPad->GetTrigger(CInputPad::BUTTON_B, id))
+    {
+        mgr->GetPlayer(id)->Uninit();
     }
 }
