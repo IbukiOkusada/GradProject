@@ -48,6 +48,8 @@ private:
 	// メンバ変数
 	CPlayer** m_ppPlayer;	// プレイヤーのポインタ
 	CMultiCamera** m_ppCamera;   // カメラのポインタ
+
+	bool m_IsFinish;  // チュートリアルが終了しているかどうか
 };
 
 #endif
