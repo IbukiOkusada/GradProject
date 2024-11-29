@@ -56,6 +56,7 @@ CEntry::CEntry()
 {
     // 値をクリア
 	m_ppCamera = nullptr;
+    m_ppObj = nullptr;
     m_IsFinish = false;
 }
 
@@ -102,6 +103,7 @@ HRESULT CEntry::Init(void)
 
     CCameraManager* mgr = CCameraManager::GetInstance();
 	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
+    m_ppObj = new CObjectX * [MAX_PLAYER];
 
     //mgr->GetTop()->SetDraw(false);
 
@@ -166,6 +168,23 @@ void CEntry::Uninit(void)
         delete[] m_ppCamera;
         m_ppCamera = nullptr;
     }
+
+
+    // カメラの破棄
+    if (m_ppObj != nullptr)
+    {
+        for (int i = 0; i < MAX_PLAYER; i++)
+        {
+            if (m_ppObj[i] == nullptr) { continue; }
+
+            m_ppObj[i]->Uninit();
+            delete m_ppObj[i];
+            m_ppObj[i] = nullptr;
+        }
+
+        delete[] m_ppObj;
+        m_ppObj = nullptr;
+    }
 }
 
 //===============================================
@@ -179,7 +198,7 @@ void CEntry::Update(void)
     if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
         pKey->GetTrigger(DIK_RETURN))
     {
-        CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+        //CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
     }
 
     // プレイヤー参加処理
@@ -250,9 +269,12 @@ void CEntry::AddPlayer(void)
                 pPlayer->EffectUninit();
 
                 pos = m_ppCamera[i]->GetPositionR();
-                CObjectX* pObj = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), "data\\MODEL\\flyingscooter.x");
-                pObj->SetType(CObject::TYPE::TYPE_PLAYER);
-                pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
+                m_ppObj[i] = DEBUG_NEW CObjectX;
+                m_ppObj[i]->SetPosition(pos);
+                m_ppObj[i]->SetRotation(D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f));
+                m_ppObj[i]->BindFile("data\\MODEL\\flyingscooter.x");
+                m_ppObj[i]->SetType(CObject::TYPE::TYPE_PLAYER);
+                m_ppObj[i]->SetRotateType(CObjectX::TYPE_QUATERNION);
             }
         }
     }
