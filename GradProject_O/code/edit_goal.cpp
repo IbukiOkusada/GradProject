@@ -48,19 +48,30 @@ HRESULT CEdit_Goal::Init(void)
 {
 	m_fMoveLength = MIN_LENGTH;
 
-	auto mgr = CGoalManager::GetInstance()->GetList();
+	auto mgr = CGoalManager::GetInstance();
+	auto list = mgr->GetList();
+	auto infolist = mgr->GetInfoList();
+	int num = list.GetNum();
 
-	// ƒS[ƒ‹‚ğ‚·‚×‚Äíœ‚µ‚Ä‰ü‚ß‚Ä¶¬‚·‚é
-	for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd();)
+	std::vector<int> id;
+	id.clear();
+
+	for (const auto& ite : list.GetList())
 	{
-			ite->second->Uninit();
-			ite = mgr.GetBegin();
+		id.push_back(ite.first);
 	}
 
-	auto list = CGoalManager::GetInstance()->GetInfoList();
-	for (int i = 0; i < list->size(); i++)
+	for (int i = 0; i < num; i++)
 	{
-		auto it = (*list)[i];
+		CGoal* pGoal = list.Get(id[i]);
+		if (pGoal == nullptr) { continue; }
+		pGoal->Uninit();
+	}
+
+	// ƒS[ƒ‹‚ğ‚·‚×‚Äíœ‚µ‚Ä‰ü‚ß‚Ä¶¬‚·‚é
+	for (int i = 0; i < infolist->size(); i++)
+	{
+		auto it = (*infolist)[i];
 		CGoal::Create(it.pos, it.fRange, it.fLimit, i);
 	}
 

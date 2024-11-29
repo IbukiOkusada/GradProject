@@ -84,6 +84,17 @@ CGame::STATE CGame::m_state = CGame::STATE_LOCAL;	// 状態
 int CGame::m_nNumPlayer = 0;
 
 //===============================================
+// 関数ポインタ
+//===============================================
+// 状態管理
+CGame::CREATE_PL_FUNC CGame::m_CreatePlayerFunc[] =
+{
+    &CGame::CreateSinglePlayer,	// シングルプレイ
+    &CGame::CreateMultiPlayer,	// マルチプレイ
+    &CGame::CreateSinglePlayer,	// シングルプレイ(例外
+};
+
+//===============================================
 // コンストラクタ
 //===============================================
 CGame::CGame()
@@ -168,7 +179,6 @@ HRESULT CGame::Init(void)
     CMapManager::GetInstance()->Load();
 
     auto net = CNetWork::GetInstance();
-    net->ReConnect();
 
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
     {
@@ -183,9 +193,8 @@ HRESULT CGame::Init(void)
         }
     }
 
-    // リスト番号変更
-    CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(34.65f, 1.0f, 1.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CNetWork::GetInstance()->GetIdx());
-    pPlayer->SetType(CPlayer::TYPE_ACTIVE);
+    // プレイヤー生成
+    (this->*(m_CreatePlayerFunc[net->GetState()]))();
 
     CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
@@ -359,10 +368,6 @@ void CGame::Update(void)
             {
                 player->Uninit();
             }
-            else if (player == nullptr && net->GetConnect(i))
-            {
-                CPlayer::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, i);
-            }
         }
     }
 
@@ -422,4 +427,39 @@ void CGame::StartIntro(void)
 bool CGame::StartDirection(void)
 {
     return false;
+}
+
+//===================================================
+// プレイヤーの生成(シングル)
+//===================================================
+void CGame::CreateSinglePlayer(void)
+{
+    auto net = CNetWork::GetInstance();
+
+    CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-3034.65f, 1.0f, 1.0f), 
+        VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());
+    pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
+}
+
+//===================================================
+// プレイヤーの生成(マルチ)
+//===================================================
+void CGame::CreateMultiPlayer(void)
+{
+    auto net = CNetWork::GetInstance();
+
+    for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+    {
+        if (net->GetConnect(i)) { continue; }
+
+        CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-3034.65f, 1.0f, 1.0f + 20.0f * i),
+            VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());
+
+        // プレイヤー自身
+        if (i == net->GetIdx())
+        {
+            pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
+            pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
+        }
+    }
 }

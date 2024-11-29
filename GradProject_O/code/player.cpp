@@ -424,7 +424,7 @@ void CPlayer::Update(void)
 		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
 	}
 
-	// Ž©g‚Ìê‡
+	// ŽóMŒ^ˆÈŠO‚Ìê‡
 	if (m_type != TYPE::TYPE_RECV)
 	{
 		CNetWork* pNet = CNetWork::GetInstance();
@@ -954,6 +954,10 @@ void CPlayer::DEBUGKEY(void)
 	if (pInputKey->GetTrigger(DIK_B))
 	{
 		GetBestPath();
+	}
+	if (pInputKey->GetTrigger(DIK_RETURN))
+	{
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
 	}
 }
 #else

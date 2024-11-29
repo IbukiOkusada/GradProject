@@ -40,6 +40,7 @@ CGoalManager::CGoalManager()
 	m_nOldIdx = 0;
 	m_nNumCreate = 0;
 	m_nNextIdx = 0;
+	m_nNowIdx = 0;
 }
 
 //==========================================================
@@ -150,7 +151,7 @@ void CGoalManager::Update(void)
 	if (pPlayer == nullptr) { return; }
 	int nNum = pPlayer->GetNumDeliverStatus();
 
-	CDebugProc::GetInstance()->Print("ゴールの生成数 [ %d ] : 現在の配置数 [ %d ]\n",m_nNumCreate, m_List.GetNum());
+	CDebugProc::GetInstance()->Print("ゴールの生成数 [ %d ] : 現在の配置数 [ %d ], 配置の番号[ %d ]\n",m_nNumCreate, m_List.GetNum(), m_nNowIdx);
 
 	if (m_pGoal == nullptr) { return; }
 }
@@ -172,6 +173,7 @@ void CGoalManager::GoalCreate(int nId)
 
 	// 新しく生成
 	auto it = m_InfoList[nId];
+	m_nNowIdx = nId;
 	m_pGoal = CGoal::Create(it.pos, it.fRange, it.fLimit, m_nNumCreate);
 	m_nOldIdx = nId;
 	m_nNumCreate++;
