@@ -450,7 +450,7 @@ void CGame::CreateMultiPlayer(void)
         if (i == net->GetIdx())
         {
             pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
-            pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
+            pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
         }
     }
 }

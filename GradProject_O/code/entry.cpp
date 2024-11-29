@@ -238,7 +238,6 @@ void CEntry::AddPlayer(void)
         for (int i = 0; i < NetWork::MAX_CONNECT; i++)
         {
             auto player = mgr->GetPlayer(i);
-
            
             // l”‚ª‘½‚¢
             if (player == nullptr && net->GetConnect(i))
@@ -249,12 +248,12 @@ void CEntry::AddPlayer(void)
                 pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
                 //pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
                 pPlayer->EffectUninit();
-            }
 
-            D3DXVECTOR3 pos = m_ppCamera[i]->GetPositionR();
-            CObjectX* pObj = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), "data\\MODEL\\flyingscooter.x");
-            pObj->SetType(CObject::TYPE::TYPE_PLAYER);
-            pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
+                pos = m_ppCamera[i]->GetPositionR();
+                CObjectX* pObj = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), "data\\MODEL\\flyingscooter.x");
+                pObj->SetType(CObject::TYPE::TYPE_PLAYER);
+                pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
+            }
         }
     }
 
