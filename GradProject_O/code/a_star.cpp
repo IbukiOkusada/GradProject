@@ -103,7 +103,7 @@ std::vector<CRoad*> AStarPolice(CRoad* Start, CRoad* Goal)
 			{
 				if (Current->pParent != nullptr)
 				{
-					Current->pParent->GetInfoSearch()->pChaild = Current->pRoad;
+					//Current->pParent->GetInfoSearch()->pChaild = Current->pRoad;
 				}
 				path.push_back(Current->pRoad);
 				Current = Current->pParent->GetInfoSearch();
