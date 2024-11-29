@@ -356,8 +356,12 @@ void CNetWork::Access(CClient* pClient)
 			memcpy(&command, &recvdata[nowbyte], sizeof(int));
 			nowbyte += sizeof(int);
 
-			// コマンドを実行
-			(this->*(m_CommandFunc[command]))(id, &recvdata[nowbyte], pClient, &nowbyte);
+			if (command > 0 && command <= NetWork::COMMAND::COMMAND_MAX)
+			{
+
+				// コマンドを実行
+				(this->*(m_CommandFunc[command]))(id, &recvdata[nowbyte], pClient, &nowbyte);
+			}
 
 			if (command == NetWork::COMMAND_DELETE)
 			{

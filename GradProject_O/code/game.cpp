@@ -441,7 +441,7 @@ void CGame::CreateMultiPlayer(void)
 
     for (int i = 0; i < NetWork::MAX_CONNECT; i++)
     {
-        if (net->GetConnect(i)) { continue; }
+        if (!net->GetConnect(i)) { continue; }
 
         CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-3034.65f, 1.0f, 1.0f + 20.0f * i),
             VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());

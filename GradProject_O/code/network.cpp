@@ -885,7 +885,7 @@ void CNetWork::SendGameStartOk()
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// 送信用
+	char aSendData[sizeof(int)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_GAMESTART_OK;
 	int byte = 0;
 
@@ -904,7 +904,7 @@ void CNetWork::SendTutorialOk()
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// 送信用
+	char aSendData[sizeof(int)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_TUTORIAL_OK;
 	int byte = 0;
 

@@ -135,8 +135,12 @@ void CClient::Uninit(void)
 //==========================================================
 int CClient::Send()
 {
+	int nSendByte = 0;
 	// データ送信
-	int nSendByte = send(m_sock, &m_aSendData[0], m_nSendByte, 0);	// send関数: データを送信する
+	if (m_nSendByte > 0)
+	{
+		nSendByte = send(m_sock, &m_aSendData[0], m_nSendByte, 0);	// send関数: データを送信する
+	}
 	memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
 	m_nSendByte = 0;
 

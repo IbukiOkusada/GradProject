@@ -932,19 +932,19 @@ void CPlayer::GetBestPath()
 #if _DEBUG
 void CPlayer::DEBUGKEY(void)
 {
-	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
-	if (pInputKey->GetTrigger(DIK_K))
-	{
-		Damage(40.0f);
-	}
-	if (pInputKey->GetTrigger(DIK_B))
-	{
-		GetBestPath();
-	}
-	if (pInputKey->GetTrigger(DIK_RETURN))
-	{
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
-	}
+	//CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
+	//if (pInputKey->GetTrigger(DIK_K))
+	//{
+	//	Damage(40.0f);
+	//}
+	//if (pInputKey->GetTrigger(DIK_B))
+	//{
+	//	GetBestPath();
+	//}
+	//if (pInputKey->GetTrigger(DIK_RETURN))
+	//{
+	//	CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+	//}
 }
 #else
 void CPlayer::DEBUGKEY(void){}
@@ -1217,26 +1217,37 @@ void CPlayer::SetStateActive()
 	if (m_pFont[0] == nullptr) {
 		m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
 			D3DXVECTOR3(400.0f, 200.0f, 0.0f), 0.0025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
+
+		for (int j = 0; j < START_TEXT[0].size(); j++)
+		{
+			m_pFont[0]->PushBackString(START_TEXT[0][j]);
+		}
 	}
 	if (m_pFont[1] == nullptr) {
 		m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
 			D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+
+		for (int j = 0; j < START_TEXT[1].size(); j++)
+		{
+			m_pFont[1]->PushBackString(START_TEXT[1][j]);
+		}
 	}
 	if (m_pFont[2] == nullptr) {
 		m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
 			D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+
+		for (int j = 0; j < START_TEXT[2].size(); j++)
+		{
+			m_pFont[2]->PushBackString(START_TEXT[2][j]);
+		}
 	}
 	if (m_pFont[3] == nullptr) {
 		m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
 			D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP, VECTOR3_ZERO, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
-	}
-
-	for (int i = 0; i < NUM_TXT; i++)
-	{
-		if (m_pFont[i] == nullptr) { continue; }
-		for (int j = 0; j < START_TEXT[i].size(); j++)
+		
+		for (int j = 0; j < START_TEXT[3].size(); j++)
 		{
-			m_pFont[i]->PushBackString(START_TEXT[i][j]);
+			m_pFont[3]->PushBackString(START_TEXT[3][j]);
 		}
 	}
 }
@@ -1259,7 +1270,7 @@ void CPlayer::SendData()
 	CNetWork* pNet = CNetWork::GetInstance();
 
 	// データの送信
-	if (pNet != nullptr) { return; }
+	if (pNet == nullptr) { return; }
 
 	if (pNet->GetTime()->IsOK())
 	{
