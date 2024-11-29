@@ -75,11 +75,19 @@ HRESULT CEntry::Init(void)
     auto net = CNetWork::GetInstance();
     net->ReConnect();
 
+    // ID取得を待つ
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
     {
+        net->GetTime()->Start();
         while (1)
         {
-            net->SendGetId();
+            net->GetTime()->End();
+
+            if (net->GetTime()->IsOK())
+            {
+                net->SendGetId();
+                net->Update();
+            }
 
             if (net->GetIdx() != -1)
             {
@@ -89,7 +97,6 @@ HRESULT CEntry::Init(void)
     }
     else
     {
-        CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
         return E_FAIL;
     }
 
@@ -179,6 +186,8 @@ void CEntry::Update(void)
     if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
         pKey->GetTrigger(DIK_RETURN))
     {
+        //m_IsFinish = true;
+        
         //CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
     }
 
@@ -187,16 +196,6 @@ void CEntry::Update(void)
 
     // プレイヤー参加取り消し処理
     DecreasePlayer();
-
-    if (m_IsFinish)
-    {
-       auto net = CNetWork::GetInstance();
-
-       if (net->GetTime()->IsOK())
-       {
-           net->SendTutorialOk();
-       }
-    }
 
     CScene::Update();
 
@@ -259,8 +258,17 @@ void CEntry::AddPlayer(void)
 
     if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
-        // チュートリアルを終了していることにする
-        m_IsFinish = true;
+        m_IsFinish ^= true;
+
+        if (m_IsFinish)
+        {
+            auto net = CNetWork::GetInstance();
+            net->SendTutorialOk();
+        }
+        else
+        {
+
+        }
     }
 }
 
@@ -278,7 +286,6 @@ void CEntry::DecreasePlayer(void)
         for (int i = 0; i < NetWork::MAX_CONNECT; i++)
         {
             auto player = mgr->GetPlayer(i);
-
    
             // 人数が多い
             if (player != nullptr && !net->GetConnect(i))
