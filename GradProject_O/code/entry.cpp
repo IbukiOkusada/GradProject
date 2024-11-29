@@ -198,7 +198,7 @@ void CEntry::Update(void)
     if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
         pKey->GetTrigger(DIK_RETURN))
     {
-        CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+        //CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
     }
 
     // プレイヤー参加処理
