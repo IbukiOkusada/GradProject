@@ -236,8 +236,7 @@ void CPolice::ReachRoad()
 			if (pRoadNext == pRoadStart) { continue; }
 		}
 
-		if (pRoadNext != nullptr)
-			break;
+		if (pRoadNext != nullptr) { break; }
 	}
 
 	pRoadStart = pRoadTarget;

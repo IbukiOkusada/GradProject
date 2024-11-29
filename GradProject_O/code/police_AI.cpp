@@ -303,7 +303,6 @@ CPoliceAI *CPoliceAI::Create(CPolice* pPolice, TYPE type)
 
 	switch (type)
 	{
-
 	case TYPE_NORMAL:
 		pPoliceAI = DEBUG_NEW CPoliceAINomal;
 		break;
