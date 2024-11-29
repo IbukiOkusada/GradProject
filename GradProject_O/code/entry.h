@@ -11,6 +11,7 @@
 
 class CPlayer;
 class CMultiCamera;
+class CObjectX;
 
 //===============================================
 // エントリークラスの定義(派生クラス)
@@ -48,6 +49,7 @@ private:
 	// メンバ変数
 	CPlayer** m_ppPlayer;	// プレイヤーのポインタ
 	CMultiCamera** m_ppCamera;   // カメラのポインタ
+	CObjectX** m_ppObj;
 
 	bool m_IsFinish;  // チュートリアルが終了しているかどうか
 };
