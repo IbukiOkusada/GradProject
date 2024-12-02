@@ -43,6 +43,7 @@ public:
 		TYPE_SEND = 0,	// データ送信
 		TYPE_RECV,		// データ受信他操作
 		TYPE_ACTIVE,	// 操作可能
+		TYPE_TUTOLERIAL_ACTIVE,  // チュートリアル時
 		TYPE_MAX
 	};
 
@@ -139,7 +140,7 @@ public:	// 誰でもアクセス可能
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 	float GetLifeOrigin() { return m_fLifeOrigin; }
 	int GetId() { return m_nId; }
-
+	CRadio* GetRadio() { return m_pRadio; }
 protected:	// 自分だけがアクセス可能
 
 	//=============================
@@ -152,6 +153,7 @@ protected:	// 自分だけがアクセス可能
 	void SetStateSend();
 	void SetStateRecv();
 	void SetStateActive();
+	void SetStateTutorialActive();
 
 	// メンバ関数
 	void SetMatrix(void);

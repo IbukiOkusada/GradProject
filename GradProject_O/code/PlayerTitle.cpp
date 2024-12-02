@@ -13,6 +13,8 @@
 #include "character.h"
 #include "model.h"
 #include "motion.h"
+#include "PoliceTitle.h"
+#include "title.h"
 
 //<************************************************
 //名前宣言
@@ -20,13 +22,35 @@
 namespace
 {
 	//目的地の位置
-	const D3DXVECTOR3 DEST_POS[] = 
+	const D3DXVECTOR3 DEST_POS[CPlayerTitle::DEST::DEST_MAX] =
 	{ D3DXVECTOR3(2630.0f, 0.0f, 1054.0f),
 		D3DXVECTOR3(2630.0f, 0.0f, -200.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
 		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
+		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f)
 	
+	};
+
+	//目的地の位置
+	const D3DXVECTOR3 DEST_POS_SELECT[CPlayerTitle::DEST::DEST_MAX]=
+	{
+		D3DXVECTOR3(2700.0f, 0.0f, 6000.0f),		//１個目
+		D3DXVECTOR3(-3160.0f, 0.0f, 6000.0f),		//２個目
+		D3DXVECTOR3(-3160.0f, 0.0f, 4000.0f),		//３個目
+		D3DXVECTOR3(-4750.0f, 0.0f, 4000.0f),		//４個目
+		D3DXVECTOR3(-4750.0f, 0.0f, -200.0f),		//５個目
+		D3DXVECTOR3(2700.0f, 0.0f, -200.0f)			//６個目
+	};
+
+	const D3DXVECTOR3 DEST_ROT_SELECT[CPlayerTitle::DEST::DEST_MAX] =
+	{
+		D3DXVECTOR3(0.0f,-3.14f,0.0f),				//１個目
+		D3DXVECTOR3(0.0f,1.56f,0.0f),				//２個目
+		D3DXVECTOR3(0.0f,0.0f,0.0f),				//３個目
+		D3DXVECTOR3(0.0f,1.56f,0.0f),				//４個目
+		D3DXVECTOR3(0.0f,0.0f,0.0f),				//５個目
+		D3DXVECTOR3(0.0f,-1.56f,0.0f)				//６個目
 	};
 
 	const float DEST_DIFF = 5.0f;										//距離の差
@@ -38,10 +62,12 @@ namespace
 //<================================================
 CPlayerTitle::CPlayerTitle()
 {
+	m_nNumDest = 0;
 	m_eState = STATE_NONE;
 	m_fBDustValue = 50.0f;
 	m_bReached = false;
 	m_bNextMove = false;
+	m_bMoved = false;
 	m_pTitleBaggage = nullptr;
 	m_pTitleGoal = nullptr;
 }
@@ -147,10 +173,8 @@ void CPlayerTitle::Update(void)
 		CPlayer::Update();
 	}
 
-	//// デバッグ表示
-	//CDebugProc::GetInstance()->Print("プレイヤー :");
-	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	//CDebugProc::GetInstance()->Print(" プレイヤー向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
+	//デバッグ表示
+	CDebugProc::GetInstance()->Print("プレイヤー座標: [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 }
 //<================================================
 //動きに関する処理
@@ -170,6 +194,36 @@ void CPlayerTitle::Moving(const int nNum)
 		//目的地に到着したら判定をtrueにする
 		if (Function::BoolToDest(m_Info.pos, DEST_POS[nNum], DEST_DIFF)) { m_bReached = true; }
 	}
+}
+//<================================================
+//
+//<================================================
+void CPlayerTitle::MovingSelect(void)
+{
+	const float PlayerMove = 25.0f;						//プレイヤーの動く値
+
+	////目的地まで移動
+	m_Info.pos.x += (DEST_POS_SELECT[m_nNumDest].x - m_Info.pos.x - m_Info.move.x) * 0.065f;//X軸
+	m_Info.pos.z += (DEST_POS_SELECT[m_nNumDest].z - m_Info.pos.z - m_Info.move.z) * 0.065f;//Z軸
+
+	//目的地に到着したら判定をtrueにする
+	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 50.0f))
+	{
+		m_nNumDest +=1;
+	}
+
+	if (m_nNumDest >= DEST_MAX)
+	{
+		m_nNumDest = 0;
+	}
+
+	PoliceRotSet();
+		
+	//その向きに設定
+	SetRotation(DEST_ROT_SELECT[m_nNumDest]);
+
+	//デバッグ表示
+	CDebugProc::GetInstance()->Print("[現在の番号]：%d\n", m_nNumDest);
 }
 //<================================================
 //荷物の動き処理
@@ -194,6 +248,127 @@ void CPlayerTitle::BaggageMove(void)
 		//人間と荷物の設定
 		m_pTitleBaggage->GetObj()->SetParent(m_pTitleGoal->GetCHR()->GetParts(6)->GetMtx());
 		m_pTitleGoal->GetCHR()->GetMotion()->BlendSet(4);
+	}
+}
+//<================================================
+//警察の位置設定
+//<================================================
+void CPlayerTitle::PoliceRotSet(void)
+{
+	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };
+	D3DXVECTOR3 rRot = VECTOR3_ZERO;
+
+	//警察の情報を取得してくる
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
+	{
+		apPolice[nCnt] = CTitle::GetPoliTitle(nCnt);
+	}
+
+	//番号によって変更させる
+	switch (m_nNumDest)
+	{
+		//最初の目的地
+	case DEST::DEST_FIRST:
+
+		//最初の向きにする
+		rRot = DEST_ROT_SELECT[DEST::DEST_FIRST];
+
+		break;
+
+		//二番目か四番目
+	case DEST::DEST_SECOND:
+	case DEST::DEST_FOUTH:
+
+		//二番目の向きにする
+		rRot = DEST_ROT_SELECT[DEST::DEST_SECOND];
+
+		break;
+
+		//三番目か五番目
+	case DEST::DEST_THIRD:
+	case DEST::DEST_FIFTH:
+
+		//三番目の向きにする
+		rRot = DEST_ROT_SELECT[DEST::DEST_THIRD];
+
+		break;
+
+		//最後の番号
+	case DEST::DEST_SIXTH:
+
+		//最終地点の向きにする
+		rRot = DEST_ROT_SELECT[DEST::DEST_SIXTH];
+
+		break;
+	}
+	//警察の向きを設定
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
+	{apPolice[nCnt]->SetRotation(rRot);}
+
+	PolicePosSet();
+}
+//<================================================
+//警察の位置設定
+//<================================================
+void CPlayerTitle::PolicePosSet(void)
+{
+	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };
+	D3DXVECTOR3 arPos[INITIAL::POLICE_MAX] = { VECTOR3_ZERO };
+	float fDis = 500.0f;
+
+	//警察の情報を取得してくる
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
+	{
+		//情報取得+位置情報取得
+		apPolice[nCnt] = CTitle::GetPoliTitle(nCnt);
+		arPos[nCnt] = apPolice[nCnt]->GetPosition();
+	}
+
+	//警察の情報を取得してくる
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
+	{
+		//パトランプ
+		apPolice[nCnt]->SettingPatLamp();
+
+		//番号によって変更させる
+		switch (m_nNumDest)
+		{
+			//最初の目的地
+		case DEST::DEST_FIRST:
+
+			//その位置に設定
+			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + 150.0f*nCnt, GetPosition().y, GetPosition().z - fDis);
+
+			break;
+
+			//二番目か四番目
+		case DEST::DEST_SECOND:
+		case DEST::DEST_FOUTH:
+
+			//その位置に設定
+			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + fDis, GetPosition().y, GetPosition().z + 150.0f * nCnt);
+
+			break;
+
+			//三番目か五番目
+		case DEST::DEST_THIRD:
+		case DEST::DEST_FIFTH:
+
+			//その位置に設定
+			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + 150.0f * nCnt, GetPosition().y, GetPosition().z + fDis);
+
+			break;
+
+			//最後の番号
+		case DEST::DEST_SIXTH:
+
+			//その位置に設定
+			arPos[nCnt] = D3DXVECTOR3(GetPosition().x - fDis, GetPosition().y, GetPosition().z + 150.0f * nCnt);
+
+			break;
+		}
+		//位置と向きを設定
+		apPolice[nCnt]->SetPosition(arPos[nCnt]);
 	}
 }
 //<================================================
@@ -263,4 +438,24 @@ bool Function::BoolToDest(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, cons
 	}
 
 	return false;
+}
+//<================================================
+//目的地に到着したかの判定
+//<================================================
+bool Function::BoolDis(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, const float Distance)
+{
+	//距離計算
+	D3DXVECTOR3 rDis = D3DXVECTOR3(Pos.x - DestPos.x, Pos.y - DestPos.y, Pos.z - DestPos.z);
+
+	//もし近づいていたら
+	if (rDis.x <= Distance &&
+		rDis.z <= Distance &&
+		!(-rDis.x >= Distance) &&
+		!(-rDis.z >= Distance))
+	{
+		return true;
+	}
+
+	return false;
+
 }

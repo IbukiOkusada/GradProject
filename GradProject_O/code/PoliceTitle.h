@@ -24,12 +24,28 @@ public:
 	void Update(void);
 	static CPoliceTitle* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move);
 
+	//パトランプ生成
+	void SettingPatLamp(void)
+	{
+		//<*******************************************
+		//パトランプ生成
+		if (!m_pPatrolLamp)
+		{
+			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+		}
+
+		//位置と向きを設定
+		m_pPatrolLamp->m_pos = this->GetPosition();
+		m_pPatrolLamp->m_rot = this->GetRotation();
+	}
+
 	//
 	void Chasing(const float fMoveZ);
 
 private:
 
 	CEffekseer::CEffectData* m_pPatrolLamp;		//テスト用
+	CEffekseer::CEffectData* m_pTailLamp;
 
 };
 
