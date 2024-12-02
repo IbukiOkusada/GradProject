@@ -29,6 +29,8 @@ public:	// 誰でもアクセス可能
 	static CRadio* Create(void);
 	void VolumeChange();
 	void ChannelChange();
+	void SetVol(float fVol) {m_fVolume = fVol;}
+	float GetVol() { return m_fVolume; }
 	enum CHANNEL
 	{
 		CHANNEL_RELAX = 0,
