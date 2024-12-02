@@ -27,6 +27,9 @@
 #include "TitleBaggage.h"
 #include "debugproc.h"
 
+//静的メンバ変数
+CPoliceTitle* CTitle::m_apPolice[INITIAL::POLICE_MAX] = {nullptr};
+
 //===============================================
 // 無名名前空間
 //===============================================
@@ -39,7 +42,8 @@ namespace
 	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.1f, 0.0f };				//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
 	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };										//フレームの目標値
-
+	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };									//警察位置
+			
 	//<************************************************
 	//int型
 	//<************************************************ 
@@ -60,9 +64,9 @@ namespace
 	//オブジェクト2Dに使うテクスチャの名前
 	const char* TEX_NAME[CTitle::OBJ2D_MAX] = 
 	{
-		"data\\TEXTURE\\logo_thaw.jpg",			//チームロゴ
+		"data\\TEXTURE\\team_logo.png",			//チームロゴ
 		"",										//黒カバー
-		"data\\TEXTURE\\Pre_char000.png",		//タイトルロゴ
+		"data\\TEXTURE\\Title_logo.png",		//タイトルロゴ
 		"data\\TEXTURE\\T_PressEnter000.png",	//プレスエンター
 		"",										//選択肢
 		"data\\TEXTURE\\T_PressEnter001.png",	//"何人選択しますか"の文字
@@ -144,7 +148,7 @@ CTitle::CTitle()
 	}
 
 	//配列の初期化
-	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 	{
 		m_apPolice[nCnt] = nullptr;
 	}
@@ -513,8 +517,7 @@ void CTitle::StatePre(void)
 //<===============================================
 void CTitle::InitingP_E(void)
 {
-	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };			//プレイヤーの位置
-	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };				//警察位置
+	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };								//プレイヤーの位置
 	const float fLogoLength = 150.0f;								//ロゴの長さ(サイズ)
 	const float fP_ELength = (350.0f, 350.0f);								//プレスエンターの長さ(サイズ)
 
@@ -538,7 +541,7 @@ void CTitle::InitingP_E(void)
 
 		//・タイトルロゴ
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(250.0f,100.0f);
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(600.0f,190.0f);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_TITLELOGO]));
 
@@ -554,7 +557,7 @@ void CTitle::InitingP_E(void)
 		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
 
 		//警察の生成
-		for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 		{
 			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
 				D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
@@ -625,28 +628,8 @@ void CTitle::ColChange(CObject2D* pObj2D)
 //<===============================================
 void CTitle::ChaseMovement(void)
 {
-	//<*************************************************************
-	//カメラに関する
-	//<*************************************************************
-	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
-	const float PlayerMove = 25.0f;						//プレイヤーの動く値
-	const int FADE_TIME = 200;							//ゲーム画面に移行するまでの時間
-
 	Selecting();
-	ChaseCamera();
-
-	//プレイヤーと警察を移動させる
-	PlayerPos.z += PlayerMove;
-
-	//カメラの向きとプレイヤーの位置の設定
-	m_pPlayer->SetPosition(PlayerPos);
-
-	//<******************************************
-	//警察関連の処理
-	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
-	{
-		m_apPolice[nCnt]->Chasing(PlayerMove);
-	}
+	Chasing();
 
 	//選択判定があれば
 	if (m_bSelected) 
@@ -665,8 +648,25 @@ void CTitle::ChaseMovement(void)
 
 		//アイスステートに移行し、変数の設定をする
 		m_eState = STATE::STATE_ICETHROW; 
+		m_bIniting = false;
 		m_nCounter = 0; 
 	}
+}
+//<===============================================
+//追跡ステートの追跡処理
+//<===============================================
+void CTitle::Chasing(void)
+{
+	//<*************************************************************
+	//カメラに関する
+	//<*************************************************************
+	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
+	const float PlayerMove = 25.0f;						//プレイヤーの動く値
+	const int FADE_TIME = 200;							//ゲーム画面に移行するまでの時間
+
+	m_pPlayer->MovingSelect();
+
+	ChaseCamera();
 }
 //<===============================================
 //追跡ステートの際のカメラの動き
@@ -711,7 +711,7 @@ void CTitle::SkipMovement(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -250.0f };	//プレイヤーの位置
 	const float DEST_ROT = 0.40f;								//目的の向き
-
+	
 	//・タイトルロゴ
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetPosition(D3DXVECTOR3(TITLELOGO_DEST,TITLELOGO_POS.y, TITLELOGO_POS.z));
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetVtx();
@@ -1006,11 +1006,39 @@ void CTitle::DebugCam(void)
 
 }
 //<===============================================
+//アイスステート時の初期化
+//<===============================================
+void CTitle::InitingIce(void)
+{
+	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -200.0f };	//プレイヤーの位置
+
+	//初期化チェック
+	if (!m_bIniting)
+	{
+		//初期化したことにする
+		m_bIniting = true;
+
+		//位置情報初期化
+		m_pPlayer->SetPosition(PLAYER_POS);
+		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
+
+		//警察の生成
+		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
+		{
+			//位置情報初期化
+			m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + 150.0f * nCnt, PolicePos.y, PolicePos.z));
+			m_apPolice[nCnt]->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
+		}
+		//カメラの設定
+		m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
+	}
+}
+//<===============================================
 //アイスステート時の動き
 //<===============================================
 void CTitle::IceMovement(void)
 {
-	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();				//プレイヤー位置
+	D3DXVECTOR3 PlayerPos = VECTOR3_ZERO;				//プレイヤー位置
 	const int FADE_TIME = 200;										//ゲーム画面に移行するまでの時間
 	const int FADE_TIME_HARF = 65;									//ゲーム画面に移行するまでの時間の半減値
 
@@ -1022,21 +1050,19 @@ void CTitle::IceMovement(void)
 	const float fDisMax = 700.0f;								//距離の最大値
 	const float fMoveValue = 10.0f;								//距離移動の際の値
 
+	InitingIce();
+
 	m_pPlayer->BaggageMove();
 
-	//カメラの設定
-	m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
-
-	//プレイヤーと警察を移動させる
+	//プレイヤー位置設定
+	PlayerPos = m_pPlayer->GetPosition();
 	PlayerPos.z += PlayerMove;
-
-	//カメラの向きとプレイヤーの位置の設定
 	m_pPlayer->SetPosition(PlayerPos);
 
-	//<******************************************
-	//警察関連の処理
-	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+	//警察の生成
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 	{
+		//位置情報初期化
 		m_apPolice[nCnt]->Chasing(PlayerMove);
 	}
 

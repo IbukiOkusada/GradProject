@@ -26,7 +26,7 @@ class CNumber;
 //<**********************************************
 //名前宣言(ココでしか使わない変数)
 //<**********************************************
-namespace
+namespace INITIAL
 {
 	const int POLICE_MAX = 3;					//警察の数
 }
@@ -88,6 +88,24 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	//<************************************
+	//Get系関数
+	//<************************************
+	//シングルとマルチどっちが選択されているかの取得関数
+	int GetSelectSingleMulti(void) { return m_nSelect; }
+	static CPoliceTitle* GetPoliTitle(int nNum)
+	{
+		if (!m_apPolice[nNum])
+		{
+			return nullptr;
+		}
+		else
+		{
+			//
+			return m_apPolice[nNum];
+		}
+	}
+
 private:
 	//チームロゴの際に使う関数
 	void StateLogo(void);
@@ -107,6 +125,7 @@ private:
 
 	//追跡状態の時の動き
 	void ChaseMovement(void);
+	void Chasing(void);
 	void ChaseCamera(void);
 
 	//選択
@@ -119,23 +138,17 @@ private:
 
 	//アイスステート
 	void IceMovement(void);
+	void InitingIce(void);
 
 	//デバッグ用
 	void DebugCam(void);
-
-	//<************************************
-	//Get系関数
-	//<************************************
-	//シングルとマルチどっちが選択されているかの取得関数
-	int GetSelectSingleMulti(void) { return m_nSelect; }		
-
 
 	STATE m_eState;								//ステート
 	//<************************************
 	//ポインタ型
 	//<************************************
 	CPlayerTitle* m_pPlayer;					//プレイヤーのポインタ
-	CPoliceTitle* m_apPolice[POLICE_MAX];		//警察のポインタ
+	static CPoliceTitle* m_apPolice[INITIAL::POLICE_MAX];		//警察のポインタ
 	CGole* m_pGoal;								//ゴールのポインタ
 
 	CObject2D* m_pObject2D[OBJ2D_MAX];			//オブジェクト2Dのポインタ

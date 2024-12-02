@@ -154,6 +154,7 @@ CPlayer::SETTYPE_FUNC CPlayer::m_SetTypeFunc[] =
 	&CPlayer::SetStateSend,		// 
 	&CPlayer::SetStateRecv,		// 接続した
 	&CPlayer::SetStateActive,	// ID取得
+	&CPlayer::SetStateTutorialActive,  // チュートリアル
 };
 
 // 前方宣言
@@ -323,7 +324,7 @@ void CPlayer::Update(void)
 	{
 		m_pRadio->Update();
 	}
-	if (m_type == TYPE_ACTIVE)
+	if (m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE)
 	{
 		// プレイヤー操作
 		Controller();
@@ -384,7 +385,7 @@ void CPlayer::Update(void)
 	}
 
 	// 荷物を所持
-	if (m_pBaggage != nullptr && m_type == TYPE_ACTIVE)
+	if (m_pBaggage != nullptr && (m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE))
 	{
 
 		D3DXVECTOR3 rot = GetRotation();
@@ -1257,6 +1258,44 @@ void CPlayer::SetStateActive()
 	}
 
 	m_type = TYPE::TYPE_ACTIVE;
+}
+
+//===============================================
+// チュートリアルアクティブ状態設定
+//===============================================
+void CPlayer::SetStateTutorialActive()
+{
+	if (m_type != TYPE::TYPE_TUTOLERIAL_ACTIVE)
+	{
+		// アイドル音の生成
+		if (m_pSound == nullptr)
+		{
+			m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\idol.wav", -1);
+			m_pSound->SetVolume(0.0f);
+		}
+
+		// ブレーキ生成
+		if (m_pSoundBrake == nullptr)
+		{
+			m_pSoundBrake = CMasterSound::CObjectSound::Create("data\\SE\\flight.wav", -1);
+			m_pSoundBrake->SetVolume(0.0f);
+		}
+
+		// ラジオ生成
+		if (m_pRadio == nullptr)
+		{
+			m_pRadio = CRadio::Create();
+		}
+
+		// 衝突seの生成
+		if (m_pCollSound == nullptr)
+		{
+			m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
+			m_pCollSound->Stop();
+		}
+	}
+
+	m_type = TYPE::TYPE_TUTOLERIAL_ACTIVE;
 }
 
 //===============================================
