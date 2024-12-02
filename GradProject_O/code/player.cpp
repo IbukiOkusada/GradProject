@@ -81,7 +81,7 @@ namespace
 	const float INER = (0.9f);		// 慣性
 	const float ENGINE_INER = (0.01f);		// 慣性
 	const float ENGINE_BRAKE = (0.006f);		// 慣性
-	const float TUURN_INER = (0.9f);		// 慣性
+	const float TURN_INER = (0.9f);		// 慣性
 	const float DRIFT_INER = (0.975f);		// ドリフト慣性
 	const float BRAKE_INER = (0.05f);
 	const float RES = (1.98f);		// 減速
@@ -188,8 +188,6 @@ CPlayer::CPlayer(int nId)
 	m_fLife = LIFE;
 	m_fLifeOrigin = m_fLife;
 	m_fCamera = CAMERA_NORMAL;
-
-	m_type = TYPE_SEND;
 	m_fNitroCool = 0.0f;
 
 	m_pObj = nullptr;
@@ -441,7 +439,7 @@ void CPlayer::Update(void)
 //===============================================
 // ID生成
 //===============================================
-CPlayer* CPlayer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move,
+CPlayer* CPlayer::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move,
 	const int nId)
 {
 	CPlayer* pPlayer = nullptr;
@@ -621,7 +619,7 @@ void CPlayer::Rotate(void)
 	m_fHandle += dest * slowmulti;
 	
 	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT);
-	m_fTurnSpeed*= TUURN_INER;
+	m_fTurnSpeed*= TURN_INER;
 	// 入力装置確認
 	if (nullptr == pInputKey) 
 	{
@@ -852,20 +850,19 @@ bool CPlayer::CollisionGimick(void)
 void CPlayer::Damage(float fDamage)
 {
 	m_fLife -= fDamage;
+	SAFE_DELETE(m_pDamageEffect);
+
 	if (m_fLife <= 0.0f)
 	{
 		m_fLife = 0.0f;
-		SAFE_DELETE(m_pDamageEffect);
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\explosion.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, false, false);
 	}
 	else if (m_fLife <= LIFE * 0.5f)
 	{
-		SAFE_DELETE(m_pDamageEffect);
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\moderately_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
 	}
 	else if (m_fLife <= LIFE * 0.8f)
 	{
-		SAFE_DELETE(m_pDamageEffect);
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\minor_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
 	}
 	

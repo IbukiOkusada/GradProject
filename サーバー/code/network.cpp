@@ -561,7 +561,27 @@ void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClie
 //==========================================================
 void CNetWork::CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(float)] = {};	// 送信用まとめデータ
+	int byte = 0;
 
+	nProt = NetWork::COMMAND_PL_DAMAGE;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコル挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 体力挿入
+	memcpy(&aSendData[byte], pRecvData, sizeof(float));
+	*pNowByte += sizeof(float);
+	byte += sizeof(float);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
 }
 
 //==========================================================

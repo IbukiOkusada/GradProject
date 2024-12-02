@@ -44,10 +44,11 @@ private:	// 自分だけがアクセス可能
 	{
 		CPlayer* pPlayer;
 		int nChaseCount;
+		int nId;
 		bool bChase;
 
 		// コンストラクタ
-		SInfo() : pPlayer(nullptr), nChaseCount(0), bChase(false) {}
+		SInfo() : pPlayer(nullptr), nChaseCount(0), bChase(false), nId(-1) {}
 	};
 
 protected:
@@ -79,12 +80,14 @@ public:	// 誰でもアクセス可能
 	CPlayer* GetPlayer() { return m_Info.pPlayer; }
 	bool GetChase() { return m_Info.bChase; }
 	int GetChaseCount() { return m_Info.nChaseCount; }
+	int GetId() { return m_Info.nId; }
 
 	// メンバ関数(設定)
 	void SetState(const STATE state);
 	void SetPlayer(CPlayer* pPlayer) { m_Info.pPlayer = pPlayer; }
 	void SetChase(bool bChase) { m_Info.bChase = bChase; }
 	void SetChaseCount(int bChaseCount) { m_Info.nChaseCount = bChaseCount; }
+	void BindId(int nId) { m_Info.nId = nId; }
 
 protected:
 

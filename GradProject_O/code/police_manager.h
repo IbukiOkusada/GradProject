@@ -9,6 +9,7 @@
 
 #include "list_manager.h"
 #include "list.h"
+#include "map_list.h"
 
 // ‘O•ûéŒ¾
 class CPolice;
