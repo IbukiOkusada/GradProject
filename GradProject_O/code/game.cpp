@@ -341,10 +341,10 @@ void CGame::Update(void)
     {
         if (m_pGameTimer->GetTime() <= 0.0f)
         {
-            CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+            End_Fail();
         }
     }
-
+   
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
 
@@ -362,7 +362,10 @@ void CGame::Update(void)
             }
         }
     }
-
+    if (mgr->GetPlayer()->GetLife()<= 0.0f)
+    {
+        End_Fail();
+    }
     CPoliceManager::GetInstance()->Update();
     CScene::Update();
     switch (m_GameState)
@@ -378,6 +381,10 @@ void CGame::Update(void)
         }
         break;
     case CGame::GAMESTATE_FAIL:
+        if (!m_pEndSound->GetPlay())
+        {
+            CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+        }
         break;
     case CGame::GAMESTATE_MAX:
         break;
@@ -458,7 +465,14 @@ void CGame::End_Success()
 }
 void CGame::End_Fail()
 {
-
+    if (m_GameState != GAMESTATE_FAIL)
+    {
+        SetGameState(GAMESTATE::GAMESTATE_FAIL);
+        m_pEndText = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, SCREEN_CENTER, 0.7f, 200.0f, 200.0f, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+        m_pEndText->PushBackString("配達失敗");
+        m_pEndText->SetEnableScroll(true);
+        m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\f_jingle.wav", 0);
+    }
 }
 //===================================================
 // プレイヤーの生成(シングル)
