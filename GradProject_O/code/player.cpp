@@ -81,6 +81,7 @@ namespace
 	const float INER = (0.9f);		// äµê´
 	const float ENGINE_INER = (0.01f);		// äµê´
 	const float ENGINE_BRAKE = (0.006f);		// äµê´
+	
 	const float TURN_INER = (0.9f);		// äµê´
 	const float DRIFT_INER = (0.975f);		// ÉhÉäÉtÉgäµê´
 	const float BRAKE_INER = (0.05f);
@@ -241,7 +242,8 @@ HRESULT CPlayer::Init(void)
 //===============================================
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
+	
+	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
@@ -249,7 +251,8 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	//m_pContainer = CContainer::Create();
 	
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	return S_OK;
 }
@@ -348,7 +351,8 @@ void CPlayer::Update(void)
 		D3DXVECTOR3 pos = GetPosition();
 		pos.y += 100.0f;
 		rot.y -= D3DX_PI * 0.5f;
-		rot.z += m_fTurnSpeed * 15.0f;
+
+		rot.z += m_fTurnSpeed * 20.0f;
 		m_pObj->SetPosition(pos);
 		m_pObj->SetRotation(rot);
 		m_pObj->SetShadowHeight(GetPosition().y);
@@ -439,8 +443,8 @@ void CPlayer::Update(void)
 //===============================================
 // IDê∂ê¨
 //===============================================
-CPlayer* CPlayer::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move,
-	const int nId)
+
+CPlayer* CPlayer::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, const int nId)
 {
 	CPlayer* pPlayer = nullptr;
 
@@ -855,14 +859,17 @@ void CPlayer::Damage(float fDamage)
 	if (m_fLife <= 0.0f)
 	{
 		m_fLife = 0.0f;
+		
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\explosion.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, false, false);
 	}
 	else if (m_fLife <= LIFE * 0.5f)
 	{
+		
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\moderately_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
 	}
 	else if (m_fLife <= LIFE * 0.8f)
 	{
+		
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\minor_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
 	}
 	
