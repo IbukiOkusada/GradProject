@@ -36,7 +36,7 @@ public:	// 誰でもアクセス可能
 	~CPoliceAI();	// デストラクタ
 
 	// メンバ関数
-	HRESULT Init(void);
+	virtual HRESULT Init(void);
 	void Uninit(void);
 	void Search(void);
 	void Chase(void);
@@ -77,11 +77,13 @@ private:	// 自分だけがアクセス可能
 
 class CPoliceAINomal : public CPoliceAI
 {
+	HRESULT Init(void) override;
 	void SelectRoad(void) override;
 };
 
 class CPoliceAIElite : public CPoliceAI
 {
+	HRESULT Init(void) override;
 	void SelectRoad(void) override;
 };
 

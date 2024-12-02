@@ -268,8 +268,10 @@ void CPolice::SearchPlayer()
 //==========================================================
 void CPolice::ChasePlayer()
 {
+	// 追跡する
 	m_pPoliceAI->Chase();
 
+	// 追跡経路が存在するならば目標地点に設定する
 	if (m_pPoliceAI->GetSearchRoad() != nullptr)
 	{
 		SetRoadTarget(m_pPoliceAI->GetSearchRoad()->pConnectRoad);
@@ -286,6 +288,24 @@ void CPolice::ChasePlayer()
 void CPolice::Collision()
 {
 	
+}
+
+//==========================================================
+// 接触時処理
+//==========================================================
+void CPolice::Hit()
+{
+	if (GetBack()) { return; }
+
+	if (!m_Info.bChase)
+	{
+		CRoad* pRoadNext = GetRoadTarget();
+		SetRoadTarget(GetRoadStart());
+		SetRoadStart(pRoadNext);
+	}
+
+	SetBack(true);
+	SetBackTime(80);
 }
 
 //==========================================================
