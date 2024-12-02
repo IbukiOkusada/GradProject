@@ -15,10 +15,10 @@ namespace AStar
 	std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole);
 
 	// AStar‚Å‚ÌŒo˜H’Tõ
-	std::vector<CRoad*> AStarPolice(CRoad* Start, CRoad* Goal);
+	std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal);
 
 	// AStar‚Å‚Ì‰ñ”§ŒÀ•t‚«Œo˜H’Tõ
-	std::vector<CRoad::SSearch*> AStarLimit(CRoad::SSearch* State, CRoad::SSearch* Gole, int nCntSearch);
+	std::vector<CRoad::SInfoSearch*> AStarPoliceLimit(CRoad* Start, CRoad* Goal, int nCntSearch);
 }
 
 #endif

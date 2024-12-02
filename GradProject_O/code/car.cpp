@@ -50,6 +50,7 @@ CCar::CCar()
 	m_Info.nBackTime = 0;
 	m_Info.fSpeed = 0.0f;
 	m_Info.fSpeedDest = 0.0f;
+	m_Info.fRotMulti = 0.0f;
 	m_Info.bBreak = false;
 	m_Info.bBack = false;
 
@@ -72,6 +73,7 @@ HRESULT CCar::Init(void)
 {
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car002.x");
 	TailLamp();
+	m_Info.fRotMulti = ROT_MULTI;
 	return S_OK;
 }
 
@@ -203,10 +205,12 @@ void CCar::Rot()
 	//äpìxàÍívîªíË
 	if (m_Info.bBack)
 	{
+		m_Info.fRotMulti = ROT_MULTI_BACK;
+
 		//ç∑ï™í«â¡
 		if (m_Info.fSpeed < -5.0f)
 		{
-			fRotMove += fRotDiff * ROT_MULTI_BACK;
+			fRotMove += fRotDiff * m_Info.fRotMulti;
 		}
 
 		if (fabsf(fRotDiff) >= ROT_CURVE)
@@ -221,7 +225,7 @@ void CCar::Rot()
 	else
 	{
 		//ç∑ï™í«â¡
-		fRotMove += fRotDiff * ROT_MULTI;
+		fRotMove += fRotDiff * m_Info.fRotMulti;
 
 		if (fabsf(fRotDiff) >= ROT_CURVE)
 		{

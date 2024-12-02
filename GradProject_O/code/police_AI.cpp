@@ -277,7 +277,7 @@ void CPoliceAI::Chase(void)
 		if (m_pRoadStart->GetSearchSelf() != m_pRoadTarget->GetSearchSelf())
 		{
 			// 経路探索
-			m_searchRoad = AStar::AStar(m_pRoadStart->GetSearchSelf(), m_pRoadTarget->GetSearchSelf());
+			m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
 
 			// リストが空でなければ移動先設定
 			if (!m_searchRoad.empty())
@@ -397,7 +397,7 @@ void CPoliceAI::ReachRoad(void)
 	if (m_pSearchTarget != nullptr)
 	{
 		// 次の目的地を設定
-		D3DXVECTOR3 posRoad = m_pSearchTarget->pRoad->GetPosition();
+		D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
 		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
 		float length = D3DXVec3Length(&(posRoad - posPolice));
 		if (length < 500.0f)
