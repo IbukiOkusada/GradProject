@@ -15,6 +15,7 @@ namespace Function
 {
 	//目的地に着いた時の判定
 	bool BoolToDest(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, const float Distance, bool bZuse = true);
+	bool BoolDis(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, const float Distance);
 }
 class CTitleBaggage;
 class CTitleGoal;
@@ -39,6 +40,10 @@ public:
 	{
 		DEST_FIRST = 0,	//一番目
 		DEST_SECOND,	//二番目
+		DEST_THIRD,		//三番目
+		DEST_FOUTH,		//四番目
+		DEST_FIFTH,		//五番目
+		DEST_SIXTH,		//六番目
 		DEST_MAX,
 
 	};
@@ -55,6 +60,7 @@ public:
 	static CPlayerTitle* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move, const char* pBodyName, const char* pLegName);
 
 	void Moving(const int nNum);
+	void MovingSelect(void);
 	void BaggageMove(void);
 
 	//到着情報に関するSet・Get関数
@@ -66,8 +72,14 @@ public:
 
 private:
 
+	void PoliceRotSet(void);
+	void PolicePosSet(void);
+
+	int m_nNumDest;
+	int m_nSet;
 	float m_fBDustValue;				//煙の大きさの値
 	bool m_bNextMove;					//次の動きに移行するときになったら
+	bool m_bMoved;
 	STATE m_eState;						//デバッグ用のステート
 	bool m_bReached;					//着いたかどうか
 	CTitleBaggage* m_pTitleBaggage;		//タイトル用の荷物
