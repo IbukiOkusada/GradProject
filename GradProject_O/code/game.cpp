@@ -53,6 +53,7 @@
 #include "police_manager.h"
 #include "objectsound.h"
 #include "scrollText2D.h"
+#include "radio.h"
 // ネットワーク
 #include "network.h"
 
@@ -375,12 +376,14 @@ void CGame::Update(void)
     case CGame::GAMESTATE_PROG:
         break;
     case CGame::GAMESTATE_SUCCESS:
+        pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol() * 0.9f);
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
         }
         break;
     case CGame::GAMESTATE_FAIL:
+        pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol()*0.9f);
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);

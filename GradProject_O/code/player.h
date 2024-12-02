@@ -140,7 +140,7 @@ public:	// 誰でもアクセス可能
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 	float GetLifeOrigin() { return m_fLifeOrigin; }
 	int GetId() { return m_nId; }
-
+	CRadio* GetRadio() { return m_pRadio; }
 protected:	// 自分だけがアクセス可能
 
 	//=============================
