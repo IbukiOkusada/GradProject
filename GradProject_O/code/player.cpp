@@ -702,6 +702,7 @@ bool CPlayer::CollisionObjX(void)
 		CObjectX* pObjectX = mgr->Get(i);	// æ“ª‚ðŽæ“¾
 
 		// Õ“Ë”»’è‚ðŽæ‚ç‚È‚¢
+		if (pObjectX == m_pObj) { continue; }
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
