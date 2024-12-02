@@ -64,7 +64,7 @@ CPolice::CPolice()
 	m_pPatrolLamp = nullptr;
 	m_pSiren = nullptr;
 	m_stateInfo = SState();
-
+	m_pPoliceAI = nullptr;
 	CPoliceManager::GetInstance()->GetList()->Regist(this);
 }
 
@@ -176,14 +176,15 @@ void CPolice::MoveRoad()
 		m_pSiren->Start();
 
 		ChasePlayer();
-		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-		float dis = GetDistance(pPlayer->GetPosition() , GetPosition());
-		float vol = 4000.0f - dis;
+	
+		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
+		float vol = 8000.0f - dis;
+		vol /= 8000.0f;
 		if (vol < 0.0f)
 		{
 			vol = 0.0f;
 		}
-		m_pSiren->SetVolume((2000.0f - dis) * 0.00025f);
+		m_pSiren->SetVolume(vol);
 
 		if (pRoadTarget != nullptr)
 		{
@@ -204,7 +205,11 @@ void CPolice::MoveRoad()
 	}
 	else
 	{
-		m_pSiren->Stop();
+		if (m_pSiren != nullptr)
+		{
+			m_pSiren->Stop();
+		}
+
 		if (pRoadTarget != nullptr)
 		{
 			pRoadStart = GetRoadStart();
@@ -260,7 +265,10 @@ void CPolice::ReachRoad()
 //==========================================================
 void CPolice::SearchPlayer()
 {
-	m_pPoliceAI->Search();
+	if (m_pPoliceAI != nullptr)
+	{
+		m_pPoliceAI->Search();
+	}
 }
 
 //==========================================================

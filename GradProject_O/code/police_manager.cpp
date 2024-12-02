@@ -13,6 +13,9 @@
 #include "deltatime.h"
 #include "debugproc.h"
 #include "pred_route.h"
+#include "network.h"
+#include "inspection_manager.h"
+#include "input_keyboard.h"
 
 // 名前空間
 namespace
@@ -158,7 +161,7 @@ void CPoliceManager::Warning(CPolice* pPolice)
 		pP->SetState(CPolice::STATE::STATE_SEARCH);
 	}
 
-	if (m_InspInfo.fInterval >= m_InspInfo.fTime && CAddPolice::GetList()->GetNum() < MAX_POLICE)
+	if (m_InspInfo.fInterval >= m_InspInfo.fTime)
 	{
 		m_InspInfo.fInterval = 0.0f;
 		// 検問を配置する
@@ -197,5 +200,10 @@ void CPoliceManager::SetInspection()
 	pos.x += sinf(targetrot) * pRoad->GetInfo()->size.x;
 	pos.z += cosf(targetrot) * pRoad->GetInfo()->size.y;
 
-	CInstpection::Create(pos, rot, pRoad);
+	// 検問生成
+	CInspection* pInsp = CInspection::Create(pos, rot, pRoad, CInspectionManager::GetInstance()->GetCreateCnt());
+
+	// 検問送信
+	auto net = CNetWork::GetInstance();
+	net->SendSetInspection(pInsp->GetId(), pos, rot, pRoad->GetIdx());
 }

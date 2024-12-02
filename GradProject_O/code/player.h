@@ -100,13 +100,13 @@ public:	// 誰でもアクセス可能
 	HRESULT Init(const char *pBodyName, const char *pLegName);	// オーバーロード
 	void Uninit(void);
 	void Update(void);
-	static CPlayer* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move,
+	static CPlayer* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move,
 		const int nId);
 
 	// メンバ関数(設定)
-	void SetMove(const D3DXVECTOR3 move) { m_Info.move = move; }
-	void SetPosition(const D3DXVECTOR3 pos) { m_Info.pos = pos; }
-	void SetRotation(const D3DXVECTOR3 rot) { m_Info.rot = rot; }
+	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }
+	void SetPosition(const D3DXVECTOR3& pos) { m_Info.pos = pos; }
+	void SetRotation(const D3DXVECTOR3& rot) { m_Info.rot = rot; }
 	void SetType(TYPE type);
 	void BindId(int nId) { m_nId = nId; }
 	void SetMotion(int nMotion);
@@ -116,8 +116,8 @@ public:	// 誰でもアクセス可能
 	void Damage(float fDamage);
 
 	// 受信用情報
-	void SetRecvPosition(const D3DXVECTOR3 pos) { m_RecvInfo.pos = pos; }
-	void SetRecvRotation(const D3DXVECTOR3 rot) { m_RecvInfo.rot = rot; }
+	void SetRecvPosition(const D3DXVECTOR3& pos) { m_RecvInfo.pos = pos; }
+	void SetRecvRotation(const D3DXVECTOR3& rot) { m_RecvInfo.rot = rot; }
 
 	void SetNumDeliveryStatus(int nNum) { m_nNumDeliveryStatus = nNum; }
 	void AddDeliveryCount(void) { m_nNumDeliveryStatus++; }
@@ -140,6 +140,8 @@ public:	// 誰でもアクセス可能
 	int GetNumDeliverStatus(void) { return m_nNumDeliveryStatus; }
 	float GetLifeOrigin() { return m_fLifeOrigin; }
 	int GetId() { return m_nId; }
+	CRadio* GetRadio() { return m_pRadio; }
+	TYPE GetType() { return m_type; }
 
 protected:	// 自分だけがアクセス可能
 

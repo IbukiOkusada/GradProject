@@ -6,6 +6,7 @@
 //==========================================================
 #include <stdio.h>
 #include "tcp_client.h"
+#include "tcp_listener.h"
 #include <string.h>
 
 //==========================================================
@@ -46,6 +47,7 @@ void CClient::Uninit(void)
 {
 	// 接続を切断する
 	closesocket(m_sock);	// クライアントとの接続を閉じる
+	CListener::SetNum(CListener::GetNum() - 1);
 }
 
 //==========================================================

@@ -53,6 +53,7 @@
 #include "police_manager.h"
 #include "objectsound.h"
 #include "scrollText2D.h"
+#include "radio.h"
 // ネットワーク
 #include "network.h"
 
@@ -293,7 +294,7 @@ void CGame::Update(void)
 
     if (m_pGameTimer != nullptr)
     {
-        auto player = CPlayerManager::GetInstance()->GetPlayer();
+        CPlayer* player = CPlayerManager::GetInstance()->GetPlayer();
         if (player->GetType() == CPlayer::TYPE::TYPE_ACTIVE)
         {
             m_pGameTimer->Update();
@@ -322,12 +323,12 @@ void CGame::Update(void)
     // エディター更新
     if (pMgr != nullptr) { pMgr->Update(); }
 
+#endif
+
     if (pInputKey->GetTrigger(DIK_J))
     {
         CPoliceManager::GetInstance()->SetInspection();
-    }
-
-#endif
+}
 
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
     int nNum = pPlayer->GetNumDeliverStatus();
@@ -362,7 +363,7 @@ void CGame::Update(void)
             }
         }
     }
-    if (mgr->GetPlayer()->GetLife()<= 0.0f)
+    if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_ONLINE)
     {
         End_Fail();
     }
@@ -375,12 +376,14 @@ void CGame::Update(void)
     case CGame::GAMESTATE_PROG:
         break;
     case CGame::GAMESTATE_SUCCESS:
+        pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol() * 0.9f);
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
         }
         break;
     case CGame::GAMESTATE_FAIL:
+        pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol()*0.9f);
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
