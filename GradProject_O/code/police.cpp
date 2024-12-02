@@ -27,6 +27,8 @@ namespace
 {
 	const float LENGTH_POINT = (200.0f);		// “ž’B”»’è‹——£
 	const float CHASE_SPEED = (17.0f);			// ’ÇÕŽž‚Ì‰Á‘¬
+	const float ROT_MULTI_DEF = (0.06f);		// ’ÊíŽž‚ÌŒü‚«•â³”{—¦
+	const float ROT_MULTI_CHASE = (0.1f);		// ’ÇÕŽž‚ÌŒü‚«•â³”{—¦
 }
 
 //==========================================================================
@@ -187,6 +189,7 @@ void CPolice::MoveRoad()
 		{
 			SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
 			SetPosTarget(pRoadTarget->GetPosition());
+			SetRotMulti(ROT_MULTI_CHASE);
 		}
 		else
 		{
@@ -212,6 +215,7 @@ void CPolice::MoveRoad()
 				ReachRoad();
 
 			SetPosTarget(pRoadTarget->GetPosition());
+			SetRotMulti(ROT_MULTI_DEF);
 		}
 	}
 }
@@ -268,9 +272,9 @@ void CPolice::ChasePlayer()
 
 	if (m_pPoliceAI->GetSearchRoad() != nullptr)
 	{
-		if (m_pPoliceAI->GetSearchRoad()->pRoad != nullptr)
+		if (m_pPoliceAI->GetSearchRoad() != nullptr)
 		{
-			SetRoadTarget(m_pPoliceAI->GetSearchRoad()->pRoad);
+			SetRoadTarget(m_pPoliceAI->GetSearchRoad()->pConnectRoad);
 		}
 		else
 		{

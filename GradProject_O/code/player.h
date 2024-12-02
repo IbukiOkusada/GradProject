@@ -43,6 +43,7 @@ public:
 		TYPE_SEND = 0,	// データ送信
 		TYPE_RECV,		// データ受信他操作
 		TYPE_ACTIVE,	// 操作可能
+		TYPE_TUTOLERIAL_ACTIVE,  // チュートリアル時
 		TYPE_MAX
 	};
 
@@ -152,6 +153,7 @@ protected:	// 自分だけがアクセス可能
 	void SetStateSend();
 	void SetStateRecv();
 	void SetStateActive();
+	void SetStateTutorialActive();
 
 	// メンバ関数
 	void SetMatrix(void);

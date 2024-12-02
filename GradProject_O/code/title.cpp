@@ -27,6 +27,9 @@
 #include "TitleBaggage.h"
 #include "debugproc.h"
 
+//静的メンバ変数
+CPoliceTitle* CTitle::m_apPolice[INITIAL::POLICE_MAX] = {nullptr};
+
 //===============================================
 // 無名名前空間
 //===============================================
@@ -39,7 +42,8 @@ namespace
 	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.1f, 0.0f };				//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
 	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };										//フレームの目標値
-
+	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };									//警察位置
+			
 	//<************************************************
 	//int型
 	//<************************************************ 
@@ -60,27 +64,27 @@ namespace
 	//オブジェクト2Dに使うテクスチャの名前
 	const char* TEX_NAME[CTitle::OBJ2D_MAX] = 
 	{
-		"data\\TEXTURE\\logo_thaw.jpg",			//チームロゴ
-		"",										//黒カバー
-		"data\\TEXTURE\\Pre_char000.png",		//タイトルロゴ
-		"data\\TEXTURE\\T_PressEnter000.png",	//プレスエンター
-		"",										//選択肢
-		"data\\TEXTURE\\T_PressEnter001.png",	//"何人選択しますか"の文字
-		"data\\TEXTURE\\T_PressEnter002.png",	//確認メッセージ
+		"data\\TEXTURE\\team_logo.png",			//チームロゴ
+		"",												//黒カバー
+		"data\\TEXTURE\\Title\\Title_logo.png",			//タイトルロゴ
+		"data\\TEXTURE\\Title\\-PRESS ENTER-.png",	//プレスエンター
+		"",												//選択肢
+		"data\\TEXTURE\\Title\\select.png",	//"何人選択しますか"の文字
+		"data\\TEXTURE\\Title\\start.png",	//確認メッセージ
 	};				
 
 	//選択肢に使うテクスチャの名前
 	const char* SELECT_NAME[CTitle::SELECT_MAX] =
 	{
-		"data\\TEXTURE\\T_PressEnter003.png",	//
-		"data\\TEXTURE\\T_PressEnter004.png",	//マルチプレイ
+		"data\\TEXTURE\\Title\\silen.png",	//シングルプレイ
+		"data\\TEXTURE\\Title\\multi.png",	//マルチプレイ
 	};
 
 	//選択肢に使うテクスチャの名前
 	const char* SELECT_YN_NAME[CTitle::SELECT_YN_MAX] =
 	{
-		"data\\TEXTURE\\GameOver-Yes.png",	//はい
-		"data\\TEXTURE\\GameOver-No.png",	//いいえ
+		"data\\TEXTURE\\Title\\YES.png",	//はい
+		"data\\TEXTURE\\Title\\NO.png",	//いいえ
 	};
 }
 //<===============================================
@@ -90,6 +94,14 @@ namespace INIT_SELECT
 {
 	const D3DXVECTOR3 NUMCHAR_POS = D3DXVECTOR3(625.0f, 100.0f, 0.0f);					//どっちか
 	const D3DXVECTOR3 CHECK_POS = D3DXVECTOR3(625.0f, 475.0f, 0.0f);					//確認
+
+	const D3DXVECTOR3 SELECT_POS = D3DXVECTOR3(400.0f, 300.0f, 0.0f);								//選択肢の位置
+	const float fDis = 475.0f;																		//距離1	
+
+	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(505.0f, INIT_SELECT::CHECK_POS.y + 150.0f, 0.0f);		//はいといいえの位置
+	const float fDis2 = 200.0f;																		//距離2
+
+	const D3DXCOLOR InitFrameCol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f);	//フレームの初期色
 }
 
 //<===============================================
@@ -144,7 +156,7 @@ CTitle::CTitle()
 	}
 
 	//配列の初期化
-	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 	{
 		m_apPolice[nCnt] = nullptr;
 	}
@@ -513,8 +525,7 @@ void CTitle::StatePre(void)
 //<===============================================
 void CTitle::InitingP_E(void)
 {
-	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };			//プレイヤーの位置
-	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };				//警察位置
+	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };								//プレイヤーの位置
 	const float fLogoLength = 150.0f;								//ロゴの長さ(サイズ)
 	const float fP_ELength = (350.0f, 350.0f);								//プレスエンターの長さ(サイズ)
 
@@ -538,13 +549,13 @@ void CTitle::InitingP_E(void)
 
 		//・タイトルロゴ
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(250.0f,100.0f);
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(600.0f,190.0f);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_TITLELOGO]));
 
 		//・プレスエンター
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(PRESSENTER_POS, VECTOR3_ZERO,5);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(250.0f, 100.0f);
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(350.0f, 100.0f);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_PressEnter]));
 
@@ -554,7 +565,7 @@ void CTitle::InitingP_E(void)
 		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
 
 		//警察の生成
-		for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 		{
 			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
 				D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
@@ -625,28 +636,8 @@ void CTitle::ColChange(CObject2D* pObj2D)
 //<===============================================
 void CTitle::ChaseMovement(void)
 {
-	//<*************************************************************
-	//カメラに関する
-	//<*************************************************************
-	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
-	const float PlayerMove = 25.0f;						//プレイヤーの動く値
-	const int FADE_TIME = 200;							//ゲーム画面に移行するまでの時間
-
 	Selecting();
-	ChaseCamera();
-
-	//プレイヤーと警察を移動させる
-	PlayerPos.z += PlayerMove;
-
-	//カメラの向きとプレイヤーの位置の設定
-	m_pPlayer->SetPosition(PlayerPos);
-
-	//<******************************************
-	//警察関連の処理
-	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
-	{
-		m_apPolice[nCnt]->Chasing(PlayerMove);
-	}
+	Chasing();
 
 	//選択判定があれば
 	if (m_bSelected) 
@@ -665,8 +656,25 @@ void CTitle::ChaseMovement(void)
 
 		//アイスステートに移行し、変数の設定をする
 		m_eState = STATE::STATE_ICETHROW; 
+		m_bIniting = false;
 		m_nCounter = 0; 
 	}
+}
+//<===============================================
+//追跡ステートの追跡処理
+//<===============================================
+void CTitle::Chasing(void)
+{
+	//<*************************************************************
+	//カメラに関する
+	//<*************************************************************
+	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
+	const float PlayerMove = 25.0f;						//プレイヤーの動く値
+	const int FADE_TIME = 200;							//ゲーム画面に移行するまでの時間
+
+	m_pPlayer->MovingSelect();
+
+	ChaseCamera();
 }
 //<===============================================
 //追跡ステートの際のカメラの動き
@@ -711,7 +719,7 @@ void CTitle::SkipMovement(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -250.0f };	//プレイヤーの位置
 	const float DEST_ROT = 0.40f;								//目的の向き
-
+	
 	//・タイトルロゴ
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetPosition(D3DXVECTOR3(TITLELOGO_DEST,TITLELOGO_POS.y, TITLELOGO_POS.z));
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetVtx();
@@ -736,14 +744,6 @@ void CTitle::SkipMovement(void)
 //<===============================================
 void CTitle::InitingSelect(void)
 {
-	const D3DXVECTOR3 SELECT_POS = D3DXVECTOR3(400.0f, 300.0f, 0.0f);								//選択肢の位置
-	const float fDis = 475.0f;																		//距離1	
-
-	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(505.0f, INIT_SELECT::CHECK_POS.y + 100.0f, 0.0f);		//はいといいえの位置
-	const float fDis2 = 200.0f;																		//距離2
-
-	const D3DXCOLOR InitFrameCol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f);								//フレームの初期色
-
 	//初期化されていなかったら
 	if (!m_bIniting)
 	{
@@ -755,11 +755,11 @@ void CTitle::InitingSelect(void)
 		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO, 6);
 		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);
 		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(true);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(InitFrameCol);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(INIT_SELECT::InitFrameCol);
 
 		//どちらにするか
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(INIT_SELECT::NUMCHAR_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(450.0f, 135.0f);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(225.0f, 50.0f);
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_NUMCHAR]));
 
@@ -768,19 +768,19 @@ void CTitle::InitingSelect(void)
 		{
 			//どちらにするか
 			m_apSelect[nCnt] = CObject2D::Create(
-				D3DXVECTOR3(SELECT_POS.x+ fDis*nCnt,
-				SELECT_POS.y,
-				SELECT_POS.z),
+				D3DXVECTOR3(INIT_SELECT::SELECT_POS.x+ INIT_SELECT::fDis*nCnt,
+				INIT_SELECT::SELECT_POS.y,
+				INIT_SELECT::SELECT_POS.z),
 				VECTOR3_ZERO, 6);
 
-			m_apSelect[nCnt]->SetSize(250.0f, 100.0f);
+			m_apSelect[nCnt]->SetSize(200.0f, 75.0f);
 			m_apSelect[nCnt]->SetDraw(false);
 			m_apSelect[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_NAME[nCnt]));
 		}
 
 		//確認メッセージ
 		m_pObject2D[OBJ2D::OBJ2D_CHECK] = CObject2D::Create(INIT_SELECT::CHECK_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(250.0f, 75.0f);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(300.0f, 50.0f);
 		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_CHECK]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_CHECK]));
 
@@ -788,8 +788,13 @@ void CTitle::InitingSelect(void)
 		for (int nCnt = 0; nCnt < SELECT_YN_MAX; nCnt++)
 		{
 			//選択肢(はい)
-			m_apYesNoObj[nCnt] = CObject2D::Create(D3DXVECTOR3(YES_POS.x + fDis2 * nCnt, YES_POS.y, YES_POS.z), VECTOR3_ZERO, 6);
-			m_apYesNoObj[nCnt]->SetSize(200.0f, 50.0f);
+			m_apYesNoObj[nCnt] = CObject2D::Create
+			(D3DXVECTOR3(INIT_SELECT::YES_POS.x + INIT_SELECT::fDis2 * nCnt, 
+				INIT_SELECT::YES_POS.y,
+				INIT_SELECT::YES_POS.z),
+				VECTOR3_ZERO, 6);
+
+			m_apYesNoObj[nCnt]->SetSize(80.0f, 35.0f);
 			m_apYesNoObj[nCnt]->SetDraw(false);
 			m_apYesNoObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_YN_NAME[nCnt]));
 		}
@@ -1006,11 +1011,39 @@ void CTitle::DebugCam(void)
 
 }
 //<===============================================
+//アイスステート時の初期化
+//<===============================================
+void CTitle::InitingIce(void)
+{
+	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -200.0f };	//プレイヤーの位置
+
+	//初期化チェック
+	if (!m_bIniting)
+	{
+		//初期化したことにする
+		m_bIniting = true;
+
+		//位置情報初期化
+		m_pPlayer->SetPosition(PLAYER_POS);
+		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
+
+		//警察の生成
+		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
+		{
+			//位置情報初期化
+			m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + 150.0f * nCnt, PolicePos.y, PolicePos.z));
+			m_apPolice[nCnt]->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
+		}
+		//カメラの設定
+		m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
+	}
+}
+//<===============================================
 //アイスステート時の動き
 //<===============================================
 void CTitle::IceMovement(void)
 {
-	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();				//プレイヤー位置
+	D3DXVECTOR3 PlayerPos = VECTOR3_ZERO;				//プレイヤー位置
 	const int FADE_TIME = 200;										//ゲーム画面に移行するまでの時間
 	const int FADE_TIME_HARF = 65;									//ゲーム画面に移行するまでの時間の半減値
 
@@ -1022,21 +1055,19 @@ void CTitle::IceMovement(void)
 	const float fDisMax = 700.0f;								//距離の最大値
 	const float fMoveValue = 10.0f;								//距離移動の際の値
 
+	InitingIce();
+
 	m_pPlayer->BaggageMove();
 
-	//カメラの設定
-	m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
-
-	//プレイヤーと警察を移動させる
+	//プレイヤー位置設定
+	PlayerPos = m_pPlayer->GetPosition();
 	PlayerPos.z += PlayerMove;
-
-	//カメラの向きとプレイヤーの位置の設定
 	m_pPlayer->SetPosition(PlayerPos);
 
-	//<******************************************
-	//警察関連の処理
-	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+	//警察の生成
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 	{
+		//位置情報初期化
 		m_apPolice[nCnt]->Chasing(PlayerMove);
 	}
 

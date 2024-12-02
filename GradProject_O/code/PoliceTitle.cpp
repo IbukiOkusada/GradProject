@@ -16,6 +16,7 @@
 CPoliceTitle::CPoliceTitle()
 {
 	m_pPatrolLamp = nullptr;
+	m_pTailLamp = nullptr;
 }
 //<======================================
 //デストラクタ
@@ -42,6 +43,7 @@ void CPoliceTitle::Uninit(void)
 	//Realese無しだとメモリ破壊が起きる
 	CPoliceManager::GetInstance()->GetList()->Delete(this);
 	SAFE_DELETE(m_pPatrolLamp);
+	SAFE_DELETE(m_pTailLamp);
 	Release();
 
 }
@@ -67,10 +69,18 @@ void CPoliceTitle::Chasing(const float fMoveZ)
 	{
 		m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	}
-
+	//ているらんぷ生成
+	if (!m_pTailLamp)
+	{
+		m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	}
 	//位置と向きを設定
 	m_pPatrolLamp->m_pos = this->GetPosition();
 	m_pPatrolLamp->m_rot = this->GetRotation();
+
+	//位置と向きを設定
+	m_pTailLamp->m_pos = this->GetPosition();
+	m_pTailLamp->m_rot = this->GetRotation();
 	//
 	//<*******************************************
 
