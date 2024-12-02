@@ -12,6 +12,7 @@
 // 前方宣言
 class CClient;
 class CPlayer;
+class CRoad;
 
 //===============================================
 // ネットワーククラスの定義
@@ -58,6 +59,8 @@ public:
 	void SendNextGoal(const int nId);
 	void SendGameStartOk();
 	void SendTutorialOk();
+	void SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx);
+	void SendEndInspection(int nId);
 
 	// メンバ関数(設定)
 
@@ -90,8 +93,10 @@ private:
 	void RecvNextGoal(int* pByte, const int nId, const char* pRecvData);
 	void RecvGameStartOk(int* pByte, const int nId, const char* pRecvData);
 	void RecvGameStart(int* pByte, const int nId, const char* pRecvData);
-	void RecvTutoriaoOk(int* pByte, const int nId, const char* pRecvData);
+	void RecvTutorialOk(int* pByte, const int nId, const char* pRecvData);
 	void RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData);
+	void RecvSetInspection(int* pByte, const int nId, const char* pRecvData);
+	void RecvEndInspection(int* pByte, const int nId, const char* pRecvData);
 
 	// メンバ関数
 	HRESULT Init();

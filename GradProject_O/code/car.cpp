@@ -53,6 +53,8 @@ CCar::CCar()
 	m_Info.fRotMulti = 0.0f;
 	m_Info.bBreak = false;
 	m_Info.bBack = false;
+	m_pObj = nullptr;
+	m_pTailLamp = nullptr;
 
 	// ƒŠƒXƒg‚É“ü‚ê‚é
 	CCarManager::GetInstance()->ListIn(this);

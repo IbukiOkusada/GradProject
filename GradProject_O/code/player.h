@@ -141,6 +141,8 @@ public:	// 誰でもアクセス可能
 	float GetLifeOrigin() { return m_fLifeOrigin; }
 	int GetId() { return m_nId; }
 	CRadio* GetRadio() { return m_pRadio; }
+	TYPE GetType() { return m_type; }
+
 protected:	// 自分だけがアクセス可能
 
 	//=============================

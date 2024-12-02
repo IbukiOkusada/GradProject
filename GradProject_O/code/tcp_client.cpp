@@ -51,7 +51,7 @@ bool CClient::Init(const char *pIPAddress, int nPortNum)
 	// 接続先の設定
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(nPortNum);	// 接続を受け付けるポート、番号を固定(接続先ポート番号)
+	addr.sin_port = htons(static_cast<u_short>(nPortNum));	// 接続を受け付けるポート、番号を固定(接続先ポート番号)
 	addr.sin_addr.S_un.S_addr = inet_addr(pIPAddress);	// 接続先IPアドレスを入れる
 
 	// 接続する
@@ -97,7 +97,7 @@ bool CClient::Reconnect(const char* pIPAddress, int nPortNum)
 	// 接続先の設定
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
-	addr.sin_port = htons(nPortNum);	// 接続を受け付けるポート、番号を固定(接続先ポート番号)
+	addr.sin_port = htons(static_cast<u_short>(nPortNum));	// 接続を受け付けるポート、番号を固定(接続先ポート番号)
 	addr.sin_addr.S_un.S_addr = inet_addr(pIPAddress);	// 接続先IPアドレスを入れる
 
 	// 接続する
