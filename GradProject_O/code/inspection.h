@@ -83,6 +83,7 @@ public:	// 誰でもアクセス可能
 	HRESULT Init() override;
 	void Uninit() override;
 	void Update() override;
+	void Start();
 
 	// 静的メンバ関数
 	static CInspection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId);
@@ -103,7 +104,6 @@ private:	// 自分だけがアクセス可能
 	void Away();
 	void LagerSet();
 	void LagerSetRotation();
-	void Start();
 	void Collision();
 
 	// メンバ変数

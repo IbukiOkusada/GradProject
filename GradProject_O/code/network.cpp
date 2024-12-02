@@ -581,7 +581,25 @@ void CNetWork::RecvPlRot(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPlDamage(int* pByte, const int nId, const char* pRecvData)
 {
-	if (m_pClient == nullptr) { return; }
+	// 体力に変換
+	float life = 0.0f;
+	memcpy(&life, pRecvData, sizeof(float));
+
+	// 確認バイト数を加算
+	*pByte += sizeof(float);
+
+	// プレイヤーの存在確認
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
+
+	// 生成していない場合
+	if (pPlayer == nullptr) {
+		RecvJoin(pByte, nId, pRecvData);
+		return;
+	}
+
+	// 座標設定
+	pPlayer->Damage(life - pPlayer->GetLife());
 }
 
 //===================================================
@@ -871,7 +889,20 @@ void CNetWork::SendPlDamage(const float nowlife)
 {
 	if (!GetActive()) { return; }
 
+	char aSendData[sizeof(int) + sizeof(float)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_PL_DAMAGE;
 	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 体力を挿入
+	memcpy(&aSendData[byte], &nowlife, sizeof(float));
+	byte += sizeof(float);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================

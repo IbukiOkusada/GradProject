@@ -60,7 +60,7 @@
 
 namespace
 {
-	const float RECV_INER = (0.5f);			// 受信したデータの慣性
+	const float RECV_INER = (0.65f);		// 受信したデータの慣性
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
 	const float DEATH_INTERVAL = (120.0f);	// 死亡インターバル
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
@@ -854,6 +854,7 @@ void CPlayer::Damage(float fDamage)
 	m_fLife -= fDamage;
 	if (m_fLife <= 0.0f)
 	{
+		m_fLife = 0.0f;
 		SAFE_DELETE(m_pDamageEffect);
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\explosion.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, false, false);
 	}
@@ -866,6 +867,13 @@ void CPlayer::Damage(float fDamage)
 	{
 		SAFE_DELETE(m_pDamageEffect);
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\minor_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
+	}
+	
+	// データ送信
+	if (m_type == TYPE::TYPE_ACTIVE || m_type == TYPE::TYPE_TUTOLERIAL_ACTIVE)
+	{
+		auto net = CNetWork::GetInstance();
+		net->SendPlDamage(m_fLife);
 	}
 }
 
