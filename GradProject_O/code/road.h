@@ -63,23 +63,21 @@ public:	// 誰でもアクセス可能な定義
 		float fGCost;		//移動コスト
 		float fHCost;		//予想コスト
 		SSearch* pParent;
-		SSearch* pChaild;
 
 		// コンストラクタ
-		SSearch() : pos(VECTOR3_ZERO), fFCost(0.0f), fGCost(0.0f), fHCost(0.0f), pRoad(nullptr), pParent(nullptr), pChaild(nullptr), bActive(false) {}
+		SSearch() : pos(VECTOR3_ZERO), fFCost(0.0f), fGCost(0.0f), fHCost(0.0f), pRoad(nullptr), pParent(nullptr), bActive(false) {}
 	};
 
 	// 経路探索用
 	struct SInfoSearch
 	{
-		CRoad* pRoad;		// 自分の道
-		CRoad* pConnectRoad;		// 連結した道
+		CRoad* pConnectRoad;	// 連結した道
 		float pConnectLength;	// 連結した道への距離
-		float fFCost;		//最終コスト
-		float fGCost;		//移動コスト
-		float fHCost;		//予想コスト
-		CRoad* pParent;
-		CRoad* pChaild;
+		float fFCost;			//最終コスト
+		float fGCost;			//移動コスト
+		float fHCost;			//予想コスト
+		SInfoSearch* pParent;
+		SInfoSearch* pChaild;
 
 		// コンストラクタ
 		SInfoSearch() : pConnectLength(0.0f), fFCost(0.0f), fGCost(0.0f), fHCost(0.0f), pParent(nullptr), pChaild(nullptr) {}

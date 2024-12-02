@@ -39,6 +39,7 @@ private:	// 自分だけがアクセス可能
 		int nBackTime;
 		float fSpeed;
 		float fSpeedDest;
+		float fRotMulti;
 		bool bBreak;
 		bool bBack;
 	};
@@ -72,6 +73,7 @@ public:	// 誰でもアクセス可能
 	void SetPosTarget(const D3DXVECTOR3& pos) { m_Info.posTarget = pos; }
 	void SetSpeed(const float speed) { m_Info.fSpeed = speed; }
 	void SetSpeedDest(const float speedDest) { m_Info.fSpeedDest = speedDest; }
+	void SetRotMulti(const float rotMulti) { m_Info.fRotMulti = rotMulti; }
 	void SetRoadStart(CRoad* RoadStart) { m_Info.pRoadStart = RoadStart; }
 	void SetRoadTarget(CRoad* RoadTarget) { m_Info.pRoadTarget = RoadTarget; }
 
