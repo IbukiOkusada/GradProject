@@ -44,7 +44,7 @@ public:	// 誰でもアクセス可能
 	static CPoliceAI* Create(CPolice* pPolice, TYPE type = TYPE_NORMAL);
 
 	// メンバ関数(取得)
-	CRoad::SSearch* GetSearchRoad() { return m_pSearchTarget; }
+	CRoad::SInfoSearch* GetSearchRoad() { return m_pSearchTarget; }
 
 	// メンバ関数(設定)
 
@@ -69,9 +69,9 @@ private:	// 自分だけがアクセス可能
 	void CheckCollision(CPlayer* pPlayer);
 
 	// メンバ変数
-	CRoad::SSearch* m_pSearchTarget;
+	CRoad::SInfoSearch* m_pSearchTarget;
 	float m_fSearchTimer;
-	vector<CRoad::SSearch*> m_searchRoad;
+	vector<CRoad::SInfoSearch*> m_searchRoad;
 	TYPE m_type;
 };
 

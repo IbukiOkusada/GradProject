@@ -34,7 +34,6 @@ CRoad::CRoad(const SInfo& info)
 
 	for (int i = 0; i < DIRECTION::DIC_MAX; i++)
 	{
-		m_aInfoSearch[i].pRoad = nullptr;
 		m_aInfoSearch[i].pConnectRoad = nullptr;
 		m_aSearchRoad[i] = SSearch();
 	}
@@ -63,7 +62,7 @@ HRESULT CRoad::Init(void)
 	m_pObj->BindTexture(pTex->Regist(FILENAME[TYPE_CROSSING]));
 	m_Searchself.pos = m_Info.pos;
 	m_Searchself.pRoad = this;
-	m_aInfoSearchSelf.pRoad = this;
+	m_aInfoSearchSelf.pConnectRoad = this;
 	for (int i = 0; i < 4; i++)
 	{
 		m_aVtxPos[i] = VECTOR3_ZERO;

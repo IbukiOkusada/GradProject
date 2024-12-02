@@ -51,7 +51,9 @@
 #include "gimmick_guardrail.h"
 #include "goal_manager.h"
 #include "police_manager.h"
-
+#include "objectsound.h"
+#include "scrollText2D.h"
+#include "radio.h"
 // ネットワーク
 #include "network.h"
 
@@ -138,7 +140,9 @@ CGame::CGame(int nNumPlayer)
     m_pPause = nullptr;
     m_nTotalDeliveryStatus = 0;
     m_nStartCameraCount = 0;
-
+    m_GameState = GAMESTATE::GAMESTATE_NONE;
+    m_pEndSound = nullptr;
+    m_pEndText = nullptr;
     // 人数設定
     m_nNumPlayer = nNumPlayer;
 }
@@ -332,16 +336,16 @@ void CGame::Update(void)
     if (m_nTotalDeliveryStatus <= nNum && pCamera->GetAction()->IsFinish() && CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_SINGLE)
     {// 配達する総数以上かつカメラの演出が終了している
 
-        CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+        End_Success();
     }
     else if (m_pGameTimer != nullptr)
     {
         if (m_pGameTimer->GetTime() <= 0.0f)
         {
-            CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+            End_Fail();
         }
     }
-
+   
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
 
@@ -359,9 +363,38 @@ void CGame::Update(void)
             }
         }
     }
-
+    if (mgr->GetPlayer()->GetLife()<= 0.0f)
+    {
+        End_Fail();
+    }
     CPoliceManager::GetInstance()->Update();
     CScene::Update();
+    switch (m_GameState)
+    {
+    case CGame::GAMESTATE_NONE:
+        break;
+    case CGame::GAMESTATE_PROG:
+        break;
+    case CGame::GAMESTATE_SUCCESS:
+        pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol() * 0.9f);
+        if (!m_pEndSound->GetPlay())
+        {
+            CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+        }
+        break;
+    case CGame::GAMESTATE_FAIL:
+        pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol()*0.9f);
+        if (!m_pEndSound->GetPlay())
+        {
+            CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+        }
+        break;
+    case CGame::GAMESTATE_MAX:
+        break;
+    default:
+        break;
+    }
+  
 }
 
 //===============================================
@@ -418,6 +451,32 @@ bool CGame::StartDirection(void)
     return false;
 }
 
+//===================================================
+// 終了演出
+//===================================================
+void CGame::End_Success()
+{
+    if (m_GameState != GAMESTATE_SUCCESS)
+    {
+        SetGameState(GAMESTATE::GAMESTATE_SUCCESS);
+        m_pEndText = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, SCREEN_CENTER, 1.0f, 200.0f, 200.0f, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+        m_pEndText->PushBackString("配達完了");
+        m_pEndText->SetEnableScroll(true);
+        m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\OPED35.wav", 0);
+    }
+ 
+}
+void CGame::End_Fail()
+{
+    if (m_GameState != GAMESTATE_FAIL)
+    {
+        SetGameState(GAMESTATE::GAMESTATE_FAIL);
+        m_pEndText = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, SCREEN_CENTER, 0.7f, 200.0f, 200.0f, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+        m_pEndText->PushBackString("配達失敗");
+        m_pEndText->SetEnableScroll(true);
+        m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\f_jingle.wav", 0);
+    }
+}
 //===================================================
 // プレイヤーの生成(シングル)
 //===================================================

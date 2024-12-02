@@ -106,7 +106,7 @@ HRESULT CEntry::Init(void)
     // マップ読み込み
     CMapManager::GetInstance()->Load();
 
-    CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.8f, 0.0f), VECTOR3_ZERO, 4);
+    CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.9f, 0.0f), VECTOR3_ZERO, 4);
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.1f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));
 
@@ -224,6 +224,15 @@ void CEntry::Update(void)
         
         //CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
     }
+    for (int i = 0; i < MAX_PLAYER; i++)
+    {
+        if (m_ppObj[i] != nullptr)
+        {
+            D3DXVECTOR3 rot = m_ppObj[i]->GetRotation();
+            rot.y += 0.005f;
+            m_ppObj[i]->SetRotation(rot);
+        }
+    }
 
     // プレイヤー参加処理
     AddPlayer();
@@ -236,14 +245,20 @@ void CEntry::Update(void)
     CPlayerManager* mgr = CPlayerManager::GetInstance();
     CDebugProc::GetInstance()->Print("プレイヤーの数[%d]\n", mgr->GetNum());
 
-   /* for (int i = 0; i < MAX_PLAYER; i++)
+    for (int i = 0; i < MAX_PLAYER; i++)
     {
         D3DXVECTOR3 CamPosV = m_ppCamera[i]->GetPositionV();
         D3DXVECTOR3 CamPosR = m_ppCamera[i]->GetPositionR();
         CDebugProc::GetInstance()->Print("カメラ 視点   : [%f, %f, %f]\n", CamPosV.x, CamPosV.y, CamPosV.z);
         CDebugProc::GetInstance()->Print("カメラ 注視点 : [%f, %f, %f]\n", CamPosR.x, CamPosR.y, CamPosR.z);
         CDebugProc::GetInstance()->Print("距離 [%f]\n", m_ppCamera[i]->GetLength());
-    }*/
+
+        if (m_ppObj[i] != nullptr)
+        {
+            D3DXVECTOR3 ObjPosR = m_ppObj[i]->GetPosition();
+            CDebugProc::GetInstance()->Print("プレイヤー   : [%f, %f, %f]\n", ObjPosR.x, ObjPosR.y, ObjPosR.z);
+        }
+    }
 }
 
 //===============================================
@@ -264,27 +279,29 @@ void CEntry::AddPlayer(void)
     CInputPad* pPad = CInputPad::GetInstance();
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
-
     int id = mgr->GetNum();
 
     if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
         pKey->GetTrigger(DIK_RETURN))
     {
         D3DXVECTOR3 pos = m_ppCamera[id]->GetPositionR();
-        CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, id);
+        int playid = id;
+        if (net->GetState() == CNetWork::STATE::STATE_SINGLE && playid == 0)
+        {
+            playid = net->GetIdx();
+        }
+
+        CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
         pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
         pPlayer->SetRecvPosition(pos);
 
         pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
         pPlayer->EffectUninit();
 
-       /* pos = m_ppCamera[id]->GetPositionR();
-        m_ppObj[id] = DEBUG_NEW CObjectX;
-        m_ppObj[id]->SetPosition(pos);
-        m_ppObj[id]->SetRotation(D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f));
-        m_ppObj[id]->BindFile(MODEL_PATH);
+        pos = m_ppCamera[id]->GetPositionR();
+        m_ppObj[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), "data\\MODEL\\flyingscooter.x", 7);
         m_ppObj[id]->SetType(CObject::TYPE::TYPE_PLAYER);
-        m_ppObj[id]->SetRotateType(CObjectX::TYPE_QUATERNION);*/
+        m_ppObj[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
     }
 
     // 人数確認
@@ -307,14 +324,11 @@ void CEntry::AddPlayer(void)
                     pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
                 }
 
-                //pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
+                pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
                 pPlayer->EffectUninit();
 
                 pos = m_ppCamera[i]->GetPositionR();
-                m_ppObj[i] = DEBUG_NEW CObjectX;
-                m_ppObj[i]->SetPosition(pos);
-                m_ppObj[i]->SetRotation(D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f));
-                m_ppObj[i]->BindFile(MODEL_PATH);
+                m_ppObj[i] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), "data\\MODEL\\flyingscooter.x", 7);
                 m_ppObj[i]->SetType(CObject::TYPE::TYPE_PLAYER);
                 m_ppObj[i]->SetRotateType(CObjectX::TYPE_QUATERNION);
             }
@@ -323,7 +337,7 @@ void CEntry::AddPlayer(void)
 
     if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
-        m_IsFinish ^= true;
+        m_IsFinish = true;
 
         if (m_IsFinish)
         {
@@ -355,6 +369,12 @@ void CEntry::DecreasePlayer(void)
             if (player != nullptr && !net->GetConnect(i))
             {
                 player->Uninit();
+
+                if (m_ppObj[i] != nullptr)
+                {
+                    m_ppObj[i]->Uninit();
+                    m_ppObj[i] = nullptr;   
+                }
             }
         }
     }
