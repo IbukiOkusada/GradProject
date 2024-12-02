@@ -174,9 +174,14 @@ void CPolice::MoveRoad()
 		m_pSiren->Start();
 
 		ChasePlayer();
-
-		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
-		m_pSiren->SetVolume((2000.0f - dis) * 0.00075f);
+		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+		float dis = GetDistance(pPlayer->GetPosition() , GetPosition());
+		float vol = 4000.0f - dis;
+		if (vol < 0.0f)
+		{
+			vol = 0.0f;
+		}
+		m_pSiren->SetVolume((2000.0f - dis) * 0.00025f);
 
 		if (pRoadTarget != nullptr)
 		{

@@ -9,7 +9,7 @@
 
 #include "manager.h"
 #include <mutex>
-
+#include "objectsound.h"
 // 前方宣言
 class CScore;
 class CTime;
@@ -24,6 +24,7 @@ class CTimer;
 class CMultiCamera;
 class CGoalManager;
 
+class CScrollText2D;
 // マクロ定義
 #define NUM_FILTER	(2)
 
@@ -42,7 +43,14 @@ public:
 		STATE_PAUSE,
 		STATE_MAX
 	};
-
+	enum GAMESTATE
+	{
+		GAMESTATE_NONE = 0,
+		GAMESTATE_PROG,
+		GAMESTATE_SUCCESS,
+		GAMESTATE_FAIL,
+		GAMESTATE_MAX
+	};
 public:
 
 	// メンバ関数
@@ -58,11 +66,14 @@ public:
 	static void SetState(STATE state) { m_state = state; }
 	static void SetNumPlayer(int nNum) { m_nNumPlayer = nNum; }
 	static int GetNumPlayer(void) { return m_nNumPlayer; }
-	
+	void SetGameState(GAMESTATE state) { m_GameState = state; }
 	// メンバ関数(ポインタ)
 	CPlayer *GetPlayer(void);
 	CFileLoad *GetFileLoad(void);
 
+
+	void End_Success();
+	void End_Fail();
 private:
 
 	//=============================
@@ -99,6 +110,10 @@ private:
 	bool m_bPause;              // ポーズ
 	int m_nTotalDeliveryStatus;  // プレイヤーが配達する数
 	int m_nStartCameraCount;
+
+	GAMESTATE m_GameState;
+	CScrollText2D* m_pEndText;
+	CMasterSound::CObjectSound* m_pEndSound;
 };
 
 #endif
