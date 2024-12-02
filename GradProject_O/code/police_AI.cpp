@@ -21,21 +21,15 @@
 // 無名名前空間を定義
 namespace
 {
-	const float SECURE_SPEEDDEST = (-35.0f);	// 確保時の目標速度
-	const float SECURE_SPEED = (0.8f);			// 確保時の加速倍率
-	const int CHASE_TIME = (300);				// 追跡時間
-	const float CHASE_SECURE = (400.0f);		// 追跡確保距離
-	const float CHASE_BEGIN[CPolice::STATE::STATE_MAX] = {
-		(700.0f),
-		(700.0f),
-		(2000.0f),
-		(400.0f),
-	};			// 追跡開始距離
+	const float SECURE_SPEEDDEST = (-35.0f);		// 確保時の目標速度
+	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
+	const int CHASE_TIME = (300);					// 追跡時間
+	const float CHASE_SECURE = (400.0f);			// 追跡確保距離
 	const float CHASE_CONTINUE = (200000.0f);		// 追跡継続距離
 	const float CHASE_END = (300000.0f);			// 追跡終了距離
-	const float CHASE_CROSS = (500.0f);			// 追跡終了距離
-	const float CHASE_NEAR = (2000.0f);			// 追跡終了距離
-	const float CHASE_FAR = (5000.0f);			// 追跡終了距離
+	const float CHASE_CROSS = (500.0f);				// すれ違い判定距離
+	const float CHASE_NEAR = (2000.0f);				// 近距離判定
+	const float CHASE_FAR = (5000.0f);				// 遠距離判定
 }
 
 //==========================================================
@@ -274,7 +268,7 @@ void CPoliceAI::Chase(void)
 	if (m_fSearchTimer > 3.0f || m_pSearchTarget == nullptr)
 	{
 		// 現在地と目的地が別の時
-		if (m_pRoadStart->GetSearchSelf() != m_pRoadTarget->GetSearchSelf())
+		if (m_pRoadStart != m_pRoadTarget)
 		{
 			// 経路探索
 			m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
@@ -284,6 +278,10 @@ void CPoliceAI::Chase(void)
 			{
 				m_pSearchTarget = m_searchRoad.front();
 			}
+		}
+		else
+		{
+			m_pSearchTarget = nullptr;
 		}
 		m_fSearchTimer = 0;
 	}
