@@ -65,11 +65,11 @@ private:	// 自分だけがアクセス可能な定義
 	struct File
 	{
 		LPDIRECT3DTEXTURE9 pTexture;	// テクスチャのポインタ
-		std::string filename;				// ファイル名
+		std::string filename;			// ファイル名
 		D3DXIMAGE_INFO status;			// テクスチャステータスへのポインタ
 		D3DXVECTOR2 aspect;
 		// コンストラクタ 
-		File() : pTexture(nullptr), filename(""), status({}), aspect(VECTOR2_ZERO) {}
+		File() : pTexture(nullptr), filename({}), status({}), aspect(VECTOR2_ZERO) {}
 	};
 
 public:	// 誰でもアクセス可能

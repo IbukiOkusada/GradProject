@@ -1,11 +1,11 @@
 //==========================================================
 //
-// 検問処理 [instpection.h]
+// 検問処理 [inspection.h]
 // Author : Ibuki Okusada
 //
 //==========================================================
-#ifndef _INSTPECTION_H_		// このマクロが定義されていない場合
-#define _INSTPECTION_H_		// 二重インクルード防止用マクロを定義
+#ifndef _INSPECTION_H_		// このマクロが定義されていない場合
+#define _INSPECTION_H_		// 二重インクルード防止用マクロを定義
 
 #include "task.h"
 #include "effekseerControl.h"
@@ -24,7 +24,7 @@ namespace InstpectionData
 //==========================================================
 // 追加警察のクラス定義
 //==========================================================
-class CInstpection : public CTask
+class CInspection : public CTask
 {
 private:
 
@@ -41,9 +41,10 @@ private:
 	{
 		D3DXVECTOR3 pos;	// 座標
 		D3DXVECTOR3 rot;	// 向き
+		int nId;
 
 		// コンストラクタ
-		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO) {}
+		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), nId(-1) {}
 	};
 
 	// 出勤パトカー情報
@@ -75,8 +76,8 @@ private:
 
 public:	// 誰でもアクセス可能
 
-	CInstpection();	// コンストラクタ(オーバーロード)
-	~CInstpection() override;	// デストラクタ
+	CInspection(int nId = -1);	// コンストラクタ(オーバーロード)
+	~CInspection() override;	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init() override;
@@ -84,16 +85,17 @@ public:	// 誰でもアクセス可能
 	void Update() override;
 
 	// 静的メンバ関数
-	static CInstpection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad);
-	static CInstpection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdxRoad);
+	static CInspection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId);
 
 	// メンバ関数(取得)
 	D3DXVECTOR3& GetPosition() { return m_Info.pos; }
 	D3DXVECTOR3& GetRotation() { return m_Info.rot; }
+	int GetId() { return m_Info.nId; }
 
 	// メンバ関数(設定)
 	void SetPosition(const D3DXVECTOR3& pos) { m_Info.pos = pos; }
 	void SetRotation(const D3DXVECTOR3& rot) { m_Info.rot = rot; }
+	void BindId(const int nId) { m_Info.nId; }
 
 private:	// 自分だけがアクセス可能
 

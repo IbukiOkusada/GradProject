@@ -139,7 +139,7 @@ void CCamera::Update(void)
 		m_pAction->Update(this);
 	}
 
-#if _DEBUG
+#if 1
 
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 	CDebugProc::GetInstance()->Print("ƒJƒƒ‰‘€ì•ÏX : [ F8 ]\n");

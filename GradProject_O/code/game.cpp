@@ -290,7 +290,7 @@ void CGame::Update(void)
 
     if (m_pGameTimer != nullptr)
     {
-        auto player = CPlayerManager::GetInstance()->GetPlayer();
+        CPlayer* player = CPlayerManager::GetInstance()->GetPlayer();
         if (player->GetType() == CPlayer::TYPE::TYPE_ACTIVE)
         {
             m_pGameTimer->Update();
@@ -319,12 +319,12 @@ void CGame::Update(void)
     // エディター更新
     if (pMgr != nullptr) { pMgr->Update(); }
 
+#endif
+
     if (pInputKey->GetTrigger(DIK_J))
     {
         CPoliceManager::GetInstance()->SetInspection();
-    }
-
-#endif
+}
 
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
     int nNum = pPlayer->GetNumDeliverStatus();

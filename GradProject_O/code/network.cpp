@@ -16,6 +16,10 @@
 #include "goal_manager.h"
 #include "manager.h"
 #include "fade.h"
+#include "inspection_manager.h"
+#include "inspection.h"
+#include "road_manager.h"
+#include "road.h"
 
 //===============================================
 // 名前空間
@@ -43,10 +47,12 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvPlGoal,	// プレイヤーゴール
 	&CNetWork::RecvGmHit,	// ギミックヒット
 	&CNetWork::RecvNextGoal,	// 次のゴール設置
-	&CNetWork::RecvGameStartOk,	// 次のゴール設置
-	&CNetWork::RecvGameStart,	// 次のゴール設置
-	&CNetWork::RecvTutoriaoOk,	// 次のゴール設置
-	&CNetWork::RecvTutorialEnd,	// 次のゴール設置
+	&CNetWork::RecvGameStartOk,	// ゲーム開始準備完了
+	&CNetWork::RecvGameStart,	// ゲーム開始
+	&CNetWork::RecvTutorialOk,	// チュートリアル終了可能
+	&CNetWork::RecvTutorialEnd,	// チュートリアル終了
+	&CNetWork::RecvSetInspection,	// チュートリアル終了可能
+	&CNetWork::RecvEndInspection,	// チュートリアル終了
 };
 
 // 静的メンバ変数
@@ -675,7 +681,7 @@ void CNetWork::RecvGameStart(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 // チュートリアル終了
 //===================================================
-void CNetWork::RecvTutoriaoOk(int* pByte, const int nId, const char* pRecvData)
+void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 {
 
 }
@@ -685,10 +691,77 @@ void CNetWork::RecvTutoriaoOk(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
 {
+	// 次の画面に遷移
 	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
 	{
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
 	}
+}
+
+//===================================================
+// 検問開始
+//===================================================
+void CNetWork::RecvSetInspection(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 検問のIDを得る
+	int inspid = -1;
+	memcpy(&inspid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// 位置を取得
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// 向きを取得
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// 隣接する道のID取得
+	int roadid = -1;
+	memcpy(&roadid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CInspection* pInsp = CInspectionManager::GetInstance()->Get(inspid);
+
+	if (pInsp != nullptr) { return; }
+
+	CRoad* pRoad = CRoadManager::GetInstance()->GetList()->Get(roadid);
+
+	if (pRoad == nullptr) {
+		return;
+	}
+
+	// 検問生成
+	CInspection::Create(pos, rot, pRoad, inspid);
+}
+
+//===================================================
+// 検問終了
+//===================================================
+void CNetWork::RecvEndInspection(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 検問のIDを得る
+	int inspid = -1;
+	memcpy(&inspid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CInspection* pInsp = CInspectionManager::GetInstance()->Get(inspid);
+
+	if (pInsp == nullptr) { return; }
+
+	// 検問廃棄
+	pInsp->Uninit();
 }
 
 //===================================================
@@ -910,6 +983,64 @@ void CNetWork::SendTutorialOk()
 
 	// protocolを挿入
 	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 検問設置を送信
+//===================================================
+void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_SET_INSP;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// ID
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 座標
+	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// 向き
+	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// 道のID
+	memcpy(&aSendData[byte], &nIdx, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 検問終了を送信
+//===================================================
+void CNetWork::SendEndInspection(int nId)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_END_INSP;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 検問のID
+	memcpy(&aSendData[byte], &nId, sizeof(int));
 	byte += sizeof(int);
 
 	// 送信

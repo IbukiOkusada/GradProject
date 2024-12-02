@@ -62,7 +62,7 @@ CPolice::CPolice()
 	m_pPatrolLamp = nullptr;
 	m_pSiren = nullptr;
 	m_stateInfo = SState();
-
+	m_pPoliceAI = nullptr;
 	CPoliceManager::GetInstance()->GetList()->Regist(this);
 }
 
@@ -196,7 +196,11 @@ void CPolice::MoveRoad()
 	}
 	else
 	{
-		m_pSiren->Stop();
+		if (m_pSiren != nullptr)
+		{
+			m_pSiren->Stop();
+		}
+
 		if (pRoadTarget != nullptr)
 		{
 			pRoadStart = GetRoadStart();
@@ -251,7 +255,10 @@ void CPolice::ReachRoad()
 //==========================================================
 void CPolice::SearchPlayer()
 {
-	m_pPoliceAI->Search();
+	if (m_pPoliceAI != nullptr)
+	{
+		m_pPoliceAI->Search();
+	}
 }
 
 //==========================================================
