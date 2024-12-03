@@ -140,6 +140,7 @@ private:	// 自分だけがアクセス可能
 	void ChasePlayer();
 	void SearchPlayer();
 	void Collision();
+	void Hit() override;
 	void Break() override;
 
 	// メンバ変数

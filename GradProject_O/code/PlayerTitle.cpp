@@ -45,7 +45,7 @@ namespace
 
 	const D3DXVECTOR3 DEST_ROT_SELECT[CPlayerTitle::DEST::DEST_MAX] =
 	{
-		D3DXVECTOR3(0.0f,-3.14f,0.0f),				//１個目
+		D3DXVECTOR3(0.0f,3.14f,0.0f),				//１個目
 		D3DXVECTOR3(0.0f,1.56f,0.0f),				//２個目
 		D3DXVECTOR3(0.0f,0.0f,0.0f),				//３個目
 		D3DXVECTOR3(0.0f,1.56f,0.0f),				//４個目
@@ -175,6 +175,7 @@ void CPlayerTitle::Update(void)
 
 	//デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー座標: [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	CDebugProc::GetInstance()->Print("プレイヤー向き: [ %f, %f, %f ]\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
 }
 //<================================================
 //動きに関する処理
@@ -192,7 +193,7 @@ void CPlayerTitle::Moving(const int nNum)
 		m_Info.pos.z += (DEST_POS[nNum].z - m_Info.pos.z - m_Info.move.z) * 0.075f;//Z軸
 
 		//目的地に到着したら判定をtrueにする
-		if (Function::BoolToDest(m_Info.pos, DEST_POS[nNum], DEST_DIFF)) { m_bReached = true; }
+		if (Function::BoolDis(m_Info.pos, DEST_POS[nNum], DEST_DIFF)) { m_bReached = true; }
 	}
 }
 //<================================================
@@ -212,13 +213,16 @@ void CPlayerTitle::MovingSelect(void)
 		m_nNumDest +=1;
 	}
 
+	//目的地の最大値まで行っていたら、初期化
 	if (m_nNumDest >= DEST_MAX)
-	{
-		m_nNumDest = 0;
-	}
+	{m_nNumDest = DEST::DEST_FIRST;}
 
 	PoliceRotSet();
-		
+
+	////その方向にプレイヤーを向かせる
+	//m_Info.rot.y += (DEST_ROT_SELECT[m_nNumDest].y - m_Info.rot.y) * 0.065f;
+	//Adjust(m_Info.rot);
+
 	//その向きに設定
 	SetRotation(DEST_ROT_SELECT[m_nNumDest]);
 

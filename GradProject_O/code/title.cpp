@@ -58,21 +58,6 @@ namespace
 	const float ALPHA_ZERO = 0.0f;																//透明の時のα値
 	const float TITLELOGO_DEST = SCREEN_WIDTH * 0.5f;											//タイトルロゴの目標位置
 
-	//<************************************************
-	//テクスチャの名前関連
-	//<************************************************ 
-	//オブジェクト2Dに使うテクスチャの名前
-	const char* TEX_NAME[CTitle::OBJ2D_MAX] = 
-	{
-		"data\\TEXTURE\\team_logo.png",			//チームロゴ
-		"",												//黒カバー
-		"data\\TEXTURE\\Title\\Title_logo.png",			//タイトルロゴ
-		"data\\TEXTURE\\Title\\-PRESS ENTER-.png",	//プレスエンター
-		"",												//選択肢
-		"data\\TEXTURE\\Title\\select.png",	//"何人選択しますか"の文字
-		"data\\TEXTURE\\Title\\start.png",	//確認メッセージ
-	};				
-
 	//選択肢に使うテクスチャの名前
 	const char* SELECT_NAME[CTitle::SELECT_MAX] =
 	{
@@ -113,6 +98,7 @@ CTitle::CTitle()
 	m_nCounter = MOVE_LOGO;
 	m_nCounterRanking = AUTOMOVE_RANKING;
 	m_nLogoAlpgha = 0;
+	m_nLogoCou = 0;
 
 	//選択肢関連
 	m_nSelect = SELECT::SELECT_SINGLE;
@@ -176,13 +162,14 @@ CTitle::~CTitle()
 //<===============================================
 HRESULT CTitle::Init(void)
 {
+	const char* TEX_TEAMLOGO = "data\\TEXTURE\\team_logo.png";				//チームロゴ
 	const D3DXVECTOR3 CAMERA_POS = { 3350.0f, 95.0f, 260.0f };				//カメラの初期位置
 
 	//タイトルBGM再生とチームロゴオブジェクトの生成
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(320, 160.0f);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_TeamLogo]));
+	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_TEAMLOGO));
 
 	//カメラ初期状態
 	m_pCam = CCameraManager::GetInstance()->GetTop();
@@ -396,18 +383,6 @@ void CTitle::MoveP_E(void)
 		//次のステートに移行する
 		m_eState = STATE::STATE_CHASING;
 	}
-	//押下反応がなかったら
-	else
-	{
-		//m_nCounterRanking--;
-		//if (m_nCounterRanking <= 0)
-		//{
-		//	//ランキング画面に移行
-		//	CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING);
-
-		//}
-
-	}
 }
 //<===============================================
 //黒カバーの動き
@@ -450,7 +425,7 @@ void CTitle::MovingLogo(void)
 		m_nCounter = 0;
 	}
 
-	//
+	//タイトルロゴの設定
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetPosition(TitlePos);
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetVtx();
 }
@@ -462,7 +437,7 @@ void CTitle::PreMove(void)
 	D3DXVECTOR3 P_EPos = m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetPosition();	//プレスエンターの位置
 
 	float PlayerRot = m_pPlayer->GetRotation().y;								//プレイヤーの向きを変える
-	const float fDestRot = -3.14f, fRotMove = 0.05f;							//目的の向きと向きの移動値
+	const float fDestRot = 3.14f, fRotMove = 0.05f;							//目的の向きと向きの移動値
 	const float fSpeed = 0.09f;													//速度
 
 	//目的地まで移動させる
@@ -473,6 +448,15 @@ void CTitle::PreMove(void)
 		D3DXVECTOR3(TITLELOGO_DEST, 0.0f, 0.0f), 3.0f, false))
 	{
 		ColChange(m_pObject2D[OBJ2D_PressEnter]);
+		LightOff();
+
+		//反応がなかったら
+		if (!m_bPush)
+		{
+			//ランキング画面に移行
+			if (m_nCounterRanking <= 0) { CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING); }
+			else { m_nCounterRanking--; }
+		}
 	}
 
 	//一番目の目的地にプレイヤーを移動させる
@@ -482,10 +466,10 @@ void CTitle::PreMove(void)
 	if (m_pPlayer->GetReached())
 	{
 		//目的の向きになっていたら
-		if (PlayerRot <= fDestRot) { PlayerRot = fDestRot; }
+		if (PlayerRot >= fDestRot) { PlayerRot = fDestRot; }
 
 		//なっていなかったら回転し続ける
-		else { PlayerRot -= fRotMove; }
+		else { PlayerRot += fRotMove; }
 
 		//プレイヤーの向きに反映
 		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, PlayerRot, 0.0f));
@@ -525,9 +509,12 @@ void CTitle::StatePre(void)
 //<===============================================
 void CTitle::InitingP_E(void)
 {
-	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };								//プレイヤーの位置
-	const float fLogoLength = 150.0f;								//ロゴの長さ(サイズ)
-	const float fP_ELength = (350.0f, 350.0f);								//プレスエンターの長さ(サイズ)
+	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };				//プレイヤーの位置
+	const float fLogoLength = 150.0f;											//ロゴの長さ(サイズ)
+	const float fP_ELength = (350.0f, 350.0f);									//プレスエンターの長さ(サイズ)
+
+	const char* TEX_TITLELOGO = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴのテクスチャネーム
+	const char* TEX_PRESSENTER = "data\\TEXTURE\\Title\\-PRESS ENTER-.png";	//プレスエンターのテクスチャネーム
 
 	//初期化済みではなければ
 	if (!m_bIniting)
@@ -551,13 +538,13 @@ void CTitle::InitingP_E(void)
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(600.0f,190.0f);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_TITLELOGO]));
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_TITLELOGO));
 
 		//・プレスエンター
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(PRESSENTER_POS, VECTOR3_ZERO,5);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(350.0f, 100.0f);
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(350.0f,100.0f);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_PressEnter]));
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PRESSENTER));
 
 		//必要なオブジェクトの生成
 		CTitleMap::GetInstance()->Load();
@@ -630,6 +617,41 @@ void CTitle::ColChange(CObject2D* pObj2D)
 	}
 	//色設定
 	pObj2D->SetCol(TitleLogoCol);
+}
+//<===============================================
+//ライトオフ処理
+//<===============================================
+void CTitle::LightOff(void)
+{
+	const int nCountMax = 75;													//カウンターの固定値
+	const char* TEX_LIGHTON = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴ(ライトオン)
+	const char* TEX_LIGHTOFF = "data\\TEXTURE\\Title\\Title_logo_lightoff.png";	//タイトルロゴ(ライトオフVer);
+
+
+	//最大値まで行っていたら
+	if (m_nLogoCou >= nCountMax)
+	{
+		//テクスチャがライトオフされていない状態だったら
+		if (m_pObject2D[OBJ2D_TITLELOGO]->GetIdxTex() ==
+			CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTON))
+		{
+			//ライトオフされているテクスチャに変更する
+			m_pObject2D[OBJ2D_TITLELOGO]->BindTexture
+			(CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTOFF));
+		}
+		//テクスチャがライトオフされていたら
+		else if (m_pObject2D[OBJ2D_TITLELOGO]->GetIdxTex() ==
+			CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTOFF))
+		{
+			//ライトオフされていないテクスチャにする
+			m_pObject2D[OBJ2D_TITLELOGO]->BindTexture
+			(CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTON));
+		}
+
+		//初期化
+		m_nLogoCou = 0;
+	}
+	else{m_nLogoCou++;}
 }
 //<===============================================
 //追跡ステートに移行した際の動き
@@ -733,7 +755,7 @@ void CTitle::SkipMovement(void)
 
 	//・プレイヤー
 	m_pPlayer->SetPosition(PLAYER_POS);
-	m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, -3.14f, 0.0f));
+	m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
 	m_pPlayer->SetReached(true);
 
 	//ステートを変更する
@@ -744,6 +766,10 @@ void CTitle::SkipMovement(void)
 //<===============================================
 void CTitle::InitingSelect(void)
 {
+	const char* TEX_MODESELECT = "data\\TEXTURE\\Title\\select.png";	//"MODE SELECT"の文字
+	const char* TEX_CHECK = "data\\TEXTURE\\Title\\start.png";			//確認文字
+
+
 	//初期化されていなかったら
 	if (!m_bIniting)
 	{
@@ -761,7 +787,7 @@ void CTitle::InitingSelect(void)
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(INIT_SELECT::NUMCHAR_POS, VECTOR3_ZERO, 6);
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(225.0f, 50.0f);
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_NUMCHAR]));
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_MODESELECT));
 
 		//シングルかマルチかの選択肢
 		for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
@@ -782,7 +808,7 @@ void CTitle::InitingSelect(void)
 		m_pObject2D[OBJ2D::OBJ2D_CHECK] = CObject2D::Create(INIT_SELECT::CHECK_POS, VECTOR3_ZERO, 6);
 		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(300.0f, 50.0f);
 		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_CHECK]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_NAME[OBJ2D::OBJ2D_CHECK]));
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_CHECK));
 
 		//はいといいえの選択肢
 		for (int nCnt = 0; nCnt < SELECT_YN_MAX; nCnt++)
@@ -1034,6 +1060,7 @@ void CTitle::InitingIce(void)
 			m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + 150.0f * nCnt, PolicePos.y, PolicePos.z));
 			m_apPolice[nCnt]->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
 		}
+
 		//カメラの設定
 		m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
 	}
@@ -1043,7 +1070,7 @@ void CTitle::InitingIce(void)
 //<===============================================
 void CTitle::IceMovement(void)
 {
-	D3DXVECTOR3 PlayerPos = VECTOR3_ZERO;				//プレイヤー位置
+	D3DXVECTOR3 PlayerPos = VECTOR3_ZERO;							//プレイヤー位置
 	const int FADE_TIME = 200;										//ゲーム画面に移行するまでの時間
 	const int FADE_TIME_HARF = 65;									//ゲーム画面に移行するまでの時間の半減値
 
@@ -1067,7 +1094,7 @@ void CTitle::IceMovement(void)
 	//警察の生成
 	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 	{
-		//位置情報初期化
+		//追跡
 		m_apPolice[nCnt]->Chasing(PlayerMove);
 	}
 
@@ -1082,15 +1109,11 @@ void CTitle::IceMovement(void)
 	{ 
 		//シングルプレイが選択されていたら、そのままゲーム画面に遷移
 		if (GetSelectSingleMulti() == SELECT::SELECT_SINGLE)
-		{
-			CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
-		}
+		{CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
 
-		//シングルプレイが選択されていたら、エントリー画面に遷移
+		//マルチプレイが選択されていたら、エントリー画面に遷移
 		else if (GetSelectSingleMulti() == SELECT::SELECT_MULTI)
-		{
-			CManager::GetInstance()->GetFade()->Set(CScene::MODE_ENTRY);
-		}
+		{CManager::GetInstance()->GetFade()->Set(CScene::MODE_ENTRY);}
 	
 	}
 
