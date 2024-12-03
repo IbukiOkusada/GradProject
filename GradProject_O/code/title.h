@@ -122,6 +122,7 @@ private:
 	void BlackCoverM(void);
 	void SkipMovement(void);
 	void PreMove(void);
+	void LightOff(void);
 
 	//追跡状態の時の動き
 	void ChaseMovement(void);
@@ -161,6 +162,7 @@ private:
 	//<************************************
 	int m_nCounterRanking;						//ランキング自動遷移タイマー
 	int m_nLogoAlpgha;							//タイトルロゴの色変化タイマー
+	int m_nLogoCou;								//ライトオフするまでのタイマー
 	int m_nCounter;								//汎用カウンター
 	int m_nSelect;								//シングルとマルチどちらが選択されているか
 	int m_nSelectYN;							//YESとNOどっちが選択されているか

@@ -65,6 +65,7 @@ public:	// 誰でもアクセス可能
 	CRoad* GetRoadStart(void) { return m_Info.pRoadStart; }
 	CRoad* GetRoadTarget(void) { return m_Info.pRoadTarget; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
+	bool GetBack(void) { return m_Info.bBack; }
 
 	// メンバ関数(設定)
 	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }
@@ -76,6 +77,8 @@ public:	// 誰でもアクセス可能
 	void SetRotMulti(const float rotMulti) { m_Info.fRotMulti = rotMulti; }
 	void SetRoadStart(CRoad* RoadStart) { m_Info.pRoadStart = RoadStart; }
 	void SetRoadTarget(CRoad* RoadTarget) { m_Info.pRoadTarget = RoadTarget; }
+	void SetBack(bool bBack) { m_Info.bBack = bBack; }
+	void SetBackTime(int nBackTime) { m_Info.nBackTime = nBackTime; }
 
 protected:	// 派生クラスからもアクセス可能
 
@@ -83,6 +86,7 @@ protected:	// 派生クラスからもアクセス可能
 	virtual void MoveRoad();
 	virtual void SearchRoad();
 	virtual void ReachRoad();
+	virtual void Hit();
 	void TailLamp();
 	virtual void Break();
 	void Set();

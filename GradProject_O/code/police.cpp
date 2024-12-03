@@ -64,7 +64,7 @@ CPolice::CPolice()
 	m_pPatrolLamp = nullptr;
 	m_pSiren = nullptr;
 	m_stateInfo = SState();
-
+	m_pPoliceAI = nullptr;
 	CPoliceManager::GetInstance()->GetList()->Regist(this);
 }
 
@@ -205,7 +205,11 @@ void CPolice::MoveRoad()
 	}
 	else
 	{
-		m_pSiren->Stop();
+		if (m_pSiren != nullptr)
+		{
+			m_pSiren->Stop();
+		}
+
 		if (pRoadTarget != nullptr)
 		{
 			pRoadStart = GetRoadStart();
@@ -261,7 +265,10 @@ void CPolice::ReachRoad()
 //==========================================================
 void CPolice::SearchPlayer()
 {
-	m_pPoliceAI->Search();
+	if (m_pPoliceAI != nullptr)
+	{
+		m_pPoliceAI->Search();
+	}
 }
 
 //==========================================================
@@ -269,8 +276,10 @@ void CPolice::SearchPlayer()
 //==========================================================
 void CPolice::ChasePlayer()
 {
+	// 追跡する
 	m_pPoliceAI->Chase();
 
+	// 追跡経路が存在するならば目標地点に設定する
 	if (m_pPoliceAI->GetSearchRoad() != nullptr)
 	{
 		SetRoadTarget(m_pPoliceAI->GetSearchRoad()->pConnectRoad);
@@ -287,6 +296,24 @@ void CPolice::ChasePlayer()
 void CPolice::Collision()
 {
 	
+}
+
+//==========================================================
+// 接触時処理
+//==========================================================
+void CPolice::Hit()
+{
+	if (GetBack()) { return; }
+
+	if (!m_Info.bChase)
+	{
+		CRoad* pRoadNext = GetRoadTarget();
+		SetRoadTarget(GetRoadStart());
+		SetRoadStart(pRoadNext);
+	}
+
+	SetBack(true);
+	SetBackTime(80);
 }
 
 //==========================================================

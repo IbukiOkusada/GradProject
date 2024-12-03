@@ -131,6 +131,7 @@ int CTexture::Regist(const SInfo info)
 	CTexture::File *tempMapInfo = DEBUG_NEW CTexture::File;	// マップ情報
 
 	// マップ情報のポインタを初期化
+	*tempMapInfo = CTexture::File();
 	tempMapInfo->pTexture = nullptr;	// テクスチャへのポインタ
 
 	// 空のテクスチャを生成

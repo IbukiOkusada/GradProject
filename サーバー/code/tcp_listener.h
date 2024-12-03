@@ -25,6 +25,8 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	char *GetIP(void) { return &m_aClientIP[0]; }
 	int GetPort(void) { return m_nClientPort; }
+	static int GetNum() { return m_nNum; }
+	static void SetNum(int nNum) { m_nNum = nNum; }
 
 private:	// 自分だけアクセス可能
 

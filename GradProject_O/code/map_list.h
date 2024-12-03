@@ -90,6 +90,7 @@ bool Cmaplist<T>::Regist(int nId, T data)
 	if (!IdFind(nId))
 	{
 		m_list[nId] = data;
+		return true;
 	}
 
 	return false;

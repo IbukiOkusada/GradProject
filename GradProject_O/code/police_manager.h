@@ -9,6 +9,7 @@
 
 #include "list_manager.h"
 #include "list.h"
+#include "map_list.h"
 
 // 前方宣言
 class CPolice;
@@ -49,6 +50,7 @@ public:	// 誰でもアクセス可能
 	void ListOut(CPolice* pPolice);
 	void Warning(CPolice* pPolice);
 	void SetInspection();
+	void ResetInterVal() { m_InspInfo.fInterval = 0.0f; }
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
 
 private:	// 自分だけがアクセス可能
