@@ -196,7 +196,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CEffekseer::GetInstance()->Init();
 	
 	// ƒ‚[ƒh‚Ì¶¬
-
 	SetMode(CScene::MODE_TITLE);
 
 	return S_OK;
