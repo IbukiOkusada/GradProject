@@ -277,6 +277,8 @@ void CPolice::SearchPlayer()
 void CPolice::ChasePlayer()
 {
 	// 追跡する
+	if (m_pPoliceAI == nullptr) { return; }
+
 	m_pPoliceAI->Chase();
 
 	// 追跡経路が存在するならば目標地点に設定する
