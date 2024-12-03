@@ -35,21 +35,14 @@ class CGame : public CScene
 {
 public:
 
+	
 	enum STATE
 	{
-		STATE_LOCAL = 0,		// ローカル通信
-		STATE_ONLINE,		// TCPオンライン
-		STATE_END,
-		STATE_PAUSE,
+		STATE_NONE = 0,
+		STATE_PROG,
+		STATE_SUCCESS,
+		STATE_FAIL,
 		STATE_MAX
-	};
-	enum GAMESTATE
-	{
-		GAMESTATE_NONE = 0,
-		GAMESTATE_PROG,
-		GAMESTATE_SUCCESS,
-		GAMESTATE_FAIL,
-		GAMESTATE_MAX
 	};
 public:
 
@@ -63,10 +56,9 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	static void SetState(STATE state) { m_state = state; }
 	static void SetNumPlayer(int nNum) { m_nNumPlayer = nNum; }
 	static int GetNumPlayer(void) { return m_nNumPlayer; }
-	void SetGameState(GAMESTATE state) { m_GameState = state; }
+	void SetGameState(STATE state) { m_GameState = state; }
 	// メンバ関数(ポインタ)
 	CPlayer *GetPlayer(void);
 	CFileLoad *GetFileLoad(void);
@@ -87,8 +79,10 @@ private:
 	void CreateMultiPlayer();
 
 	// メンバ関数
-	void StartIntro(void);  // ゲームスタート時の演出
-	bool StartDirection(void);
+	void StartIntro();  // ゲームスタート時の演出
+	bool StartDirection();
+	void CreatePolice();
+	void CreateCar();
 
 	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
 	CPlayer** m_ppPlayer;		// プレイヤーのポインタ
@@ -99,7 +93,6 @@ private:
 	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ
 	CTimer* m_pGameTimer;		// タイマーのポインタ
 	char m_aAddress[30];		// 接続先サーバーのアドレス
-	static STATE m_state;		// 状態
 	int m_nSledCnt;				// 現在動作しているスレッド数
 	static int m_nNumPlayer;	// プレイ人数
 	CPause *m_pPause;			// ポーズ画面
@@ -111,7 +104,7 @@ private:
 	int m_nTotalDeliveryStatus;  // プレイヤーが配達する数
 	int m_nStartCameraCount;
 
-	GAMESTATE m_GameState;
+	STATE m_GameState;
 	CScrollText2D* m_pEndText;
 	CMasterSound::CObjectSound* m_pEndSound;
 };

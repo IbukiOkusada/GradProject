@@ -263,35 +263,35 @@ void CEntry::AddPlayer(void)
     auto mgr = CPlayerManager::GetInstance();
     int id = mgr->GetNum();
 
-    if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
-        pKey->GetTrigger(DIK_RETURN))
-    {
-        D3DXVECTOR3 pos = m_ppCamera[id]->GetPositionR();
-        int playid = id;
-        if (net->GetState() == CNetWork::STATE::STATE_SINGLE && playid == 0)
-        {
-            playid = net->GetIdx();
-        }
+    //if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
+    //    pKey->GetTrigger(DIK_RETURN))
+    //{
+    //    D3DXVECTOR3 pos = m_ppCamera[id]->GetPositionR();
+    //    int playid = id;
+    //    if (net->GetState() == CNetWork::STATE::STATE_SINGLE && playid == 0)
+    //    {
+    //        playid = net->GetIdx();
+    //    }
 
-        // プレイヤー生成
-        CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
+    //    // プレイヤー生成
+    //    CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
 
-        // データ受信
-        pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
-        pPlayer->SetRecvPosition(pos);
+    //    // データ受信
+    //    pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
+    //    pPlayer->SetRecvPosition(pos);
 
-        // チュートリアル時のアクティブに設定
-        pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
+    //    // チュートリアル時のアクティブに設定
+    //    pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
 
-        // エフェクトの終了
-        pPlayer->EffectUninit();
+    //    // エフェクトの終了
+    //    pPlayer->EffectUninit();
 
-        // 画面下にプレイヤーのモデルを表示
-        pos = m_ppCamera[id]->GetPositionR();
-        m_ppObj[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), "data\\MODEL\\flyingscooter.x", 7);
-        m_ppObj[id]->SetType(CObject::TYPE::TYPE_PLAYER);
-        m_ppObj[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
-    }
+    //    // 画面下にプレイヤーのモデルを表示
+    //    pos = m_ppCamera[id]->GetPositionR();
+    //    m_ppObj[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), "data\\MODEL\\flyingscooter.x", 7);
+    //    m_ppObj[id]->SetType(CObject::TYPE::TYPE_PLAYER);
+    //    m_ppObj[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
+    //}
 
     // 人数確認
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
@@ -315,10 +315,10 @@ void CEntry::AddPlayer(void)
                 {
                     // データ送信
                     pPlayer->SetType(CPlayer::TYPE::TYPE_SEND);
-                }
 
-                // チュートリアル時のアクティブに設定
-                pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
+                    // チュートリアル時のアクティブに設定
+                    pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
+                }
 
                 // エフェクト終了
                 pPlayer->EffectUninit();

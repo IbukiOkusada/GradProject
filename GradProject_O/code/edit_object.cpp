@@ -16,7 +16,7 @@
 
 namespace
 {
-	const std::string FILENAME = "data\\FILE\\map\\obstacle.bin";
+	
 }
 
 //==========================================================
@@ -341,7 +341,7 @@ void CEdit_Obj::Save()
 	if (!pKey->GetTrigger(DIK_F7)) { return; }
 
 	// ファイルを開く
-	std::ofstream File(FILENAME, std::ios::binary);
+	std::ofstream File(EDITFILENAME::OBSTACLE, std::ios::binary);
 	if (!File.is_open()) {
 		return;
 	}
