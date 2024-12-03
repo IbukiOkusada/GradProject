@@ -278,7 +278,7 @@ void CResult::Update(void)
 		pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
 		pKey->GetTrigger(DIK_RETURN))
 	{
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING);
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
