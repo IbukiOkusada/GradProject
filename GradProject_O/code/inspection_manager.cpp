@@ -25,7 +25,6 @@ CInspectionManager::CInspectionManager()
 {
 	m_pInstance = this;
 	m_List.Clear();
-	m_nCreateCnt = 0;
 }
 
 //==========================================================
@@ -69,12 +68,7 @@ bool CInspectionManager::ListIn(CInspection* pInspection)
 {
 	if (pInspection == nullptr) { return false; }
 
-	bool bflag = m_List.Regist(pInspection->GetId(), pInspection);
-
-	// ¬Œ÷
-	if (bflag) { m_nCreateCnt++; }
-
-	return bflag;
+	return m_List.Regist(pInspection->GetId(), pInspection);
 }
 
 //==========================================================
@@ -84,9 +78,7 @@ bool CInspectionManager::ListOut(CInspection* pInspection)
 {
 	if (pInspection == nullptr) { return false; }
 
-	bool bflag = m_List.Delete(pInspection->GetId(), pInspection);
-
-	return bflag;
+	return m_List.Delete(pInspection->GetId(), pInspection);
 }
 
 //==========================================================

@@ -23,11 +23,11 @@ class CAddPolice : public CPolice
 {
 public:	// 誰でもアクセス可能
 
-	CAddPolice();	// コンストラクタ(オーバーロード)
+	CAddPolice(int nId);	// コンストラクタ(オーバーロード)
 	~CAddPolice() override;	// デストラクタ
 
 	// メンバ関数
-	static CAddPolice* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move);
+	static CAddPolice* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId);
 	static Clist<CAddPolice*>* GetList() { return &m_List; }
 
 	// 設定関数
@@ -45,6 +45,7 @@ private:	// 自分だけがアクセス可能
 
 	void SearchRoad() override;
 	void ReachRoad() override;
+	void SendPosition() override;
 
 	// 状態設定関数
 	virtual void SetStateNormal() override;		// 通常

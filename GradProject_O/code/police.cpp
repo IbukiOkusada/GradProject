@@ -57,7 +57,7 @@ CPolice::SETSTATE_FUNC CPolice::m_SetStateFunc[] =
 //==========================================================
 // コンストラクタ
 //==========================================================
-CPolice::CPolice()
+CPolice::CPolice(int nId) : CCar(nId)
 {
 	// 値のクリア
 	m_Info = SInfo();
@@ -134,11 +134,11 @@ void CPolice::Update(void)
 //==========================================================
 // 生成
 //==========================================================
-CPolice *CPolice::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
+CPolice *CPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId)
 {
 	CPolice *pCar = nullptr;
 
-	pCar = DEBUG_NEW CPolice;
+	pCar = DEBUG_NEW CPolice(nId);
 
 	if (pCar != nullptr)
 	{
@@ -166,7 +166,7 @@ void CPolice::MoveRoad()
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
-	if (pRoadTarget == nullptr)
+	if (pRoadTarget == nullptr && IsActive())
 		SearchRoad();
 
 	SearchPlayer();
@@ -277,6 +277,8 @@ void CPolice::SearchPlayer()
 void CPolice::ChasePlayer()
 {
 	// 追跡する
+	if (m_pPoliceAI == nullptr) { return; }
+
 	m_pPoliceAI->Chase();
 
 	// 追跡経路が存在するならば目標地点に設定する
@@ -454,4 +456,14 @@ void CPolice::SetStateStop(void)
 
 	// 状態変更
 	m_stateInfo.state = STATE::STATE_STOP;
+}
+
+//===============================================
+// 警察の座標の送信
+//===============================================
+void CPolice::SendPosition()
+{
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendPdPos(GetId(), GetPosition(), GetRotation());
 }

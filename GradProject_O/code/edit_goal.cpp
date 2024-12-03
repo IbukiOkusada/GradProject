@@ -15,7 +15,6 @@
 namespace
 {
 	const float MIN_LENGTH = 50.0f;	// 最小移動量
-	const char* FILENAME = "data\\FILE\\map\\goal.bin";
 	const D3DXVECTOR2 SET_SIZE = D3DXVECTOR2(500.0f, 500.0f);
 	const float CHANGESIZE = 50.0f;
 	const float MAX_SIZE = 1500.0f;
@@ -56,7 +55,7 @@ HRESULT CEdit_Goal::Init(void)
 	std::vector<int> id;
 	id.clear();
 
-	for (const auto& ite : list.GetList())
+	for (const auto& ite : *list.GetList())
 	{
 		id.push_back(ite.first);
 	}
@@ -358,7 +357,7 @@ void CEdit_Goal::Save()
 	if (!pKey->GetTrigger(DIK_F7)) { return; }
 
 	// ファイルを開く
-	std::ofstream File(FILENAME, std::ios::binary);
+	std::ofstream File(EDITFILENAME::GOAL, std::ios::binary);
 	if (!File.is_open()) {
 		return;
 	}

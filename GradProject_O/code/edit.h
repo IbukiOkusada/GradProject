@@ -7,6 +7,15 @@
 #ifndef _EDIT_H_		// このマクロが定義されていない場合
 #define _EDIT_H_		// 二重インクルード防止用マクロを定義
 
+// エディット情報保存ファイル名
+namespace EDITFILENAME
+{
+	const std::string OBSTACLE =	"data\\FILE\\map\\obstacle.bin";
+	const std::string ROAD =		"data\\FILE\\map\\road.bin";
+	const std::string GIMMICK =		"data\\FILE\\map\\gimmick.bin";
+	const std::string GOAL =		"data\\FILE\\map\\goal.bin";
+}
+
 //==========================================================
 // サンプルのクラス定義
 //==========================================================

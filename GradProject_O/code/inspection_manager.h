@@ -28,7 +28,7 @@ public:
 	bool ListIn(CInspection* pInspection);
 	bool ListOut(CInspection* pInspection);
 	CInspection* Get(int nIdx);
-	int GetCreateCnt() { return m_nCreateCnt; }
+	int GetCreateCnt() { return m_List.GetInCnt(); }
 
 	static void Release();
 
@@ -41,7 +41,6 @@ private:
 	void Uninit(void);   // 終了処理
 
 	// メンバ変数
-	int m_nCreateCnt;	// 総生成カウント
 	Cmaplist<CInspection*> m_List;
 	static CInspectionManager* m_pInstance;  // 自身のポインタ
 };

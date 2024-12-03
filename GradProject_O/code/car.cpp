@@ -32,29 +32,18 @@ namespace
 	const float ROT_CURVE = (0.15f);			// カーブ判定角度
 	const float LENGTH_POINT = (200.0f);		// 到達判定距離
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
+	const float RECV_INER = (0.5f);		// 受信したデータの慣性
 }
 
 //==========================================================
 // コンストラクタ
 //==========================================================
-CCar::CCar()
+CCar::CCar(int nId)
 {
 	// 値のクリア
-	m_Info.pos = VECTOR3_ZERO;
-	m_Info.posOld = VECTOR3_ZERO;
-	m_Info.rot = VECTOR3_ZERO;
-	m_Info.rotDest = VECTOR3_ZERO;
-	m_Info.move = VECTOR3_ZERO;
-	m_Info.pRoadStart = nullptr;
-	m_Info.pRoadTarget = nullptr;
-	m_Info.nBackTime = 0;
-	m_Info.fSpeed = 0.0f;
-	m_Info.fSpeedDest = 0.0f;
-	m_Info.fRotMulti = 0.0f;
-	m_Info.bBreak = false;
-	m_Info.bBack = false;
-	m_pObj = nullptr;
-	m_pTailLamp = nullptr;
+	m_Info = SInfo();
+	m_Info.nId = nId;
+	m_RecvInfo = SRecvInfo();
 
 	// リストに入れる
 	CCarManager::GetInstance()->ListIn(this);
@@ -109,6 +98,23 @@ void CCar::Update(void)
 	// 当たり判定処理
 	Collision();
 
+	if (m_Info.type == TYPE::TYPE_RECV)
+	{
+		RecvInerSet();
+	}
+	else
+	{
+		CNetWork* pNet = CNetWork::GetInstance();
+
+		// 座標送信
+		if (pNet->GetTime()->IsOK())
+		{
+			SendPosition();
+		}
+	}
+
+	CDebugProc::GetInstance()->Print("車の座標 : [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+
 	// 座標系設定
 	Set();
 }
@@ -116,11 +122,11 @@ void CCar::Update(void)
 //==========================================================
 // 生成
 //==========================================================
-CCar *CCar::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
+CCar *CCar::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId)
 {
 	CCar *pCar = nullptr;
 
-	pCar = DEBUG_NEW CCar;
+	pCar = DEBUG_NEW CCar(nId);
 
 	if (pCar != nullptr)
 	{
@@ -153,6 +159,7 @@ void CCar::TailLamp()
 //==========================================================
 void CCar::Move()
 {
+	if (!IsActive()) { return; }
 	if (!m_Info.bBreak)
 	{
 		// 角度調整
@@ -265,6 +272,7 @@ void CCar::Rot()
 //==========================================================
 void CCar::MoveRoad()
 {
+	if (!IsActive()) { return; }
 	if (m_Info.pRoadTarget == nullptr)
 		SearchRoad();
 
@@ -285,6 +293,7 @@ void CCar::MoveRoad()
 //==========================================================
 void CCar::SearchRoad()
 {
+	if (!IsActive()) { return; }
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
 	auto list = pRoadManager->GetList();
 
@@ -318,6 +327,7 @@ void CCar::SearchRoad()
 //==========================================================
 void CCar::ReachRoad()
 {
+	if (!IsActive()) { return; }
 	CRoad* pRoadNext = nullptr;
 
 	while (1)
@@ -347,6 +357,8 @@ void CCar::ReachRoad()
 //==========================================================
 bool CCar::Collision()
 {
+	if (!IsActive()) { return false; }
+
 	auto mgr = CObjectX::GetList();
 	for(int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
@@ -364,8 +376,6 @@ bool CCar::Collision()
 
 		if (bCollision)
 		{
-			
-
 			if (pObjectX->GetType() == TYPE_PLAYER)
 			{
 				Break();
@@ -444,4 +454,38 @@ void CCar::SetRotation(const D3DXVECTOR3& rot)
 	{
 		m_pObj->SetRotation(m_Info.rot);
 	}
+}
+
+//===============================================
+// 受信したデータに慣性をつけて補正
+//===============================================
+void CCar::RecvInerSet()
+{
+	// 位置
+	{
+		D3DXVECTOR3 diff = m_RecvInfo.pos - m_Info.pos;
+		D3DXVECTOR3 pos = m_Info.pos + diff * RECV_INER;
+		m_Info.pos = pos;
+	}
+
+	// 向き
+	{
+		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
+		Adjust(diff);
+
+		D3DXVECTOR3 rot = m_Info.rot + diff;
+		Adjust(rot);
+		m_Info.rot = rot;
+		Adjust(m_Info.rot);
+	}
+}
+
+//===============================================
+// 車の座標の更新
+//===============================================
+void CCar::SendPosition()
+{
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendCarPos(GetId(), GetPosition(), GetRotation());
 }

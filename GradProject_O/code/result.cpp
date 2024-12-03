@@ -292,6 +292,8 @@ void CResult::Uninit(void)
 		}
 	}
 
+	// ƒ}ƒbƒvî•ñ”pŠü
+	CMapManager::Release();
 	CRanking::SetScore(m_nScore);
 	m_nScore = 0;
 	CManager::GetInstance()->GetCamera()->SetActive(true);

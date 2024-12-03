@@ -82,7 +82,6 @@ namespace {
 //===============================================
 // 静的メンバ変数
 //===============================================
-CGame::STATE CGame::m_state = CGame::STATE_LOCAL;	// 状態
 int CGame::m_nNumPlayer = 0;
 
 //===============================================
@@ -140,7 +139,7 @@ CGame::CGame(int nNumPlayer)
     m_pPause = nullptr;
     m_nTotalDeliveryStatus = 0;
     m_nStartCameraCount = 0;
-    m_GameState = GAMESTATE::GAMESTATE_NONE;
+    m_GameState = STATE::STATE_NONE;
     m_pEndSound = nullptr;
     m_pEndText = nullptr;
     // 人数設定
@@ -161,12 +160,6 @@ CGame::~CGame()
 HRESULT CGame::Init(void)
 {
     memset(&m_aAddress[0], '\0', sizeof(m_aAddress));
-    int nErr = WSAStartup(WINSOCK_VERSION, &m_wsaData);	// winsockの初期化関数
-
-    if (nErr != 0)
-    {// 初期化に失敗した場合
-        m_state = STATE_LOCAL;
-    }
 
     // 外部ファイル読み込みの生成
     if (nullptr == m_pFileLoad)
@@ -190,14 +183,22 @@ HRESULT CGame::Init(void)
     CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
-    /*for (int i = 0; i < 8; i++)
-    {
-        CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-    }*/
+    int myid = net->GetIdx();
 
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < NetWork::MAX_CONNECT; i++)
     {
-        CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+        if (!net->GetConnect(i)) { continue; }
+
+        if (i <= myid) { myid = i; }
+    }
+
+    // 自分が先頭の場合
+    if (myid == net->GetIdx())
+    {
+        // 車の生成
+        CreateCar();
+        // 警察の生成
+        CreatePolice();
     }
 
     if (m_pGoalManager == nullptr)
@@ -276,7 +277,8 @@ void CGame::Uninit(void)
     // エディット設定
     CEditManager::Release();
 
-    m_state = STATE_LOCAL;
+    // マップマネージャー廃棄
+    CMapManager::Release();
 }
 
 //===============================================
@@ -371,25 +373,25 @@ void CGame::Update(void)
     CScene::Update();
     switch (m_GameState)
     {
-    case CGame::GAMESTATE_NONE:
+    case CGame::STATE_NONE:
         break;
-    case CGame::GAMESTATE_PROG:
+    case CGame::STATE_PROG:
         break;
-    case CGame::GAMESTATE_SUCCESS:
+    case CGame::STATE_SUCCESS:
         pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol() * 0.9f);
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
         }
         break;
-    case CGame::GAMESTATE_FAIL:
+    case CGame::STATE_FAIL:
         pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol()*0.9f);
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
         }
         break;
-    case CGame::GAMESTATE_MAX:
+    case CGame::STATE_MAX:
         break;
     default:
         break;
@@ -456,9 +458,9 @@ bool CGame::StartDirection(void)
 //===================================================
 void CGame::End_Success()
 {
-    if (m_GameState != GAMESTATE_SUCCESS)
+    if (m_GameState != STATE_SUCCESS)
     {
-        SetGameState(GAMESTATE::GAMESTATE_SUCCESS);
+        SetGameState(STATE::STATE_SUCCESS);
         m_pEndText = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, SCREEN_CENTER, 1.0f, 200.0f, 200.0f, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
         m_pEndText->PushBackString("配達完了");
         m_pEndText->SetEnableScroll(true);
@@ -468,9 +470,9 @@ void CGame::End_Success()
 }
 void CGame::End_Fail()
 {
-    if (m_GameState != GAMESTATE_FAIL)
+    if (m_GameState != STATE_FAIL)
     {
-        SetGameState(GAMESTATE::GAMESTATE_FAIL);
+        SetGameState(STATE::STATE_FAIL);
         m_pEndText = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, SCREEN_CENTER, 0.7f, 200.0f, 200.0f, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
         m_pEndText->PushBackString("配達失敗");
         m_pEndText->SetEnableScroll(true);
@@ -513,5 +515,31 @@ void CGame::CreateMultiPlayer(void)
         {
             pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
         }
+    }
+}
+
+//===================================================
+// 警察の生成
+//===================================================
+void CGame::CreatePolice()
+{
+    for (int i = 0; i < 0; i++)
+    {
+        CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
+            D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
+        pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
+    }
+}
+
+//===================================================
+// 車の生成
+//===================================================
+void CGame::CreateCar()
+{
+    for (int i = 0; i < 1; i++)
+    {
+        CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), 
+            D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
+        pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
     }
 }

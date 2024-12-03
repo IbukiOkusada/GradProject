@@ -24,22 +24,25 @@ namespace
 // 状態管理
 CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 {
-	&CNetWork::CommandNone,		// 何もない
-	&CNetWork::CommandJoin,		// 接続した
-	&CNetWork::CommandGetId,	// ID取得
-	&CNetWork::CommandDelete,	// 削除
-	&CNetWork::CommandPlPos,	// プレイヤー位置
-	&CNetWork::CommandPlRot,	// プレイヤー向き
-	&CNetWork::CommandPlDamage,	// プレイヤーダメ―ジ
-	&CNetWork::CommandPlGoal,	// プレイヤーゴール
-	&CNetWork::CommandGmHit,	// ギミック衝突
-	&CNetWork::CommandNextGoal,	// 次のゴール
-	&CNetWork::CommandGameStartOk,	// ゲーム開始可能になったよ
-	&CNetWork::CommandGameStart,	// ゲーム開始
-	&CNetWork::CommandTutorialOk,	// ゲーム開始可能になったよ
-	&CNetWork::CommandTutorialEnd,	// ゲーム開始
+	&CNetWork::CommandNone,				// 何もない
+	&CNetWork::CommandJoin,				// 接続した
+	&CNetWork::CommandGetId,			// ID取得
+	&CNetWork::CommandDelete,			// 削除
+	&CNetWork::CommandPlPos,			// プレイヤー位置
+	&CNetWork::CommandPlRot,			// プレイヤー向き
+	&CNetWork::CommandPlDamage,			// プレイヤーダメ―ジ
+	&CNetWork::CommandPlGoal,			// プレイヤーゴール
+	&CNetWork::CommandGmHit,			// ギミック衝突
+	&CNetWork::CommandNextGoal,			// 次のゴール
+	&CNetWork::CommandGameStartOk,		// ゲーム開始可能になったよ
+	&CNetWork::CommandGameStart,		// ゲーム開始
+	&CNetWork::CommandTutorialOk,		// ゲーム開始可能になったよ
+	&CNetWork::CommandTutorialEnd,		// ゲーム開始
 	&CNetWork::CommandSetInspection,	// 検問配置
 	&CNetWork::CommandEndInspection,	// 検問廃棄
+	&CNetWork::CommandCarPos,			// 車位置
+	&CNetWork::CommandPdPos,			// 警察位置
+	&CNetWork::CommandAddPdPos,			// 追加警察位置
 };
 
 // 静的メンバ変数
@@ -871,7 +874,132 @@ void CNetWork::CommandEndInspection(const int nId, const char* pRecvData, CClien
 	byte += sizeof(int);
 	*pNowByte += sizeof(int);
 
-
 	// プロトコルを送信
 	pClient->SetData(&aRecv[0], byte);
+}
+
+//==========================================================
+// 車の座標
+//==========================================================
+void CNetWork::CommandCarPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_CAR_POS;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 車のID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 座標挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 向き挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// 警察の座標
+//==========================================================
+void CNetWork::CommandPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_PD_POS;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 車のID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 座標挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 向き挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// 追加警察の座標
+//==========================================================
+void CNetWork::CommandAddPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_ADDPD_POS;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 車のID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 座標挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 向き挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
 }

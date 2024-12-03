@@ -42,7 +42,7 @@ namespace
 		D3DXVECTOR3(-4750.0f, 0.0f, -200.0f),		//５個目
 		D3DXVECTOR3(2700.0f, 0.0f, -200.0f)			//６個目
 	};
-
+	//目的の向き
 	const D3DXVECTOR3 DEST_ROT_SELECT[CPlayerTitle::DEST::DEST_MAX] =
 	{
 		D3DXVECTOR3(0.0f,3.14f,0.0f),				//１個目
@@ -62,14 +62,25 @@ namespace
 //<================================================
 CPlayerTitle::CPlayerTitle()
 {
+	//初期化
+
+	//<*************************************
+	//int型
 	m_nNumDest = 0;
-	m_eState = STATE_NONE;
+	m_nNumDestNext = m_nNumDest + 1; 
+	//<*************************************
+	//float型
+	m_fDestrot = 0.0f;
 	m_fBDustValue = 50.0f;
+	//<*************************************
+	//その他
+	m_eState = STATE_NONE;
 	m_bReached = false;
 	m_bNextMove = false;
 	m_bMoved = false;
 	m_pTitleBaggage = nullptr;
 	m_pTitleGoal = nullptr;
+	//<*************************************
 }
 //<================================================
 //デストラクタ
@@ -93,7 +104,7 @@ HRESULT CPlayerTitle::Init(void)
 HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 {
 	//コンテナだけいらないのでこのような形にしました
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
+	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
@@ -172,7 +183,6 @@ void CPlayerTitle::Update(void)
 		SetType(CPlayer::TYPE::TYPE_ACTIVE);
 		CPlayer::Update();
 	}
-
 	//デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー座標: [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 	CDebugProc::GetInstance()->Print("プレイヤー向き: [ %f, %f, %f ]\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
@@ -197,34 +207,45 @@ void CPlayerTitle::Moving(const int nNum)
 	}
 }
 //<================================================
-//
+//選択画面の際の動き
 //<================================================
 void CPlayerTitle::MovingSelect(void)
 {
 	const float PlayerMove = 25.0f;						//プレイヤーの動く値
 
 	////目的地まで移動
-	m_Info.pos.x += (DEST_POS_SELECT[m_nNumDest].x - m_Info.pos.x - m_Info.move.x) * 0.065f;//X軸
-	m_Info.pos.z += (DEST_POS_SELECT[m_nNumDest].z - m_Info.pos.z - m_Info.move.z) * 0.065f;//Z軸
+	m_Info.pos.x += (DEST_POS_SELECT[m_nNumDest].x - m_Info.pos.x - m_Info.move.x) * 0.12f;//X軸
+	m_Info.pos.z += (DEST_POS_SELECT[m_nNumDest].z - m_Info.pos.z - m_Info.move.z) * 0.12f;//Z軸
 
 	//目的地に到着したら判定をtrueにする
 	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 50.0f))
 	{
 		m_nNumDest +=1;
 	}
+	//目的地に到着したら判定をtrueにする
+	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 350.0f))
+	{
+		//目的向きの設定と向きを回転
+		m_nNumDestNext = m_nNumDest + 1;
+
+		//最大値まで次の目的地が行っていたら、最初の目的地に設定
+		if (m_nNumDestNext >= DEST_MAX){m_nNumDestNext = DEST::DEST_FIRST;}
+
+		m_fDestrot = DEST_ROT_SELECT[m_nNumDestNext].y;
+		m_Info.rot.y += (m_fDestrot - m_Info.rot.y) * 0.5f;
+		Adjust(m_Info.rot.y);
+	}
 
 	//目的地の最大値まで行っていたら、初期化
 	if (m_nNumDest >= DEST_MAX)
-	{m_nNumDest = DEST::DEST_FIRST;}
+	{
+		m_nNumDest = DEST::DEST_FIRST;
+	}
 
 	PoliceRotSet();
 
-	////その方向にプレイヤーを向かせる
-	//m_Info.rot.y += (DEST_ROT_SELECT[m_nNumDest].y - m_Info.rot.y) * 0.065f;
-	//Adjust(m_Info.rot);
-
 	//その向きに設定
-	SetRotation(DEST_ROT_SELECT[m_nNumDest]);
+	SetRotation(m_Info.rot);
 
 	//デバッグ表示
 	CDebugProc::GetInstance()->Print("[現在の番号]：%d\n", m_nNumDest);
@@ -316,9 +337,10 @@ void CPlayerTitle::PoliceRotSet(void)
 //<================================================
 void CPlayerTitle::PolicePosSet(void)
 {
-	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };
-	D3DXVECTOR3 arPos[INITIAL::POLICE_MAX] = { VECTOR3_ZERO };
-	float fDis = 500.0f;
+	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };	//警察ポインタ
+	D3DXVECTOR3 arPos[INITIAL::POLICE_MAX] = { VECTOR3_ZERO };	//警察の位置
+	float fDis = 500.0f;										//プレイヤーからの距離
+	float fDis_Police = 150.0f;									//警察間の距離
 
 	//警察の情報を取得してくる
 	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
@@ -341,7 +363,7 @@ void CPlayerTitle::PolicePosSet(void)
 		case DEST::DEST_FIRST:
 
 			//その位置に設定
-			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + 150.0f*nCnt, GetPosition().y, GetPosition().z - fDis);
+			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + fDis_Police *nCnt, GetPosition().y, GetPosition().z - fDis);
 
 			break;
 
@@ -350,7 +372,7 @@ void CPlayerTitle::PolicePosSet(void)
 		case DEST::DEST_FOUTH:
 
 			//その位置に設定
-			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + fDis, GetPosition().y, GetPosition().z + 150.0f * nCnt);
+			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + fDis, GetPosition().y, GetPosition().z + fDis_Police * nCnt);
 
 			break;
 
@@ -359,7 +381,7 @@ void CPlayerTitle::PolicePosSet(void)
 		case DEST::DEST_FIFTH:
 
 			//その位置に設定
-			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + 150.0f * nCnt, GetPosition().y, GetPosition().z + fDis);
+			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + fDis_Police * nCnt, GetPosition().y, GetPosition().z + fDis);
 
 			break;
 
@@ -367,7 +389,7 @@ void CPlayerTitle::PolicePosSet(void)
 		case DEST::DEST_SIXTH:
 
 			//その位置に設定
-			arPos[nCnt] = D3DXVECTOR3(GetPosition().x - fDis, GetPosition().y, GetPosition().z + 150.0f * nCnt);
+			arPos[nCnt] = D3DXVECTOR3(GetPosition().x - fDis, GetPosition().y, GetPosition().z + fDis_Police * nCnt);
 
 			break;
 		}

@@ -46,6 +46,7 @@ public:	// 誰でもアクセス可能
 	static void Release(void);
 	Clist<CPolice*>* GetList() { if (m_pList == nullptr) { m_pList = m_pList->Create(); }return m_pList; }	// リスト取得
 	void ListRelease() { if (m_pList != nullptr) { delete m_pList; m_pList = nullptr; } }			// リスト解放
+	Cmaplist<CPolice*>* GetMapList() { return &m_maplist; }
 	void ListIn(CPolice* pPolice);
 	void ListOut(CPolice* pPolice);
 	void Warning(CPolice* pPolice);
@@ -56,9 +57,12 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void IdListIn(CPolice* pPolice);
+	void IdListOut(CPolice* pPolice);
 
 	// メンバ変数
 	Clist<CPolice*>* m_pList;
+	Cmaplist<CPolice*> m_maplist;
 	int m_nNum;
 	static CPoliceManager* m_pInstance;	// インスタンス
 	SInspInfo m_InspInfo;

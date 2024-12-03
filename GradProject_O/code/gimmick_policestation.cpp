@@ -17,6 +17,7 @@
 #include "add_police.h"
 #include "debugproc.h"
 #include "road_manager.h"
+#include "car_manager.h"
 
 // 定数定義
 namespace
@@ -93,6 +94,7 @@ void CGimmickPoliceStation::Uninit(void)
 //==========================================================
 void CGimmickPoliceStation::Update(void)
 {
+	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_TITLE) { return; }
 	if (m_pObj == nullptr) { return; }
 
 	// インターバルが終わっていない
@@ -129,8 +131,9 @@ void CGimmickPoliceStation::Update(void)
 	// 範囲内のみ警察生成
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
-	pP->SetRoadTarget(m_pRoad);
+	//CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+	//pP->SetRoadTarget(m_pRoad);
+	//pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 }
 
 //==========================================================

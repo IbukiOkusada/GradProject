@@ -20,6 +20,11 @@
 #include "inspection.h"
 #include "road_manager.h"
 #include "road.h"
+#include "car_manager.h"
+#include "car.h"
+#include "police_manager.h"
+#include "police.h"
+#include "add_police.h"
 
 //===============================================
 // –¼‘O‹óŠÔ
@@ -53,6 +58,9 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvTutorialEnd,	// ƒ`ƒ…[ƒgƒŠƒAƒ‹I—¹
 	&CNetWork::RecvSetInspection,	// ƒ`ƒ…[ƒgƒŠƒAƒ‹I—¹‰Â”\
 	&CNetWork::RecvEndInspection,	// ƒ`ƒ…[ƒgƒŠƒAƒ‹I—¹
+	&CNetWork::RecvCarPos,		// ŽÔÀ•W
+	&CNetWork::RecvPdPos,		// ŒxŽ@À•W
+	&CNetWork::RecvAddPdPos,	// ’Ç‰ÁÀ•W
 };
 
 // Ã“Iƒƒ“ƒo•Ï”
@@ -778,8 +786,125 @@ void CNetWork::RecvEndInspection(int* pByte, const int nId, const char* pRecvDat
 
 	if (pInsp == nullptr) { return; }
 
-	// ŒŸ–â”pŠü
-	pInsp->Uninit();
+	// ŒŸ–â‰ð•ú
+	pInsp->Start();
+}
+
+//===================================================
+// ŽÔ‚ÌÀ•W
+//===================================================
+void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// ŒŸ–â‚ÌID‚ð“¾‚é
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// ˆÊ’u‚ðŽæ“¾
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// Œü‚«‚ðŽæ“¾
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
+
+	if (pCar == nullptr)
+	{
+		pCar = CCar::Create(pos, rot, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
+
+	pCar->SetRecvPosition(pos);
+	pCar->SetRecvRotation(rot);
+}
+
+//===================================================
+// ŒxŽ@‚ÌÀ•W
+//===================================================
+void CNetWork::RecvPdPos(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// ŒŸ–â‚ÌID‚ð“¾‚é
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// ˆÊ’u‚ðŽæ“¾
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// Œü‚«‚ðŽæ“¾
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
+
+	if (pCar == nullptr)
+	{
+		pCar = CPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
+
+	pCar->SetRecvPosition(pos);
+	pCar->SetRecvRotation(rot);
+}
+
+//===================================================
+// ’Ç‰ÁŒxŽ@‚ÌÀ•W
+//===================================================
+void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// ŒŸ–â‚ÌID‚ð“¾‚é
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// ˆÊ’u‚ðŽæ“¾
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// Œü‚«‚ðŽæ“¾
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
+
+	if (pCar == nullptr)
+	{
+		pCar = CAddPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
+
+	pCar->SetRecvPosition(pos);
+	pCar->SetRecvRotation(rot);
 }
 
 //===================================================
@@ -1073,6 +1198,99 @@ void CNetWork::SendEndInspection(int nId)
 	// ŒŸ–â‚ÌID
 	memcpy(&aSendData[byte], &nId, sizeof(int));
 	byte += sizeof(int);
+
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ŽÔ‚ÌÀ•W‚ð‘—M
+//===================================================
+void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_CAR_POS;
+	int byte = 0;
+
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// ID‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// À•W‚ð‘}“ü
+	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// Œü‚«‚ð‘}“ü
+	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ŒxŽ@‚ÌÀ•W‚ð‘—M
+//===================================================
+void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_PD_POS;
+	int byte = 0;
+
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// À•W‚ð‘}“ü
+	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// Œü‚«‚ð‘}“ü
+	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ’Ç‰ÁŒxŽ@‚ÌÀ•W‚ð‘—M
+//===================================================
+void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_ADDPD_POS;
+	int byte = 0;
+
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// À•W‚ð‘}“ü
+	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// Œü‚«‚ð‘}“ü
+	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
 
 	// ‘—M
 	m_pClient->SetData(&aSendData[0], byte);

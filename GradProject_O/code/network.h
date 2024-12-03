@@ -61,6 +61,9 @@ public:
 	void SendTutorialOk();
 	void SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx);
 	void SendEndInspection(int nId);
+	void SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	void SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	void SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
 
 	// ÉÅÉìÉoä÷êî(ê›íË)
 
@@ -97,6 +100,9 @@ private:
 	void RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData);
 	void RecvSetInspection(int* pByte, const int nId, const char* pRecvData);
 	void RecvEndInspection(int* pByte, const int nId, const char* pRecvData);
+	void RecvCarPos(int* pByte, const int nId, const char* pRecvData);
+	void RecvPdPos(int* pByte, const int nId, const char* pRecvData);
+	void RecvAddPdPos(int* pByte, const int nId, const char* pRecvData);
 
 	// ÉÅÉìÉoä÷êî
 	HRESULT Init();
