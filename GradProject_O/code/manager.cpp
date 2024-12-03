@@ -666,10 +666,6 @@ CScene *CScene::Create(MODE mode)
 		pScene = DEBUG_NEW CTitle;
 		break;
 
-	case MODE_TUTORIAL:
-		pScene = DEBUG_NEW CTutorial;
-		break;
-
 	case MODE_ENTRY:
 		pScene = DEBUG_NEW CEntry;
 		break;
@@ -680,10 +676,6 @@ CScene *CScene::Create(MODE mode)
 
 	case MODE_RESULT:
 		pScene = DEBUG_NEW CResult;
-		break;
-
-	case MODE_RANKING:
-		pScene = DEBUG_NEW CRanking;
 		break;
 	}
 
