@@ -8,7 +8,7 @@
 #define _ROADMANAGER_H_		// 二重インクルード防止用マクロを定義
 
 #include "list_manager.h"
-#include "list.h"
+#include "map_list.h"
 #include "road.h"
 
 // 前方宣言
@@ -53,7 +53,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	Clist<CRoad*>* m_pList;
-	std::map<int, CRoad*> m_IdList;	// ID管理のリスト
+	Cmaplist<CRoad*> m_IdList;	// ID管理のリスト
 	static CRoadManager* m_pInstance;	// インスタンス
 	Clist<CRoad::SInfo*> m_InfoList;
 	

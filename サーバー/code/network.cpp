@@ -38,6 +38,8 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandGameStart,	// ゲーム開始
 	&CNetWork::CommandTutorialOk,	// ゲーム開始可能になったよ
 	&CNetWork::CommandTutorialEnd,	// ゲーム開始
+	&CNetWork::CommandSetInspection,	// 検問配置
+	&CNetWork::CommandEndInspection,	// 検問廃棄
 };
 
 // 静的メンバ変数
@@ -559,7 +561,27 @@ void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClie
 //==========================================================
 void CNetWork::CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(float)] = {};	// 送信用まとめデータ
+	int byte = 0;
 
+	nProt = NetWork::COMMAND_PL_DAMAGE;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコル挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 体力挿入
+	memcpy(&aSendData[byte], pRecvData, sizeof(float));
+	*pNowByte += sizeof(float);
+	byte += sizeof(float);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
 }
 
 //==========================================================
@@ -766,7 +788,7 @@ void CNetWork::CommandTutorialEnd(const int nId, const char* pRecvData, CClient*
 	}
 
 	char aRecv[sizeof(int) * 2] = {};
-	int command = NetWork::COMMAND_TUTORIALEND;
+	int command = NetWork::COMMAND_TUTORIAL_END;
 	int byte = 0;
 
 	// IDを挿入
@@ -776,6 +798,79 @@ void CNetWork::CommandTutorialEnd(const int nId, const char* pRecvData, CClient*
 	// プロトコルを挿入
 	memcpy(&aRecv[byte], &command, sizeof(int));
 	byte += sizeof(int);
+
+	// プロトコルを送信
+	pClient->SetData(&aRecv[0], byte);
+}
+
+//==========================================================
+// 検問設置
+//==========================================================
+void CNetWork::CommandSetInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	char aRecv[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int)] = {};
+	int command = NetWork::COMMAND_SET_INSP;
+	int byte = 0;
+	int recvbyte = 0;
+
+	// IDを挿入
+	memcpy(&aRecv[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aRecv[byte], &command, sizeof(int));
+	byte += sizeof(int);
+
+	// 検問IDを挿入
+	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(int));
+	byte += sizeof(int);
+	*pNowByte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 座標挿入
+	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 向き挿入
+	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 道IDを挿入
+	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(int));
+	byte += sizeof(int);
+	*pNowByte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// プロトコルを送信
+	pClient->SetData(&aRecv[0], byte);
+}
+
+//==========================================================
+// 検問廃棄
+//==========================================================
+void CNetWork::CommandEndInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	char aRecv[sizeof(int) * 2 + sizeof(int)] = {};
+	int command = NetWork::COMMAND_END_INSP;
+	int byte = 0;
+
+	// IDを挿入
+	memcpy(&aRecv[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aRecv[byte], &command, sizeof(int));
+	byte += sizeof(int);
+
+	// 検問IDを挿入
+	memcpy(&aRecv[byte], pRecvData, sizeof(int));
+	byte += sizeof(int);
+	*pNowByte += sizeof(int);
+
 
 	// プロトコルを送信
 	pClient->SetData(&aRecv[0], byte);

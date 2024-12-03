@@ -60,7 +60,7 @@
 
 namespace
 {
-	const float RECV_INER = (0.5f);			// 受信したデータの慣性
+	const float RECV_INER = (0.65f);		// 受信したデータの慣性
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
 	const float DEATH_INTERVAL = (120.0f);	// 死亡インターバル
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
@@ -81,7 +81,8 @@ namespace
 	const float INER = (0.9f);		// 慣性
 	const float ENGINE_INER = (0.01f);		// 慣性
 	const float ENGINE_BRAKE = (0.006f);		// 慣性
-	const float TUURN_INER = (0.9f);		// 慣性
+	
+	const float TURN_INER = (0.9f);		// 慣性
 	const float DRIFT_INER = (0.975f);		// ドリフト慣性
 	const float BRAKE_INER = (0.05f);
 	const float RES = (1.98f);		// 減速
@@ -188,8 +189,6 @@ CPlayer::CPlayer(int nId)
 	m_fLife = LIFE;
 	m_fLifeOrigin = m_fLife;
 	m_fCamera = CAMERA_NORMAL;
-
-	m_type = TYPE_SEND;
 	m_fNitroCool = 0.0f;
 
 	m_pObj = nullptr;
@@ -243,7 +242,8 @@ HRESULT CPlayer::Init(void)
 //===============================================
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
+	
+	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
@@ -251,7 +251,8 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	//m_pContainer = CContainer::Create();
 	
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	return S_OK;
 }
@@ -350,7 +351,8 @@ void CPlayer::Update(void)
 		D3DXVECTOR3 pos = GetPosition();
 		pos.y += 100.0f;
 		rot.y -= D3DX_PI * 0.5f;
-		rot.z += m_fTurnSpeed * 15.0f;
+
+		rot.z += m_fTurnSpeed * 20.0f;
 		m_pObj->SetPosition(pos);
 		m_pObj->SetRotation(rot);
 		m_pObj->SetShadowHeight(GetPosition().y);
@@ -441,8 +443,8 @@ void CPlayer::Update(void)
 //===============================================
 // ID生成
 //===============================================
-CPlayer* CPlayer::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move,
-	const int nId)
+
+CPlayer* CPlayer::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, const int nId)
 {
 	CPlayer* pPlayer = nullptr;
 
@@ -621,7 +623,7 @@ void CPlayer::Rotate(void)
 	m_fHandle += dest * slowmulti;
 	
 	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT);
-	m_fTurnSpeed*= TUURN_INER;
+	m_fTurnSpeed*= TURN_INER;
 	// 入力装置確認
 	if (nullptr == pInputKey) 
 	{
@@ -700,6 +702,7 @@ bool CPlayer::CollisionObjX(void)
 		CObjectX* pObjectX = mgr->Get(i);	// 先頭を取得
 
 		// 衝突判定を取らない
+		if (pObjectX == m_pObj) { continue; }
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
@@ -852,20 +855,30 @@ bool CPlayer::CollisionGimick(void)
 void CPlayer::Damage(float fDamage)
 {
 	m_fLife -= fDamage;
+	SAFE_DELETE(m_pDamageEffect);
+
 	if (m_fLife <= 0.0f)
 	{
-		SAFE_DELETE(m_pDamageEffect);
+		m_fLife = 0.0f;
+		
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\explosion.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, false, false);
 	}
 	else if (m_fLife <= LIFE * 0.5f)
 	{
-		SAFE_DELETE(m_pDamageEffect);
+		
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\moderately_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
 	}
 	else if (m_fLife <= LIFE * 0.8f)
 	{
-		SAFE_DELETE(m_pDamageEffect);
+		
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\minor_damage.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 60.0f, false, false);
+	}
+	
+	// データ送信
+	if (m_type == TYPE::TYPE_ACTIVE || m_type == TYPE::TYPE_TUTOLERIAL_ACTIVE)
+	{
+		auto net = CNetWork::GetInstance();
+		net->SendPlDamage(m_fLife);
 	}
 }
 

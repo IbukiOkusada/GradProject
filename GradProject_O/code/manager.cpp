@@ -190,9 +190,6 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	if (m_pNetWork == nullptr)
 	{
 		m_pNetWork = CNetWork::Create();
-
-		// 接続
-		//m_pNetWork->ReConnect();
 	}
 
 	// エフェクシア初期化

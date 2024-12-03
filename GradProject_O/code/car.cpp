@@ -53,6 +53,8 @@ CCar::CCar()
 	m_Info.fRotMulti = 0.0f;
 	m_Info.bBreak = false;
 	m_Info.bBack = false;
+	m_pObj = nullptr;
+	m_pTailLamp = nullptr;
 
 	// ÉäÉXÉgÇ…ì¸ÇÍÇÈ
 	CCarManager::GetInstance()->ListIn(this);
@@ -362,14 +364,7 @@ bool CCar::Collision()
 
 		if (bCollision)
 		{
-			if (!m_Info.bBack)
-			{
-				CRoad* pRoadNext = m_Info.pRoadTarget;
-				m_Info.pRoadTarget = m_Info.pRoadStart;
-				m_Info.pRoadStart = pRoadNext;
-				m_Info.bBack = true;
-				m_Info.nBackTime = TIME_BACK;
-			}
+			
 
 			if (pObjectX->GetType() == TYPE_PLAYER)
 			{
@@ -381,6 +376,20 @@ bool CCar::Collision()
 	}
 
 	return false;
+}
+
+//==========================================================
+// ê⁄êGéûèàóù
+//==========================================================
+void CCar::Hit()
+{
+	if (!m_Info.bBack) { return; }
+
+	CRoad* pRoadNext = m_Info.pRoadTarget;
+	m_Info.pRoadTarget = m_Info.pRoadStart;
+	m_Info.pRoadStart = pRoadNext;
+	m_Info.bBack = true;
+	m_Info.nBackTime = TIME_BACK;
 }
 
 //==========================================================

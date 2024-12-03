@@ -14,6 +14,7 @@
 #include "gimmick_policestation.h"
 #include "a_star.h"
 #include "particle3D.h"
+#include "inspection_manager.h"
 
 // 無名名前空間を定義
 namespace
@@ -30,10 +31,11 @@ namespace
 //==========================================================
 // コンストラクタ
 //==========================================================
-CInstpection::CInstpection()
+CInspection::CInspection(int nId)
 {
 	// 値のクリア
 	m_Info = SInfo();
+	m_Info.nId = nId;
 	m_pNearStation = nullptr;
 	m_pRoad = nullptr;
 	m_LagerInfo = SLagerInfo();
@@ -42,12 +44,15 @@ CInstpection::CInstpection()
 	{
 		m_aPoliceInfo[i] = SPoliceInfo();
 	}
+
+	// リストに挿入
+	CInspectionManager::GetInstance()->ListIn(this);
 }
 
 //==========================================================
 // デストラクタ
 //==========================================================
-CInstpection::~CInstpection()
+CInspection::~CInspection()
 {
 
 }
@@ -55,7 +60,7 @@ CInstpection::~CInstpection()
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CInstpection::Init(void)
+HRESULT CInspection::Init(void)
 {
 	// 座標取得
 	D3DXVECTOR3 pos = m_Info.pos;
@@ -98,13 +103,14 @@ HRESULT CInstpection::Init(void)
 //==========================================================
 // 終了処理
 //==========================================================
-void CInstpection::Uninit(void)
+void CInspection::Uninit(void)
 {
 	// 警察廃棄
 	for (int i = 0; i < TYPE::TYPE_MAX; i++)
 	{
 		if (m_aPoliceInfo[i].pPolice != nullptr)
 		{
+			m_aPoliceInfo[i].pPolice->SetState(CPolice::STATE::STATE_SEARCH);
 			m_aPoliceInfo[i].pPolice = nullptr;
 			m_aPoliceInfo[i] = SPoliceInfo();
 		}
@@ -115,16 +121,20 @@ void CInstpection::Uninit(void)
 		SAFE_DELETE(m_LagerInfo.apEffect[i]);
 	}
 
+	// リストから外す
+	CInspectionManager::GetInstance()->ListOut(this);
+
 	Release();
 }
 
 //==========================================================
 // 更新処理
 //==========================================================
-void CInstpection::Update(void)
+void CInspection::Update(void)
 {
 	// デバッグ表示
-	CDebugProc::GetInstance()->Print("検問の座標 : [ %f, %f, %f]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	CDebugProc::GetInstance()->Print("検問の座標 : [ %f, %f, %f] : 向き : [ %f, %f, %f] \n", 
+		m_Info.pos.x, m_Info.pos.y, m_Info.pos.z, m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
 
 	// 移動
 	Away();
@@ -139,11 +149,11 @@ void CInstpection::Update(void)
 //==========================================================
 // 生成
 //==========================================================
-CInstpection* CInstpection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad)
+CInspection* CInspection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId)
 {
-	CInstpection* pInsp = nullptr;
+	CInspection* pInsp = nullptr;
 
-	pInsp = DEBUG_NEW CInstpection;
+	pInsp = DEBUG_NEW CInspection(nId);
 
 	if (pInsp != nullptr)
 	{
@@ -162,7 +172,7 @@ CInstpection* CInstpection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& ro
 //==========================================================
 // 移動
 //==========================================================
-void CInstpection::Away()
+void CInspection::Away()
 {
 	for (int i = 0; i < TYPE::TYPE_MAX; i++)
 	{
@@ -202,7 +212,7 @@ void CInstpection::Away()
 //==========================================================
 // 検問線を配置
 //==========================================================
-void CInstpection::LagerSet()
+void CInspection::LagerSet()
 {
 	// 停止しているときのみ
 	if (m_aPoliceInfo[TYPE::TYPE_SEARCH_L].fTimer < STOP_TIMER
@@ -272,7 +282,7 @@ void CInstpection::LagerSet()
 //==========================================================
 // 検問時の向き設定
 //==========================================================
-void CInstpection::LagerSetRotation()
+void CInspection::LagerSetRotation()
 {
 	// タイマーを進行
 	if (m_LagerInfo.fRotateTimer <= ROTATE_TIMER) {
@@ -314,7 +324,7 @@ void CInstpection::LagerSetRotation()
 //==========================================================
 // 出撃
 //==========================================================
-void CInstpection::Start()
+void CInspection::Start()
 {
 	for (int i = 0; i < TYPE::TYPE_MAX; i++)
 	{
@@ -344,7 +354,7 @@ void CInstpection::Start()
 //==========================================================
 // 判定
 //==========================================================
-void CInstpection::Collision()
+void CInspection::Collision()
 {
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }

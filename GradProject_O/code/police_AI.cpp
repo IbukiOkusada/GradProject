@@ -276,6 +276,7 @@ void CPoliceAI::Chase(void)
 			// リストが空でなければ移動先設定
 			if (!m_searchRoad.empty())
 			{
+
 				m_pSearchTarget = m_searchRoad.front();
 			}
 		}
@@ -347,6 +348,33 @@ void CPoliceAI::SelectRoad(void)
 }
 
 //==========================================================
+// 目標地点到達時処理
+//==========================================================
+void CPoliceAI::ReachRoad(void)
+{
+	// 目的地が存在する時
+	if (m_pSearchTarget != nullptr)
+	{
+		// 次の目的地を設定
+		D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
+		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
+		float length = D3DXVec3Length(&(posRoad - posPolice));
+		if (length < 500.0f)
+		{
+			m_pSearchTarget = m_pSearchTarget->pChaild;
+		}
+	}
+}
+
+//==========================================================
+// 初期化処理
+//==========================================================
+HRESULT CPoliceAINomal::Init(void)
+{
+	return S_OK;
+}
+
+//==========================================================
 // 移動ルート用の道選択処理
 //==========================================================
 void CPoliceAINomal::SelectRoad(void)
@@ -364,6 +392,14 @@ void CPoliceAINomal::SelectRoad(void)
 	{
 		m_pRoadTarget = m_pPolice->GetRoadTarget();
 	}
+}
+
+//==========================================================
+// 初期化処理
+//==========================================================
+HRESULT CPoliceAIElite::Init(void)
+{
+	return S_OK;
 }
 
 //==========================================================
@@ -386,21 +422,3 @@ void CPoliceAIElite::SelectRoad(void)
 	}
 }
 
-//==========================================================
-// 目標地点到達時処理
-//==========================================================
-void CPoliceAI::ReachRoad(void)
-{
-	// 目的地が存在する時
-	if (m_pSearchTarget != nullptr)
-	{
-		// 次の目的地を設定
-		D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
-		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
-		float length = D3DXVec3Length(&(posRoad - posPolice));
-		if (length < 500.0f)
-		{
-			m_pSearchTarget = m_pSearchTarget->pChaild;
-		}
-	}
-}
