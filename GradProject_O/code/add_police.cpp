@@ -211,3 +211,13 @@ void CAddPolice::ReachRoad()
 	m_nNowRoad++;
 	SetRoadTarget(m_Path[m_nNowRoad]->pRoad);
 }
+
+//===============================================
+// ’Ç‰ÁŒxŽ@‚ÌÀ•W‚Ì‘—M
+//===============================================
+void CAddPolice::SendPosition()
+{
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendAddPdPos(GetId(), GetPosition());
+}

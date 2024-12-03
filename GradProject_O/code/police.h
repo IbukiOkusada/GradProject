@@ -112,6 +112,8 @@ protected:
 		m_stateInfo.fTimerOrigin = fTimer; 
 	}
 
+	virtual void SendPosition() override;
+
 	// ƒƒ“ƒo•Ï”
 	SState m_stateInfo;	// ó‘ÔŠÇ—î•ñ
 

@@ -1197,7 +1197,7 @@ void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos)
 	memcpy(&aSendData[byte], &nProt, sizeof(int));
 	byte += sizeof(int);
 
-	// À•W‚ğ‘}“ü
+	// ID‚ğ‘}“ü
 	memcpy(&aSendData[byte], &nId, sizeof(int));
 	byte += sizeof(int);
 
@@ -1224,7 +1224,7 @@ void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos)
 	memcpy(&aSendData[byte], &nProt, sizeof(int));
 	byte += sizeof(int);
 
-	// À•W‚ğ‘}“ü
+	// Id‚ğ‘}“ü
 	memcpy(&aSendData[byte], &nId, sizeof(int));
 	byte += sizeof(int);
 
@@ -1251,7 +1251,7 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos)
 	memcpy(&aSendData[byte], &nProt, sizeof(int));
 	byte += sizeof(int);
 
-	// À•W‚ğ‘}“ü
+	// Id‚ğ‘}“ü
 	memcpy(&aSendData[byte], &nId, sizeof(int));
 	byte += sizeof(int);
 

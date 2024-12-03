@@ -132,6 +132,7 @@ protected:	// 派生クラスからもアクセス可能
 	void TailLamp();
 	virtual void Break();
 	void Set();
+	virtual void SendPosition();
 
 	// メンバ変数
 	CObjectX* m_pObj;

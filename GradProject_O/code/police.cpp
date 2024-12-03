@@ -457,3 +457,13 @@ void CPolice::SetStateStop(void)
 	// ó‘Ô•ÏX
 	m_stateInfo.state = STATE::STATE_STOP;
 }
+
+//===============================================
+// ŒxŽ@‚ÌÀ•W‚Ì‘—M
+//===============================================
+void CPolice::SendPosition()
+{
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendPdPos(GetId(), GetPosition());
+}

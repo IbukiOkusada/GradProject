@@ -102,6 +102,16 @@ void CCar::Update(void)
 	{
 		RecvInerSet();
 	}
+	else
+	{
+		CNetWork* pNet = CNetWork::GetInstance();
+
+		// 座標送信
+		if (pNet->GetTime()->IsOK())
+		{
+			SendPosition();
+		}
+	}
 
 	// 座標系設定
 	Set();
@@ -470,4 +480,14 @@ void CCar::RecvInerSet()
 		m_Info.rot = rot;
 		Adjust(m_Info.rot);
 	}
+}
+
+//===============================================
+// 車の座標の更新
+//===============================================
+void CCar::SendPosition()
+{
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendCarPos(GetId(), GetPosition());
 }
