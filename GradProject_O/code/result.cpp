@@ -33,6 +33,11 @@
 //==========================================================
 namespace OBJ
 {
+	const char* CLEAR_TEX_PATH = "data\\TEXTURE\\result_clear.png";
+	const float CLEAR_WIDTH = 250.0f;		// 横幅
+	const float CLEAR_HEIGHT = 70.0f;		// 横幅
+	const D3DXVECTOR3 CLEAR_POS = D3DXVECTOR3(300.0f, 100.0f, 0.0f);
+
 	const char* DELI_TEX_PATH = "data\\TEXTURE\\result_deli.png";
 	const float DELI_WIDTH = 120.0f;		// 横幅
 
@@ -43,9 +48,10 @@ namespace OBJ
 	const char* LIFE_TEX_PATH = "data\\TEXTURE\\result_life.png";
 	const float LIFE_WIDTH = 120.0f;		// 横幅
 
+
 	const float HEIGHT = 50.0f;			// 高さ
 	const float INTERVAL_Y = 110.0f;	// 間隔
-	const D3DXVECTOR3 POS = D3DXVECTOR3(300.0f, 220.0f, 0.0f);
+	const D3DXVECTOR3 POS = D3DXVECTOR3(300.0f, 240.0f, 0.0f);
 }
 
 namespace NUMBER
@@ -56,11 +62,12 @@ namespace NUMBER
 	const float INTERVAL_OBJ = 60.0f;	// 文字のオブジェクトとの間隔
 	const int TIME_OBJ = 3;				// タイムのオブジェクトの数
 	const int LIFE_OBJ = 3;				// 体力のオブジェクトの数
+	const int EVAL_OBJ = 2;				// 総合評価のオブジェクトの数
 }
 
 namespace PLAYER
 {
-	const D3DXVECTOR3 POS = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	const D3DXVECTOR3 POS = D3DXVECTOR3(0.0f, 40.0f, 0.0f);
 }
 
 namespace
@@ -69,10 +76,10 @@ namespace
 	const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 }
 // 静的メンバ変数
-int CResult::m_nScore = 0;
 int CResult::m_nDeli = 0;
 float CResult::m_fTime = 0.0f;
 float CResult::m_fLife = 0.0f;
+float CResult::m_nScore = 0.0f;
 
 //===============================================
 // コンストラクタ
@@ -128,6 +135,8 @@ HRESULT CResult::Init(void)
 	m_fTime = CTimer::GetTime();
 	m_fLife = CManager::GetInstance()->GetLife();
 
+	m_nScore = ((float)m_nDeli + m_fTime / 100.0f + m_fLife / 100.0f) * 10.0f;
+
 	for (int nCnt = 0; nCnt < 3; nCnt++)
 	{
 		switch (nCnt)
@@ -143,15 +152,15 @@ HRESULT CResult::Init(void)
 			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
 			// 届けた数のオブジェクト生成
-			m_pDeliObject2D = CNumber::Create(D3DXVECTOR3(
+			m_pDeliNumber = CNumber::Create(D3DXVECTOR3(
 				m_pScoreObj[nCnt]->GetPosition().x + OBJ::DELI_WIDTH + NUMBER::INTERVAL_OBJ,
 				m_pScoreObj[nCnt]->GetPosition().y,
 				0.0f),
 				NUMBER::WIDTH,
 				NUMBER::HEIGHT);
 
-			m_pDeliObject2D->SetIdx(m_nDeli);
-			m_pDeliObject2D->GetObject2D()->SetCol(INIT_COL);
+			m_pDeliNumber->SetIdx(m_nDeli);
+			m_pDeliNumber->GetObject2D()->SetCol(INIT_COL);
 
 			break;
 
@@ -168,18 +177,18 @@ HRESULT CResult::Init(void)
 			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
 			// 残りタイムのオブジェクト生成
-			for (int Cnt = 0; Cnt < 3; Cnt++)
+			for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ; Cnt++)
 			{
-				m_pTimeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(
+				m_pTimeNumber[Cnt] = CNumber::Create(D3DXVECTOR3(
 					m_pScoreObj[nCnt]->GetPosition().x + OBJ::TIME_WIDTH + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * Cnt,
 					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
 					NUMBER::HEIGHT);
 
-				Calculation(&m_TimeObj[Cnt], m_fTime, Cnt, NUMBER::TIME_OBJ);
-				m_pTimeObject2D[Cnt]->SetIdx(m_TimeObj[Cnt]);
-				m_pTimeObject2D[Cnt]->GetObject2D()->SetCol(INIT_COL);
+				Calculation(&m_TimeObj[Cnt], m_fTime, Cnt, NUMBER::TIME_OBJ, CResult::TYPE_TIME);
+				m_pTimeNumber[Cnt]->SetIdx(m_TimeObj[Cnt]);
+				m_pTimeNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
 			}
 
 			break;
@@ -197,17 +206,17 @@ HRESULT CResult::Init(void)
 			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
 			// 残り体力のオブジェクト生成
-			for (int Cnt = 0; Cnt < 3; Cnt++)
+			for (int Cnt = 0; Cnt < NUMBER::LIFE_OBJ; Cnt++)
 			{
-				m_pLifeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(
+				m_pLifeNumber[Cnt] = CNumber::Create(D3DXVECTOR3(
 					m_pScoreObj[nCnt]->GetPosition().x + OBJ::LIFE_WIDTH + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * Cnt,
 					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
 					NUMBER::HEIGHT);
-				Calculation(&m_LifeObj[Cnt], m_fLife, Cnt, NUMBER::LIFE_OBJ);
-				m_pLifeObject2D[Cnt]->SetIdx(m_LifeObj[Cnt]);
-				m_pLifeObject2D[Cnt]->GetObject2D()->SetCol(INIT_COL);
+				Calculation(&m_LifeObj[Cnt], m_fLife, Cnt, NUMBER::LIFE_OBJ, CResult::TYPE_LIFE);
+				m_pLifeNumber[Cnt]->SetIdx(m_LifeObj[Cnt]);
+				m_pLifeNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
 			}
 
 			break;
@@ -216,6 +225,29 @@ HRESULT CResult::Init(void)
 			break;
 		}
 	}
+
+	// 届けた数の文字のオブジェクト生成
+	m_pObj = CObject2D::Create(D3DXVECTOR3(OBJ::CLEAR_POS.x, OBJ::CLEAR_POS.y, 0.0f),
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		7);
+
+	m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::CLEAR_TEX_PATH));
+	m_pObj->SetSize(OBJ::CLEAR_WIDTH, OBJ::CLEAR_HEIGHT);
+
+	//m_nScore = 4.8f * 10.0f;
+
+	// 総合評価のオブジェクト生成
+	for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
+	{
+		m_pEvalNumber[Cnt] = CNumber::Create(D3DXVECTOR3(300.0f + NUMBER::INTERVAL * Cnt, 600.0f, 0.0f),
+			NUMBER::WIDTH,
+			NUMBER::HEIGHT);
+
+		Calculation(&m_EvalObj[Cnt], m_nScore, Cnt, NUMBER::EVAL_OBJ, CResult::TYPE_EVAL);
+		m_pEvalNumber[Cnt]->SetIdx(m_EvalObj[Cnt]);
+		//m_pEvalNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
+	}
+
 
 	//CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT);
 
@@ -236,27 +268,27 @@ void CResult::Uninit(void)
 		}
 	}
 
-	if (m_pDeliObject2D != NULL)
+	if (m_pDeliNumber != NULL)
 	{
-		m_pDeliObject2D->Uninit();
-		m_pDeliObject2D = NULL;
+		m_pDeliNumber->Uninit();
+		m_pDeliNumber = NULL;
 	}
 
 	for (int Cnt = 0; Cnt < 3; Cnt++)
 	{
-		if (m_pTimeObject2D[Cnt] != NULL)
+		if (m_pTimeNumber[Cnt] != NULL)
 		{
-			m_pTimeObject2D[Cnt]->Uninit();
-			m_pTimeObject2D[Cnt] = NULL;
+			m_pTimeNumber[Cnt]->Uninit();
+			m_pTimeNumber[Cnt] = NULL;
 		}
 	}
 
 	for (int Cnt = 0; Cnt < 3; Cnt++)
 	{
-		if (m_pLifeObject2D[Cnt] != NULL)
+		if (m_pLifeNumber[Cnt] != NULL)
 		{
-			m_pLifeObject2D[Cnt]->Uninit();
-			m_pLifeObject2D[Cnt] = NULL;
+			m_pLifeNumber[Cnt]->Uninit();
+			m_pLifeNumber[Cnt] = NULL;
 		}
 	}
 
@@ -292,13 +324,9 @@ void CResult::Update(void)
 
 			col.a += ALPHA_ADD;
 			m_pScoreObj[m_Display]->SetCol(col);
-			m_pDeliObject2D->GetObject2D()->SetCol(col);
+			m_pDeliNumber->GetObject2D()->SetCol(col);
 
-			if (col.a >= 1.0f)
-			{
-				col.a = 1.0f;
-				m_Display++;
-			}
+			AlphaJudge(col.a);
 
 			break;
 
@@ -309,14 +337,11 @@ void CResult::Update(void)
 			m_pScoreObj[m_Display]->SetCol(col);
 			for (int Cnt = 0; Cnt < 3; Cnt++)
 			{
-				m_pTimeObject2D[Cnt]->GetObject2D()->SetCol(col);
+				m_pTimeNumber[Cnt]->GetObject2D()->SetCol(col);
 			}
 
-			if (col.a >= 1.0f)
-			{
-				col.a = 1.0f;
-				m_Display++;
-			}
+			AlphaJudge(col.a);
+
 			break;
 
 		case 2:
@@ -326,14 +351,11 @@ void CResult::Update(void)
 			m_pScoreObj[m_Display]->SetCol(col);
 			for (int Cnt = 0; Cnt < 3; Cnt++)
 			{
-				m_pLifeObject2D[Cnt]->GetObject2D()->SetCol(col);
+				m_pLifeNumber[Cnt]->GetObject2D()->SetCol(col);
 			}
 
-			if (col.a >= 1.0f)
-			{
-				col.a = 1.0f;
-				m_Display++;
-			}
+			AlphaJudge(col.a);
+
 			break;
 
 		default:
@@ -355,7 +377,7 @@ void CResult::Draw(void)
 //===============================================
 // ナンバー表示のための計算
 //===============================================
-void CResult::Calculation(int* Obj, float Score, int Cnt, int ObjMax)
+void CResult::Calculation(int* Obj, float Score, int Cnt, int ObjMax, TYPE_OBJ Type)
 {
 	int nCal = 1;
 	bool bFirst = false;
@@ -376,18 +398,74 @@ void CResult::Calculation(int* Obj, float Score, int Cnt, int ObjMax)
 		Cnt--;
 	}
 
-	switch (Cnt)
+	switch (Type)
 	{
-	case 0:
-		*Obj = ((int)Score) / nCal;
+	case CResult::TYPE_TIME:
+		switch (Cnt)
+		{
+		case 0:
+			*Obj = ((int)Score) / nCal;
+			break;
+
+		case NUMBER::TIME_OBJ - 1:
+			*Obj = ((int)Score) % nCal;
+			break;
+
+		default:
+			*Obj = ((int)Score) % nCal / (nCal / 10);
+			break;
+		}
 		break;
 
-	case NUMBER::LIFE_OBJ - 1:
-		*Obj = ((int)Score) % nCal;
+
+	case CResult::TYPE_LIFE:
+		switch (Cnt)
+		{
+		case 0:
+			*Obj = ((int)Score) / nCal;
+			break;
+
+		case NUMBER::LIFE_OBJ - 1:
+			*Obj = ((int)Score) % nCal;
+			break;
+
+		default:
+			*Obj = ((int)Score) % nCal / (nCal / 10);
+			break;
+		}
+
+		break;
+
+	case CResult::TYPE_EVAL:
+		switch (Cnt)
+		{
+		case 0:
+			*Obj = ((int)Score) / nCal;
+			break;
+
+		case NUMBER::EVAL_OBJ - 1:
+			*Obj = ((int)Score) % nCal;
+			break;
+
+		default:
+			*Obj = ((int)Score) % nCal / (nCal / 10);
+			break;
+		}
+
 		break;
 
 	default:
-		*Obj = ((int)Score) % nCal / (nCal / 10);
 		break;
+	}
+}
+
+//===============================================
+// アルファ値の判定
+//===============================================
+void CResult::AlphaJudge(float Alpha)
+{
+	if (Alpha >= 1.0f)
+	{
+		m_Display++;
 	}
 }
