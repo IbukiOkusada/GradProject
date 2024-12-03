@@ -29,7 +29,7 @@ public:
 	void Clear();					// リストを空にする
 
 	// 取得系関数
-	std::map<int, T>& GetList();		// リストを取得
+	std::map<int, T>* GetList();		// リストを取得
 	int GetNum();					// リストのサイズ取得
 	T Get(int nId);					// IDから本体を取得
 	int Get(T data);				// データからIDを取得
@@ -168,9 +168,9 @@ void Cmaplist<T>::Clear()
 // リストを取得
 //===============================================
 template <typename T>
-std::map<int, T>& Cmaplist<T>::GetList()
+std::map<int, T>* Cmaplist<T>::GetList()
 {
-	return m_list;
+	return &m_list;
 }
 
 //===============================================

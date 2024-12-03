@@ -56,7 +56,7 @@ HRESULT CEdit_Goal::Init(void)
 	std::vector<int> id;
 	id.clear();
 
-	for (const auto& ite : list.GetList())
+	for (const auto& ite : *list.GetList())
 	{
 		id.push_back(ite.first);
 	}

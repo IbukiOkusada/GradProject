@@ -15,6 +15,7 @@
 #include "a_star.h"
 #include "particle3D.h"
 #include "inspection_manager.h"
+#include "network.h"
 
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace
@@ -359,6 +360,8 @@ void CInspection::Collision()
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }
 
+	auto net = CNetWork::GetInstance();
+
 	for (int i = 0; i < InstpectionData::NUM_EFFECT; i++)
 	{
 		if (m_LagerInfo.apEffect[i] == nullptr) { continue; }
@@ -376,6 +379,7 @@ void CInspection::Collision()
 		{
 			// ’ÇÕ
 			Start();
+			net->SendEndInspection(m_Info.nId);
 			return;
 		}
 		// ŒxŽ@‚ªŠù‚Éo”­Ï‚Ý
@@ -384,6 +388,7 @@ void CInspection::Collision()
 		{
 			// ’ÇÕ
 			Start();
+			net->SendEndInspection(m_Info.nId);
 			return;
 		}
 	}

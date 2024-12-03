@@ -59,7 +59,8 @@ private:
 	CObject2D *m_pObjClear;		// clearしたかどうか
 	CPlayerResult* m_pPlayer;	// リザルトプレイヤーのポインタ
 
-	CObject2D* m_pObj[3];		// clearしたかどうか
+	CObject2D* m_pObj;			// オブジェクト
+	CObject2D* m_pScoreObj[3];	// 各スコアの文字のオブジェクト
 	CNumber* m_pDeliObject2D;	// 届けた数のオブジェクト
 	CNumber* m_pTimeObject2D[3];// 残りタイムのオブジェクト
 	CNumber* m_pLifeObject2D[3];// 残り体力のオブジェクト
