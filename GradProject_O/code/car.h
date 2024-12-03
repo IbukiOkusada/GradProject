@@ -121,6 +121,7 @@ public:	// 誰でもアクセス可能
 
 	// 受信用情報
 	void SetRecvPosition(const D3DXVECTOR3& pos) { m_RecvInfo.pos = pos; }
+	void SetRecvRotation(const D3DXVECTOR3& rot) { m_RecvInfo.rot = rot; }
 
 protected:	// 派生クラスからもアクセス可能
 

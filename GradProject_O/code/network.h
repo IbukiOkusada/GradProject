@@ -61,9 +61,9 @@ public:
 	void SendTutorialOk();
 	void SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx);
 	void SendEndInspection(int nId);
-	void SendCarPos(int nId, const D3DXVECTOR3& pos);
-	void SendPdPos(int nId, const D3DXVECTOR3& pos);
-	void SendAddPdPos(int nId, const D3DXVECTOR3& pos);
+	void SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	void SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	void SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
 
 	// ÉÅÉìÉoä÷êî(ê›íË)
 

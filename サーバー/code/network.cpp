@@ -884,7 +884,7 @@ void CNetWork::CommandEndInspection(const int nId, const char* pRecvData, CClien
 void CNetWork::CommandCarPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
 	int byte = 0;
 	int recvbyte = 0;
 
@@ -892,6 +892,10 @@ void CNetWork::CommandCarPos(const int nId, const char* pRecvData, CClient* pCli
 
 	// IDを挿入
 	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
 	byte += sizeof(int);
 
 	// 車のID挿入
@@ -904,6 +908,13 @@ void CNetWork::CommandCarPos(const int nId, const char* pRecvData, CClient* pCli
 	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 向き挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);
@@ -915,7 +926,7 @@ void CNetWork::CommandCarPos(const int nId, const char* pRecvData, CClient* pCli
 void CNetWork::CommandPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
 	int byte = 0;
 	int recvbyte = 0;
 
@@ -923,6 +934,10 @@ void CNetWork::CommandPdPos(const int nId, const char* pRecvData, CClient* pClie
 
 	// IDを挿入
 	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
 	byte += sizeof(int);
 
 	// 車のID挿入
@@ -935,6 +950,13 @@ void CNetWork::CommandPdPos(const int nId, const char* pRecvData, CClient* pClie
 	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 向き挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);
@@ -946,7 +968,7 @@ void CNetWork::CommandPdPos(const int nId, const char* pRecvData, CClient* pClie
 void CNetWork::CommandAddPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
 	int byte = 0;
 	int recvbyte = 0;
 
@@ -954,6 +976,10 @@ void CNetWork::CommandAddPdPos(const int nId, const char* pRecvData, CClient* pC
 
 	// IDを挿入
 	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
 	byte += sizeof(int);
 
 	// 車のID挿入
@@ -966,6 +992,13 @@ void CNetWork::CommandAddPdPos(const int nId, const char* pRecvData, CClient* pC
 	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 向き挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
+	*pNowByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);

@@ -219,5 +219,5 @@ void CAddPolice::SendPosition()
 {
 	CNetWork* pNet = CNetWork::GetInstance();
 
-	pNet->SendAddPdPos(GetId(), GetPosition());
+	pNet->SendAddPdPos(GetId(), GetPosition(), GetRotation());
 }

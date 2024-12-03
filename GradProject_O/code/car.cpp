@@ -32,7 +32,7 @@ namespace
 	const float ROT_CURVE = (0.15f);			// カーブ判定角度
 	const float LENGTH_POINT = (200.0f);		// 到達判定距離
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
-	const float RECV_INER = (0.65f);		// 受信したデータの慣性
+	const float RECV_INER = (0.5f);		// 受信したデータの慣性
 }
 
 //==========================================================
@@ -113,6 +113,8 @@ void CCar::Update(void)
 		}
 	}
 
+	CDebugProc::GetInstance()->Print("車の座標 : [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+
 	// 座標系設定
 	Set();
 }
@@ -157,6 +159,7 @@ void CCar::TailLamp()
 //==========================================================
 void CCar::Move()
 {
+	if (!IsActive()) { return; }
 	if (!m_Info.bBreak)
 	{
 		// 角度調整
@@ -463,19 +466,14 @@ void CCar::RecvInerSet()
 		D3DXVECTOR3 diff = m_RecvInfo.pos - m_Info.pos;
 		D3DXVECTOR3 pos = m_Info.pos + diff * RECV_INER;
 		m_Info.pos = pos;
-
-		float f = atan2f(diff.x, diff.z);
-		Adjust(f);
-		m_RecvInfo.rot.y = f;
 	}
 
 	// 向き
 	{
-
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
 		Adjust(diff);
 
-		D3DXVECTOR3 rot = m_Info.rot + diff * (RECV_INER * 0.5f);
+		D3DXVECTOR3 rot = m_Info.rot + diff;
 		Adjust(rot);
 		m_Info.rot = rot;
 		Adjust(m_Info.rot);
@@ -489,5 +487,5 @@ void CCar::SendPosition()
 {
 	CNetWork* pNet = CNetWork::GetInstance();
 
-	pNet->SendCarPos(GetId(), GetPosition());
+	pNet->SendCarPos(GetId(), GetPosition(), GetRotation());
 }

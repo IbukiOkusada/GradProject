@@ -465,5 +465,5 @@ void CPolice::SendPosition()
 {
 	CNetWork* pNet = CNetWork::GetInstance();
 
-	pNet->SendPdPos(GetId(), GetPosition());
+	pNet->SendPdPos(GetId(), GetPosition(), GetRotation());
 }
