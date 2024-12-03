@@ -30,14 +30,14 @@ namespace
 	};
 
 	const std::string GIMMICKFILENAME[CScene::MODE_MAX] = {	// ギミックファイル名
-		"data\\FILE\\map\\gimmick.bin",
+		"",
 		"data\\FILE\\map\\gimmick.bin",
 		"data\\FILE\\map\\gimmick.bin",
 		"data\\FILE\\map\\gimmick.bin",
 	};
 
 	const std::string GOALFILENAME[CScene::MODE_MAX] = {	// ゴールファイル名
-		"data\\FILE\\map\\goal.bin",
+		"",
 		"data\\FILE\\map\\goal.bin",
 		"data\\FILE\\map\\goal.bin",
 		"data\\FILE\\map\\goal.bin",

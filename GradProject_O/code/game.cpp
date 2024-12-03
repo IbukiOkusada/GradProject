@@ -276,6 +276,9 @@ void CGame::Uninit(void)
     // エディット設定
     CEditManager::Release();
 
+    // マップマネージャー廃棄
+    CMapManager::Release();
+
     m_state = STATE_LOCAL;
 }
 

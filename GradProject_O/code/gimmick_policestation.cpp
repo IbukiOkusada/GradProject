@@ -93,6 +93,7 @@ void CGimmickPoliceStation::Uninit(void)
 //==========================================================
 void CGimmickPoliceStation::Update(void)
 {
+	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_TITLE) { return; }
 	if (m_pObj == nullptr) { return; }
 
 	// インターバルが終わっていない

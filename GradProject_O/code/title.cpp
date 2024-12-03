@@ -17,7 +17,7 @@
 #include "input_gamepad.h"
 #include "input_keyboard.h"
 #include "object2D.h"
-#include "TitleMap.h"
+#include "map_manager.h"
 #include "meshfield.h"
 #include "PlayerTitle.h"
 #include "PoliceTitle.h"
@@ -193,6 +193,9 @@ void CTitle::Uninit(void)
 
 	//オブジェクト破棄
 	SAFE_UNINIT(m_pPlayer);
+
+	// マップ情報廃棄
+	CMapManager::Release();
 }
 //<===============================================
 //更新処理
@@ -454,7 +457,7 @@ void CTitle::PreMove(void)
 		if (!m_bPush)
 		{
 			//ランキング画面に移行
-			if (m_nCounterRanking <= 0) { CManager::GetInstance()->GetFade()->Set(CScene::MODE_RANKING); }
+			if (m_nCounterRanking <= 0) { CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT); }
 			else { m_nCounterRanking--; }
 		}
 	}
@@ -547,7 +550,8 @@ void CTitle::InitingP_E(void)
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PRESSENTER));
 
 		//必要なオブジェクトの生成
-		CTitleMap::GetInstance()->Load();
+		//マップ読み込み
+		CMapManager::GetInstance()->Load();
 		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), VECTOR3_ZERO, 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
 
