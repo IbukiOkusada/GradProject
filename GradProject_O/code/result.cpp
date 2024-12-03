@@ -134,18 +134,18 @@ HRESULT CResult::Init(void)
 		{
 		case 0:
 			// 届けた数の文字のオブジェクト生成
-			m_pObj[nCnt] = CObject2D::Create(D3DXVECTOR3(OBJ::POS.x, OBJ::POS.y, 0.0f),
+			m_pScoreObj[nCnt] = CObject2D::Create(D3DXVECTOR3(OBJ::POS.x, OBJ::POS.y, 0.0f),
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				7);
 
-			m_pObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::DELI_TEX_PATH));
-			m_pObj[nCnt]->SetSize(OBJ::DELI_WIDTH, OBJ::HEIGHT);
-			m_pObj[nCnt]->SetCol(INIT_COL);
+			m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::DELI_TEX_PATH));
+			m_pScoreObj[nCnt]->SetSize(OBJ::DELI_WIDTH, OBJ::HEIGHT);
+			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
 			// 届けた数のオブジェクト生成
 			m_pDeliObject2D = CNumber::Create(D3DXVECTOR3(
-				m_pObj[nCnt]->GetPosition().x + OBJ::DELI_WIDTH + NUMBER::INTERVAL_OBJ,
-				m_pObj[nCnt]->GetPosition().y,
+				m_pScoreObj[nCnt]->GetPosition().x + OBJ::DELI_WIDTH + NUMBER::INTERVAL_OBJ,
+				m_pScoreObj[nCnt]->GetPosition().y,
 				0.0f),
 				NUMBER::WIDTH,
 				NUMBER::HEIGHT);
@@ -157,22 +157,22 @@ HRESULT CResult::Init(void)
 
 		case 1:
 			// 残りタイムの文字のオブジェクト生成
-			m_pObj[nCnt] = CObject2D::Create(D3DXVECTOR3(OBJ::POS.x + OBJ::TIME_POS_ADJUST,
+			m_pScoreObj[nCnt] = CObject2D::Create(D3DXVECTOR3(OBJ::POS.x + OBJ::TIME_POS_ADJUST,
 				OBJ::POS.y + OBJ::INTERVAL_Y * nCnt,
 				0.0f),
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				7);
 
-			m_pObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::TIME_TEX_PATH));
-			m_pObj[nCnt]->SetSize(OBJ::TIME_WIDTH, OBJ::HEIGHT);
-			m_pObj[nCnt]->SetCol(INIT_COL);
+			m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::TIME_TEX_PATH));
+			m_pScoreObj[nCnt]->SetSize(OBJ::TIME_WIDTH, OBJ::HEIGHT);
+			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
 			// 残りタイムのオブジェクト生成
 			for (int Cnt = 0; Cnt < 3; Cnt++)
 			{
 				m_pTimeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(
-					m_pObj[nCnt]->GetPosition().x + OBJ::TIME_WIDTH + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * Cnt,
-					m_pObj[nCnt]->GetPosition().y,
+					m_pScoreObj[nCnt]->GetPosition().x + OBJ::TIME_WIDTH + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * Cnt,
+					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
 					NUMBER::HEIGHT);
@@ -186,22 +186,22 @@ HRESULT CResult::Init(void)
 
 		case 2:
 			// 残り体力の文字のオブジェクト生成
-			m_pObj[nCnt] = CObject2D::Create(D3DXVECTOR3(OBJ::POS.x,
+			m_pScoreObj[nCnt] = CObject2D::Create(D3DXVECTOR3(OBJ::POS.x,
 				OBJ::POS.y + OBJ::INTERVAL_Y * nCnt,
 				0.0f),
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				7);
 
-			m_pObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::LIFE_TEX_PATH));
-			m_pObj[nCnt]->SetSize(OBJ::LIFE_WIDTH, OBJ::HEIGHT);
-			m_pObj[nCnt]->SetCol(INIT_COL);
+			m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::LIFE_TEX_PATH));
+			m_pScoreObj[nCnt]->SetSize(OBJ::LIFE_WIDTH, OBJ::HEIGHT);
+			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
 			// 残り体力のオブジェクト生成
 			for (int Cnt = 0; Cnt < 3; Cnt++)
 			{
 				m_pLifeObject2D[Cnt] = CNumber::Create(D3DXVECTOR3(
-					m_pObj[nCnt]->GetPosition().x + OBJ::LIFE_WIDTH + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * Cnt,
-					m_pObj[nCnt]->GetPosition().y,
+					m_pScoreObj[nCnt]->GetPosition().x + OBJ::LIFE_WIDTH + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * Cnt,
+					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
 					NUMBER::HEIGHT);
@@ -229,10 +229,10 @@ void CResult::Uninit(void)
 {
 	for (int Cnt = 0; Cnt < 3; Cnt++)
 	{
-		if (m_pObj[Cnt] != NULL)
+		if (m_pScoreObj[Cnt] != NULL)
 		{
-			m_pObj[Cnt]->Uninit();
-			m_pObj[Cnt] = NULL;
+			m_pScoreObj[Cnt]->Uninit();
+			m_pScoreObj[Cnt] = NULL;
 		}
 	}
 
@@ -288,10 +288,10 @@ void CResult::Update(void)
 		switch (m_Display)
 		{
 		case 0:
-			col = m_pObj[m_Display]->GetCol();
+			col = m_pScoreObj[m_Display]->GetCol();
 
 			col.a += ALPHA_ADD;
-			m_pObj[m_Display]->SetCol(col);
+			m_pScoreObj[m_Display]->SetCol(col);
 			m_pDeliObject2D->GetObject2D()->SetCol(col);
 
 			if (col.a >= 1.0f)
@@ -303,10 +303,10 @@ void CResult::Update(void)
 			break;
 
 		case 1:
-			col = m_pObj[m_Display]->GetCol();
+			col = m_pScoreObj[m_Display]->GetCol();
 
 			col.a += ALPHA_ADD;
-			m_pObj[m_Display]->SetCol(col);
+			m_pScoreObj[m_Display]->SetCol(col);
 			for (int Cnt = 0; Cnt < 3; Cnt++)
 			{
 				m_pTimeObject2D[Cnt]->GetObject2D()->SetCol(col);
@@ -320,10 +320,10 @@ void CResult::Update(void)
 			break;
 
 		case 2:
-			col = m_pObj[m_Display]->GetCol();
+			col = m_pScoreObj[m_Display]->GetCol();
 
 			col.a += ALPHA_ADD;
-			m_pObj[m_Display]->SetCol(col);
+			m_pScoreObj[m_Display]->SetCol(col);
 			for (int Cnt = 0; Cnt < 3; Cnt++)
 			{
 				m_pLifeObject2D[Cnt]->GetObject2D()->SetCol(col);
