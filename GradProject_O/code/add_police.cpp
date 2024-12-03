@@ -33,7 +33,7 @@ Clist<CAddPolice*> CAddPolice::m_List = {};
 //==========================================================
 // コンストラクタ
 //==========================================================
-CAddPolice::CAddPolice()
+CAddPolice::CAddPolice(int nId) : CPolice(nId)
 {
 	m_SpawnPos = VECTOR3_ZERO;
 	m_List.Regist(this);
@@ -52,11 +52,11 @@ CAddPolice::~CAddPolice()
 //==========================================================
 // 生成
 //==========================================================
-CAddPolice* CAddPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move)
+CAddPolice* CAddPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId)
 {
 	CAddPolice* pCar = nullptr;
 
-	pCar = DEBUG_NEW CAddPolice;
+	pCar = DEBUG_NEW CAddPolice(nId);
 
 	if (pCar != nullptr)
 	{

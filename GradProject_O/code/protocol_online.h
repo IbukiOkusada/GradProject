@@ -35,6 +35,9 @@ namespace NetWork
 		COMMAND_TUTORIAL_END,	// エントリー終了
 		COMMAND_SET_INSP,		// 検問設置
 		COMMAND_END_INSP,		// 検問廃棄
+		COMMAND_CAR_POS,		// 車座標
+		COMMAND_PD_POS,			// 警察座標
+		COMMAND_ADDPD_POS,		// 追加警察座標
 		COMMAND_MAX
 	};
 

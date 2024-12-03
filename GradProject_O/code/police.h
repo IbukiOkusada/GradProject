@@ -37,12 +37,6 @@ public:
 		STATE_MAX
 	};
 
-	// 種類列挙
-	enum TYPE
-	{
-
-	};
-
 private:	// 自分だけがアクセス可能
 
 	// 情報構造体
@@ -50,11 +44,10 @@ private:	// 自分だけがアクセス可能
 	{
 		CPlayer* pPlayer;
 		int nChaseCount;
-		int nId;
 		bool bChase;
 
 		// コンストラクタ
-		SInfo() : pPlayer(nullptr), nChaseCount(0), bChase(false), nId(-1) {}
+		SInfo() : pPlayer(nullptr), nChaseCount(0), bChase(false) {}
 	};
 
 protected:
@@ -72,28 +65,26 @@ protected:
 
 public:	// 誰でもアクセス可能
 
-	CPolice();	// コンストラクタ(オーバーロード)
+	CPolice(int nId);	// コンストラクタ(オーバーロード)
 	virtual ~CPolice() override;	// デストラクタ
 
 	// メンバ関数
 	HRESULT Init(void) override;
 	void Uninit(void);
 	void Update(void);
-	static CPolice*Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move);
+	static CPolice* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId);
 
 	// メンバ関数(取得)
 	STATE GetState() { return m_stateInfo.state; }
 	CPlayer* GetPlayer() { return m_Info.pPlayer; }
 	bool GetChase() { return m_Info.bChase; }
 	int GetChaseCount() { return m_Info.nChaseCount; }
-	int GetId() { return m_Info.nId; }
 
 	// メンバ関数(設定)
 	void SetState(const STATE state);
 	void SetPlayer(CPlayer* pPlayer) { m_Info.pPlayer = pPlayer; }
 	void SetChase(bool bChase) { m_Info.bChase = bChase; }
 	void SetChaseCount(int bChaseCount) { m_Info.nChaseCount = bChaseCount; }
-	void BindId(int nId) { m_Info.nId = nId; }
 
 protected:
 

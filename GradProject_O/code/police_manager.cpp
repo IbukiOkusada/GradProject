@@ -112,6 +112,7 @@ void CPoliceManager::Release(void)
 void CPoliceManager::ListIn(CPolice* pPolice)
 {
 	GetList()->Regist(pPolice);
+	IdListIn(pPolice);
 }
 
 //==========================================================
@@ -121,6 +122,24 @@ void CPoliceManager::ListOut(CPolice* pPolice)
 {
 	// リストから自分自身を削除する
 	GetList()->Delete(pPolice);
+	IdListOut(pPolice);
+}
+
+//==========================================================
+// Idリストに挿入
+//==========================================================
+void CPoliceManager::IdListIn(CPolice* pPolice)
+{
+	m_maplist.Regist(pPolice->GetId(), pPolice);
+}
+
+//==========================================================
+// Idリストから外す
+//==========================================================
+void CPoliceManager::IdListOut(CPolice* pPolice)
+{
+	// リストから自分自身を削除する
+	m_maplist.Delete(pPolice->GetId(), pPolice);
 }
 
 //==========================================================

@@ -84,7 +84,7 @@ HRESULT CInspection::Init(void)
 		goalpos.x += sinf(rot.y) * POLICE_SETLENGTH;
 		goalpos.z += cosf(rot.y) * POLICE_SETLENGTH;
 
-		m_aPoliceInfo[i].pPolice = CAddPolice::Create(pos, VECTOR3_ZERO, VECTOR3_ZERO);
+		m_aPoliceInfo[i].pPolice = CAddPolice::Create(pos, VECTOR3_ZERO, VECTOR3_ZERO, 0);
 		m_aPoliceInfo[i].goalpos = goalpos;
 
 		// åoòHÇê›íË

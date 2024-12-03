@@ -17,6 +17,7 @@
 #include "add_police.h"
 #include "debugproc.h"
 #include "road_manager.h"
+#include "car_manager.h"
 
 // ’è”’è‹`
 namespace
@@ -130,7 +131,7 @@ void CGimmickPoliceStation::Update(void)
 	// ”ÍˆÍ“à‚Ì‚İŒx@¶¬
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO);
+	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
 	pP->SetRoadTarget(m_pRoad);
 }
 

@@ -18,6 +18,7 @@ CCarManager::CCarManager()
 	// 値のクリア
 	m_pList = nullptr;
 	m_nNum = 0;
+	m_List.Clear();
 }
 
 //==========================================================
@@ -90,6 +91,7 @@ void CCarManager::Release(void)
 void CCarManager::ListIn(CCar* pCar)
 {
 	GetList()->Regist(pCar);
+	IdListIn(pCar);
 }
 
 //==========================================================
@@ -99,6 +101,24 @@ void CCarManager::ListOut(CCar* pCar)
 {
 	// リストから自分自身を削除する
 	GetList()->Delete(pCar);
+	IdListOut(pCar);
+}
+
+//==========================================================
+// マップリストに挿入
+//==========================================================
+void CCarManager::IdListIn(CCar* pCar)
+{
+	m_List.Regist(pCar->GetId(),pCar);
+}
+
+//==========================================================
+// マップリストから外す
+//==========================================================
+void CCarManager::IdListOut(CCar* pCar)
+{
+	// リストから自分自身を削除する
+	m_List.Delete(pCar->GetId(), pCar);
 }
 
 //==========================================================

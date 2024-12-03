@@ -38,10 +38,14 @@ public:
 	Cmaplist<T>::Iteretor GetBegin();	// 先頭取得
 	Cmaplist<T>::Iteretor GetEnd();		// 終端取得
 
+	// メンバ関数
+	int GetInCnt() { return m_nInCnt; }	// 今まで登録した総数取得
+
 private:
 
 	// メンバ変数
 	std::map<int, T> m_list;	// リスト本体
+	int m_nInCnt;		// リストに登録した総数
 };
 
 //===============================================
@@ -51,6 +55,7 @@ template <typename T>
 Cmaplist<T>::Cmaplist()
 {
 	m_list.clear();
+	m_nInCnt = 0;
 }
 
 //===============================================
@@ -90,6 +95,7 @@ bool Cmaplist<T>::Regist(int nId, T data)
 	if (!IdFind(nId))
 	{
 		m_list[nId] = data;
+		m_nInCnt++;
 		return true;
 	}
 

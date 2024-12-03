@@ -57,7 +57,7 @@ CPolice::SETSTATE_FUNC CPolice::m_SetStateFunc[] =
 //==========================================================
 // コンストラクタ
 //==========================================================
-CPolice::CPolice()
+CPolice::CPolice(int nId) : CCar(nId)
 {
 	// 値のクリア
 	m_Info = SInfo();
@@ -134,11 +134,11 @@ void CPolice::Update(void)
 //==========================================================
 // 生成
 //==========================================================
-CPolice *CPolice::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move)
+CPolice *CPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId)
 {
 	CPolice *pCar = nullptr;
 
-	pCar = DEBUG_NEW CPolice;
+	pCar = DEBUG_NEW CPolice(nId);
 
 	if (pCar != nullptr)
 	{
@@ -166,7 +166,7 @@ void CPolice::MoveRoad()
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
-	if (pRoadTarget == nullptr)
+	if (pRoadTarget == nullptr && IsActive())
 		SearchRoad();
 
 	SearchPlayer();
