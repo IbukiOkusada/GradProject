@@ -51,8 +51,7 @@ public:
 	void SendJoin();
 	void SendGetId();
 	void SendDelete();
-	void SendPlPos(const D3DXVECTOR3& pos);
-	void SendPlRot(const D3DXVECTOR3& rot);
+	void SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
 	void SendPlDamage(const float nowlife);
 	void SendPlGoal(int nId);
 	void SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float fSpeed);
@@ -89,7 +88,6 @@ private:
 	void RecvGetId(int* pByte, const int nId, const char* pRecvData);
 	void RecvDelete(int* pByte, const int nId, const char* pRecvData);
 	void RecvPlPos(int* pByte, const int nId, const char* pRecvData);
-	void RecvPlRot(int* pByte, const int nId, const char* pRecvData);
 	void RecvPlDamage(int* pByte, const int nId, const char* pRecvData);
 	void RecvPlGoal(int* pByte, const int nId, const char* pRecvData);
 	void RecvGmHit(int* pByte, const int nId, const char* pRecvData);

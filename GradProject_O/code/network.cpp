@@ -47,7 +47,6 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvGetId,	// ID取得
 	&CNetWork::RecvDelete,	// 削除
 	&CNetWork::RecvPlPos,	// プレイヤー座標
-	&CNetWork::RecvPlRot,	// プレイヤー向き
 	&CNetWork::RecvPlDamage,	// プレイヤーダメージ
 	&CNetWork::RecvPlGoal,	// プレイヤーゴール
 	&CNetWork::RecvGmHit,	// ギミックヒット
@@ -544,6 +543,13 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 	// 確認バイト数を加算
 	*pByte += sizeof(D3DXVECTOR3);
 
+	// 座標に変換
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[sizeof(D3DXVECTOR3)], sizeof(D3DXVECTOR3));
+
+	// 確認バイト数を加算
+	*pByte += sizeof(D3DXVECTOR3);
+
 	// プレイヤーの存在確認
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT || nId == m_nMyIdx) { return; }
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
@@ -556,31 +562,6 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 
 	// 座標設定
 	pPlayer->SetRecvPosition(pos);
-}
-
-//===================================================
-// プレイヤーの向きを取得
-//===================================================
-void CNetWork::RecvPlRot(int* pByte, const int nId, const char* pRecvData)
-{
-	// 向きに変換
-	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	memcpy(&rot, pRecvData, sizeof(D3DXVECTOR3));
-
-	// 確認バイト数を加算
-	*pByte += sizeof(D3DXVECTOR3);
-
-	// プレイヤーの存在確認
-	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
-
-	// 生成していない場合
-	if (pPlayer == nullptr) {
-		RecvJoin(pByte, nId, pRecvData);
-		return;
-	}
-
-	// 座標設定
 	pPlayer->SetRecvRotation(rot);
 }
 
@@ -964,11 +945,11 @@ void CNetWork::SendDelete()
 //===================================================
 // プレイヤーの座標送信
 //===================================================
-void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
+void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PL_POS;
 	int byte = 0;
 
@@ -980,26 +961,7 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
 	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
 	byte += sizeof(D3DXVECTOR3);
 
-	// 送信
-	m_pClient->SetData(&aSendData[0], byte);
-}
-
-//===================================================
-// プレイヤーの向き送信
-//===================================================
-void CNetWork::SendPlRot(const D3DXVECTOR3& rot)
-{
-	if (!GetActive()) { return; }
-
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) ] = {};	// 送信用
-	int nProt = NetWork::COMMAND_PL_ROT;
-	int byte = 0;
-
-	// protocolを挿入
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
-
-	// 座標を挿入
+	// 向きを挿入
 	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
 	byte += sizeof(D3DXVECTOR3);
 

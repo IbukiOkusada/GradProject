@@ -59,7 +59,6 @@ private:
 	void CommandGetId(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandDelete(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandPlPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
-	void CommandPlRot(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandGmHit(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);

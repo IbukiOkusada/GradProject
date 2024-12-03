@@ -1333,8 +1333,7 @@ void CPlayer::SendData()
 
 	if (pNet->GetTime()->IsOK())
 	{
-		pNet->SendPlPos(m_Info.pos);
-		pNet->SendPlRot(m_Info.rot);
+		pNet->SendPlPos(m_Info.pos, m_Info.rot);
 
 		if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME)
 		{

@@ -29,7 +29,6 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandGetId,			// ID取得
 	&CNetWork::CommandDelete,			// 削除
 	&CNetWork::CommandPlPos,			// プレイヤー位置
-	&CNetWork::CommandPlRot,			// プレイヤー向き
 	&CNetWork::CommandPlDamage,			// プレイヤーダメ―ジ
 	&CNetWork::CommandPlGoal,			// プレイヤーゴール
 	&CNetWork::CommandGmHit,			// ギミック衝突
@@ -509,7 +508,7 @@ void CNetWork::CommandDelete(const int nId, const char* pRecvData, CClient* pCli
 void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
 	int byte = 0;
 
 	nProt = NetWork::COMMAND_PL_POS;
@@ -527,31 +526,8 @@ void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClie
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
 
-	// 挿入
-	pClient->SetData(&aSendData[0], byte);
-}
-
-//==========================================================
-// プレイヤーの向き
-//==========================================================
-void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
-{
-	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
-	int byte = 0;
-
-	nProt = NetWork::COMMAND_PL_ROT;
-
-	// IDを挿入
-	memcpy(&aSendData[byte], &nId, sizeof(int));
-	byte += sizeof(int);
-
-	// プロトコル挿入
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
-
 	// 座標挿入
-	memcpy(&aSendData[byte], pRecvData, sizeof(D3DXVECTOR3));
+	memcpy(&aSendData[byte], &pRecvData[sizeof(D3DXVECTOR3)], sizeof(D3DXVECTOR3));
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
 
