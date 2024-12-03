@@ -75,9 +75,11 @@ private:
 	void PoliceRotSet(void);
 	void PolicePosSet(void);
 
-	int m_nNumDest;
-	int m_nSet;
+	int m_nNumDest;						//目的地の番号
+	int m_nNumDestNext;					//次の目的地の番号
 	float m_fBDustValue;				//煙の大きさの値
+	float m_fDestrot;					//プレイヤー自身の向きの目的地
+	float m_fDestPoliceRot;				//警察の向きの目的地
 	bool m_bNextMove;					//次の動きに移行するときになったら
 	bool m_bMoved;
 	STATE m_eState;						//デバッグ用のステート
