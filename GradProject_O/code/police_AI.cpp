@@ -77,7 +77,7 @@ void CPoliceAI::Search(void)
 	auto mgr = CPlayerManager::GetInstance();
 	auto list = mgr->GetList();
 
-	for (const auto& pair : list->GetList())
+	for (const auto& pair : *list->GetList())
 	{
 		// 追跡するプレイヤーがいる場合そのプレイヤー以外は判定しない
 		if (m_pPolice->GetPlayer() != nullptr && m_pPolice->GetPlayer() != pair.second) { continue; }
