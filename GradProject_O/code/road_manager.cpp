@@ -98,6 +98,7 @@ void CRoadManager::Release(void)
 void CRoadManager::ListIn(CRoad* pRoad)
 {
 	GetList()->Regist(pRoad);
+	m_InfoList.Regist(pRoad->GetInfo());
 	IdListIn(pRoad);
 }
 
@@ -107,6 +108,7 @@ void CRoadManager::ListIn(CRoad* pRoad)
 void CRoadManager::ListOut(CRoad* pRoad)
 {
 	GetList()->Delete(pRoad);
+	m_InfoList.Delete(pRoad->GetInfo());
 	IdListOut(pRoad);
 }
 

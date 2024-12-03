@@ -93,7 +93,7 @@ HRESULT CPlayerTitle::Init(void)
 HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 {
 	//コンテナだけいらないのでこのような形にしました
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\flyingscooter.x");
+	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
@@ -197,7 +197,7 @@ void CPlayerTitle::Moving(const int nNum)
 	}
 }
 //<================================================
-//
+//選択画面の際の動き
 //<================================================
 void CPlayerTitle::MovingSelect(void)
 {

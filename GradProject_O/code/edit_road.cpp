@@ -16,7 +16,6 @@
 namespace
 {
 	const float MIN_LENGTH = 50.0f;	// 最小移動量
-	const char* FILENAME = "data\\FILE\\map\\road.bin";
 	const D3DXVECTOR2 SET_SIZE = D3DXVECTOR2(500.0f, 500.0f);
 	const float CHANGESIZE = 50.0f;
 	const float MAX_SIZE = 1500.0f;
@@ -365,7 +364,7 @@ void CEdit_Road::Save()
 
 	CRoadManager* pMgr = CRoadManager::GetInstance();
 	// ファイルを開く
-	std::ofstream File(FILENAME, std::ios::binary);
+	std::ofstream File(EDITFILENAME::ROAD, std::ios::binary);
 	if (!File.is_open()) {
 		return;
 	}
