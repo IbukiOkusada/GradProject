@@ -29,6 +29,7 @@ public:	// 誰でもアクセス可能
 	{
 		TYPE_NORMAL = 0,	// 通常
 		TYPE_ELITE,			// 回り込み型
+		TYPE_GENTLE,		// 緩やか型
 		TYPE_MAX
 	};
 
@@ -62,6 +63,8 @@ protected:
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void BeginChase(CPlayer* pPlayer);
+	void EndChase(void);
 	void CheckSpeed(CPlayer* pPlayer);
 	void CheckTurn(CPlayer* pPlayer);
 	void CheckDamage(CPlayer* pPlayer);
@@ -75,13 +78,28 @@ private:	// 自分だけがアクセス可能
 	TYPE m_type;
 };
 
+//==========================================================
+// 警察AIのクラス定義
+//==========================================================
 class CPoliceAINomal : public CPoliceAI
 {
 	HRESULT Init(void) override;
 	void SelectRoad(void) override;
 };
 
+//==========================================================
+// 警察AIのクラス定義
+//==========================================================
 class CPoliceAIElite : public CPoliceAI
+{
+	HRESULT Init(void) override;
+	void SelectRoad(void) override;
+};
+
+//==========================================================
+// 警察AIのクラス定義
+//==========================================================
+class CPoliceAIGentle : public CPoliceAI
 {
 	HRESULT Init(void) override;
 	void SelectRoad(void) override;

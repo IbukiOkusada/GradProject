@@ -194,7 +194,6 @@ void CPolice::MoveRoad()
 		}
 		else
 		{
-			//SetSpeedDest(0.0f);
 			if (m_Info.pPlayer != nullptr)
 			{
 				SetPosTarget(m_Info.pPlayer->GetPosition());
