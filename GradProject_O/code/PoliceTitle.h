@@ -33,13 +33,24 @@ public:
 		{
 			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 		}
+		//ているらんぷ生成
+		if (!m_pTailLamp)
+		{
+			m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+		}
 
-		//位置と向きを設定
+		//パトランプ
 		m_pPatrolLamp->m_pos = this->GetPosition();
 		m_pPatrolLamp->m_rot = this->GetRotation();
+
+		//ているらんぷ
+		m_pTailLamp->m_pos = this->GetPosition();
+		m_pTailLamp->m_rot = this->GetRotation();
+		//
+		//<*******************************************
 	}
 
-	//
+	//追跡処理
 	void Chasing(const float fMoveZ);
 
 private:
