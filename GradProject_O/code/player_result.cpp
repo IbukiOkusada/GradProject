@@ -26,7 +26,7 @@ namespace ROTATION
 
 namespace MOVE
 {
-	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(17.0f, 0.0f, 0.0f);
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(18.0f, 0.0f, 0.0f);
 }
 
 //==========================================================
@@ -74,7 +74,7 @@ HRESULT CPlayerResult::Init(const char* pBodyName, const char* pLegName)
 	{
 		CManager::GetInstance()->GetCamera()->SetLength(300.0f);
 		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, 0.8f, 1.2f));
-		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(800.0f, 300.0f, 800.0f));
+		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(800.0f, 340.0f, 800.0f));
 		D3DVIEWPORT9 viewport;
 
 		//プレイヤー追従カメラの画面位置設定
