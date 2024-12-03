@@ -157,6 +157,10 @@ void CPoliceManager::Warning(CPolice* pPolice)
 		CPolice::STATE outstate = CPolice::STATE::STATE_CHASE;
 		if (pP->GetState() == outstate) { continue; }
 
+		// ’âŽ~’†‚à‘Ê–Ú
+		outstate = CPolice::STATE::STATE_STOP;
+		if (pP->GetState() == outstate) { continue; }
+
 		// Œx‰úó‘Ô‚É‚·‚é
 		pP->SetState(CPolice::STATE::STATE_SEARCH);
 	}

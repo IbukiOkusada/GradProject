@@ -59,6 +59,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	Clist<CPolice*>* m_pList;
+	Cmaplist<CPolice*> m_maplist;
 	int m_nNum;
 	static CPoliceManager* m_pInstance;	// インスタンス
 	SInspInfo m_InspInfo;

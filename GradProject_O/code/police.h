@@ -29,12 +29,18 @@ public:
 	// 状態
 	enum STATE
 	{
-		STATE_NORMAL = 0,
-		STATE_CHASE,
-		STATE_SEARCH,
-		STATE_FADEOUT,
-		STATE_STOP,
+		STATE_NORMAL = 0,	// 通常
+		STATE_CHASE,		// 追跡
+		STATE_SEARCH,		// 探索
+		STATE_FADEOUT,		// フェードアウト
+		STATE_STOP,			// 停止
 		STATE_MAX
+	};
+
+	// 種類列挙
+	enum TYPE
+	{
+
 	};
 
 private:	// 自分だけがアクセス可能

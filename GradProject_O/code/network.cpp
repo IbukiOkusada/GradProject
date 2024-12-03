@@ -778,8 +778,8 @@ void CNetWork::RecvEndInspection(int* pByte, const int nId, const char* pRecvDat
 
 	if (pInsp == nullptr) { return; }
 
-	// ŒŸ–â”pŠü
-	pInsp->Uninit();
+	// ŒŸ–â‰ğ•ú
+	pInsp->Start();
 }
 
 //===================================================
