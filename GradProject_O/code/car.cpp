@@ -159,7 +159,7 @@ void CCar::TailLamp()
 //==========================================================
 void CCar::Move()
 {
-	//if (!IsActive()) { return; }
+	if (!IsActive()) { return; }
 	if (!m_Info.bBreak)
 	{
 		// Šp“x’²®
@@ -272,7 +272,7 @@ void CCar::Rot()
 //==========================================================
 void CCar::MoveRoad()
 {
-	//if (!IsActive()) { return; }
+	if (!IsActive()) { return; }
 	if (m_Info.pRoadTarget == nullptr)
 		SearchRoad();
 
@@ -293,7 +293,7 @@ void CCar::MoveRoad()
 //==========================================================
 void CCar::SearchRoad()
 {
-	//if (!IsActive()) { return; }
+	if (!IsActive()) { return; }
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
 	auto list = pRoadManager->GetList();
 
@@ -327,7 +327,7 @@ void CCar::SearchRoad()
 //==========================================================
 void CCar::ReachRoad()
 {
-	//if (!IsActive()) { return; }
+	if (!IsActive()) { return; }
 	CRoad* pRoadNext = nullptr;
 
 	while (1)
@@ -357,7 +357,7 @@ void CCar::ReachRoad()
 //==========================================================
 bool CCar::Collision()
 {
-	//if (!IsActive()) { return false; }
+	if (!IsActive()) { return false; }
 
 	auto mgr = CObjectX::GetList();
 	for(int i = 0; i < mgr->GetNum(); i++)
