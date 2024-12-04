@@ -24,8 +24,6 @@ namespace
 	const float SECURE_SPEEDDEST = (-35.0f);		// Šm•ÛŽž‚Ì–Ú•W‘¬“x
 	const float SECURE_SPEED = (0.8f);				// Šm•ÛŽž‚Ì‰Á‘¬”{—¦
 	const float CHASE_SECURE = (400.0f);			// ’ÇÕŠm•Û‹——£
-	const float CHASE_CONTINUE = (200000.0f);		// ’ÇÕŒp‘±‹——£
-	const float CHASE_END = (300000.0f);			// ’ÇÕI—¹‹——£
 	const float CHASE_CROSS = (500.0f);				// ‚·‚êˆá‚¢”»’è‹——£
 	const float CHASE_NEAR = (2000.0f);				// ‹ß‹——£”»’è
 	const float CHASE_FAR = (3500.0f);				// ‰“‹——£”»’è
@@ -87,7 +85,7 @@ void CPoliceAI::Search(void)
 		D3DXVECTOR3 vecPlayer = pPlayer->GetPosition() - m_pPolice->GetPosition();		// ƒvƒŒƒCƒ„[‚ÆŒxŽ@ŠÔ‚ÌƒxƒNƒgƒ‹ŒvŽZ
 		float length = D3DXVec3Length(&vecPlayer);										// ‹——£ŒvŽZ
 		float rotVec = atan2f(vecPlayer.x, vecPlayer.z);								// Šp“xŒvŽZ
-		float rotView = fabs(pPlayer->GetRotation().y - rotVec);						// Œü‚¢‚Ä‚é•ûŒü‚Æ‚Ì·‚ðŒvŽZ
+		float rotView =m_pPolice->GetRotation().y - rotVec;						// Œü‚¢‚Ä‚é•ûŒü‚Æ‚Ì·‚ðŒvŽZ
 
 		// Šp“x•â³
 		if (rotView > D3DX_PI)
@@ -98,6 +96,7 @@ void CPoliceAI::Search(void)
 		{
 			rotView += D3DX_PI * 2.0f;
 		}
+		CDebugProc::GetInstance()->Print("Ž‹ŠE”»’è : %f\n", rotView);
 
 		// ‹——£‚É‚æ‚Á‚Ä”»’f
 		if (length < CHASE_CROSS)
@@ -111,12 +110,19 @@ void CPoliceAI::Search(void)
 
 			// ’ÇÕŠJŽnˆ—
 			BeginChase(pPlayer);
+
+			// ‘¬“x‚ðÝ’è
+			m_pPolice->SetSpeedDest(SECURE_SPEEDDEST);
+			m_pPolice->SetSpeed(m_pPolice->GetSpeed() * SECURE_SPEED);
 		}
 		else if (length < CHASE_NEAR)
 		{// ‹ß‹——£
 
 			// Ž‹ŠE“à‚É“ü‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
-			if (rotView > D3DX_PI * 0.5f && !m_pPolice->GetChase()) { continue; }
+			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
+
+			// ’ÇÕó‘Ô‚É•ÏX
+			m_pPolice->SetChase(true);
 
 			// Šeó‹µŠm”F
 			CheckSpeed(pPlayer);
@@ -134,7 +140,7 @@ void CPoliceAI::Search(void)
 		{// ‰“‹——£
 
 			// Ž‹ŠE“à‚É“ü‚Á‚Ä‚¢‚é‚©‚Ç‚¤‚©
-			if (rotView > D3DX_PI * 0.5f && !m_pPolice->GetChase()) { continue; }
+			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
 
 			// Šeó‹µŠm”F
 			CheckSpeed(pPlayer);
@@ -192,9 +198,7 @@ void CPoliceAI::BeginChase(CPlayer* pPlayer)
 	// ’ÇÕŽžŠÔ‚ðÝ’è
 	m_pPolice->SetChaseCount(CHASE_TIME);
 
-	// ‘¬“x‚ðÝ’è
-	m_pPolice->SetSpeedDest(SECURE_SPEEDDEST);
-	m_pPolice->SetSpeed(m_pPolice->GetSpeed() * SECURE_SPEED);
+	
 
 	// ó‘ÔÝ’è
 	m_pPolice->SetState(CPolice::STATE::STATE_CHASE);
