@@ -218,7 +218,7 @@ void CPlayerTitle::MovingSelect(void)
 	m_Info.pos.z += (DEST_POS_SELECT[m_nNumDest].z - m_Info.pos.z - m_Info.move.z) * 0.12f;//ZŽ²
 
 	//–Ú“I’n‚É“ž’…‚µ‚½‚ç”»’è‚ðtrue‚É‚·‚é
-	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 50.0f))
+	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 100.0f))
 	{
 		m_nNumDest +=1;
 	}
@@ -232,7 +232,7 @@ void CPlayerTitle::MovingSelect(void)
 		if (m_nNumDestNext >= DEST_MAX){m_nNumDestNext = DEST::DEST_FIRST;}
 
 		m_fDestrot = DEST_ROT_SELECT[m_nNumDestNext].y;
-		m_Info.rot.y += (m_fDestrot - m_Info.rot.y) * 0.5f;
+		m_Info.rot.y += (m_fDestrot - m_Info.rot.y) * 0.9f;
 		Adjust(m_Info.rot.y);
 	}
 

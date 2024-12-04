@@ -39,7 +39,7 @@ namespace
 	//D3DXVECTOR3型
 	//<************************************************ 
 	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.9f, 0.0f };		//プレスエンターの座標位置
-	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.1f, 0.0f };				//タイトルロゴの座標位置
+	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.19f, 0.0f };				//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
 	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };										//フレームの目標値
 	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };									//警察位置
@@ -47,7 +47,7 @@ namespace
 	//<************************************************
 	//int型
 	//<************************************************ 
-	const int AUTOMOVE_RANKING = 1000;															//ランキング自動遷移時間
+	const int AUTOMOVE_RANKING = 30000;															//ランキング自動遷移時間
 	const int MOVE_LOGO = 120;																	//次のステートに遷移するまでの時間
 
 	//<************************************************
@@ -168,7 +168,7 @@ HRESULT CTitle::Init(void)
 	//タイトルBGM再生とチームロゴオブジェクトの生成
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(320, 160.0f);
+	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(250.0f, 125.0f);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_TEAMLOGO));
 
 	//カメラ初期状態
@@ -468,11 +468,7 @@ void CTitle::PreMove(void)
 	//その場所についているかつプレスエンターの文字が表示されていなければ
 	if (m_pPlayer->GetReached())
 	{
-		//目的の向きになっていたら
-		if (PlayerRot >= fDestRot) { PlayerRot = fDestRot; }
-
-		//なっていなかったら回転し続ける
-		else { PlayerRot += fRotMove; }
+		PlayerRot += (fDestRot - PlayerRot) * fRotMove;
 
 		//プレイヤーの向きに反映
 		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, PlayerRot, 0.0f));
@@ -519,6 +515,11 @@ void CTitle::InitingP_E(void)
 	const char* TEX_TITLELOGO = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴのテクスチャネーム
 	const char* TEX_PRESSENTER = "data\\TEXTURE\\Title\\-PRESS ENTER-.png";	//プレスエンターのテクスチャネーム
 
+	//サイズ関連
+	const float fSizeBlack[SIZING_MAX] = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };	//サイズ(ブラックカバー)
+	const float fSizeTitleLogo[SIZING_MAX] = { 600.0f,350.0f };							//サイズ(タイトルロゴ)
+	const float fSizePressEnter[SIZING_MAX] = { 450.0f,100.0f };						//サイズ(プレスエンター)
+
 	//初期化済みではなければ
 	if (!m_bIniting)
 	{
@@ -534,23 +535,22 @@ void CTitle::InitingP_E(void)
 		//<******************************************
 		//・ブラックカバー
 		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO,6);
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetSize(fSizeBlack[SIZING_WIDTH], fSizeBlack[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
 		//・タイトルロゴ
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(600.0f,190.0f);
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(fSizeTitleLogo[SIZING_WIDTH], fSizeTitleLogo[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_TITLELOGO));
 
 		//・プレスエンター
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(PRESSENTER_POS, VECTOR3_ZERO,5);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(350.0f,100.0f);
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(fSizePressEnter[SIZING_WIDTH], fSizePressEnter[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PRESSENTER));
 
 		//必要なオブジェクトの生成
-		//マップ読み込み
 		CMapManager::GetInstance()->Load();
 		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), VECTOR3_ZERO, 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
@@ -773,6 +773,13 @@ void CTitle::InitingSelect(void)
 	const char* TEX_MODESELECT = "data\\TEXTURE\\Title\\select.png";	//"MODE SELECT"の文字
 	const char* TEX_CHECK = "data\\TEXTURE\\Title\\start.png";			//確認文字
 
+	//サイズ関連
+	const float fSizeModeSelect[SIZING_MAX] = { 225.0f, 50.0f };	//サイズ(MODE SELECT)
+	const float fSizeSINGLEMULTI[SIZING_MAX] = { 200.0f, 75.0f };	//サイズ(シングルとマルチ)
+	const float fSizeCHECK[SIZING_MAX] = { 300.0f, 50.0f };			//サイズ(確認文字)
+	const float fSizeYESNO[SIZING_MAX] = { 80.0f, 35.0f };			//サイズ(選択肢YESNO)
+
+
 
 	//初期化されていなかったら
 	if (!m_bIniting)
@@ -783,13 +790,13 @@ void CTitle::InitingSelect(void)
 
 		//フレーム
 		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);//*拡大するので0.0fにしてます*//
 		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(true);
 		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(INIT_SELECT::InitFrameCol);
 
 		//どちらにするか
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(INIT_SELECT::NUMCHAR_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(225.0f, 50.0f);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(fSizeModeSelect[SIZING_WIDTH], fSizeModeSelect[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_MODESELECT));
 
@@ -803,14 +810,14 @@ void CTitle::InitingSelect(void)
 				INIT_SELECT::SELECT_POS.z),
 				VECTOR3_ZERO, 6);
 
-			m_apSelect[nCnt]->SetSize(200.0f, 75.0f);
+			m_apSelect[nCnt]->SetSize(fSizeSINGLEMULTI[SIZING_WIDTH], fSizeSINGLEMULTI[SIZING_HEIGHT]);
 			m_apSelect[nCnt]->SetDraw(false);
 			m_apSelect[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_NAME[nCnt]));
 		}
 
 		//確認メッセージ
 		m_pObject2D[OBJ2D::OBJ2D_CHECK] = CObject2D::Create(INIT_SELECT::CHECK_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(300.0f, 50.0f);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(fSizeCHECK[SIZING_WIDTH], fSizeCHECK[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_CHECK]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_CHECK));
 
@@ -824,7 +831,7 @@ void CTitle::InitingSelect(void)
 				INIT_SELECT::YES_POS.z),
 				VECTOR3_ZERO, 6);
 
-			m_apYesNoObj[nCnt]->SetSize(80.0f, 35.0f);
+			m_apYesNoObj[nCnt]->SetSize(fSizeYESNO[SIZING_WIDTH], fSizeYESNO[SIZING_HEIGHT]);
 			m_apYesNoObj[nCnt]->SetDraw(false);
 			m_apYesNoObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_YN_NAME[nCnt]));
 		}
@@ -1046,6 +1053,7 @@ void CTitle::DebugCam(void)
 void CTitle::InitingIce(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -200.0f };	//プレイヤーの位置
+	float fDis = 150.0f;										//警察の距離
 
 	//初期化チェック
 	if (!m_bIniting)
@@ -1061,7 +1069,7 @@ void CTitle::InitingIce(void)
 		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 		{
 			//位置情報初期化
-			m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + 150.0f * nCnt, PolicePos.y, PolicePos.z));
+			m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + fDis * nCnt, PolicePos.y, PolicePos.z));
 			m_apPolice[nCnt]->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
 		}
 
