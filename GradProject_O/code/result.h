@@ -50,7 +50,17 @@ public:
 	static void SetScore(const int nScore) { m_nScore = nScore; }
 
 private:
-	void Calculation(int* Obj, float Score, int Cnt, int ObjMax);
+
+	enum TYPE_OBJ
+	{
+		TYPE_TIME = 0,
+		TYPE_LIFE,
+		TYPE_EVAL,
+		TYPE_NUM
+	};
+
+	void Calculation(int* Obj, float Score, int Cnt, int ObjMax, TYPE_OBJ Type);
+	void AlphaJudge(float Alpha);
 
 	// メンバ変数
 	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
@@ -61,19 +71,20 @@ private:
 
 	CObject2D* m_pObj;			// オブジェクト
 	CObject2D* m_pScoreObj[3];	// 各スコアの文字のオブジェクト
-	CNumber* m_pDeliObject2D;	// 届けた数のオブジェクト
-	CNumber* m_pTimeObject2D[3];// 残りタイムのオブジェクト
-	CNumber* m_pLifeObject2D[3];// 残り体力のオブジェクト
+	CNumber* m_pDeliNumber;		// 届けた数のオブジェクト
+	CNumber* m_pTimeNumber[3];	// 残りタイムのオブジェクト
+	CNumber* m_pLifeNumber[3];	// 残り体力のオブジェクト
+	CNumber* m_pEvalNumber[2];	// 総合評価のオブジェクト
 
 	static int m_nDeli;
 	static float m_fTime;
 	static float m_fLife;
+	static float m_nScore;
 
 	int m_TimeObj[3];
 	int m_LifeObj[3];
+	int m_EvalObj[2];
 	int m_Display;
-
-	static int m_nScore;
 };
 
 #endif

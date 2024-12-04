@@ -107,6 +107,15 @@ public:
 	}
 
 private:
+
+	//サイズに関係する列挙型
+	enum SIZING
+	{
+		SIZING_WIDTH = 0,	//横
+		SIZING_HEIGHT,		//縦
+		SIZING_MAX
+	};
+
 	//チームロゴの際に使う関数
 	void StateLogo(void);
 

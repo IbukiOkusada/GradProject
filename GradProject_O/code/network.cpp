@@ -20,6 +20,11 @@
 #include "inspection.h"
 #include "road_manager.h"
 #include "road.h"
+#include "car_manager.h"
+#include "car.h"
+#include "police_manager.h"
+#include "police.h"
+#include "add_police.h"
 
 //===============================================
 // 名前空間
@@ -42,7 +47,6 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvGetId,	// ID取得
 	&CNetWork::RecvDelete,	// 削除
 	&CNetWork::RecvPlPos,	// プレイヤー座標
-	&CNetWork::RecvPlRot,	// プレイヤー向き
 	&CNetWork::RecvPlDamage,	// プレイヤーダメージ
 	&CNetWork::RecvPlGoal,	// プレイヤーゴール
 	&CNetWork::RecvGmHit,	// ギミックヒット
@@ -53,6 +57,9 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvTutorialEnd,	// チュートリアル終了
 	&CNetWork::RecvSetInspection,	// チュートリアル終了可能
 	&CNetWork::RecvEndInspection,	// チュートリアル終了
+	&CNetWork::RecvCarPos,		// 車座標
+	&CNetWork::RecvPdPos,		// 警察座標
+	&CNetWork::RecvAddPdPos,	// 追加座標
 };
 
 // 静的メンバ変数
@@ -536,6 +543,13 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 	// 確認バイト数を加算
 	*pByte += sizeof(D3DXVECTOR3);
 
+	// 座標に変換
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[sizeof(D3DXVECTOR3)], sizeof(D3DXVECTOR3));
+
+	// 確認バイト数を加算
+	*pByte += sizeof(D3DXVECTOR3);
+
 	// プレイヤーの存在確認
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT || nId == m_nMyIdx) { return; }
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
@@ -548,31 +562,6 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 
 	// 座標設定
 	pPlayer->SetRecvPosition(pos);
-}
-
-//===================================================
-// プレイヤーの向きを取得
-//===================================================
-void CNetWork::RecvPlRot(int* pByte, const int nId, const char* pRecvData)
-{
-	// 向きに変換
-	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	memcpy(&rot, pRecvData, sizeof(D3DXVECTOR3));
-
-	// 確認バイト数を加算
-	*pByte += sizeof(D3DXVECTOR3);
-
-	// プレイヤーの存在確認
-	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
-
-	// 生成していない場合
-	if (pPlayer == nullptr) {
-		RecvJoin(pByte, nId, pRecvData);
-		return;
-	}
-
-	// 座標設定
 	pPlayer->SetRecvRotation(rot);
 }
 
@@ -783,6 +772,123 @@ void CNetWork::RecvEndInspection(int* pByte, const int nId, const char* pRecvDat
 }
 
 //===================================================
+// 車の座標
+//===================================================
+void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 検問のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// 位置を取得
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// 向きを取得
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
+
+	if (pCar == nullptr)
+	{
+		pCar = CCar::Create(pos, rot, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
+
+	pCar->SetRecvPosition(pos);
+	pCar->SetRecvRotation(rot);
+}
+
+//===================================================
+// 警察の座標
+//===================================================
+void CNetWork::RecvPdPos(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 検問のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// 位置を取得
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// 向きを取得
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
+
+	if (pCar == nullptr)
+	{
+		pCar = CPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
+
+	pCar->SetRecvPosition(pos);
+	pCar->SetRecvRotation(rot);
+}
+
+//===================================================
+// 追加警察の座標
+//===================================================
+void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 検問のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// 位置を取得
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	memcpy(&pos, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	// 向きを取得
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
+	*pByte += sizeof(D3DXVECTOR3);
+	byte += sizeof(D3DXVECTOR3);
+
+	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
+
+	if (pCar == nullptr)
+	{
+		pCar = CAddPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
+
+	pCar->SetRecvPosition(pos);
+	pCar->SetRecvRotation(rot);
+}
+
+//===================================================
 // 何も送信しない
 //===================================================
 void CNetWork::SendNone()
@@ -839,11 +945,11 @@ void CNetWork::SendDelete()
 //===================================================
 // プレイヤーの座標送信
 //===================================================
-void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
+void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PL_POS;
 	int byte = 0;
 
@@ -855,26 +961,7 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
 	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
 	byte += sizeof(D3DXVECTOR3);
 
-	// 送信
-	m_pClient->SetData(&aSendData[0], byte);
-}
-
-//===================================================
-// プレイヤーの向き送信
-//===================================================
-void CNetWork::SendPlRot(const D3DXVECTOR3& rot)
-{
-	if (!GetActive()) { return; }
-
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) ] = {};	// 送信用
-	int nProt = NetWork::COMMAND_PL_ROT;
-	int byte = 0;
-
-	// protocolを挿入
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
-
-	// 座標を挿入
+	// 向きを挿入
 	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
 	byte += sizeof(D3DXVECTOR3);
 
@@ -1073,6 +1160,99 @@ void CNetWork::SendEndInspection(int nId)
 	// 検問のID
 	memcpy(&aSendData[byte], &nId, sizeof(int));
 	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 車の座標を送信
+//===================================================
+void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_CAR_POS;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 座標を挿入
+	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// 向きを挿入
+	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 警察の座標を送信
+//===================================================
+void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_PD_POS;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Idを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 座標を挿入
+	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// 向きを挿入
+	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 追加警察の座標を送信
+//===================================================
+void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_ADDPD_POS;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Idを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 座標を挿入
+	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
+
+	// 向きを挿入
+	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
+	byte += sizeof(D3DXVECTOR3);
 
 	// 送信
 	m_pClient->SetData(&aSendData[0], byte);

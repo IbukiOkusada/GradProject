@@ -59,7 +59,6 @@ private:
 	void CommandGetId(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandDelete(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandPlPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
-	void CommandPlRot(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandPlDamage(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandPlGoal(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandGmHit(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
@@ -70,6 +69,9 @@ private:
 	void CommandTutorialEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandSetInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandEndInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandCarPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandAddPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 
 	// ÉÅÉìÉoä÷êî
 	HRESULT Init();
