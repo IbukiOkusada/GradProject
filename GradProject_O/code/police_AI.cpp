@@ -96,7 +96,6 @@ void CPoliceAI::Search(void)
 		{
 			rotView += D3DX_PI * 2.0f;
 		}
-		CDebugProc::GetInstance()->Print("視界判定 : %f\n", rotView);
 
 		// 距離によって判断
 		if (length < CHASE_CROSS)
@@ -120,9 +119,6 @@ void CPoliceAI::Search(void)
 
 			// 視界内に入っているかどうか
 			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
-
-			// 追跡状態に変更
-			m_pPolice->SetChase(true);
 
 			// 各状況確認
 			CheckSpeed(pPlayer);
@@ -197,8 +193,6 @@ void CPoliceAI::BeginChase(CPlayer* pPlayer)
 
 	// 追跡時間を設定
 	m_pPolice->SetChaseCount(CHASE_TIME);
-
-	
 
 	// 状態設定
 	m_pPolice->SetState(CPolice::STATE::STATE_CHASE);
@@ -304,7 +298,7 @@ void CPoliceAI::Chase(void)
 	if (m_fSearchTimer > 3.0f || m_pSearchTarget == nullptr)
 	{
 		// 現在地と目的地が別の時
-		if (m_pRoadStart != m_pRoadTarget)
+		if (m_pRoadStart != m_pRoadTarget || m_pRoadStart == nullptr || m_pRoadTarget == nullptr)
 		{
 			// 経路探索
 			m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
