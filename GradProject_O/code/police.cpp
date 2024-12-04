@@ -166,7 +166,7 @@ void CPolice::MoveRoad()
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
-	if (pRoadTarget == nullptr)
+	if (pRoadTarget == nullptr && IsActive())
 		SearchRoad();
 
 	SearchPlayer();
@@ -209,7 +209,7 @@ void CPolice::MoveRoad()
 			m_pSiren->Stop();
 		}
 
-		if (pRoadTarget != nullptr)
+		if (pRoadTarget != nullptr && IsActive())
 		{
 			pRoadStart = GetRoadStart();
 			pRoadTarget = GetRoadTarget();
@@ -276,7 +276,7 @@ void CPolice::SearchPlayer()
 void CPolice::ChasePlayer()
 {
 	// ’ÇÕ‚·‚é
-	if (m_pPoliceAI == nullptr) { return; }
+	if (m_pPoliceAI == nullptr && !IsActive()) { return; }
 
 	m_pPoliceAI->Chase();
 
