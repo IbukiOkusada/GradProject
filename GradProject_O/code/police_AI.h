@@ -42,6 +42,9 @@ public:	// 誰でもアクセス可能
 	void Search(void);
 	void Chase(void);
 
+	void BeginChase(CPlayer* pPlayer);
+	void EndChase(void);
+
 	static CPoliceAI* Create(CPolice* pPolice, TYPE type = TYPE_NORMAL);
 
 	// メンバ関数(取得)
@@ -63,8 +66,6 @@ protected:
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	void BeginChase(CPlayer* pPlayer);
-	void EndChase(void);
 	void CheckSpeed(CPlayer* pPlayer);
 	void CheckTurn(CPlayer* pPlayer);
 	void CheckDamage(CPlayer* pPlayer);

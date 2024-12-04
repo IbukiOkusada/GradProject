@@ -27,6 +27,7 @@ CObjectManager::CObjectManager()
 		m_aPriNumAll[nCntPri] = 0;
 	}
 
+	
 	m_nNumAll = 0;
 }
 

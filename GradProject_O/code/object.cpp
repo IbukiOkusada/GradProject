@@ -32,6 +32,7 @@ CObject::CObject(int nPriority)
 	m_pPrev = NULL;
 	m_bDeath = false;
 	m_bDraw = true;
+	m_type = TYPE::TYPE_NONE;
 
 	// —Dæ‡ˆÊ‚ÌŠm”F
 	if (nPriority < 0)

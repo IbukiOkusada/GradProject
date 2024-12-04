@@ -42,6 +42,10 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandCarPos,			// ŽÔˆÊ’u
 	&CNetWork::CommandPdPos,			// ŒxŽ@ˆÊ’u
 	&CNetWork::CommandAddPdPos,			// ’Ç‰ÁŒxŽ@ˆÊ’u
+	&CNetWork::CommandPdChase,			// ŒxŽ@ˆÊ’u
+	&CNetWork::CommandAddPdChase,		// ’Ç‰ÁŒxŽ@ˆÊ’u
+	&CNetWork::CommandPdChaseEnd,		// ŒxŽ@ˆÊ’u
+	&CNetWork::CommandAddPdChaseEnd,	// ’Ç‰ÁŒxŽ@ˆÊ’u
 };
 
 // Ã“Iƒƒ“ƒo•Ï”
@@ -975,6 +979,138 @@ void CNetWork::CommandAddPdPos(const int nId, const char* pRecvData, CClient* pC
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
 	recvbyte += sizeof(D3DXVECTOR3);
+
+	// ‘}“ü
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// ŒxŽ@‚Ì’ÇÕŠJŽn
+//==========================================================
+void CNetWork::CommandPdChase(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// ƒvƒƒgƒRƒ‹”Ô†
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(int)] = {};	// ‘—M—p‚Ü‚Æ‚ßƒf[ƒ^
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_PD_CHASE;
+
+	// ID‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// ƒvƒƒgƒRƒ‹‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// ŽÔ‚ÌID‘}“ü
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// ƒvƒŒƒCƒ„[‚ÌID‘}“ü
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// ‘}“ü
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// ’Ç‰ÁŒxŽ@‚Ì’ÇÕŠJŽn
+//==========================================================
+void CNetWork::CommandAddPdChase(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// ƒvƒƒgƒRƒ‹”Ô†
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(int)] = {};	// ‘—M—p‚Ü‚Æ‚ßƒf[ƒ^
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_ADDPD_CHASE;
+
+	// ID‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// ƒvƒƒgƒRƒ‹‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// ŽÔ‚ÌID‘}“ü
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// ƒvƒŒƒCƒ„[‚ÌID‘}“ü
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// ‘}“ü
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// ŒxŽ@‚Ì’ÇÕI—¹
+//==========================================================
+void CNetWork::CommandPdChaseEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// ƒvƒƒgƒRƒ‹”Ô†
+	char aSendData[sizeof(int) * 2 + sizeof(int)] = {};	// ‘—M—p‚Ü‚Æ‚ßƒf[ƒ^
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_PD_CHASEEND;
+
+	// ID‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// ƒvƒƒgƒRƒ‹‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// ŽÔ‚ÌID‘}“ü
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// ‘}“ü
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// ’ÇÕŒxŽ@‚Ì’ÇÕI—¹
+//==========================================================
+void CNetWork::CommandAddPdChaseEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// ƒvƒƒgƒRƒ‹”Ô†
+	char aSendData[sizeof(int) * 2 + sizeof(int)] = {};	// ‘—M—p‚Ü‚Æ‚ßƒf[ƒ^
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_ADDPD_CHASEEND;
+
+	// ID‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// ƒvƒƒgƒRƒ‹‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// ŽÔ‚ÌID‘}“ü
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
 
 	// ‘}“ü
 	pClient->SetData(&aSendData[0], byte);

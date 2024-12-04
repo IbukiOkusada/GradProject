@@ -1182,6 +1182,7 @@ void CPlayer::SetStateRecv()
 	{
 		if (m_pFont[i] == nullptr) { continue; }
 		SAFE_UNINIT(m_pFont[i]);
+		m_pFont[i]->Uninit();
 	}
 }
 

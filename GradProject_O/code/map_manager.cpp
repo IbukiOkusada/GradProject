@@ -17,28 +17,28 @@ namespace
 {
 	const std::string ROADFILENAME[CScene::MODE_MAX] = {	// 道ファイル名
 		"data\\FILE\\map\\road.bin",
-		"data\\FILE\\map\\road.bin",
+		"data\\FILE\\map\\tutorial_road.bin",
 		"data\\FILE\\map\\road.bin",
 		"data\\FILE\\map\\road.bin",
 	};
 
 	const std::string OBSTACLEFILENAME[CScene::MODE_MAX] = {	// 障害物ファイル名
 		"data\\FILE\\map\\obstacle.bin",
-		"data\\FILE\\map\\obstacle.bin",
+		"data\\FILE\\map\\tutorial_obstacle.bin",
 		"data\\FILE\\map\\obstacle.bin",
 		"data\\FILE\\map\\obstacle.bin",
 	};
 
 	const std::string GIMMICKFILENAME[CScene::MODE_MAX] = {	// ギミックファイル名
 		"",
-		"data\\FILE\\map\\gimmick.bin",
+		"data\\FILE\\map\\tutorial_gimmick.bin",
 		"data\\FILE\\map\\gimmick.bin",
 		"data\\FILE\\map\\gimmick.bin",
 	};
 
 	const std::string GOALFILENAME[CScene::MODE_MAX] = {	// ゴールファイル名
 		"",
-		"data\\FILE\\map\\goal.bin",
+		"data\\FILE\\map\\tutorial_goal.bin",
 		"data\\FILE\\map\\goal.bin",
 		"data\\FILE\\map\\goal.bin",
 	};

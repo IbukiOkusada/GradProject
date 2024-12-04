@@ -184,7 +184,7 @@ void CPoliceManager::Warning(CPolice* pPolice)
 		pP->SetState(CPolice::STATE::STATE_SEARCH);
 	}
 
-	if (m_InspInfo.fInterval >= m_InspInfo.fTime)
+	if (m_InspInfo.fInterval >= m_InspInfo.fTime && pPolice->IsActive())
 	{
 		m_InspInfo.fInterval = 0.0f;
 		// ŒŸ–â‚ð”z’u‚·‚é

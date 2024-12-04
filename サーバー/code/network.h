@@ -72,6 +72,10 @@ private:
 	void CommandCarPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandAddPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandPdChase(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandAddPdChase(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandPdChaseEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandAddPdChaseEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 
 	// ÉÅÉìÉoä÷êî
 	HRESULT Init();
