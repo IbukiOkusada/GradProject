@@ -19,6 +19,8 @@
 #include "debugproc.h"
 #include "map_manager.h"
 #include "objectX.h"
+#include "edit_manager.h"
+#include "meshfield.h"
 
 //===============================================
 // 定数定義
@@ -49,7 +51,7 @@ namespace
     const float LENGTH = 500.0f;
     const float ROTATION_Y = 0.005f;
 
-    const char* MODEL_PATH = "data\\MODEL\\flyingscooter.x";  // プレイヤーのモデル
+    const char* MODEL_PATH = "data\\MODEL\\bike.x";  // プレイヤーのモデル
 }
 
 //===============================================
@@ -77,7 +79,7 @@ CEntry::~CEntry()
 HRESULT CEntry::Init(void)
 {
     auto net = CNetWork::GetInstance();
-    net->ReConnect();
+    //net->ReConnect();
 
     // ID取得を待つ
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
@@ -107,9 +109,11 @@ HRESULT CEntry::Init(void)
     // マップ読み込み
     CMapManager::GetInstance()->Load();
 
-    CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.9f, 0.0f), VECTOR3_ZERO, 4);
+    CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
+
+    /*CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.9f, 0.0f), VECTOR3_ZERO, 4);
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.1f);
-    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));
+    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));*/
 
     CCameraManager* mgr = CCameraManager::GetInstance();
 	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
@@ -201,6 +205,21 @@ void CEntry::Update(void)
     CInputKeyboard* pKey = CInputKeyboard::GetInstance();
     CInputPad* pPad = CInputPad::GetInstance();
 
+    // エディター関連
+#if _DEBUG
+
+    CEditManager* pMgr = CEditManager::GetInstance();
+    // エディター生成
+    if (pKey->GetTrigger(DIK_F4) && CEditManager::GetInstance() == nullptr)
+    {
+        pMgr = CEditManager::Create();
+    }
+
+    // エディター更新
+    if (pMgr != nullptr) { pMgr->Update(); }
+
+#endif
+
     if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
         pKey->GetTrigger(DIK_RETURN))
     {
@@ -274,7 +293,7 @@ void CEntry::AddPlayer(void)
         }
 
         // プレイヤー生成
-        CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
+        CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(4000.0f, 0.0f, 1600.0f), D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
 
         // データ受信
         pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
@@ -284,11 +303,11 @@ void CEntry::AddPlayer(void)
         pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
 
         // エフェクトの終了
-        pPlayer->EffectUninit();
+        //pPlayer->EffectUninit();
 
         // 画面下にプレイヤーのモデルを表示
         pos = m_ppCamera[id]->GetPositionR();
-        m_ppObj[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), "data\\MODEL\\flyingscooter.x", 7);
+        m_ppObj[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), MODEL_PATH, 7);
         m_ppObj[id]->SetType(CObject::TYPE::TYPE_PLAYER);
         m_ppObj[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
     }
@@ -305,7 +324,7 @@ void CEntry::AddPlayer(void)
             {
                 // プレイヤー生成
                 D3DXVECTOR3 pos = m_ppCamera[i]->GetPositionR();
-                CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), VECTOR3_ZERO, i);
+                CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(4000.0f, 0.0f, 1600.0f), D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), VECTOR3_ZERO, i);
 
                 // データ受信
                 pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
@@ -325,7 +344,7 @@ void CEntry::AddPlayer(void)
 
                 // 画面下にプレイヤーのモデルを表示
                 pos = m_ppCamera[i]->GetPositionR();
-                m_ppObj[i] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), "data\\MODEL\\flyingscooter.x", 7);
+                m_ppObj[i] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), MODEL_PATH, 7);
                 m_ppObj[i]->SetType(CObject::TYPE::TYPE_PLAYER);
                 m_ppObj[i]->SetRotateType(CObjectX::TYPE_QUATERNION);
             }

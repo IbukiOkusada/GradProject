@@ -19,6 +19,20 @@ CMeter::CMeter()
 {
 	m_state = STATE_NONE;
 	// ’l‚ÌƒNƒŠƒA
+	m_pCircle = nullptr;
+	m_pFrame = nullptr;
+	m_pInnerCircle = nullptr;
+	m_pNitroGage = nullptr;
+
+	for (int i = 0; i < NUMBER_NUM; i++)
+	{
+		m_pNumber[i] = nullptr;
+	}
+	
+	for (int i = 0; i < METER_NUM; i++)
+	{
+		m_pMeter[i] = nullptr;
+	}
 }
 
 //==========================================================
@@ -86,7 +100,38 @@ void CMeter::Uninit(void)
 {
 	for (int i = 0; i < NUMBER_NUM; i++)
 	{
-		SAFE_DELETE(m_pNumber[i]);
+		if (m_pNumber != nullptr)
+		{
+			SAFE_DELETE(m_pNumber[i]);
+		}
+	}
+
+	for (int i = 0; i < METER_NUM; i++)
+	{
+		if (m_pMeter != nullptr)
+		{
+			SAFE_DELETE(m_pMeter[i]);
+		}
+	}
+
+	if (m_pCircle != nullptr)
+	{
+		SAFE_DELETE(m_pCircle);
+	}
+
+	if (m_pFrame != nullptr)
+	{
+		SAFE_DELETE(m_pFrame);
+	}
+
+	if (m_pInnerCircle != nullptr)
+	{
+		SAFE_DELETE(m_pInnerCircle);
+	}
+
+	if (m_pNitroGage != nullptr)
+	{
+		SAFE_DELETE(m_pNitroGage);
 	}
 	
 	Release();
@@ -97,10 +142,18 @@ void CMeter::Uninit(void)
 //==========================================================
 void CMeter::Update(void)
 {
-	m_pCircle->SetRotation(D3DXVECTOR3(0.0f,0.0f,m_pCircle->GetRotation().z - 0.005f));
-	m_pCircle->SetVtx();
-	m_pInnerCircle->SetRotation(D3DXVECTOR3(0.0f, 0.0f, m_pInnerCircle->GetRotation().z + 0.005f));
-	m_pInnerCircle->SetVtx();
+	if (m_pCircle != nullptr)
+	{
+		m_pCircle->SetRotation(D3DXVECTOR3(0.0f, 0.0f, m_pCircle->GetRotation().z - 0.005f));
+		m_pCircle->SetVtx();
+	}
+	
+	if (m_pInnerCircle != nullptr)
+	{
+		m_pInnerCircle->SetRotation(D3DXVECTOR3(0.0f, 0.0f, m_pInnerCircle->GetRotation().z + 0.005f));
+		m_pInnerCircle->SetVtx();
+	}
+	
 	switch (m_state)
 	{
 	case CMeter::STATE_NONE:
@@ -128,30 +181,49 @@ void CMeter::Update(void)
 //==========================================================
 void CMeter::BootAnimation(void)
 {
-	m_pFrame->SetSize(m_pFrame->GetHeight()+((100.0f- m_pFrame->GetHeight())*0.1f), m_pFrame->GetWidth() + ((100.0f - m_pFrame->GetWidth()) * 0.1f));
-	m_pCircle->SetLength(m_pCircle->GetLength() + ((210.0f - m_pCircle->GetLength()) * 0.05f));
-	m_pCircle->SetRotation(D3DXVECTOR3(0.0f, 0.0f, m_pCircle->GetRotation().z - ((210.0f - m_pCircle->GetLength())/210.0f*2)));
-	m_pInnerCircle->SetLength(m_pInnerCircle->GetLength() + ((190.0f - m_pInnerCircle->GetLength()) * 0.05f));
+	if (m_pFrame != nullptr)
+	{
+		m_pFrame->SetSize(m_pFrame->GetHeight() + ((100.0f - m_pFrame->GetHeight()) * 0.1f), m_pFrame->GetWidth() + ((100.0f - m_pFrame->GetWidth()) * 0.1f));
+	}
+	
+	if (m_pCircle != nullptr)
+	{
+		m_pCircle->SetLength(m_pCircle->GetLength() + ((210.0f - m_pCircle->GetLength()) * 0.05f));
+		m_pCircle->SetRotation(D3DXVECTOR3(0.0f, 0.0f, m_pCircle->GetRotation().z - ((210.0f - m_pCircle->GetLength()) / 210.0f * 2)));
+	}
+	
+	if (m_pInnerCircle != nullptr)
+	{
+		m_pInnerCircle->SetLength(m_pInnerCircle->GetLength() + ((190.0f - m_pInnerCircle->GetLength()) * 0.05f));
+	}
+	
 	for (int i = 0; i < NUMBER_NUM; i++)
 	{
-		if ((ANIM_COUNT / NUMBER_NUM) * i <= (ANIM_COUNT - m_nStateCount))
+		if (m_pNumber[i] != nullptr)
 		{
-			m_pNumber[i]->GetObject2D()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		}
-		else
-		{
-			m_pNumber[i]->GetObject2D()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+			if ((ANIM_COUNT / NUMBER_NUM) * i <= (ANIM_COUNT - m_nStateCount))
+			{
+				m_pNumber[i]->GetObject2D()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			}
+			else
+			{
+				m_pNumber[i]->GetObject2D()->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+			}
 		}
 	}
+
 	for (int i = 0; i < METER_NUM; i++)
 	{
-		if ((3* METER_NUM) - (3*i) >m_nStateCount)
+		if (m_pMeter[i] != nullptr)
 		{
-			m_pMeter[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
-		}
-		else
-		{
-			m_pMeter[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+			if ((3 * METER_NUM) - (3 * i) > m_nStateCount)
+			{
+				m_pMeter[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
+			}
+			else
+			{
+				m_pMeter[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+			}
 		}
 	}
 }
@@ -171,24 +243,27 @@ void CMeter::Measure(void)
 	m_pNumber[2]->SetIdx(nSpeed % 1000 / 100);
 	m_pNumber[3]->SetIdx(nSpeed % 100 / 10);
 	m_pNumber[4]->SetIdx(nSpeed % 10 / 1);
-
+	
 	for (int i = 0; i < METER_NUM; i++)
 	{
-		float SpeedScale = 120.0f / METER_NUM;
-		if (fSpeed > SpeedScale * (i +1))
+		if (m_pMeter[i] != nullptr)
 		{
-			if (i>24)
+			float SpeedScale = 120.0f / METER_NUM;
+			if (fSpeed > SpeedScale * (i + 1))
 			{
-				m_pMeter[i]->SetCol(D3DXCOLOR(0.91f,0.11f,0.3f, 1.0f));
+				if (i > 24)
+				{
+					m_pMeter[i]->SetCol(D3DXCOLOR(0.91f, 0.11f, 0.3f, 1.0f));
+				}
+				else
+				{
+					m_pMeter[i]->SetCol(D3DXCOLOR(0.1f, 0.91f, 0.81f, 1.0f));
+				}
 			}
 			else
 			{
-				m_pMeter[i]->SetCol(D3DXCOLOR(0.1f, 0.91f, 0.81f, 1.0f));
+				m_pMeter[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
 			}
-		}
-		else
-		{
-			m_pMeter[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.3f));
 		}
 	}
 }
