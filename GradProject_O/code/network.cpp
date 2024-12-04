@@ -25,6 +25,7 @@
 #include "police_manager.h"
 #include "police.h"
 #include "add_police.h"
+#include "police_AI.h"
 
 //===============================================
 // 名前空間
@@ -893,7 +894,50 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 {
+	int byte = 0;
 
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// プレイヤーIDを取得
+	int plyid = -1;
+	memcpy(&plyid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(plyid);
+
+	// プレイヤーがいない
+	if (pPlayer == nullptr)
+	{
+		RecvJoin(pByte, nId, pRecvData);
+		return;
+	}
+
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		pCar = CPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	// 追跡状態にする
+	pCar->GetAi()->BeginChase(pPlayer);
+
+	// 自分自身
+	if (nId == m_nMyIdx)
+	{
+		pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
+	}
+	// それ以外
+	else
+	{
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
 }
 
 //===================================================
@@ -901,7 +945,50 @@ void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 {
+	int byte = 0;
 
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// プレイヤーIDを取得
+	int plyid = -1;
+	memcpy(&plyid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(plyid);
+
+	// プレイヤーがいない
+	if (pPlayer == nullptr)
+	{
+		RecvJoin(pByte, nId, pRecvData);
+		return;
+	}
+
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		pCar = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	// 追跡状態にする
+	pCar->GetAi()->BeginChase(pPlayer);
+
+	// 追跡されているのが自分自身
+	if (plyid == m_nMyIdx)
+	{
+		pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
+	}
+	// それ以外
+	else
+	{
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
 }
 
 //===================================================
@@ -909,7 +996,25 @@ void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 {
+	int byte = 0;
 
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		pCar = CPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	// 追跡終了状態にする
+	pCar->GetAi()->EndChase();
 }
 
 //===================================================
@@ -917,7 +1022,25 @@ void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 {
+	int byte = 0;
 
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		pCar = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	// 追跡終了状態にする
+	pCar->GetAi()->EndChase();
 }
 
 //===================================================
