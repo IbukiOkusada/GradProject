@@ -102,7 +102,7 @@ void CMeter::Uninit(void)
 	{
 		if (m_pNumber != nullptr)
 		{
-			SAFE_DELETE(m_pNumber[i]);
+			SAFE_UNINIT(m_pNumber[i]);
 		}
 	}
 
@@ -110,28 +110,28 @@ void CMeter::Uninit(void)
 	{
 		if (m_pMeter != nullptr)
 		{
-			SAFE_DELETE(m_pMeter[i]);
+			SAFE_UNINIT(m_pMeter[i]);
 		}
 	}
 
 	if (m_pCircle != nullptr)
 	{
-		SAFE_DELETE(m_pCircle);
+		SAFE_UNINIT(m_pCircle);
 	}
 
 	if (m_pFrame != nullptr)
 	{
-		SAFE_DELETE(m_pFrame);
+		SAFE_UNINIT(m_pFrame);
 	}
 
 	if (m_pInnerCircle != nullptr)
 	{
-		SAFE_DELETE(m_pInnerCircle);
+		SAFE_UNINIT(m_pInnerCircle);
 	}
 
 	if (m_pNitroGage != nullptr)
 	{
-		SAFE_DELETE(m_pNitroGage);
+		SAFE_UNINIT(m_pNitroGage);
 	}
 	
 	Release();
