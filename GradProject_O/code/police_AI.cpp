@@ -161,6 +161,12 @@ void CPoliceAI::Search(void)
 
 			// 追跡終了処理
 			EndChase();
+
+			// 追跡状態を送信
+			if (m_pPolice->IsActive())
+			{
+				m_pPolice->SendChaseEnd();
+			}
 		}
 	}
 }
@@ -175,6 +181,12 @@ void CPoliceAI::BeginChase(CPlayer* pPlayer)
 	{
 		// 追跡するプレイヤーを決定
 		m_pPolice->SetPlayer(pPlayer);
+
+		// 追跡状態を送信
+		if (m_pPolice->IsActive())
+		{
+			m_pPolice->SendChase();
+		}
 	}
 
 	// 追跡時間を設定
@@ -202,8 +214,10 @@ void CPoliceAI::EndChase(void)
 	// 追跡状態を解除
 	m_pPolice->SetChase(false);
 
-	// 全員を警戒状態に
+	// 警戒状態に
 	m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
+
+	// 全員を警戒状態にする
 	CPoliceManager::GetInstance()->Warning(m_pPolice);
 }
 

@@ -74,11 +74,16 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 	static CPolice* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId);
 
+	// 通信用
+	virtual void SendChase();
+	virtual void SendChaseEnd();
+
 	// メンバ関数(取得)
 	STATE GetState() { return m_stateInfo.state; }
 	CPlayer* GetPlayer() { return m_Info.pPlayer; }
 	bool GetChase() { return m_Info.bChase; }
 	int GetChaseCount() { return m_Info.nChaseCount; }
+	CPoliceAI* GetAi() { return m_pPoliceAI; }
 
 	// メンバ関数(設定)
 	void SetState(const STATE state);
@@ -112,6 +117,7 @@ protected:
 		m_stateInfo.fTimerOrigin = fTimer; 
 	}
 
+	// 通信用
 	virtual void SendPosition() override;
 
 	// メンバ変数

@@ -889,6 +889,38 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 }
 
 //===================================================
+// ŒxŽ@‚Ì’ÇÕŠJŽn
+//===================================================
+void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
+// ’Ç‰ÁŒxŽ@‚Ì’ÇÕŠJŽn
+//===================================================
+void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
+// ŒxŽ@‚Ì’ÇÕI—¹
+//===================================================
+void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
+// ’Ç‰ÁŒxŽ@‚Ì’ÇÕI—¹
+//===================================================
+void CNetWork::RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
 // ‰½‚à‘—M‚µ‚È‚¢
 //===================================================
 void CNetWork::SendNone()
@@ -1253,6 +1285,106 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 	// Œü‚«‚ð‘}“ü
 	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
 	byte += sizeof(D3DXVECTOR3);
+
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ŒxŽ@‚Ì’ÇÕŠJŽn‘—M
+//===================================================
+void CNetWork::SendPdChase(int nId, int plyid)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_PD_CHASE;
+	int byte = 0;
+
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &plyid, sizeof(int));
+	byte += sizeof(int);
+
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ’Ç‰ÁŒxŽ@‚Ì’ÇÕŠJŽn‘—M
+//===================================================
+void CNetWork::SendAddPdChase(int nId, int plyid)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_ADDPD_CHASE;
+	int byte = 0;
+
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &plyid , sizeof(int));
+	byte += sizeof(int);
+
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ŒxŽ@‚Ì’ÇÕI—¹‘—M
+//===================================================
+void CNetWork::SendPdChaseEnd(int nId)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_PD_CHASEEND;
+	int byte = 0;
+
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// ’Ç‰ÁŒxŽ@‚Ì’ÇÕI—¹‘—M
+//===================================================
+void CNetWork::SendAddPdChaseEnd(int nId)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_ADDPD_CHASEEND;
+	int byte = 0;
+
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
 	// ‘—M
 	m_pClient->SetData(&aSendData[0], byte);

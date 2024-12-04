@@ -37,6 +37,10 @@ namespace NetWork
 		COMMAND_CAR_POS,		// é‘ç¿ïW
 		COMMAND_PD_POS,			// åxé@ç¿ïW
 		COMMAND_ADDPD_POS,		// í«â¡åxé@ç¿ïW
+		COMMAND_PD_CHASE,		// åxé@í«ê’
+		COMMAND_ADDPD_CHASE,	// í«â¡åxé@ç¿ïW
+		COMMAND_PD_CHASEEND,	// åxé@í«ê’
+		COMMAND_ADDPD_CHASEEND,	// í«â¡åxé@ç¿ïW
 		COMMAND_MAX
 	};
 

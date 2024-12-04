@@ -63,6 +63,10 @@ public:
 	void SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
 	void SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
 	void SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	void SendPdChase(int nId, int plyid);
+	void SendAddPdChase(int nId, int plyid);
+	void SendPdChaseEnd(int nId);
+	void SendAddPdChaseEnd(int nId);
 
 	// ÉÅÉìÉoä÷êî(ê›íË)
 
@@ -101,6 +105,10 @@ private:
 	void RecvCarPos(int* pByte, const int nId, const char* pRecvData);
 	void RecvPdPos(int* pByte, const int nId, const char* pRecvData);
 	void RecvAddPdPos(int* pByte, const int nId, const char* pRecvData);
+	void RecvPdChase(int* pByte, const int nId, const char* pRecvData);
+	void RecvAddPdChase(int* pByte, const int nId, const char* pRecvData);
+	void RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData);
+	void RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvData);
 
 	// ÉÅÉìÉoä÷êî
 	HRESULT Init();
