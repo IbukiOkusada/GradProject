@@ -27,7 +27,7 @@ class CPlayerTitle: public CPlayer
 public:
 
 	//ステート
-	enum STATE
+	const enum STATE
 	{
 
 		STATE_NONE=0,	//通常の動き
@@ -36,7 +36,7 @@ public:
 	};
 
 	//目的地ナンバー
-	enum DEST
+	const enum DEST
 	{
 		DEST_FIRST = 0,	//一番目
 		DEST_SECOND,	//二番目
