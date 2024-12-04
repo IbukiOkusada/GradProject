@@ -209,7 +209,7 @@ void CPolice::MoveRoad()
 			m_pSiren->Stop();
 		}
 
-		if (pRoadTarget != nullptr)
+		if (pRoadTarget != nullptr || IsActive())
 		{
 			pRoadStart = GetRoadStart();
 			pRoadTarget = GetRoadTarget();
@@ -276,7 +276,7 @@ void CPolice::SearchPlayer()
 void CPolice::ChasePlayer()
 {
 	// ’ÇÕ‚·‚é
-	if (m_pPoliceAI == nullptr) { return; }
+	if (m_pPoliceAI == nullptr || !IsActive()) { return; }
 
 	m_pPoliceAI->Chase();
 
@@ -465,4 +465,25 @@ void CPolice::SendPosition()
 	CNetWork* pNet = CNetWork::GetInstance();
 
 	pNet->SendPdPos(GetId(), GetPosition(), GetRotation());
+}
+
+//===============================================
+// ŒxŽ@‚Ì’ÇÕŠJŽn‘—M
+//===============================================
+void CPolice::SendChase()
+{
+	if (m_Info.pPlayer == nullptr) { return; }
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendPdChase(GetId(), m_Info.pPlayer->GetId());
+}
+
+//===============================================
+// ŒxŽ@‚Ì’ÇÕI—¹‘—M
+//===============================================
+void CPolice::SendChaseEnd()
+{
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendPdChaseEnd(GetId());
 }

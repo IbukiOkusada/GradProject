@@ -55,8 +55,8 @@ public:
 
 private:
 
-	CEffekseer::CEffectData* m_pPatrolLamp;		//テスト用
-	CEffekseer::CEffectData* m_pTailLamp;
+	CEffekseer::CEffectData* m_pPatrolLamp;		//パトランプ
+	CEffekseer::CEffectData* m_pTailLamp;		//ているらんぷ
 
 };
 

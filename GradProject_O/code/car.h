@@ -100,7 +100,7 @@ public:	// 誰でもアクセス可能
 
 	// 自分で動くときはtrue 動かないときはfalse
 	bool IsActive() {
-		if (m_Info.type == TYPE::TYPE_SEND) return false;
+		if (m_Info.type == TYPE::TYPE_RECV) return false;
 		return true;
 	}
 

@@ -24,8 +24,6 @@ namespace
 	const float SECURE_SPEEDDEST = (-35.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
 	const float CHASE_SECURE = (400.0f);			// 追跡確保距離
-	const float CHASE_CONTINUE = (200000.0f);		// 追跡継続距離
-	const float CHASE_END = (300000.0f);			// 追跡終了距離
 	const float CHASE_CROSS = (500.0f);				// すれ違い判定距離
 	const float CHASE_NEAR = (2000.0f);				// 近距離判定
 	const float CHASE_FAR = (3500.0f);				// 遠距離判定
@@ -87,7 +85,7 @@ void CPoliceAI::Search(void)
 		D3DXVECTOR3 vecPlayer = pPlayer->GetPosition() - m_pPolice->GetPosition();		// プレイヤーと警察間のベクトル計算
 		float length = D3DXVec3Length(&vecPlayer);										// 距離計算
 		float rotVec = atan2f(vecPlayer.x, vecPlayer.z);								// 角度計算
-		float rotView = fabs(pPlayer->GetRotation().y - rotVec);						// 向いてる方向との差を計算
+		float rotView =m_pPolice->GetRotation().y - rotVec;						// 向いてる方向との差を計算
 
 		// 角度補正
 		if (rotView > D3DX_PI)
@@ -111,12 +109,16 @@ void CPoliceAI::Search(void)
 
 			// 追跡開始処理
 			BeginChase(pPlayer);
+
+			// 速度を設定
+			m_pPolice->SetSpeedDest(SECURE_SPEEDDEST);
+			m_pPolice->SetSpeed(m_pPolice->GetSpeed() * SECURE_SPEED);
 		}
 		else if (length < CHASE_NEAR)
 		{// 近距離
 
 			// 視界内に入っているかどうか
-			if (rotView > D3DX_PI * 0.5f && !m_pPolice->GetChase()) { continue; }
+			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
 
 			// 各状況確認
 			CheckSpeed(pPlayer);
@@ -134,7 +136,7 @@ void CPoliceAI::Search(void)
 		{// 遠距離
 
 			// 視界内に入っているかどうか
-			if (rotView > D3DX_PI * 0.5f && !m_pPolice->GetChase()) { continue; }
+			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
 
 			// 各状況確認
 			CheckSpeed(pPlayer);
@@ -161,6 +163,12 @@ void CPoliceAI::Search(void)
 
 			// 追跡終了処理
 			EndChase();
+
+			// 追跡状態を送信
+			if (m_pPolice->IsActive())
+			{
+				m_pPolice->SendChaseEnd();
+			}
 		}
 	}
 }
@@ -175,14 +183,16 @@ void CPoliceAI::BeginChase(CPlayer* pPlayer)
 	{
 		// 追跡するプレイヤーを決定
 		m_pPolice->SetPlayer(pPlayer);
+
+		// 追跡状態を送信
+		if (m_pPolice->IsActive())
+		{
+			m_pPolice->SendChase();
+		}
 	}
 
 	// 追跡時間を設定
 	m_pPolice->SetChaseCount(CHASE_TIME);
-
-	// 速度を設定
-	m_pPolice->SetSpeedDest(SECURE_SPEEDDEST);
-	m_pPolice->SetSpeed(m_pPolice->GetSpeed() * SECURE_SPEED);
 
 	// 状態設定
 	m_pPolice->SetState(CPolice::STATE::STATE_CHASE);
@@ -202,8 +212,10 @@ void CPoliceAI::EndChase(void)
 	// 追跡状態を解除
 	m_pPolice->SetChase(false);
 
-	// 全員を警戒状態に
+	// 警戒状態に
 	m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
+
+	// 全員を警戒状態にする
 	CPoliceManager::GetInstance()->Warning(m_pPolice);
 }
 
@@ -286,7 +298,7 @@ void CPoliceAI::Chase(void)
 	if (m_fSearchTimer > 3.0f || m_pSearchTarget == nullptr)
 	{
 		// 現在地と目的地が別の時
-		if (m_pRoadStart != m_pRoadTarget)
+		if (m_pRoadStart != m_pRoadTarget || m_pRoadStart == nullptr || m_pRoadTarget == nullptr)
 		{
 			// 経路探索
 			m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);

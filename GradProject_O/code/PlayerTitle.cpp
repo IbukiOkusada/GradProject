@@ -52,9 +52,6 @@ namespace
 		D3DXVECTOR3(0.0f,0.0f,0.0f),				//５個目
 		D3DXVECTOR3(0.0f,-1.56f,0.0f)				//６個目
 	};
-
-	const float DEST_DIFF = 5.0f;										//距離の差
-	const float BDustMaxValue = 300.0f;									//後ろから出る煙の最大値
 }
 
 //<================================================
@@ -135,6 +132,8 @@ void CPlayerTitle::Uninit(void)
 //<================================================
 void CPlayerTitle::Update(void)
 {
+	constexpr float BDustMaxValue = 300.0f;									//後ろから出る煙の最大値
+
 	//デバッグ以外だったら
 	if (m_eState == STATE_NONE)
 	{
@@ -192,6 +191,8 @@ void CPlayerTitle::Update(void)
 //<================================================
 void CPlayerTitle::Moving(const int nNum)
 {
+	constexpr float DEST_DIFF = 5.0f;										//距離の差
+
 	//正規状態をなくす
 	if (m_bReached) { m_bReached = false; }
 
@@ -211,14 +212,14 @@ void CPlayerTitle::Moving(const int nNum)
 //<================================================
 void CPlayerTitle::MovingSelect(void)
 {
-	const float PlayerMove = 25.0f;						//プレイヤーの動く値
+	constexpr float fMove = 0.12f;																//プレイヤーの動く値
 
-	////目的地まで移動
-	m_Info.pos.x += (DEST_POS_SELECT[m_nNumDest].x - m_Info.pos.x - m_Info.move.x) * 0.12f;//X軸
-	m_Info.pos.z += (DEST_POS_SELECT[m_nNumDest].z - m_Info.pos.z - m_Info.move.z) * 0.12f;//Z軸
+	//目的地まで移動
+	m_Info.pos.x += (DEST_POS_SELECT[m_nNumDest].x - m_Info.pos.x - m_Info.move.x) * fMove;//X軸
+	m_Info.pos.z += (DEST_POS_SELECT[m_nNumDest].z - m_Info.pos.z - m_Info.move.z) * fMove;//Z軸
 
 	//目的地に到着したら判定をtrueにする
-	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 50.0f))
+	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 100.0f))
 	{
 		m_nNumDest +=1;
 	}
@@ -232,7 +233,7 @@ void CPlayerTitle::MovingSelect(void)
 		if (m_nNumDestNext >= DEST_MAX){m_nNumDestNext = DEST::DEST_FIRST;}
 
 		m_fDestrot = DEST_ROT_SELECT[m_nNumDestNext].y;
-		m_Info.rot.y += (m_fDestrot - m_Info.rot.y) * 0.5f;
+		m_Info.rot.y += (m_fDestrot - m_Info.rot.y) * 0.9f;
 		Adjust(m_Info.rot.y);
 	}
 
@@ -255,7 +256,7 @@ void CPlayerTitle::MovingSelect(void)
 //<================================================
 void CPlayerTitle::BaggageMove(void)
 {
-	const float fDis = -200.0f;
+	constexpr float fDis = -200.0f;
 	D3DXVECTOR3 GoalPos = VECTOR3_ZERO;
 
 	//次の動きに移行していなかったら
@@ -339,8 +340,8 @@ void CPlayerTitle::PolicePosSet(void)
 {
 	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };	//警察ポインタ
 	D3DXVECTOR3 arPos[INITIAL::POLICE_MAX] = { VECTOR3_ZERO };	//警察の位置
-	float fDis = 500.0f;										//プレイヤーからの距離
-	float fDis_Police = 150.0f;									//警察間の距離
+	constexpr float fDis = 500.0f;										//プレイヤーからの距離
+	constexpr float fDis_Police = 150.0f;									//警察間の距離
 
 	//警察の情報を取得してくる
 	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
@@ -471,7 +472,7 @@ bool Function::BoolToDest(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, cons
 bool Function::BoolDis(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, const float Distance)
 {
 	//距離計算
-	D3DXVECTOR3 rDis = D3DXVECTOR3(Pos.x - DestPos.x, Pos.y - DestPos.y, Pos.z - DestPos.z);
+	const D3DXVECTOR3 rDis = D3DXVECTOR3(Pos.x - DestPos.x, Pos.y - DestPos.y, Pos.z - DestPos.z);
 
 	//もし近づいていたら
 	if (rDis.x <= Distance &&

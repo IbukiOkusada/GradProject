@@ -30,83 +30,46 @@
 //静的メンバ変数
 CPoliceTitle* CTitle::m_apPolice[INITIAL::POLICE_MAX] = {nullptr};
 
-//===============================================
-// 無名名前空間
-//===============================================
+//<===============================================
+//無名名前空間
+//<===============================================
 namespace 
 {
 	//<************************************************
 	//D3DXVECTOR3型
 	//<************************************************ 
-	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.9f, 0.0f };		//プレスエンターの座標位置
-	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.1f, 0.0f };				//タイトルロゴの座標位置
+	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.9f, 0.0f };			//プレスエンターの座標位置
+	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.19f, 0.0f };			//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
-	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };										//フレームの目標値
 	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };									//警察位置
-			
-	//<************************************************
-	//int型
-	//<************************************************ 
-	const int AUTOMOVE_RANKING = 1000;															//ランキング自動遷移時間
-	const int MOVE_LOGO = 120;																	//次のステートに遷移するまでの時間
+	const D3DXVECTOR3 DEST_ROT = { 0.0f,3.14f,0.0f };											//目的向き
 
 	//<************************************************
 	//float型
 	//<************************************************ 
-	const float MAX_ALPHA = 1.0f;																//透明度の最大値
-	const float MIN_ALPHA = 0.3f;																//透明度の最小値
-	const float ALPHA_ZERO = 0.0f;																//透明の時のα値
-	const float TITLELOGO_DEST = SCREEN_WIDTH * 0.5f;											//タイトルロゴの目標位置
-
-	//選択肢に使うテクスチャの名前
-	const char* SELECT_NAME[CTitle::SELECT_MAX] =
-	{
-		"data\\TEXTURE\\Title\\silen.png",	//シングルプレイ
-		"data\\TEXTURE\\Title\\multi.png",	//マルチプレイ
-	};
-
-	//選択肢に使うテクスチャの名前
-	const char* SELECT_YN_NAME[CTitle::SELECT_YN_MAX] =
-	{
-		"data\\TEXTURE\\Title\\YES.png",	//はい
-		"data\\TEXTURE\\Title\\NO.png",	//いいえ
-	};
+	constexpr float MAX_ALPHA = 1.0f;																//透明度の最大値
+	constexpr float MIN_ALPHA = 0.3f;																//透明度の最小値
+	constexpr float ALPHA_ZERO = 0.0f;																//透明の時のα値
+	constexpr float TITLELOGO_DEST = SCREEN_WIDTH * 0.5f;											//タイトルロゴの目標位置
+	
 }
-//<===============================================
-//セレクト画面の初期化の際に使う名前宣言
-//<===============================================
-namespace INIT_SELECT
-{
-	const D3DXVECTOR3 NUMCHAR_POS = D3DXVECTOR3(625.0f, 100.0f, 0.0f);					//どっちか
-	const D3DXVECTOR3 CHECK_POS = D3DXVECTOR3(625.0f, 475.0f, 0.0f);					//確認
-
-	const D3DXVECTOR3 SELECT_POS = D3DXVECTOR3(400.0f, 300.0f, 0.0f);								//選択肢の位置
-	const float fDis = 475.0f;																		//距離1	
-
-	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(505.0f, INIT_SELECT::CHECK_POS.y + 150.0f, 0.0f);		//はいといいえの位置
-	const float fDis2 = 200.0f;																		//距離2
-
-	const D3DXCOLOR InitFrameCol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f);	//フレームの初期色
-}
-
 //<===============================================
 //コンストラクタ
 //<===============================================
 CTitle::CTitle()
 {
 	//int関係
-	m_nCounter = MOVE_LOGO;
-	m_nCounterRanking = AUTOMOVE_RANKING;
+	m_nCounter = 0;
+	m_nCounterRanking = 0;
 	m_nLogoAlpgha = 0;
 	m_nLogoCou = 0;
 
 	//選択肢関連
 	m_nSelect = SELECT::SELECT_SINGLE;
 	m_nSelectYN = SELECT_YN::SELECT_YN_YES;
+	m_eState = STATE::STATE_TEAMLOGO;
 
 	m_fDis = 0.0f;
-
-	m_eState = STATE::STATE_TEAMLOGO;
 
 	//bool系
 	m_bPush = false;
@@ -162,13 +125,19 @@ CTitle::~CTitle()
 //<===============================================
 HRESULT CTitle::Init(void)
 {
-	const char* TEX_TEAMLOGO = "data\\TEXTURE\\team_logo.png";				//チームロゴ
+	constexpr char* TEX_TEAMLOGO = "data\\TEXTURE\\team_logo.png";				//チームロゴ
 	const D3DXVECTOR3 CAMERA_POS = { 3350.0f, 95.0f, 260.0f };				//カメラの初期位置
+	constexpr int MOVE_LOGO = 120;												//次のステートに遷移するまでの時間
+	constexpr int AUTOMOVE_RANKING = 30000;										//ランキング自動遷移時間
+
+	//int型変数の設定
+	m_nCounterRanking = AUTOMOVE_RANKING;
+	m_nCounter = MOVE_LOGO;
 
 	//タイトルBGM再生とチームロゴオブジェクトの生成
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(320, 160.0f);
+	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(250.0f, 125.0f);
 	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_TEAMLOGO));
 
 	//カメラ初期状態
@@ -293,8 +262,8 @@ void CTitle::Draw(void)
 void CTitle::StateLogo(void)
 {
 	D3DXCOLOR TeamCol = m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->GetCol();	// チームロゴの色情報を取得
-	const int nCountMax = 10;											// カウンターの固定値
-	const int nAmoValue = 20;											//色変更時の値
+	constexpr int nCountMax = 10;											// カウンターの固定値
+	constexpr int nAmoValue = 20;											//色変更時の値
 
 	//ステートがチームロゴだった場合
 	if (m_eState == STATE::STATE_TEAMLOGO)
@@ -332,7 +301,7 @@ void CTitle::StateLogo(void)
 void CTitle::StateP_E(void)
 {
 	// カウンターの固定値
-	const int nCountMax = 10;	
+	constexpr int nCountMax = 10;	
 
 	//その場所についているかつプレスエンターの文字が表示されていなければ
 	if (m_pPlayer->GetReached()&&!m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetDraw())
@@ -393,7 +362,7 @@ void CTitle::MoveP_E(void)
 void CTitle::BlackCoverM(void)
 {
 	D3DXCOLOR BCoverCol = m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->GetCol();	// チームロゴの色情報を取得
-	const int nAmoValue = 20;												//色変更時の値
+	constexpr int nAmoValue = 20;												//色変更時の値
 	BCoverCol.a -= MAX_ALPHA / nAmoValue;									//透明に近づけていく
 
 	if (BCoverCol.a <= 0.0f){BCoverCol.a = ALPHA_ZERO;}
@@ -405,7 +374,7 @@ void CTitle::BlackCoverM(void)
 //<===============================================
 void CTitle::MovingLogo(void)
 {
-	const float fSpeed = 0.09f;													//タイトルロゴが動くスピード
+	constexpr float fSpeed = 0.09f;													//タイトルロゴが動くスピード
 	D3DXVECTOR3 TitlePos = m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->GetPosition();	//タイトルロゴの位置
 
 	//描画設定をオンにし、移動用の変数にタイトルロゴの位置を取得させる
@@ -440,8 +409,8 @@ void CTitle::PreMove(void)
 	D3DXVECTOR3 P_EPos = m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetPosition();	//プレスエンターの位置
 
 	float PlayerRot = m_pPlayer->GetRotation().y;								//プレイヤーの向きを変える
-	const float fDestRot = 3.14f, fRotMove = 0.05f;							//目的の向きと向きの移動値
-	const float fSpeed = 0.09f;													//速度
+	constexpr float fRotMove = 0.05f;											//向きの移動値
+	constexpr float fSpeed = 0.09f;												//速度
 
 	//目的地まで移動させる
 	P_EPos.x += (TITLELOGO_DEST - P_EPos.x - 0.0f) * fSpeed;//X軸
@@ -468,11 +437,7 @@ void CTitle::PreMove(void)
 	//その場所についているかつプレスエンターの文字が表示されていなければ
 	if (m_pPlayer->GetReached())
 	{
-		//目的の向きになっていたら
-		if (PlayerRot >= fDestRot) { PlayerRot = fDestRot; }
-
-		//なっていなかったら回転し続ける
-		else { PlayerRot += fRotMove; }
+		PlayerRot += (DEST_ROT.y - PlayerRot) * fRotMove;
 
 		//プレイヤーの向きに反映
 		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, PlayerRot, 0.0f));
@@ -513,11 +478,16 @@ void CTitle::StatePre(void)
 void CTitle::InitingP_E(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };				//プレイヤーの位置
-	const float fLogoLength = 150.0f;											//ロゴの長さ(サイズ)
-	const float fP_ELength = (350.0f, 350.0f);									//プレスエンターの長さ(サイズ)
+	constexpr float fLogoLength = 150.0f;											//ロゴの長さ(サイズ)
+	constexpr float fP_ELength = (350.0f, 350.0f);									//プレスエンターの長さ(サイズ)
 
-	const char* TEX_TITLELOGO = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴのテクスチャネーム
-	const char* TEX_PRESSENTER = "data\\TEXTURE\\Title\\-PRESS ENTER-.png";	//プレスエンターのテクスチャネーム
+	constexpr char* TEX_TITLELOGO = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴのテクスチャネーム
+	constexpr char* TEX_PRESSENTER = "data\\TEXTURE\\Title\\-PRESS ENTER-.png";	//プレスエンターのテクスチャネーム
+
+	//サイズ関連
+	constexpr float fSizeBlack[SIZING_MAX] = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };	//サイズ(ブラックカバー)
+	constexpr float fSizeTitleLogo[SIZING_MAX] = { 600.0f,350.0f };							//サイズ(タイトルロゴ)
+	constexpr float fSizePressEnter[SIZING_MAX] = { 450.0f,100.0f };						//サイズ(プレスエンター)
 
 	//初期化済みではなければ
 	if (!m_bIniting)
@@ -534,32 +504,32 @@ void CTitle::InitingP_E(void)
 		//<******************************************
 		//・ブラックカバー
 		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO,6);
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetSize(fSizeBlack[SIZING_WIDTH], fSizeBlack[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
 		//・タイトルロゴ
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(600.0f,190.0f);
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(fSizeTitleLogo[SIZING_WIDTH], fSizeTitleLogo[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_TITLELOGO));
 
 		//・プレスエンター
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(PRESSENTER_POS, VECTOR3_ZERO,5);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(350.0f,100.0f);
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(fSizePressEnter[SIZING_WIDTH], fSizePressEnter[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PRESSENTER));
 
 		//必要なオブジェクトの生成
-		//マップ読み込み
 		CMapManager::GetInstance()->Load();
 		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), VECTOR3_ZERO, 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
-		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO,nullptr,nullptr);
+		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, DEST_ROT, VECTOR3_ZERO,nullptr,nullptr);
 
 		//警察の生成
 		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 		{
-			m_apPolice[nCnt] = CPoliceTitle::Create(D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
-				D3DXVECTOR3(0.0f, 3.14f, 0.0f), VECTOR3_ZERO);
+			m_apPolice[nCnt] = CPoliceTitle::Create(
+				D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
+				DEST_ROT, VECTOR3_ZERO);
 		}
 	}
 }
@@ -569,8 +539,8 @@ void CTitle::InitingP_E(void)
 void CTitle::ColChange(CObject2D* pObj2D)
 {
 	D3DXCOLOR TitleLogoCol = pObj2D->GetCol();									//そのオブジェクトの色情報を取得
-	const int nCountMax = 25;													//カウンターの固定値
-	const int nAmoValue = 10;													//色変化値
+	constexpr int nCountMax = 25;													//カウンターの固定値
+	constexpr int nAmoValue = 10;													//色変化値
 
 	//色変更完了していなければ
 	if (!m_bCol) 
@@ -627,9 +597,9 @@ void CTitle::ColChange(CObject2D* pObj2D)
 //<===============================================
 void CTitle::LightOff(void)
 {
-	const int nCountMax = 75;													//カウンターの固定値
-	const char* TEX_LIGHTON = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴ(ライトオン)
-	const char* TEX_LIGHTOFF = "data\\TEXTURE\\Title\\Title_logo_lightoff.png";	//タイトルロゴ(ライトオフVer);
+	constexpr int nCountMax = 75;													//カウンターの固定値
+	constexpr char* TEX_LIGHTON = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴ(ライトオン)
+	constexpr char* TEX_LIGHTOFF = "data\\TEXTURE\\Title\\Title_logo_lightoff.png";	//タイトルロゴ(ライトオフVer);
 
 
 	//最大値まで行っていたら
@@ -691,15 +661,8 @@ void CTitle::ChaseMovement(void)
 //<===============================================
 void CTitle::Chasing(void)
 {
-	//<*************************************************************
-	//カメラに関する
-	//<*************************************************************
-	D3DXVECTOR3 PlayerPos = m_pPlayer->GetPosition();	//プレイヤー位置
-	const float PlayerMove = 25.0f;						//プレイヤーの動く値
-	const int FADE_TIME = 200;							//ゲーム画面に移行するまでの時間
-
+	//プレイヤーと警察を動かす
 	m_pPlayer->MovingSelect();
-
 	ChaseCamera();
 }
 //<===============================================
@@ -714,12 +677,12 @@ void CTitle::ChaseCamera(void)
 	D3DXVECTOR3 CameraPos = m_pCam->GetPositionR();		//カメラ位置
 
 	//向き移動の際の移動値と目的向き
-	const float fRotMoveY = 0.02f,
+	constexpr float fRotMoveY = 0.02f,
 		fRotMoveZ = 0.005f,
 		fDestRotY = -0.66f,
 		fDestRotZ = 1.15f;
 
-	const float CameraPosDif[2] = { 0.0f,210.0f };	//カメラの補正距離
+	constexpr float CameraPosDif[2] = { 0.0f,210.0f };	//カメラの補正距離
 	float CameraDis = 1150.0f;					//カメラの距離
 
 	//カメラの向きの調整
@@ -744,7 +707,6 @@ void CTitle::ChaseCamera(void)
 void CTitle::SkipMovement(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -250.0f };	//プレイヤーの位置
-	const float DEST_ROT = 0.40f;								//目的の向き
 	
 	//・タイトルロゴ
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetPosition(D3DXVECTOR3(TITLELOGO_DEST,TITLELOGO_POS.y, TITLELOGO_POS.z));
@@ -759,7 +721,7 @@ void CTitle::SkipMovement(void)
 
 	//・プレイヤー
 	m_pPlayer->SetPosition(PLAYER_POS);
-	m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
+	m_pPlayer->SetRotation(DEST_ROT);
 	m_pPlayer->SetReached(true);
 
 	//ステートを変更する
@@ -770,8 +732,41 @@ void CTitle::SkipMovement(void)
 //<===============================================
 void CTitle::InitingSelect(void)
 {
-	const char* TEX_MODESELECT = "data\\TEXTURE\\Title\\select.png";	//"MODE SELECT"の文字
-	const char* TEX_CHECK = "data\\TEXTURE\\Title\\start.png";			//確認文字
+	//テクスチャネーム
+	constexpr char* TEX_MODESELECT = "data\\TEXTURE\\Title\\select.png";					//"MODE SELECT"の文字
+	constexpr char* TEX_CHECK = "data\\TEXTURE\\Title\\start.png";							//確認文字
+
+	//選択肢(シングルとマルチ)
+	constexpr char* SELECT_NAME[CTitle::SELECT_MAX] =
+	{
+		"data\\TEXTURE\\Title\\silen.png",	//シングルプレイ
+		"data\\TEXTURE\\Title\\multi.png",	//マルチプレイ
+	};
+
+	//選択肢(YESNO)
+	constexpr char* SELECT_YN_NAME[CTitle::SELECT_YN_MAX] =
+	{
+		"data\\TEXTURE\\Title\\YES.png",	//はい
+		"data\\TEXTURE\\Title\\NO.png",	//いいえ
+	};
+
+	//サイズ関連
+	constexpr float fSizeModeSelect[SIZING_MAX] = { 225.0f, 50.0f };						//サイズ(MODE SELECT)
+	constexpr float fSizeSINGLEMULTI[SIZING_MAX] = { 200.0f, 75.0f };						//サイズ(シングルとマルチ)
+	constexpr float fSizeCHECK[SIZING_MAX] = { 300.0f, 50.0f };								//サイズ(確認文字)
+	constexpr float fSizeYESNO[SIZING_MAX] = { 80.0f, 35.0f };								//サイズ(選択肢YESNO)
+
+	//オブジェクト2D関連
+	const D3DXCOLOR InitFrameCol = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.7f);					//フレームの初期色
+	const D3DXVECTOR3 NUMCHAR_POS = D3DXVECTOR3(625.0f, 100.0f, 0.0f);					//どっちか
+	const D3DXVECTOR3 CHECK_POS = D3DXVECTOR3(625.0f, 475.0f, 0.0f);					//確認
+		 
+	const D3DXVECTOR3 SELECT_POS = D3DXVECTOR3(400.0f, 300.0f, 0.0f);					//選択肢の位置
+	constexpr float fDis_SELECT = 475.0f;													//距離1	
+
+	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(505.0f, CHECK_POS.y + 150.0f, 0.0f);		//はいといいえの位置
+	constexpr float fDis_YESNO = 200.0f;													//距離2
+
 
 
 	//初期化されていなかったら
@@ -783,13 +778,13 @@ void CTitle::InitingSelect(void)
 
 		//フレーム
 		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);//*拡大するので0.0fにしてます*//
 		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(true);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(INIT_SELECT::InitFrameCol);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(InitFrameCol);
 
 		//どちらにするか
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(INIT_SELECT::NUMCHAR_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(225.0f, 50.0f);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(NUMCHAR_POS, VECTOR3_ZERO, 6);
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(fSizeModeSelect[SIZING_WIDTH], fSizeModeSelect[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_MODESELECT));
 
@@ -798,19 +793,19 @@ void CTitle::InitingSelect(void)
 		{
 			//どちらにするか
 			m_apSelect[nCnt] = CObject2D::Create(
-				D3DXVECTOR3(INIT_SELECT::SELECT_POS.x+ INIT_SELECT::fDis*nCnt,
-				INIT_SELECT::SELECT_POS.y,
-				INIT_SELECT::SELECT_POS.z),
+				D3DXVECTOR3(SELECT_POS.x+ fDis_SELECT*nCnt,
+				SELECT_POS.y,
+				SELECT_POS.z),
 				VECTOR3_ZERO, 6);
 
-			m_apSelect[nCnt]->SetSize(200.0f, 75.0f);
+			m_apSelect[nCnt]->SetSize(fSizeSINGLEMULTI[SIZING_WIDTH], fSizeSINGLEMULTI[SIZING_HEIGHT]);
 			m_apSelect[nCnt]->SetDraw(false);
 			m_apSelect[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_NAME[nCnt]));
 		}
 
 		//確認メッセージ
-		m_pObject2D[OBJ2D::OBJ2D_CHECK] = CObject2D::Create(INIT_SELECT::CHECK_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(300.0f, 50.0f);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK] = CObject2D::Create(CHECK_POS, VECTOR3_ZERO, 6);
+		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(fSizeCHECK[SIZING_WIDTH], fSizeCHECK[SIZING_HEIGHT]);
 		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
 		m_pObject2D[OBJ2D::OBJ2D_CHECK]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_CHECK));
 
@@ -819,12 +814,12 @@ void CTitle::InitingSelect(void)
 		{
 			//選択肢(はい)
 			m_apYesNoObj[nCnt] = CObject2D::Create
-			(D3DXVECTOR3(INIT_SELECT::YES_POS.x + INIT_SELECT::fDis2 * nCnt, 
-				INIT_SELECT::YES_POS.y,
-				INIT_SELECT::YES_POS.z),
+			(D3DXVECTOR3(YES_POS.x + fDis_YESNO * nCnt, 
+				YES_POS.y,
+				YES_POS.z),
 				VECTOR3_ZERO, 6);
 
-			m_apYesNoObj[nCnt]->SetSize(80.0f, 35.0f);
+			m_apYesNoObj[nCnt]->SetSize(fSizeYESNO[SIZING_WIDTH], fSizeYESNO[SIZING_HEIGHT]);
 			m_apYesNoObj[nCnt]->SetDraw(false);
 			m_apYesNoObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_YN_NAME[nCnt]));
 		}
@@ -836,7 +831,9 @@ void CTitle::InitingSelect(void)
 void CTitle::Sizing(void)
 {
 	D3DXVECTOR3 FrameSize = m_pObject2D[OBJ2D::OBJ2D_FRAME]->GetSize();		//フレームサイズ
-	const float fSpeed = 0.09f;												//スピード
+	constexpr float fSpeed = 0.09f;												//スピード
+
+	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };					//フレームの目標値
 
 	//X軸
 	if (FrameSize.x >= FRAME_DEST.x) { FrameSize.x = FRAME_DEST.x; }
@@ -863,7 +860,7 @@ void CTitle::Sizing(void)
 void CTitle::Selecting(void)
 {
 	const D3DXVECTOR3 NUMBER_POS = D3DXVECTOR3(625.0f, 325.0f, 0.0f);		//数字の位置
-	const int ONE_PLAYER = 1,MAX_PLAYER = 4;								//プレイヤーの数
+	constexpr int ONE_PLAYER = 1,MAX_PLAYER = 4;								//プレイヤーの数
 
 	//初期化
 	InitingSelect();
@@ -1021,7 +1018,7 @@ void CTitle::DebugCam(void)
 {
 #ifdef _DEBUG
 	D3DXVECTOR3 CamRot = m_pCam->GetRotation();	//カメラ向き
-	const float fRotMove = 0.01f;				//カメラ向きの移動値
+	constexpr float fRotMove = 0.01f;				//カメラ向きの移動値
 
 	//<*******************************************************************************
 	//カメラ移動
@@ -1045,7 +1042,8 @@ void CTitle::DebugCam(void)
 //<===============================================
 void CTitle::InitingIce(void)
 {
-	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -200.0f };	//プレイヤーの位置
+	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -200.0f };			//プレイヤーの位置
+	constexpr float fDis = 150.0f;										//警察の距離
 
 	//初期化チェック
 	if (!m_bIniting)
@@ -1055,14 +1053,14 @@ void CTitle::InitingIce(void)
 
 		//位置情報初期化
 		m_pPlayer->SetPosition(PLAYER_POS);
-		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
+		m_pPlayer->SetRotation(DEST_ROT);
 
 		//警察の生成
 		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 		{
 			//位置情報初期化
-			m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + 150.0f * nCnt, PolicePos.y, PolicePos.z));
-			m_apPolice[nCnt]->SetRotation(D3DXVECTOR3(0.0f, 3.14f, 0.0f));
+			m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + fDis * nCnt, PolicePos.y, PolicePos.z));
+			m_apPolice[nCnt]->SetRotation(DEST_ROT);
 		}
 
 		//カメラの設定
@@ -1075,16 +1073,16 @@ void CTitle::InitingIce(void)
 void CTitle::IceMovement(void)
 {
 	D3DXVECTOR3 PlayerPos = VECTOR3_ZERO;							//プレイヤー位置
-	const int FADE_TIME = 200;										//ゲーム画面に移行するまでの時間
-	const int FADE_TIME_HARF = 65;									//ゲーム画面に移行するまでの時間の半減値
+	constexpr int FADE_TIME = 200;										//ゲーム画面に移行するまでの時間
+	constexpr int FADE_TIME_HARF = 65;									//ゲーム画面に移行するまでの時間の半減値
 
 	//<*************************************************************
 	//float型
 	//<*************************************************************
-	const float PlayerMove = 50.0f;								//プレイヤーの動く値
-	const float CamHeightDis = 150.0f;							//高さの差
-	const float fDisMax = 700.0f;								//距離の最大値
-	const float fMoveValue = 10.0f;								//距離移動の際の値
+	constexpr float PlayerMove = 50.0f;								//プレイヤーの動く値
+	constexpr float CamHeightDis = 150.0f;							//高さの差
+	constexpr float fDisMax = 700.0f;								//距離の最大値
+	constexpr float fMoveValue = 10.0f;								//距離移動の際の値
 
 	InitingIce();
 

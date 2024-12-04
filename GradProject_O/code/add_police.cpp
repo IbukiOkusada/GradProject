@@ -221,3 +221,24 @@ void CAddPolice::SendPosition()
 
 	pNet->SendAddPdPos(GetId(), GetPosition(), GetRotation());
 }
+
+//===============================================
+// ’Ç‰ÁŒxŽ@‚Ì’ÇÕŠJŽn‘—M
+//===============================================
+void CAddPolice::SendChase()
+{
+	if (GetPlayer() == nullptr) { return; }
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendAddPdChase(GetId(), GetPlayer()->GetId());
+}
+
+//===============================================
+// ’Ç‰ÁŒxŽ@‚Ì’ÇÕI—¹‘—M
+//===============================================
+void CAddPolice::SendChaseEnd()
+{
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendAddPdChaseEnd(GetId());
+}
