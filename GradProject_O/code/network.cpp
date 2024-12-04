@@ -61,6 +61,10 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvCarPos,		// 車座標
 	&CNetWork::RecvPdPos,		// 警察座標
 	&CNetWork::RecvAddPdPos,	// 追加座標
+	&CNetWork::RecvPdChase,		// 警察座標
+	&CNetWork::RecvAddPdChase,	// 追加座標
+	&CNetWork::RecvPdChaseEnd,	// 警察座標
+	&CNetWork::RecvAddPdChaseEnd,	// 追加座標
 };
 
 // 静的メンバ変数
