@@ -162,11 +162,11 @@ void CPoliceAI::Search(void)
 			// 追跡終了処理
 			EndChase();
 
-			// 追跡状態を送信
-			if (m_pPolice->IsActive())
-			{
-				m_pPolice->SendChaseEnd();
-			}
+			//// 追跡状態を送信
+			//if (m_pPolice->IsActive())
+			//{
+			//	m_pPolice->SendChaseEnd();
+			//}
 		}
 	}
 }
@@ -182,11 +182,11 @@ void CPoliceAI::BeginChase(CPlayer* pPlayer)
 		// 追跡するプレイヤーを決定
 		m_pPolice->SetPlayer(pPlayer);
 
-		// 追跡状態を送信
-		if (m_pPolice->IsActive())
-		{
-			m_pPolice->SendChase();
-		}
+		//// 追跡状態を送信
+		//if (m_pPolice->IsActive())
+		//{
+		//	m_pPolice->SendChase();
+		//}
 	}
 
 	// 追跡時間を設定
