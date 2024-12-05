@@ -58,6 +58,7 @@ public:
 	void SendNextGoal(const int nId);
 	void SendGameStartOk();
 	void SendTutorialOk();
+	void SendTutorialNo();
 	void SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx, int nStartPdId);
 	void SendEndInspection(int nId);
 	void SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
@@ -99,6 +100,7 @@ private:
 	void RecvGameStartOk(int* pByte, const int nId, const char* pRecvData);
 	void RecvGameStart(int* pByte, const int nId, const char* pRecvData);
 	void RecvTutorialOk(int* pByte, const int nId, const char* pRecvData);
+	void RecvTutorialNo(int* pByte, const int nId, const char* pRecvData);
 	void RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData);
 	void RecvSetInspection(int* pByte, const int nId, const char* pRecvData);
 	void RecvEndInspection(int* pByte, const int nId, const char* pRecvData);

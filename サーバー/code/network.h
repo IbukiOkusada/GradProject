@@ -66,6 +66,7 @@ private:
 	void CommandGameStartOk(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandGameStart(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandTutorialOk(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
+	void CommandTutorialNo(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandTutorialEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandSetInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);
 	void CommandEndInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte);

@@ -55,6 +55,7 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvGameStartOk,	// ゲーム開始準備完了
 	&CNetWork::RecvGameStart,	// ゲーム開始
 	&CNetWork::RecvTutorialOk,	// チュートリアル終了可能
+	&CNetWork::RecvTutorialNo,	// チュートリアル終了可能
 	&CNetWork::RecvTutorialEnd,	// チュートリアル終了
 	&CNetWork::RecvSetInspection,	// チュートリアル終了可能
 	&CNetWork::RecvEndInspection,	// チュートリアル終了
@@ -317,10 +318,7 @@ bool CNetWork::DisConnect()
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
-		if (m_nMyIdx != i)
-		{
-			m_aConnect[i] = false;
-		}
+		m_aConnect[i] = false;
 	}
 
 	m_nMyIdx = -1;
@@ -694,9 +692,17 @@ void CNetWork::RecvGameStart(int* pByte, const int nId, const char* pRecvData)
 }
 
 //===================================================
-// チュートリアル終了
+// チュートリアルOk
 //===================================================
 void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
+// チュートリアルOkキャンセル
+//===================================================
+void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 {
 
 }
@@ -1268,6 +1274,25 @@ void CNetWork::SendTutorialOk()
 
 	char aSendData[sizeof(int)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_TUTORIAL_OK;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// チュートリアルOkキャンセル
+//===================================================
+void CNetWork::SendTutorialNo()
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_TUTORIAL_NO;
 	int byte = 0;
 
 	// protocolを挿入
