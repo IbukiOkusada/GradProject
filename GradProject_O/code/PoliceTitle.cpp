@@ -46,6 +46,9 @@ void CPoliceTitle::Uninit(void)
 {
 	CPolice::Uninit();
 
+	SAFE_DELETE(m_pPatrolLamp);
+	SAFE_DELETE(m_pTailLamp);
+
 }
 //<======================================
 //更新処理
@@ -62,6 +65,10 @@ void CPoliceTitle::Update(void)
 void CPoliceTitle::Chasing(const float fMoveZ)
 {
 	D3DXVECTOR3 PolicePos = this->GetPosition();		//警察の位置取得
+
+	///警察の位置を移動させ、位置を設定する
+	PolicePos.z += fMoveZ;
+	SetPosition(PolicePos);
 
 	//<*******************************************
 	//パトランプ生成
@@ -83,10 +90,6 @@ void CPoliceTitle::Chasing(const float fMoveZ)
 	m_pTailLamp->m_rot = this->GetRotation();
 	//
 	//<*******************************************
-
-	///警察の位置を移動させ、位置を設定する
-	PolicePos.z += fMoveZ;
-	SetPosition(PolicePos);
 }
 //<======================================
 //生成処理

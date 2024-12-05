@@ -857,5 +857,8 @@
     <ClInclude Include="code\map_list.h">
       <Filter>system</Filter>
     </ClInclude>
+    <ClInclude Include="code\PoliceTitle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
