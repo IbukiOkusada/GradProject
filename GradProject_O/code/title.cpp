@@ -41,7 +41,7 @@ namespace
 	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.9f, 0.0f };			//プレスエンターの座標位置
 	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.19f, 0.0f };			//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
-	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };									//警察位置
+	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -800.0f };									//警察位置
 	const D3DXVECTOR3 DEST_ROT = { 0.0f,3.14f,0.0f };											//目的向き
 
 	//<************************************************
@@ -678,7 +678,7 @@ void CTitle::ChaseCamera(void)
 		fDestRotZ = 1.15f;
 
 	constexpr float CameraPosDif[2] = { 0.0f,210.0f };	//カメラの補正距離
-	float CameraDis = 1150.0f;					//カメラの距離
+	float CameraDis = 2000.0f;							//カメラの距離
 
 	//カメラの向きの調整
 	if (CameraRot.y <= fDestRotY) { CameraRot.y = fDestRotY; }
@@ -804,7 +804,7 @@ void CTitle::InitingSelect(void)
 				YES_POS.z),
 				VECTOR3_ZERO,
 				6,
-				fSizeYESNO[SIZING_WIDTH], 
+				fSizeYESNO[SIZING_WIDTH],
 				fSizeYESNO[SIZING_HEIGHT],
 				false, SELECT_YN_NAME[nCnt]);
 		}
@@ -873,11 +873,11 @@ void CTitle::Selecting(void)
 		if (m_bPush)
 		{
 			//シングルが透明になっていたら
-			if (m_apSelect[SELECT::SELECT_SINGLE]->GetCol().a == 0.0f)
+			if (m_apSelect[SELECT::SELECT_SINGLE]->GetCol().a == ALPHA_ZERO)
 			{m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));}
 
 			//マルチが透明になっていたら
-			else if (m_apSelect[SELECT::SELECT_MULTI]->GetCol().a == 0.0f)
+			else if (m_apSelect[SELECT::SELECT_MULTI]->GetCol().a == ALPHA_ZERO)
 			{m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));}
 			
 			SelectYesNO();
@@ -930,14 +930,14 @@ void CTitle::SelectSingleMulti(void)
 	{
 		//"YES"を選択状態、"NO"を非選択状態
 		ColChange(m_apSelect[SELECT::SELECT_SINGLE]);
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
 	}
 	//"NO"を選択している時
 	else if (m_nSelect == SELECT::SELECT_MULTI)
 	{
 		//"YES"を非選択状態、"NO"を選択状態
 		ColChange(m_apSelect[SELECT::SELECT_MULTI]);
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
 	}
 }
 //<===============================================
@@ -985,16 +985,18 @@ void CTitle::SelectCol(void)
 	//"YES"を選択している時
 	if (m_nSelect == SELECT::SELECT_SINGLE) 
 	{
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		//選択されていないマルチを透明にする
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO));
 	
 	}
 
 	//"NO"を選択している時
 	else if (m_nSelect == SELECT::SELECT_MULTI)
 	{
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		//選択されていないシングルを透明にする
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO));
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
 	}
 
 	//"YES"を選択している時

@@ -219,7 +219,7 @@ void CPlayerTitle::MovingSelect(void)
 	m_Info.pos.z += (DEST_POS_SELECT[m_nNumDest].z - m_Info.pos.z - m_Info.move.z) * fMove;//Z軸
 
 	//目的地に到着したら判定をtrueにする
-	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 100.0f))
+	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], 85.0f))
 	{
 		m_nNumDest +=1;
 	}
@@ -340,8 +340,11 @@ void CPlayerTitle::PolicePosSet(void)
 {
 	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };	//警察ポインタ
 	D3DXVECTOR3 arPos[INITIAL::POLICE_MAX] = { VECTOR3_ZERO };	//警察の位置
-	constexpr float fDis = 500.0f;										//プレイヤーからの距離
-	constexpr float fDis_Police = 150.0f;									//警察間の距離
+	constexpr float fDis = 550.0f;								//プレイヤーからの距離
+	constexpr float fDis_Police = 350.0f;						//警察間の距離
+	constexpr float fDiff = 250.0f;								//補正(警察用)
+
+	const D3DXVECTOR3 aPos = GetPosition();						//プレイヤー位置
 
 	//警察の情報を取得してくる
 	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
@@ -364,7 +367,7 @@ void CPlayerTitle::PolicePosSet(void)
 		case DEST::DEST_FIRST:
 
 			//その位置に設定
-			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + fDis_Police *nCnt, GetPosition().y, GetPosition().z - fDis);
+			arPos[nCnt] = D3DXVECTOR3(aPos.x - fDiff + fDis_Police *nCnt, aPos.y, aPos.z - fDis);
 
 			break;
 
@@ -373,7 +376,7 @@ void CPlayerTitle::PolicePosSet(void)
 		case DEST::DEST_FOUTH:
 
 			//その位置に設定
-			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + fDis, GetPosition().y, GetPosition().z + fDis_Police * nCnt);
+			arPos[nCnt] = D3DXVECTOR3(aPos.x + fDis, aPos.y, aPos.z - fDiff + fDis_Police * nCnt);
 
 			break;
 
@@ -382,7 +385,7 @@ void CPlayerTitle::PolicePosSet(void)
 		case DEST::DEST_FIFTH:
 
 			//その位置に設定
-			arPos[nCnt] = D3DXVECTOR3(GetPosition().x + fDis_Police * nCnt, GetPosition().y, GetPosition().z + fDis);
+			arPos[nCnt] = D3DXVECTOR3(aPos.x - fDiff + fDis_Police * nCnt, aPos.y, GetPosition().z + fDis);
 
 			break;
 
@@ -390,7 +393,7 @@ void CPlayerTitle::PolicePosSet(void)
 		case DEST::DEST_SIXTH:
 
 			//その位置に設定
-			arPos[nCnt] = D3DXVECTOR3(GetPosition().x - fDis, GetPosition().y, GetPosition().z + fDis_Police * nCnt);
+			arPos[nCnt] = D3DXVECTOR3(aPos.x - fDis, aPos.y, aPos.z - fDiff + fDis_Police * nCnt);
 
 			break;
 		}
