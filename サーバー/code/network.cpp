@@ -36,6 +36,7 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandGameStartOk,		// ゲーム開始可能になったよ
 	&CNetWork::CommandGameStart,		// ゲーム開始
 	&CNetWork::CommandTutorialOk,		// ゲーム開始可能になったよ
+	&CNetWork::CommandTutorialNo,		// ゲーム開始可能キャンセル
 	&CNetWork::CommandTutorialEnd,		// ゲーム開始
 	&CNetWork::CommandSetInspection,	// 検問配置
 	&CNetWork::CommandEndInspection,	// 検問廃棄
@@ -734,6 +735,15 @@ void CNetWork::CommandTutorialOk(const int nId, const char* pRecvData, CClient* 
 	m_aFlag[nId].bTutorial = true;
 
 	CommandTutorialEnd(nId, pRecvData, pClient, pNowByte);
+}
+
+//==========================================================
+// チュートリアルOK
+//==========================================================
+void CNetWork::CommandTutorialNo(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	// フラグオフ
+	m_aFlag[nId].bTutorial = false;
 }
 
 //==========================================================
