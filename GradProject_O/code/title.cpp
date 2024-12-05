@@ -26,6 +26,7 @@
 #include "number.h"
 #include "TitleBaggage.h"
 #include "debugproc.h"
+#include "objectsound.h"
 
 //静的メンバ変数
 CPoliceTitle* CTitle::m_apPolice[INITIAL::POLICE_MAX] = {nullptr};
@@ -126,19 +127,18 @@ CTitle::~CTitle()
 HRESULT CTitle::Init(void)
 {
 	constexpr char* TEX_TEAMLOGO = "data\\TEXTURE\\team_logo.png";				//チームロゴ
-	const D3DXVECTOR3 CAMERA_POS = { 3350.0f, 95.0f, 260.0f };				//カメラの初期位置
-	constexpr int MOVE_LOGO = 120;												//次のステートに遷移するまでの時間
-	constexpr int AUTOMOVE_RANKING = 30000;										//ランキング自動遷移時間
+	const D3DXVECTOR3 CAMERA_POS = { 3350.0f, 95.0f, 260.0f };					//カメラの初期位置
+	constexpr int MOVE_LOGO = 135;												//次のステートに遷移するまでの時間
+	constexpr int AUTOMOVE_RANKING = 1000;										//ランキング自動遷移時間
+	constexpr float fSize[SIZING::SIZING_MAX] = { 250.0f, 125.0f };				//サイズ(チームロゴ)
 
 	//int型変数の設定
 	m_nCounterRanking = AUTOMOVE_RANKING;
 	m_nCounter = MOVE_LOGO;
 
-	//タイトルBGM再生とチームロゴオブジェクトの生成
-	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
-
 	//チームロゴ
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO,3,250.0f, 125.0f,true, TEX_TEAMLOGO);
+	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = InitObj2D(TEAMLOGO_POS, 
+		VECTOR3_ZERO,3, fSize[SIZING_WIDTH], fSize[SIZING_HEIGHT],true, TEX_TEAMLOGO);
 
 	//カメラ初期状態
 	m_pCam = CCameraManager::GetInstance()->GetTop();
@@ -526,6 +526,11 @@ void CTitle::InitingP_E(void)
 				D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
 				DEST_ROT, VECTOR3_ZERO);
 		}
+
+		//タイトルBGM再生
+		CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
+
+
 	}
 }
 //<===============================================
@@ -769,9 +774,11 @@ void CTitle::InitingSelect(void)
 		m_bIniting = true;
 		m_bPush = false;
 
+		//フレーム
 		m_pObject2D[OBJ2D::OBJ2D_FRAME] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO, 6,
 			0.0f, 0.0f, true, nullptr, InitFrameCol);
 
+		//確認文字
 		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = InitObj2D(NUMCHAR_POS, VECTOR3_ZERO, 6,
 			fSizeModeSelect[SIZING_WIDTH], fSizeModeSelect[SIZING_HEIGHT], false, TEX_MODESELECT);
 
@@ -808,6 +815,10 @@ void CTitle::InitingSelect(void)
 				fSizeYESNO[SIZING_HEIGHT],
 				false, SELECT_YN_NAME[nCnt]);
 		}
+
+		//サイレン音と到着情報を設定
+		m_pPlayer->SetReached(false);
+		CPoliceTitle::SetSiren(true);
 	}
 }
 //<===============================================
@@ -911,7 +922,7 @@ void CTitle::SelectSingleMulti(void)
 		//無駄なfor文を避けるため
 		else { break; }
 	}
-
+	//switch_04_button
 	//キーボード入力かパッド入力があれば
 	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
 		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
@@ -922,8 +933,12 @@ void CTitle::SelectSingleMulti(void)
 	}
 
 	//人数選択をする
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW)) { m_nSelect = (m_nSelect + 1) % SELECT_MAX; }
-	else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW)) { m_nSelect = (m_nSelect + (SELECT_MAX - 1)) % SELECT_MAX; }
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW)) 
+	{ 
+		m_nSelect = (m_nSelect + 1) % SELECT_MAX; 
+	}
+	else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW)) 
+	{ m_nSelect = (m_nSelect + (SELECT_MAX - 1)) % SELECT_MAX; }
 
 	//"YES"を選択している時
 	if (m_nSelect == SELECT::SELECT_SINGLE)
@@ -1048,6 +1063,7 @@ void CTitle::InitingIce(void)
 {
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -200.0f };			//プレイヤーの位置
 	constexpr float fDis = 150.0f;										//警察の距離
+	constexpr float fLength = 1350.0f;									//カメラの長さ
 
 	//初期化チェック
 	if (!m_bIniting)
@@ -1069,6 +1085,7 @@ void CTitle::InitingIce(void)
 
 		//カメラの設定
 		m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
+		m_pCam->SetLength(fLength);
 	}
 }
 //<===============================================
@@ -1077,16 +1094,16 @@ void CTitle::InitingIce(void)
 void CTitle::IceMovement(void)
 {
 	D3DXVECTOR3 PlayerPos = VECTOR3_ZERO;							//プレイヤー位置
-	constexpr int FADE_TIME = 200;										//ゲーム画面に移行するまでの時間
-	constexpr int FADE_TIME_HARF = 65;									//ゲーム画面に移行するまでの時間の半減値
+	constexpr int FADE_TIME = 200;									//ゲーム画面に移行するまでの時間
+	constexpr int FADE_TIME_HARF = 65;								//ゲーム画面に移行するまでの時間の半減値
 
 	//<*************************************************************
 	//float型
 	//<*************************************************************
 	constexpr float PlayerMove = 50.0f;								//プレイヤーの動く値
 	constexpr float CamHeightDis = 150.0f;							//高さの差
-	constexpr float fDisMax = 700.0f;								//距離の最大値
-	constexpr float fMoveValue = 10.0f;								//距離移動の際の値
+	constexpr float fDisMax = 900.0f;								//距離の最大値
+	constexpr float fMoveValue = 7.5f;								//距離移動の際の値
 
 	InitingIce();
 
@@ -1131,7 +1148,10 @@ void CTitle::IceMovement(void)
 	{
 		//距離が一定値になったらその値にし、なっていなかったら近づける
 		if (m_fDis >= fDisMax) { m_fDis = fDisMax; }
-		else { m_fDis += fMoveValue; }
+		else { m_fDis += fMoveValue;}
+
+		//サイレン音を鳴らす
+		CPoliceTitle::SetSiren(false);
 	}
 }
 //<===============================================

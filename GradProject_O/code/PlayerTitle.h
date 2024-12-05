@@ -64,11 +64,11 @@ public:
 	void BaggageMove(void);
 
 	//“’…î•ñ‚ÉŠÖ‚·‚éSetEGetŠÖ”
-	void SetReached(bool bReach) { m_bReached = bReach; }
-	bool GetReached(void) {return m_bReached;}
+	inline void SetReached(bool bReach) { m_bReached = bReach; }
+	inline bool GetReached(void) {return m_bReached;}
 
 	//ƒS[ƒ‹î•ñ‚ğæ“¾
-	CTitleGoal* GetTitleGoal(void) { return m_pTitleGoal; }
+	inline CTitleGoal* GetTitleGoal(void) { return m_pTitleGoal; }
 
 private:
 
