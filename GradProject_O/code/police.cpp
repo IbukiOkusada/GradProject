@@ -493,8 +493,31 @@ void CPolice::SendChaseEnd()
 //===============================================
 void CPolice::RecvTypeSet()
 {
-	if (GetTypeNext() == TYPE::TYPE_MAX) { return; }
+	// Ží—ÞÝ’è
+	CCar::RecvTypeSet();
 
-	SetType(GetTypeNext());
-	SetTypeNext(TYPE::TYPE_MAX);
+	if (m_stateInfo.chasenext == CHASE::CHASE_MAX) { return; }
+
+	// ŽŸ‚ÌŽw’è‚³‚ê‚½ó‘Ô‚Å‚ÌÝ’è
+	switch (m_stateInfo.chasenext)
+	{
+	case CHASE::CHASE_BEGIN:
+	{
+		// ’ÇÕŠJŽn
+		m_pPoliceAI->BeginChase(m_stateInfo.pNextPlayer);
+		m_stateInfo.pNextPlayer = nullptr;
+	}
+	break;
+
+	case CHASE::CHASE_END:
+	{
+		m_pPoliceAI->EndChase();
+	}
+	break;
+
+	default:
+		break;
+	}
+
+	m_stateInfo.chasenext = CHASE::CHASE_MAX;
 }

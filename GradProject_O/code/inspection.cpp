@@ -365,26 +365,27 @@ void CInspection::Collision()
 
 	for (int i = 0; i < InstpectionData::NUM_EFFECT; i++)
 	{
-		if (m_LagerInfo.apEffect[i] == nullptr) { continue; }
-
-		// 線分
-		D3DXVECTOR3 vtx1 = m_aPoliceInfo[i].goalpos;
-		D3DXVECTOR3 vtx2 = m_aPoliceInfo[i].goalpos + (m_Info.pos - m_aPoliceInfo[i].goalpos) * m_LagerInfo.scale;
-
-		// プレイヤーの位置
-		D3DXVECTOR3 pos = pPlayer->GetPosition();
-		D3DXVECTOR3 posOld = pPlayer->GetOldPosition();
-
-		// 通り過ぎた
-		if (collision::LineCrossProduct(vtx1, vtx2, &pos, posOld))
+		if (m_LagerInfo.apEffect[i] != nullptr)
 		{
-			// 追跡
-			Start();
-			net->SendEndInspection(m_Info.nId);
-			return;
+			// 線分
+			D3DXVECTOR3 vtx1 = m_aPoliceInfo[i].goalpos;
+			D3DXVECTOR3 vtx2 = m_aPoliceInfo[i].goalpos + (m_Info.pos - m_aPoliceInfo[i].goalpos) * m_LagerInfo.scale;
+
+			// プレイヤーの位置
+			D3DXVECTOR3 pos = pPlayer->GetPosition();
+			D3DXVECTOR3 posOld = pPlayer->GetOldPosition();
+
+			// 通り過ぎた
+			if (collision::LineCrossProduct(vtx1, vtx2, &pos, posOld))
+			{
+				// 追跡
+				Start();
+				net->SendEndInspection(m_Info.nId);
+				return;
+			}
 		}
 		// 警察が既に出発済み
-		else if (m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_STOP &&
+		if (m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_STOP &&
 			m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_NORMAL)
 		{
 			// 追跡

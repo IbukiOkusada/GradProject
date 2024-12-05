@@ -32,7 +32,7 @@ CPoliceTitle::~CPoliceTitle()
 HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 {
 	//モデルの名前
-	constexpr char* MODEL_NAME = "data\\MODEL\\car003.x";
+	constexpr char* MODEL_NAME = "data\\MODEL\\police.x";
 
 	//位置ありのオブジェクト生成
 	m_pObj = CObjectX::Create(pos, VECTOR3_ZERO, MODEL_NAME);
@@ -45,6 +45,9 @@ HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 void CPoliceTitle::Uninit(void)
 {
 	CPolice::Uninit();
+
+	SAFE_DELETE(m_pPatrolLamp);
+	SAFE_DELETE(m_pTailLamp);
 
 }
 //<======================================
@@ -62,6 +65,10 @@ void CPoliceTitle::Update(void)
 void CPoliceTitle::Chasing(const float fMoveZ)
 {
 	D3DXVECTOR3 PolicePos = this->GetPosition();		//警察の位置取得
+
+	///警察の位置を移動させ、位置を設定する
+	PolicePos.z += fMoveZ;
+	SetPosition(PolicePos);
 
 	//<*******************************************
 	//パトランプ生成
@@ -83,10 +90,6 @@ void CPoliceTitle::Chasing(const float fMoveZ)
 	m_pTailLamp->m_rot = this->GetRotation();
 	//
 	//<*******************************************
-
-	///警察の位置を移動させ、位置を設定する
-	PolicePos.z += fMoveZ;
-	SetPosition(PolicePos);
 }
 //<======================================
 //生成処理
