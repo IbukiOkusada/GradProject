@@ -32,6 +32,7 @@ namespace NetWork
 		COMMAND_GAMESTART_OK,	// ゲーム準備完了
 		COMMAND_GAMESTART,		// ゲーム開始
 		COMMAND_TUTORIAL_OK,	// チュートリアル準備完了
+		COMMAND_TUTORIAL_NO,
 		COMMAND_TUTORIAL_END,	// エントリー終了
 		COMMAND_SET_INSP,		// 検問設置
 		COMMAND_END_INSP,		// 検問廃棄

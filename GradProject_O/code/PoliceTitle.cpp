@@ -10,11 +10,15 @@
 #include "title.h"
 #include "car_manager.h"
 
+//サウンド再生
+CMasterSound::CObjectSound* CPoliceTitle::m_pSound = nullptr;
+// 
 //<======================================
 //コンストラクタ
 //<======================================
 CPoliceTitle::CPoliceTitle() : CPolice(-1)
 {
+	//初期化
 	m_pPatrolLamp = nullptr;
 	m_pTailLamp = nullptr;
 }
@@ -31,11 +35,20 @@ CPoliceTitle::~CPoliceTitle()
 //<======================================
 HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 {
-	//モデルの名前
-	constexpr char* MODEL_NAME = "data\\MODEL\\car003.x";
+	constexpr char* MODEL_NAME = "data\\MODEL\\police.x";	//モデル名
+	constexpr char* SoundName = "data\\SE\\siren.wav";		//サウンド名
 
 	//位置ありのオブジェクト生成
 	m_pObj = CObjectX::Create(pos, VECTOR3_ZERO, MODEL_NAME);
+
+	//音生成
+	if (!m_pSound)
+	{
+		//生成開始
+		m_pSound = CMasterSound::CObjectSound::Create(SoundName, -1);
+		m_pSound->SetVolume(0.2f);
+		m_pSound->Stop();
+	}
 
 	return S_OK;
 }
@@ -44,12 +57,11 @@ HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 //<======================================
 void CPoliceTitle::Uninit(void)
 {
-	//Realese無しだとメモリ破壊が起きる
-	CPoliceManager::GetInstance()->GetList()->Delete(this);
+	CPolice::Uninit();
+	SAFE_UNINIT_DELETE(m_pSound);
+
 	SAFE_DELETE(m_pPatrolLamp);
 	SAFE_DELETE(m_pTailLamp);
-	Release();
-
 }
 //<======================================
 //更新処理
@@ -57,7 +69,7 @@ void CPoliceTitle::Uninit(void)
 void CPoliceTitle::Update(void)
 {
 	//唯のデバッグ用
-	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", 
+	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]",
 		this->GetPosition().x, this->GetPosition().y, this->GetPosition().z);
 }
 //<======================================

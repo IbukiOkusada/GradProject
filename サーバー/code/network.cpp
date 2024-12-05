@@ -36,6 +36,7 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandGameStartOk,		// ゲーム開始可能になったよ
 	&CNetWork::CommandGameStart,		// ゲーム開始
 	&CNetWork::CommandTutorialOk,		// ゲーム開始可能になったよ
+	&CNetWork::CommandTutorialNo,		// ゲーム開始可能キャンセル
 	&CNetWork::CommandTutorialEnd,		// ゲーム開始
 	&CNetWork::CommandSetInspection,	// 検問配置
 	&CNetWork::CommandEndInspection,	// 検問廃棄
@@ -737,6 +738,15 @@ void CNetWork::CommandTutorialOk(const int nId, const char* pRecvData, CClient* 
 }
 
 //==========================================================
+// チュートリアルOK
+//==========================================================
+void CNetWork::CommandTutorialNo(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	// フラグオフ
+	m_aFlag[nId].bTutorial = false;
+}
+
+//==========================================================
 // チュートリアル終了
 //==========================================================
 void CNetWork::CommandTutorialEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
@@ -791,7 +801,7 @@ void CNetWork::CommandTutorialEnd(const int nId, const char* pRecvData, CClient*
 //==========================================================
 void CNetWork::CommandSetInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
-	char aRecv[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int)] = {};
+	char aRecv[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int) + sizeof(int)] = {};
 	int command = NetWork::COMMAND_SET_INSP;
 	int byte = 0;
 	int recvbyte = 0;
@@ -823,6 +833,12 @@ void CNetWork::CommandSetInspection(const int nId, const char* pRecvData, CClien
 	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 道IDを挿入
+	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(int));
+	byte += sizeof(int);
+	*pNowByte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 開始IDを挿入
 	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(int));
 	byte += sizeof(int);
 	*pNowByte += sizeof(int);

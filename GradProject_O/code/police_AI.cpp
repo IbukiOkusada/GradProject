@@ -85,7 +85,7 @@ void CPoliceAI::Search(void)
 		D3DXVECTOR3 vecPlayer = pPlayer->GetPosition() - m_pPolice->GetPosition();		// プレイヤーと警察間のベクトル計算
 		float length = D3DXVec3Length(&vecPlayer);										// 距離計算
 		float rotVec = atan2f(vecPlayer.x, vecPlayer.z);								// 角度計算
-		float rotView =m_pPolice->GetRotation().y - rotVec;						// 向いてる方向との差を計算
+		float rotView =m_pPolice->GetRotation().y - rotVec;								// 向いてる方向との差を計算
 
 		// 角度補正
 		if (rotView > D3DX_PI)
@@ -300,14 +300,9 @@ void CPoliceAI::Chase(void)
 		// 現在地と目的地が別の時
 		if (m_pRoadStart != m_pRoadTarget || m_pRoadStart == nullptr || m_pRoadTarget == nullptr)
 		{
-			// 経路探索
-			m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
-
-			// リストが空でなければ移動先設定
-			if (!m_searchRoad.empty())
-			{
-				m_pSearchTarget = m_searchRoad.front();
-			}
+			// マルチスレッド
+			std::thread th(&CPoliceAI::ChaseAStar, this);
+			th.detach();
 		}
 		else
 		{
@@ -320,6 +315,21 @@ void CPoliceAI::Chase(void)
 	ReachRoad();
 
 	m_fSearchTimer += fDeltaTime * fSlow;
+}
+
+//==========================================================
+// 追跡時の経路探索処理
+//==========================================================
+void CPoliceAI::ChaseAStar(void)
+{
+	// 経路探索
+	m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
+
+	// リストが空でなければ移動先設定
+	if (!m_searchRoad.empty())
+	{
+		m_pSearchTarget = m_searchRoad.front();
+	}
 }
 
 //==========================================================
@@ -394,7 +404,7 @@ void CPoliceAI::ReachRoad(void)
 		float length = D3DXVec3Length(&(posRoad - posPolice));
 		if (length < 500.0f)
 		{
-			m_pSearchTarget = m_pSearchTarget->pChaild;
+			m_pSearchTarget = m_pSearchTarget->pChild;
 		}
 	}
 }
@@ -447,11 +457,27 @@ void CPoliceAIElite::SelectRoad(void)
 	CPlayer* pPlayer = m_pPolice->GetPlayer();
 	if (pPlayer != nullptr)
 	{
-		m_pRoadTarget = pPlayer->GetPredRoute()->GetPredRoad();
+		m_pRoadRelay = pPlayer->GetPredRoute()->GetPredRoad();
+		m_pRoadTarget = pPlayer->GetRoad();
 	}
 	else
 	{
 		m_pRoadTarget = m_pPolice->GetRoadTarget();
+	}
+}
+
+//==========================================================
+// 追跡時の経路探索処理
+//==========================================================
+void CPoliceAIElite::ChaseAStar(void)
+{
+	// 経路探索
+	m_searchRoad = AStar::AStarPoliceDetour(m_pRoadStart, m_pRoadRelay, m_pRoadTarget);
+
+	// リストが空でなければ移動先設定
+	if (!m_searchRoad.empty())
+	{
+		m_pSearchTarget = m_searchRoad.front();
 	}
 }
 

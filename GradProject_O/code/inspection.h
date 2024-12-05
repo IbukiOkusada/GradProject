@@ -42,6 +42,7 @@ private:
 		D3DXVECTOR3 pos;	// 座標
 		D3DXVECTOR3 rot;	// 向き
 		int nId;
+		int nStartPdId;		// 警察開始ID
 
 		// コンストラクタ
 		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), nId(-1) {}
@@ -86,7 +87,7 @@ public:	// 誰でもアクセス可能
 	void Start();
 
 	// 静的メンバ関数
-	static CInspection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId);
+	static CInspection* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId, int startpdid);
 
 	// メンバ関数(取得)
 	D3DXVECTOR3& GetPosition() { return m_Info.pos; }

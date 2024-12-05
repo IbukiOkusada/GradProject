@@ -57,11 +57,14 @@ protected:
 	// メンバ関数
 	virtual void SelectRoad(void);
 	virtual void ReachRoad(void);
+	virtual void ChaseAStar(void);
 
 	// メンバ変数
 	CPolice* m_pPolice;
 	CRoad* m_pRoadStart;		// 移動開始地点
 	CRoad* m_pRoadTarget;		// 目標地点
+	CRoad::SInfoSearch* m_pSearchTarget;
+	vector<CRoad::SInfoSearch*> m_searchRoad;
 
 private:	// 自分だけがアクセス可能
 
@@ -73,9 +76,7 @@ private:	// 自分だけがアクセス可能
 	void CheckCollision(CPlayer* pPlayer);
 
 	// メンバ変数
-	CRoad::SInfoSearch* m_pSearchTarget;
 	float m_fSearchTimer;
-	vector<CRoad::SInfoSearch*> m_searchRoad;
 	TYPE m_type;
 };
 
@@ -84,6 +85,7 @@ private:	// 自分だけがアクセス可能
 //==========================================================
 class CPoliceAINomal : public CPoliceAI
 {
+	// メンバ関数
 	HRESULT Init(void) override;
 	void SelectRoad(void) override;
 };
@@ -93,8 +95,13 @@ class CPoliceAINomal : public CPoliceAI
 //==========================================================
 class CPoliceAIElite : public CPoliceAI
 {
+	// メンバ関数
 	HRESULT Init(void) override;
 	void SelectRoad(void) override;
+	void ChaseAStar(void) override;
+
+	// メンバ変数
+	CRoad* m_pRoadRelay;		// 目標地点
 };
 
 //==========================================================
@@ -102,6 +109,7 @@ class CPoliceAIElite : public CPoliceAI
 //==========================================================
 class CPoliceAIGentle : public CPoliceAI
 {
+	// メンバ関数
 	HRESULT Init(void) override;
 	void SelectRoad(void) override;
 };

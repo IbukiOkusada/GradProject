@@ -355,6 +355,7 @@
     <ClInclude Include="code\PlayerTitle.h" />
     <ClInclude Include="code\player_manager.h" />
     <ClInclude Include="code\police.h" />
+    <ClInclude Include="code\PoliceTitle.h" />
     <ClInclude Include="code\police_AI.h" />
     <ClInclude Include="code\police_manager.h" />
     <ClInclude Include="code\precompile.h" />

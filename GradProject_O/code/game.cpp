@@ -55,6 +55,7 @@
 #include "scrollText2D.h"
 #include "radio.h"
 #include "fog.h"
+#include "inspection_manager.h"
 // ネットワーク
 #include "network.h"
 
@@ -271,6 +272,13 @@ void CGame::Uninit(void)
 
     // マップマネージャー廃棄
     CMapManager::Release();
+
+    // 各種マネージャー廃棄
+    CCarManager::Release();
+    CGoalManager::Release();
+    CPoliceManager::Release();
+    CInspectionManager::Release();
+    CPlayerManager::Release();
 }
 
 //===============================================
@@ -357,7 +365,7 @@ void CGame::Update(void)
             }
         }
     }
-    if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_ONLINE)
+    if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_SINGLE)
     {
         End_Fail();
     }

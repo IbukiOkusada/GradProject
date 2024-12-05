@@ -866,5 +866,8 @@
     <ClInclude Include="code\fog.h">
       <Filter>fog</Filter>
     </ClInclude>
+    <ClInclude Include="code\PoliceTitle.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
