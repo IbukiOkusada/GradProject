@@ -44,6 +44,8 @@ CCar::CCar(int nId)
 	m_Info = SInfo();
 	m_Info.nId = nId;
 	m_RecvInfo = SRecvInfo();
+	m_pObj = nullptr;
+	m_pTailLamp = nullptr;
 
 	// ƒŠƒXƒg‚É“ü‚ê‚é
 	CCarManager::GetInstance()->ListIn(this);
@@ -88,6 +90,9 @@ void CCar::Update(void)
 {
 	m_Info.posOld = m_Info.pos;
 	m_Info.fSpeedDest = 0.0f;
+
+	// óM‚µ‚½í—Ş‚ğİ’è
+	RecvTypeSet();
 
 	// ˆÚ“®æ‚ÌŒˆ’è
 	MoveRoad();

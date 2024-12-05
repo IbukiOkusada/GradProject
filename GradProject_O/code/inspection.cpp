@@ -84,7 +84,7 @@ HRESULT CInspection::Init(void)
 		goalpos.x += sinf(rot.y) * POLICE_SETLENGTH;
 		goalpos.z += cosf(rot.y) * POLICE_SETLENGTH;
 
-		m_aPoliceInfo[i].pPolice = CAddPolice::Create(pos, VECTOR3_ZERO, VECTOR3_ZERO, 0);
+		m_aPoliceInfo[i].pPolice = CAddPolice::Create(pos, VECTOR3_ZERO, VECTOR3_ZERO, m_Info.nStartPdId + i);
 		m_aPoliceInfo[i].goalpos = goalpos;
 
 		// 経路を設定
@@ -150,7 +150,7 @@ void CInspection::Update(void)
 //==========================================================
 // 生成
 //==========================================================
-CInspection* CInspection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId)
+CInspection* CInspection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId, int startpdid)
 {
 	CInspection* pInsp = nullptr;
 
@@ -159,6 +159,7 @@ CInspection* CInspection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot,
 	if (pInsp != nullptr)
 	{
 		// 値設定
+		pInsp->m_Info.nStartPdId = startpdid;
 		pInsp->SetPosition(pos);
 		pInsp->SetRotation(rot);
 		pInsp->m_pRoad = pRoad;
@@ -364,32 +365,36 @@ void CInspection::Collision()
 
 	for (int i = 0; i < InstpectionData::NUM_EFFECT; i++)
 	{
-		if (m_LagerInfo.apEffect[i] == nullptr) { continue; }
-
-		// 線分
-		D3DXVECTOR3 vtx1 = m_aPoliceInfo[i].goalpos;
-		D3DXVECTOR3 vtx2 = m_aPoliceInfo[i].goalpos + (m_Info.pos - m_aPoliceInfo[i].goalpos) * m_LagerInfo.scale;
-
-		// プレイヤーの位置
-		D3DXVECTOR3 pos = pPlayer->GetPosition();
-		D3DXVECTOR3 posOld = pPlayer->GetOldPosition();
-
-		// 通り過ぎた
-		if (collision::LineCrossProduct(vtx1, vtx2, &pos, posOld))
+		if (m_LagerInfo.apEffect[i] != nullptr)
 		{
-			// 追跡
-			Start();
-			net->SendEndInspection(m_Info.nId);
-			return;
+			// 線分
+			D3DXVECTOR3 vtx1 = m_aPoliceInfo[i].goalpos;
+			D3DXVECTOR3 vtx2 = m_aPoliceInfo[i].goalpos + (m_Info.pos - m_aPoliceInfo[i].goalpos) * m_LagerInfo.scale;
+
+			// プレイヤーの位置
+			D3DXVECTOR3 pos = pPlayer->GetPosition();
+			D3DXVECTOR3 posOld = pPlayer->GetOldPosition();
+
+			// 通り過ぎた
+			if (collision::LineCrossProduct(vtx1, vtx2, &pos, posOld))
+			{
+				// 追跡
+				Start();
+				net->SendEndInspection(m_Info.nId);
+				return;
+			}
 		}
-		// 警察が既に出発済み
-		else if (m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_STOP &&
-			m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_NORMAL)
+		if (m_aPoliceInfo[i].pPolice != nullptr)
 		{
-			// 追跡
-			Start();
-			net->SendEndInspection(m_Info.nId);
-			return;
+			// 警察が既に出発済み
+			if (m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_STOP &&
+				m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_NORMAL)
+			{
+				// 追跡
+				Start();
+				net->SendEndInspection(m_Info.nId);
+				return;
+			}
 		}
 	}
 

@@ -12,6 +12,12 @@
 class CPlayer;
 class CMultiCamera;
 class CObjectX;
+class CObject2D;
+
+namespace
+{
+	const int MAX = 4;
+}
 
 //===============================================
 // エントリークラスの定義(派生クラス)
@@ -45,13 +51,14 @@ private:
 	// メンバ関数
 	void AddPlayer(void);  // プレイヤー参加処理
 	void DecreasePlayer(void);  // プレイヤー参加取り消し処理
+	void ControlsUI(void);      // 操作方法のUI
 
 	// メンバ変数
-	CPlayer** m_ppPlayer;	// プレイヤーのポインタ
 	CMultiCamera** m_ppCamera;   // カメラのポインタ
-	CObjectX** m_ppObj;
+	CObjectX** m_ppObjX;
+	CObject2D* m_pObj2D[MAX];
 
-	bool m_IsFinish;  // チュートリアルが終了しているかどうか
+	bool m_IsFinish;   // チュートリアルが終了しているかどうか
 };
 
 #endif

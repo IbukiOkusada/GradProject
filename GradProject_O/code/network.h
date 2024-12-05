@@ -58,7 +58,7 @@ public:
 	void SendNextGoal(const int nId);
 	void SendGameStartOk();
 	void SendTutorialOk();
-	void SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx);
+	void SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx, int nStartPdId);
 	void SendEndInspection(int nId);
 	void SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
 	void SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);

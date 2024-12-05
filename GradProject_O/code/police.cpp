@@ -65,7 +65,7 @@ CPolice::CPolice(int nId) : CCar(nId)
 	m_pSiren = nullptr;
 	m_stateInfo = SState();
 	m_pPoliceAI = nullptr;
-	CPoliceManager::GetInstance()->GetList()->Regist(this);
+	CPoliceManager::GetInstance()->ListIn(this);
 }
 
 //==========================================================
@@ -95,7 +95,7 @@ HRESULT CPolice::Init(void)
 void CPolice::Uninit(void)
 {
 	CCar::Uninit();
-	CPoliceManager::GetInstance()->GetList()->Delete(this);
+	CPoliceManager::GetInstance()->ListOut(this);
 	SAFE_DELETE(m_pPatrolLamp);
 	SAFE_UNINIT_DELETE(m_pSiren);
 	Release();
@@ -486,4 +486,38 @@ void CPolice::SendChaseEnd()
 	CNetWork* pNet = CNetWork::GetInstance();
 
 	pNet->SendPdChaseEnd(GetId());
+}
+
+//===============================================
+// 受信した種類設定
+//===============================================
+void CPolice::RecvTypeSet()
+{
+	// 種類設定
+	CCar::RecvTypeSet();
+
+	if (m_stateInfo.chasenext == CHASE::CHASE_MAX) { return; }
+
+	// 次の指定された状態での設定
+	switch (m_stateInfo.chasenext)
+	{
+	case CHASE::CHASE_BEGIN:
+	{
+		// 追跡開始
+		m_pPoliceAI->BeginChase(m_stateInfo.pNextPlayer);
+		m_stateInfo.pNextPlayer = nullptr;
+	}
+	break;
+
+	case CHASE::CHASE_END:
+	{
+		m_pPoliceAI->EndChase();
+	}
+	break;
+
+	default:
+		break;
+	}
+
+	m_stateInfo.chasenext = CHASE::CHASE_MAX;
 }

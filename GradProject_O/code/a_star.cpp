@@ -75,6 +75,8 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 //==========================================================
 std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 {
+	if(Start == nullptr || Goal == nullptr){ return {}; }
+
 	std::vector < CRoad::SInfoSearch * > OpenList;		//探索候補リスト
 	std::vector<CRoad::SInfoSearch*> CloseList;			//探索終了リスト
 

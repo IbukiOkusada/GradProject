@@ -19,6 +19,7 @@
 #include "debugproc.h"
 #include "map_manager.h"
 #include "objectX.h"
+#include "meshfield.h"
 
 //===============================================
 // 定数定義
@@ -28,6 +29,20 @@ namespace
     const int WIDTH_NUM = 4;   // 横の分割数
     const int HEIGHT_NUM = 2;  // 縦の分割数
     const int MAX_PLAYER = 4;  // プレイヤーの最大数
+
+    const float LENGTH = 500.0f;
+    const float ROTATION_Y = 0.005f;
+
+    const char* MODEL_PATH = "data\\MODEL\\bike.x";  // プレイヤーのモデルパス
+
+    // 操作方法UIのテクスチャパス
+    const char* TEX_PATH[MAX] =
+    {
+        "data\\TEXTURE\\result_clear.png",
+        "data\\TEXTURE\\result_deli.png",
+        "data\\TEXTURE\\result_life.png",
+        "data\\TEXTURE\\result_time.png",
+    };
 
     const D3DXVECTOR3 CAMERA_ROT[4] =
     {
@@ -46,10 +61,10 @@ namespace
     };
 
     const D3DXVECTOR3 CAMERA_POS_V = D3DXVECTOR3(320.3f, -300.0f, 91.6f);
-    const float LENGTH = 500.0f;
-    const float ROTATION_Y = 0.005f;
 
-    const char* MODEL_PATH = "data\\MODEL\\bike.x";  // プレイヤーのモデル
+    const D3DXCOLOR TEX_COL_ALPHA = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);   // 半透明
+    const D3DXCOLOR TEX_COL_OPAQUE = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);  // 不透明
+   
 }
 
 //===============================================
@@ -59,8 +74,13 @@ CEntry::CEntry()
 {
     // 値をクリア
 	m_ppCamera = nullptr;
-    m_ppObj = nullptr;
+    m_ppObjX = nullptr;
     m_IsFinish = false;
+
+    for (int i = 0; i < MAX; i++)
+    {
+        m_pObj2D[i] = nullptr;
+    }
 }
 
 //===============================================
@@ -107,18 +127,29 @@ HRESULT CEntry::Init(void)
     // マップ読み込み
     CMapManager::GetInstance()->Load();
 
+    // メッシュフィールド生成
+    CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
+
    /* CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.9f, 0.0f), VECTOR3_ZERO, 4);
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.1f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));*/
 
+    for (int i = 0; i < MAX; i++)
+    {
+        m_pObj2D[i] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.9f, SCREEN_HEIGHT * 0.3f + i * 60.0f, 0.0f), VECTOR3_ZERO, 7);
+        m_pObj2D[i]->SetSize(100.0f, 40.0f);
+        m_pObj2D[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PATH[i]));
+        m_pObj2D[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+    }
+
     CCameraManager* mgr = CCameraManager::GetInstance();
 	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
-    m_ppObj = new CObjectX * [MAX_PLAYER];
+    m_ppObjX = new CObjectX * [MAX_PLAYER];
 
     for (int i = 0; i < MAX_PLAYER; i++)
     {
         m_ppCamera[i] = nullptr;
-        m_ppObj[i] = nullptr;
+        m_ppObjX[i] = nullptr;
     }
 
     CCamera *pCamera = mgr->GetTop();
@@ -178,18 +209,18 @@ void CEntry::Uninit(void)
     }
 
     // 画面下にでるプレイヤーモデルの破棄
-    if (m_ppObj != nullptr)
+    if (m_ppObjX != nullptr)
     {
         for (int i = 0; i < MAX_PLAYER; i++)
         {
-            if (m_ppObj[i] == nullptr) { continue; }
+            if (m_ppObjX[i] == nullptr) { continue; }
 
-            m_ppObj[i]->Uninit();
-            m_ppObj[i] = nullptr;
+            m_ppObjX[i]->Uninit();
+            m_ppObjX[i] = nullptr;
         }
 
-        delete[] m_ppObj;
-        m_ppObj = nullptr;
+        delete[] m_ppObjX;
+        m_ppObjX = nullptr;
     }
 }
 
@@ -210,13 +241,16 @@ void CEntry::Update(void)
     }
     for (int i = 0; i < MAX_PLAYER; i++)
     {
-        if (m_ppObj[i] != nullptr)
+        if (m_ppObjX[i] != nullptr)
         {
-            D3DXVECTOR3 rot = m_ppObj[i]->GetRotation();
+            D3DXVECTOR3 rot = m_ppObjX[i]->GetRotation();
             rot.y += ROTATION_Y;
-            m_ppObj[i]->SetRotation(rot);
+            m_ppObjX[i]->SetRotation(rot);
         }
     }
+
+    // 操作方法UI
+    ControlsUI();
 
     // プレイヤー参加処理
     AddPlayer();
@@ -274,7 +308,7 @@ void CEntry::AddPlayer(void)
     //    }
 
     //    // プレイヤー生成
-    //    CPlayer* pPlayer = CPlayer::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
+    //    CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(4000.0f, 0.0f, 2000.0f), D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
 
     //    // データ受信
     //    pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
@@ -288,9 +322,9 @@ void CEntry::AddPlayer(void)
 
     //    // 画面下にプレイヤーのモデルを表示
     //    pos = m_ppCamera[id]->GetPositionR();
-    //    m_ppObj[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), "data\\MODEL\\flyingscooter.x", 7);
-    //    m_ppObj[id]->SetType(CObject::TYPE::TYPE_PLAYER);
-    //    m_ppObj[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
+    //    m_ppObjX[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), MODEL_PATH, 7);
+    //    m_ppObjX[id]->SetType(CObject::TYPE::TYPE_PLAYER);
+    //    m_ppObjX[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
     //}
 
     // 人数確認
@@ -325,9 +359,9 @@ void CEntry::AddPlayer(void)
 
                 // 画面下にプレイヤーのモデルを表示
                 pos = m_ppCamera[i]->GetPositionR();
-                m_ppObj[i] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), MODEL_PATH, 7);
-                m_ppObj[i]->SetType(CObject::TYPE::TYPE_PLAYER);
-                m_ppObj[i]->SetRotateType(CObjectX::TYPE_QUATERNION);
+                m_ppObjX[i] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), MODEL_PATH, 7);
+                m_ppObjX[i]->SetType(CObject::TYPE::TYPE_PLAYER);
+                m_ppObjX[i]->SetRotateType(CObjectX::TYPE_QUATERNION);
             }
         }
     }
@@ -369,13 +403,69 @@ void CEntry::DecreasePlayer(void)
                 // プレイヤーの終了処理
                 player->Uninit();
 
-                if (m_ppObj[i] != nullptr)
+                if (m_ppObjX[i] != nullptr)
                 {// 画面下に出てるプレイヤーモデルの終了
 
-                    m_ppObj[i]->Uninit();
-                    m_ppObj[i] = nullptr;   
+                    m_ppObjX[i]->Uninit();
+                    m_ppObjX[i] = nullptr;   
                 }
             }
         }
+    }
+}
+
+//===============================================
+// 操作方法UI
+//===============================================
+void CEntry::ControlsUI(void)
+{
+    // プレイヤーの総数取得
+    int num = CPlayerManager::GetInstance()->GetNum();
+
+    // プレイヤーの総数が0以下のとき処理を抜ける
+    if (num <= 0) { return; }
+
+    // ゲームパッド取得
+    CInputPad* pPad = CInputPad::GetInstance();
+
+    // 半透明にする
+    for (int i = 0; i < MAX; i++)
+    {
+        if (m_pObj2D[i] == nullptr) { continue; }
+
+        m_pObj2D[i]->SetCol(TEX_COL_ALPHA);
+    }
+
+    // 右トリガーの値取得
+    float fAccel = (float)pPad->GetRightTriggerPress(0);
+
+    // 左トリガーの値取得
+    float fBrake = (float)pPad->GetLeftTriggerPress(0);
+
+    // 左スティックの値取得
+    float fLStick = pPad->GetLStick(0, 0.1f).x;
+
+    // 旋回
+    if (1.0f <= fLStick || -1.0f >= fLStick)
+    {
+        m_pObj2D[0]->SetCol(TEX_COL_OPAQUE);
+    }
+
+    // アクセル
+    if (1.0f <= fAccel)
+    {
+        m_pObj2D[1]->SetCol(TEX_COL_OPAQUE);
+    }
+
+    // ブレーキ
+    if (1.0f <= fBrake)
+    {
+        m_pObj2D[2]->SetCol(TEX_COL_OPAQUE);
+    }
+
+    // ブースト
+    if (pPad->GetPress(CInputPad::BUTTON_B, 0))
+    {
+        m_pObj2D[3]->SetCol(TEX_COL_OPAQUE);
     }
 }

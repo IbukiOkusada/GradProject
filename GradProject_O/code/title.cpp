@@ -41,7 +41,7 @@ namespace
 	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.9f, 0.0f };			//プレスエンターの座標位置
 	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.19f, 0.0f };			//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
-	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -550.0f };									//警察位置
+	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -800.0f };									//警察位置
 	const D3DXVECTOR3 DEST_ROT = { 0.0f,3.14f,0.0f };											//目的向き
 
 	//<************************************************
@@ -136,9 +136,9 @@ HRESULT CTitle::Init(void)
 
 	//タイトルBGM再生とチームロゴオブジェクトの生成
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->SetSize(250.0f, 125.0f);
-	m_pObject2D[OBJ2D::OBJ2D_TeamLogo]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_TEAMLOGO));
+
+	//チームロゴ
+	m_pObject2D[OBJ2D::OBJ2D_TeamLogo] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO,3,250.0f, 125.0f,true, TEX_TEAMLOGO);
 
 	//カメラ初期状態
 	m_pCam = CCameraManager::GetInstance()->GetTop();
@@ -501,23 +501,18 @@ void CTitle::InitingP_E(void)
 		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_TeamLogo]);
 		//<******************************************
 		// 2Dオブジェクトの生成処理
-		//<******************************************
-		//・ブラックカバー
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO,6);
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetSize(fSizeBlack[SIZING_WIDTH], fSizeBlack[SIZING_HEIGHT]);
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+		//<****************************************** 
+		//ブラックカバー
+		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO, 6,
+			fSizeBlack[SIZING_WIDTH], fSizeBlack[SIZING_HEIGHT], true, nullptr, D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
-		//・タイトルロゴ
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = CObject2D::Create(TITLELOGO_POS, VECTOR3_ZERO, 5);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetSize(fSizeTitleLogo[SIZING_WIDTH], fSizeTitleLogo[SIZING_HEIGHT]);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_TITLELOGO));
+		//ブラックカバー
+		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = InitObj2D(TITLELOGO_POS, VECTOR3_ZERO, 5,
+			fSizeTitleLogo[SIZING_WIDTH], fSizeTitleLogo[SIZING_HEIGHT], false, TEX_TITLELOGO);
 
-		//・プレスエンター
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = CObject2D::Create(PRESSENTER_POS, VECTOR3_ZERO,5);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetSize(fSizePressEnter[SIZING_WIDTH], fSizePressEnter[SIZING_HEIGHT]);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PRESSENTER));
+		//ブラックカバー
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = InitObj2D(PRESSENTER_POS, VECTOR3_ZERO, 5,
+			fSizePressEnter[SIZING_WIDTH], fSizePressEnter[SIZING_HEIGHT], false, TEX_PRESSENTER);
 
 		//必要なオブジェクトの生成
 		CMapManager::GetInstance()->Load();
@@ -683,7 +678,7 @@ void CTitle::ChaseCamera(void)
 		fDestRotZ = 1.15f;
 
 	constexpr float CameraPosDif[2] = { 0.0f,210.0f };	//カメラの補正距離
-	float CameraDis = 1150.0f;					//カメラの距離
+	float CameraDis = 2000.0f;							//カメラの距離
 
 	//カメラの向きの調整
 	if (CameraRot.y <= fDestRotY) { CameraRot.y = fDestRotY; }
@@ -751,9 +746,9 @@ void CTitle::InitingSelect(void)
 	};
 
 	//サイズ関連
-	constexpr float fSizeModeSelect[SIZING_MAX] = { 225.0f, 50.0f };						//サイズ(MODE SELECT)
+	constexpr float fSizeModeSelect[SIZING_MAX] = { 300.0f, 50.0f };						//サイズ(MODE SELECT)
 	constexpr float fSizeSINGLEMULTI[SIZING_MAX] = { 200.0f, 75.0f };						//サイズ(シングルとマルチ)
-	constexpr float fSizeCHECK[SIZING_MAX] = { 300.0f, 50.0f };								//サイズ(確認文字)
+	constexpr float fSizeCHECK[SIZING_MAX] = { 400.0f, 50.0f };								//サイズ(確認文字)
 	constexpr float fSizeYESNO[SIZING_MAX] = { 80.0f, 35.0f };								//サイズ(選択肢YESNO)
 
 	//オブジェクト2D関連
@@ -764,10 +759,8 @@ void CTitle::InitingSelect(void)
 	const D3DXVECTOR3 SELECT_POS = D3DXVECTOR3(400.0f, 300.0f, 0.0f);					//選択肢の位置
 	constexpr float fDis_SELECT = 475.0f;													//距離1	
 
-	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(505.0f, CHECK_POS.y + 150.0f, 0.0f);		//はいといいえの位置
-	constexpr float fDis_YESNO = 200.0f;													//距離2
-
-
+	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(485.0f, CHECK_POS.y + 150.0f, 0.0f);		//はいといいえの位置
+	constexpr float fDis_YESNO = 250.0f;													//距離2
 
 	//初期化されていなかったら
 	if (!m_bIniting)
@@ -776,52 +769,44 @@ void CTitle::InitingSelect(void)
 		m_bIniting = true;
 		m_bPush = false;
 
-		//フレーム
-		m_pObject2D[OBJ2D::OBJ2D_FRAME] = CObject2D::Create(TEAMLOGO_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(0.0f, 0.0f);//*拡大するので0.0fにしてます*//
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetDraw(true);
-		m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetCol(InitFrameCol);
+		m_pObject2D[OBJ2D::OBJ2D_FRAME] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO, 6,
+			0.0f, 0.0f, true, nullptr, InitFrameCol);
 
-		//どちらにするか
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = CObject2D::Create(NUMCHAR_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetSize(fSizeModeSelect[SIZING_WIDTH], fSizeModeSelect[SIZING_HEIGHT]);
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_MODESELECT));
+		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = InitObj2D(NUMCHAR_POS, VECTOR3_ZERO, 6,
+			fSizeModeSelect[SIZING_WIDTH], fSizeModeSelect[SIZING_HEIGHT], false, TEX_MODESELECT);
 
 		//シングルかマルチかの選択肢
 		for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
 		{
-			//どちらにするか
-			m_apSelect[nCnt] = CObject2D::Create(
-				D3DXVECTOR3(SELECT_POS.x+ fDis_SELECT*nCnt,
-				SELECT_POS.y,
-				SELECT_POS.z),
-				VECTOR3_ZERO, 6);
 
-			m_apSelect[nCnt]->SetSize(fSizeSINGLEMULTI[SIZING_WIDTH], fSizeSINGLEMULTI[SIZING_HEIGHT]);
-			m_apSelect[nCnt]->SetDraw(false);
-			m_apSelect[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_NAME[nCnt]));
+			//シングルとマルチ
+			m_apSelect[nCnt] = InitObj2D(D3DXVECTOR3(
+				SELECT_POS.x + fDis_SELECT * nCnt,
+				SELECT_POS.y,
+				SELECT_POS.z), 
+				VECTOR3_ZERO, 
+				6,
+				fSizeSINGLEMULTI[SIZING_WIDTH],
+				fSizeSINGLEMULTI[SIZING_HEIGHT], 
+				false, SELECT_NAME[nCnt]);
 		}
 
 		//確認メッセージ
-		m_pObject2D[OBJ2D::OBJ2D_CHECK] = CObject2D::Create(CHECK_POS, VECTOR3_ZERO, 6);
-		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetSize(fSizeCHECK[SIZING_WIDTH], fSizeCHECK[SIZING_HEIGHT]);
-		m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false);
-		m_pObject2D[OBJ2D::OBJ2D_CHECK]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_CHECK));
+		m_pObject2D[OBJ2D::OBJ2D_CHECK] = InitObj2D(CHECK_POS, VECTOR3_ZERO, 6,
+			fSizeCHECK[SIZING_WIDTH], fSizeCHECK[SIZING_HEIGHT], false, TEX_CHECK);
 
 		//はいといいえの選択肢
 		for (int nCnt = 0; nCnt < SELECT_YN_MAX; nCnt++)
 		{
-			//選択肢(はい)
-			m_apYesNoObj[nCnt] = CObject2D::Create
-			(D3DXVECTOR3(YES_POS.x + fDis_YESNO * nCnt, 
+			m_apYesNoObj[nCnt] = InitObj2D(D3DXVECTOR3(
+				YES_POS.x + fDis_YESNO * nCnt,
 				YES_POS.y,
 				YES_POS.z),
-				VECTOR3_ZERO, 6);
-
-			m_apYesNoObj[nCnt]->SetSize(fSizeYESNO[SIZING_WIDTH], fSizeYESNO[SIZING_HEIGHT]);
-			m_apYesNoObj[nCnt]->SetDraw(false);
-			m_apYesNoObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(SELECT_YN_NAME[nCnt]));
+				VECTOR3_ZERO,
+				6,
+				fSizeYESNO[SIZING_WIDTH],
+				fSizeYESNO[SIZING_HEIGHT],
+				false, SELECT_YN_NAME[nCnt]);
 		}
 	}
 }
@@ -887,6 +872,14 @@ void CTitle::Selecting(void)
 		//反応があったら
 		if (m_bPush)
 		{
+			//シングルが透明になっていたら
+			if (m_apSelect[SELECT::SELECT_SINGLE]->GetCol().a == ALPHA_ZERO)
+			{m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));}
+
+			//マルチが透明になっていたら
+			else if (m_apSelect[SELECT::SELECT_MULTI]->GetCol().a == ALPHA_ZERO)
+			{m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));}
+			
 			SelectYesNO();
 		}
 		//無ければ
@@ -937,14 +930,14 @@ void CTitle::SelectSingleMulti(void)
 	{
 		//"YES"を選択状態、"NO"を非選択状態
 		ColChange(m_apSelect[SELECT::SELECT_SINGLE]);
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
 	}
 	//"NO"を選択している時
 	else if (m_nSelect == SELECT::SELECT_MULTI)
 	{
 		//"YES"を非選択状態、"NO"を選択状態
 		ColChange(m_apSelect[SELECT::SELECT_MULTI]);
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
 	}
 }
 //<===============================================
@@ -990,10 +983,21 @@ void CTitle::SelectYesNO(void)
 void CTitle::SelectCol(void)
 {	
 	//"YES"を選択している時
-	if (m_nSelect == SELECT::SELECT_SINGLE) {m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));}
+	if (m_nSelect == SELECT::SELECT_SINGLE) 
+	{
+		//選択されていないマルチを透明にする
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO));
+	
+	}
 
 	//"NO"を選択している時
-	else if (m_nSelect == SELECT::SELECT_MULTI){m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));}
+	else if (m_nSelect == SELECT::SELECT_MULTI)
+	{
+		//選択されていないシングルを透明にする
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO));
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
+	}
 
 	//"YES"を選択している時
 	if (m_nSelectYN == SELECT_YN::SELECT_YN_YES)
@@ -1129,4 +1133,36 @@ void CTitle::IceMovement(void)
 		if (m_fDis >= fDisMax) { m_fDis = fDisMax; }
 		else { m_fDis += fMoveValue; }
 	}
+}
+//<===============================================
+//オブジェクト2Dの初期化
+//<===============================================
+CObject2D* CTitle::InitObj2D(const D3DXVECTOR3 rPos,
+	const D3DXVECTOR3 rRot,
+	const int nPri,
+	const float fWidth,
+	const float fHeight,
+	const bool bDraw,
+	const char* pTexName,
+	const D3DXCOLOR rCol)
+
+{
+	//生成用のオブジェクト
+	CObject2D* pObj2D = nullptr;
+
+	//オブジェクト2Dの初期化を行う
+	pObj2D = CObject2D::Create(rPos, rRot, nPri);
+	pObj2D->SetSize(fWidth, fHeight);
+	pObj2D->SetDraw(bDraw);
+
+	//テクスチャの名前があったら
+	if (pTexName)
+	{
+		pObj2D->BindTexture(CManager::GetInstance()->GetTexture()->Regist(pTexName));
+	}
+
+	//色の設定
+	pObj2D->SetCol(rCol);	
+
+	return pObj2D;
 }
