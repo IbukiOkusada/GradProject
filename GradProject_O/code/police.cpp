@@ -84,7 +84,7 @@ HRESULT CPolice::Init(void)
 	TailLamp();
 	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
 	m_pSiren->Stop();
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car003.x");
+	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\police.x");
 	m_pPoliceAI = CPoliceAI::Create(this);
 	return S_OK;
 }
