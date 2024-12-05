@@ -151,6 +151,16 @@ private:
 	//デバッグ用
 	void DebugCam(void);
 
+	//オブジェクト2Dの初期化
+	CObject2D* InitObj2D(const D3DXVECTOR3 rPos,		
+		const D3DXVECTOR3 rRot,								
+		const int nPri,										
+		const float fWidth,									
+		const float fHeight,								
+		const bool bDraw,									
+		const char* pTexName,								
+		const D3DXCOLOR rCol = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
+
 	STATE m_eState;								//ステート
 	//<************************************
 	//ポインタ型
