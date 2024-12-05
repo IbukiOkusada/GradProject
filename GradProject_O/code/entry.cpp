@@ -79,7 +79,7 @@ CEntry::CEntry()
 
     for (int i = 0; i < MAX; i++)
     {
-        m_pObj2D[i] = nullptr;
+        m_pControlsUI[i] = nullptr;
     }
 }
 
@@ -136,10 +136,10 @@ HRESULT CEntry::Init(void)
 
     for (int i = 0; i < MAX; i++)
     {
-        m_pObj2D[i] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.9f, SCREEN_HEIGHT * 0.3f + i * 60.0f, 0.0f), VECTOR3_ZERO, 7);
-        m_pObj2D[i]->SetSize(100.0f, 40.0f);
-        m_pObj2D[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PATH[i]));
-        m_pObj2D[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+        m_pControlsUI[i] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.9f, SCREEN_HEIGHT * 0.3f + i * 60.0f, 0.0f), VECTOR3_ZERO, 7);
+        m_pControlsUI[i]->SetSize(100.0f, 40.0f);
+        m_pControlsUI[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PATH[i]));
+        m_pControlsUI[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
     }
 
     CCameraManager* mgr = CCameraManager::GetInstance();
@@ -368,7 +368,7 @@ void CEntry::AddPlayer(void)
 
     if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
-        m_IsFinish = true;
+        m_IsFinish ^= true;
 
         if (m_IsFinish)
         {// チュートリアルが終了している
@@ -431,9 +431,9 @@ void CEntry::ControlsUI(void)
     // 半透明にする
     for (int i = 0; i < MAX; i++)
     {
-        if (m_pObj2D[i] == nullptr) { continue; }
+        if (m_pControlsUI[i] == nullptr) { continue; }
 
-        m_pObj2D[i]->SetCol(TEX_COL_ALPHA);
+        m_pControlsUI[i]->SetCol(TEX_COL_ALPHA);
     }
 
     // 右トリガーの値取得
@@ -448,24 +448,24 @@ void CEntry::ControlsUI(void)
     // 旋回
     if (1.0f <= fLStick || -1.0f >= fLStick)
     {
-        m_pObj2D[0]->SetCol(TEX_COL_OPAQUE);
+        m_pControlsUI[0]->SetCol(TEX_COL_OPAQUE);
     }
 
     // アクセル
     if (1.0f <= fAccel)
     {
-        m_pObj2D[1]->SetCol(TEX_COL_OPAQUE);
+        m_pControlsUI[1]->SetCol(TEX_COL_OPAQUE);
     }
 
     // ブレーキ
     if (1.0f <= fBrake)
     {
-        m_pObj2D[2]->SetCol(TEX_COL_OPAQUE);
+        m_pControlsUI[2]->SetCol(TEX_COL_OPAQUE);
     }
 
     // ブースト
     if (pPad->GetPress(CInputPad::BUTTON_B, 0))
     {
-        m_pObj2D[3]->SetCol(TEX_COL_OPAQUE);
+        m_pControlsUI[3]->SetCol(TEX_COL_OPAQUE);
     }
 }
