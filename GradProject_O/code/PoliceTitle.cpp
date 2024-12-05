@@ -32,7 +32,7 @@ CPoliceTitle::~CPoliceTitle()
 HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 {
 	//モデルの名前
-	constexpr char* MODEL_NAME = "data\\MODEL\\car003.x";
+	constexpr char* MODEL_NAME = "data\\MODEL\\police.x";
 
 	//位置ありのオブジェクト生成
 	m_pObj = CObjectX::Create(pos, VECTOR3_ZERO, MODEL_NAME);
