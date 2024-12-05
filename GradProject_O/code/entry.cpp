@@ -81,6 +81,11 @@ CEntry::CEntry()
     {
         m_pControlsUI[i] = nullptr;
     }
+
+    for (int i = 0; i < MAX; i++)
+    {
+        m_pReady[i] = nullptr;
+    }
 }
 
 //===============================================
