@@ -41,6 +41,7 @@ CPoliceAI::CPoliceAI()
 	m_pRoadTarget = nullptr;
 	m_pSearchTarget = nullptr;
 	m_fSearchTimer = 0.0f;
+	m_nCntThread = 0;
 }
 
 //==========================================================
@@ -64,7 +65,7 @@ HRESULT CPoliceAI::Init(void)
 //==========================================================
 void CPoliceAI::Uninit(void)
 {
-	CDeltaTime::GetInstance()->GetDeltaTime();
+	while (m_nCntThread == 1) {}
 }
 
 //==========================================================
@@ -303,6 +304,12 @@ void CPoliceAI::Chase(void)
 			// マルチスレッド
 			std::thread th(&CPoliceAI::ChaseAStar, this);
 			th.detach();
+
+			// リストが空でなければ移動先設定
+			if (!m_searchRoad.empty())
+			{
+				m_pSearchTarget = m_searchRoad.front();
+			}
 		}
 		else
 		{
@@ -322,14 +329,12 @@ void CPoliceAI::Chase(void)
 //==========================================================
 void CPoliceAI::ChaseAStar(void)
 {
+	m_nCntThread = 1;
+
 	// 経路探索
 	m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
 
-	// リストが空でなければ移動先設定
-	if (!m_searchRoad.empty())
-	{
-		m_pSearchTarget = m_searchRoad.front();
-	}
+	m_nCntThread--;
 }
 
 //==========================================================
@@ -471,14 +476,12 @@ void CPoliceAIElite::SelectRoad(void)
 //==========================================================
 void CPoliceAIElite::ChaseAStar(void)
 {
+	m_nCntThread = 1;
+
 	// 経路探索
 	m_searchRoad = AStar::AStarPoliceDetour(m_pRoadStart, m_pRoadRelay, m_pRoadTarget);
 
-	// リストが空でなければ移動先設定
-	if (!m_searchRoad.empty())
-	{
-		m_pSearchTarget = m_searchRoad.front();
-	}
+	m_nCntThread--;
 }
 
 //==========================================================
