@@ -140,7 +140,7 @@ protected:	// 派生クラスからもアクセス可能
 	virtual void RecvTypeSet() {
 		if (m_Info.typeNext != TYPE::TYPE_MAX)
 		{
-			m_Info.type = m_Info.type;
+			m_Info.type = m_Info.typeNext;
 			m_Info.typeNext = TYPE::TYPE_MAX;
 		}
 	}

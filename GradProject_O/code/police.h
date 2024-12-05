@@ -37,6 +37,14 @@ public:
 		STATE_MAX
 	};
 
+	// 次の追跡状態列挙
+	enum CHASE
+	{
+		CHASE_BEGIN = 0,
+		CHASE_END,
+		CHASE_MAX
+	};
+
 private:	// 自分だけがアクセス可能
 
 	// 情報構造体
@@ -55,13 +63,14 @@ protected:
 	// 状態管理構造体
 	struct SState
 	{
-		STATE statenext;
+		CPlayer* pNextPlayer;
+		CHASE chasenext;
 		STATE state;
 		float fTimer;
 		float fTimerOrigin;
 
 		// コンストラクタ
-		SState() : state(STATE::STATE_NORMAL), fTimer(0.0f) {}
+		SState() : state(STATE::STATE_NORMAL), chasenext(CHASE::CHASE_MAX), pNextPlayer(nullptr), fTimer(0.0f) {}
 	};
 
 public:	// 誰でもアクセス可能
@@ -88,7 +97,9 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(設定)
 	void SetState(const STATE state);
+	void SetChaseNext(const CHASE chase) { m_stateInfo.chasenext = chase; }
 	void SetPlayer(CPlayer* pPlayer) { m_Info.pPlayer = pPlayer; }
+	void SetNextPlayer(CPlayer* pPlayer) { m_stateInfo.pNextPlayer = pPlayer; }
 	void SetChase(bool bChase) { m_Info.bChase = bChase; }
 	void SetChaseCount(int bChaseCount) { m_Info.nChaseCount = bChaseCount; }
 

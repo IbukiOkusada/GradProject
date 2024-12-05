@@ -938,18 +938,19 @@ void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 		pCar->SetType(CCar::TYPE::TYPE_RECV);
 	}
 
-	// 追跡状態にする
-	pCar->GetAi()->BeginChase(pPlayer);
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
 
 	// 自分自身
-	if (nId == m_nMyIdx)
+	if (plyid == m_nMyIdx)
 	{
-		pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
+		pCar->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
+		pCar->SetNextPlayer(pPlayer);
 	}
 	// それ以外
 	else
 	{
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+		pCar->SetTypeNext(CCar::TYPE::TYPE_RECV);
+		pCar->SetNextPlayer(pPlayer);
 	}
 }
 
@@ -990,17 +991,19 @@ void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 	}
 
 	// 追跡状態にする
-	pCar->GetAi()->BeginChase(pPlayer);
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
 
-	// 追跡されているのが自分自身
+	// 自分自身
 	if (plyid == m_nMyIdx)
 	{
-		pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
+		pCar->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
+		pCar->SetNextPlayer(pPlayer);
 	}
 	// それ以外
 	else
 	{
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+		pCar->SetTypeNext(CCar::TYPE::TYPE_RECV);
+		pCar->SetNextPlayer(pPlayer);
 	}
 }
 
@@ -1027,7 +1030,7 @@ void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 	}
 
 	// 追跡終了状態にする
-	pCar->GetAi()->EndChase();
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_END);
 }
 
 //===================================================
@@ -1053,7 +1056,7 @@ void CNetWork::RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvDat
 	}
 
 	// 追跡終了状態にする
-	pCar->GetAi()->EndChase();
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_END);
 }
 
 //===================================================
