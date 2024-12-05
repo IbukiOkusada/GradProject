@@ -56,7 +56,8 @@ private:
 	// メンバ変数
 	CMultiCamera** m_ppCamera;   // カメラのポインタ
 	CObjectX** m_ppObjX;
-	CObject2D* m_pObj2D[MAX];
+	CObject2D* m_pControlsUI[MAX];
+	CObject2D* m_pReady[MAX];
 
 	bool m_IsFinish;   // チュートリアルが終了しているかどうか
 };
