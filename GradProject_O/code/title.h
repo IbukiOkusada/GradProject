@@ -39,7 +39,7 @@ class CTitle : public CScene
 public:
 
 	// オブジェクト2Dの列挙型
-	enum OBJ2D
+	const enum OBJ2D
 	{
 		OBJ2D_TeamLogo = 0,		//チームロゴ
 		OBJ2D_BLACKCOVER,		//黒カバー
@@ -52,7 +52,7 @@ public:
 
 	};
 	// ステート
-	enum STATE
+	const enum STATE
 	{
 		STATE_TEAMLOGO = 0,	//チームロゴ
 		STATE_PRE,			//仮名
@@ -63,7 +63,7 @@ public:
 	};
 
 	//シングルかマルチかの選択肢
-	enum SELECT
+	const enum SELECT
 	{
 		SELECT_SINGLE = 0,		//シングル
 		SELECT_MULTI,			//マルチ
@@ -71,7 +71,7 @@ public:
 	};
 
 	//選択肢
-	enum SELECT_YN
+	const enum SELECT_YN
 	{
 		SELECT_YN_YES = 0,
 		SELECT_YN_NO,
@@ -92,21 +92,28 @@ public:
 	//Get系関数
 	//<************************************
 	//シングルとマルチどっちが選択されているかの取得関数
-	int GetSelectSingleMulti(void) { return m_nSelect; }
-	static CPoliceTitle* GetPoliTitle(int nNum)
+	inline int GetSelectSingleMulti(void) { return m_nSelect; }
+
+	//警察取得関数
+	inline static CPoliceTitle* GetPoliTitle(int nNum)
 	{
-		if (!m_apPolice[nNum])
-		{
-			return nullptr;
-		}
-		else
-		{
-			//
-			return m_apPolice[nNum];
-		}
+		//中身なければnullptrを返す
+		if (!m_apPolice[nNum]){return nullptr;}
+
+		//中身あればその警察情報を返す
+		else{return m_apPolice[nNum];}
 	}
 
 private:
+
+	//サイズに関係する列挙型
+	const enum SIZING
+	{
+		SIZING_WIDTH = 0,	//横
+		SIZING_HEIGHT,		//縦
+		SIZING_MAX
+	};
+
 	//チームロゴの際に使う関数
 	void StateLogo(void);
 
@@ -144,6 +151,16 @@ private:
 	//デバッグ用
 	void DebugCam(void);
 
+	//オブジェクト2Dの初期化
+	CObject2D* InitObj2D(const D3DXVECTOR3 rPos,		
+		const D3DXVECTOR3 rRot,								
+		const int nPri,										
+		const float fWidth,									
+		const float fHeight,								
+		const bool bDraw,									
+		const char* pTexName,								
+		const D3DXCOLOR rCol = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
+
 	STATE m_eState;								//ステート
 	//<************************************
 	//ポインタ型
@@ -152,9 +169,9 @@ private:
 	static CPoliceTitle* m_apPolice[INITIAL::POLICE_MAX];		//警察のポインタ
 	CGole* m_pGoal;								//ゴールのポインタ
 
-	CObject2D* m_pObject2D[OBJ2D_MAX];			//オブジェクト2Dのポインタ
+	CObject2D* m_pObject2D[OBJ2D::OBJ2D_MAX];			//オブジェクト2Dのポインタ
 	CObject2D* m_apSelect[SELECT::SELECT_MAX];	//シングルとマルチの選択肢のポインタ
-	CObject2D* m_apYesNoObj[SELECT_YN_MAX];		//YESとNOの選択肢のポインタ
+	CObject2D* m_apYesNoObj[SELECT_YN::SELECT_YN_MAX];		//YESとNOの選択肢のポインタ
 	CCamera* m_pCam;
 
 	//<************************************

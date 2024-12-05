@@ -191,6 +191,7 @@
     <ClCompile Include="code\entry.cpp" />
     <ClCompile Include="code\extension.cpp" />
     <ClCompile Include="code\fade.cpp" />
+    <ClCompile Include="code\Fog.cpp" />
     <ClCompile Include="code\font.cpp" />
     <ClCompile Include="code\fontChar.cpp" />
     <ClCompile Include="code\game.cpp" />
@@ -303,6 +304,7 @@
     <ClInclude Include="code\edit_road.h" />
     <ClInclude Include="code\entry.h" />
     <ClInclude Include="code\extension.h" />
+    <ClInclude Include="code\fog.h" />
     <ClInclude Include="code\font.h" />
     <ClInclude Include="code\fontChar.h" />
     <ClInclude Include="code\gimmick.h" />
@@ -353,6 +355,7 @@
     <ClInclude Include="code\PlayerTitle.h" />
     <ClInclude Include="code\player_manager.h" />
     <ClInclude Include="code\police.h" />
+    <ClInclude Include="code\PoliceTitle.h" />
     <ClInclude Include="code\police_AI.h" />
     <ClInclude Include="code\police_manager.h" />
     <ClInclude Include="code\precompile.h" />

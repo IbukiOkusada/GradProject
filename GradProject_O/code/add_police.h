@@ -45,7 +45,11 @@ private:	// 自分だけがアクセス可能
 
 	void SearchRoad() override;
 	void ReachRoad() override;
+
+	// 通信用
 	void SendPosition() override;
+	void SendChase() override;
+	void SendChaseEnd() override;
 
 	// 状態設定関数
 	virtual void SetStateNormal() override;		// 通常

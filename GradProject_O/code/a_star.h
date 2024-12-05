@@ -17,6 +17,9 @@ namespace AStar
 	// AStar‚Å‚ÌŒo˜H’Tõ
 	std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal);
 
+	// AStar‚Å‚ÌŒo˜H’Tõ
+	std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Relay, CRoad* Goal);
+
 	// AStar‚Å‚Ì‰ñ”§ŒÀ•t‚«Œo˜H’Tõ
 	std::vector<CRoad::SInfoSearch*> AStarPoliceLimit(CRoad* Start, CRoad* Goal, int nCntSearch);
 }

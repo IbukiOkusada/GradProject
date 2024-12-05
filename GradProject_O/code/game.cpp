@@ -54,6 +54,8 @@
 #include "objectsound.h"
 #include "scrollText2D.h"
 #include "radio.h"
+#include "fog.h"
+#include "inspection_manager.h"
 // ネットワーク
 #include "network.h"
 
@@ -116,6 +118,7 @@ CGame::CGame()
     m_pPause = nullptr;
     m_nTotalDeliveryStatus = 0;
     m_nStartCameraCount = 0;
+    pFog = nullptr;
 }
 
 //===============================================
@@ -224,7 +227,8 @@ HRESULT CGame::Init(void)
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
     CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
-
+    pFog = DEBUG_NEW CFog;
+    pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);
     return S_OK;
 }
 
@@ -246,24 +250,13 @@ void CGame::Uninit(void)
         }
     }   
 
-    if (m_pDeliveryStatus != nullptr)
-    {
-        m_pDeliveryStatus->Uninit();
-        m_pDeliveryStatus = nullptr;
-    }
+  
+    SAFE_UNINIT(m_pDeliveryStatus);
 
-    if (m_pGameTimer != nullptr)
-    {
-        m_pGameTimer->Uninit();
-        m_pGameTimer = nullptr;
-    }
+    SAFE_UNINIT(m_pGameTimer);
+    SAFE_RELEASE(m_pGoalManager);
 
-    if (m_pGoalManager != nullptr)
-    {
-        m_pGoalManager->Release();
-        m_pGoalManager = nullptr;
-    }
-
+    SAFE_UNINIT_DELETE(pFog);
     // ネットワーク切断
     auto net = CNetWork::GetInstance();
     net->DisConnect();
@@ -279,6 +272,13 @@ void CGame::Uninit(void)
 
     // マップマネージャー廃棄
     CMapManager::Release();
+
+    // 各種マネージャー廃棄
+    CCarManager::Release();
+    CGoalManager::Release();
+    CPoliceManager::Release();
+    CInspectionManager::Release();
+    CPlayerManager::Release();
 }
 
 //===============================================
@@ -365,7 +365,7 @@ void CGame::Update(void)
             }
         }
     }
-    if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_ONLINE)
+    if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_SINGLE)
     {
         End_Fail();
     }
@@ -523,9 +523,9 @@ void CGame::CreateMultiPlayer(void)
 //===================================================
 void CGame::CreatePolice()
 {
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < 3; i++)
     {
-        CCar* pCar = CPolice::Create(D3DXVECTOR3(3000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
+        CCar* pCar = CPolice::Create(D3DXVECTOR3(-6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
         pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
     }

@@ -37,6 +37,14 @@ public:
 		STATE_MAX
 	};
 
+	// 次の追跡状態列挙
+	enum CHASE
+	{
+		CHASE_BEGIN = 0,
+		CHASE_END,
+		CHASE_MAX
+	};
+
 private:	// 自分だけがアクセス可能
 
 	// 情報構造体
@@ -55,12 +63,14 @@ protected:
 	// 状態管理構造体
 	struct SState
 	{
+		CPlayer* pNextPlayer;
+		CHASE chasenext;
 		STATE state;
 		float fTimer;
 		float fTimerOrigin;
 
 		// コンストラクタ
-		SState() : state(STATE::STATE_NORMAL), fTimer(0.0f) {}
+		SState() : state(STATE::STATE_NORMAL), chasenext(CHASE::CHASE_MAX), pNextPlayer(nullptr), fTimer(0.0f) {}
 	};
 
 public:	// 誰でもアクセス可能
@@ -74,15 +84,22 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 	static CPolice* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId);
 
+	// 通信用
+	virtual void SendChase();
+	virtual void SendChaseEnd();
+
 	// メンバ関数(取得)
 	STATE GetState() { return m_stateInfo.state; }
 	CPlayer* GetPlayer() { return m_Info.pPlayer; }
 	bool GetChase() { return m_Info.bChase; }
 	int GetChaseCount() { return m_Info.nChaseCount; }
+	CPoliceAI* GetAi() { return m_pPoliceAI; }
 
 	// メンバ関数(設定)
 	void SetState(const STATE state);
+	void SetChaseNext(const CHASE chase) { m_stateInfo.chasenext = chase; }
 	void SetPlayer(CPlayer* pPlayer) { m_Info.pPlayer = pPlayer; }
+	void SetNextPlayer(CPlayer* pPlayer) { m_stateInfo.pNextPlayer = pPlayer; }
 	void SetChase(bool bChase) { m_Info.bChase = bChase; }
 	void SetChaseCount(int bChaseCount) { m_Info.nChaseCount = bChaseCount; }
 
@@ -112,6 +129,7 @@ protected:
 		m_stateInfo.fTimerOrigin = fTimer; 
 	}
 
+	// 通信用
 	virtual void SendPosition() override;
 
 	// メンバ変数
@@ -135,6 +153,7 @@ private:	// 自分だけがアクセス可能
 	void Collision();
 	void Hit() override;
 	void Break() override;
+	void RecvTypeSet() override;
 
 	// メンバ変数
 	SInfo m_Info;					// 自分自身の情報

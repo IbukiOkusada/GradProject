@@ -25,6 +25,7 @@
 #include "police_manager.h"
 #include "police.h"
 #include "add_police.h"
+#include "police_AI.h"
 
 //===============================================
 // 名前空間
@@ -47,7 +48,6 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvGetId,	// ID取得
 	&CNetWork::RecvDelete,	// 削除
 	&CNetWork::RecvPlPos,	// プレイヤー座標
-	&CNetWork::RecvPlRot,	// プレイヤー向き
 	&CNetWork::RecvPlDamage,	// プレイヤーダメージ
 	&CNetWork::RecvPlGoal,	// プレイヤーゴール
 	&CNetWork::RecvGmHit,	// ギミックヒット
@@ -55,12 +55,17 @@ CNetWork::RECV_FUNC CNetWork::m_RecvFunc[] =
 	&CNetWork::RecvGameStartOk,	// ゲーム開始準備完了
 	&CNetWork::RecvGameStart,	// ゲーム開始
 	&CNetWork::RecvTutorialOk,	// チュートリアル終了可能
+	&CNetWork::RecvTutorialNo,	// チュートリアル終了可能
 	&CNetWork::RecvTutorialEnd,	// チュートリアル終了
 	&CNetWork::RecvSetInspection,	// チュートリアル終了可能
 	&CNetWork::RecvEndInspection,	// チュートリアル終了
 	&CNetWork::RecvCarPos,		// 車座標
 	&CNetWork::RecvPdPos,		// 警察座標
 	&CNetWork::RecvAddPdPos,	// 追加座標
+	&CNetWork::RecvPdChase,		// 警察座標
+	&CNetWork::RecvAddPdChase,	// 追加座標
+	&CNetWork::RecvPdChaseEnd,	// 警察座標
+	&CNetWork::RecvAddPdChaseEnd,	// 追加座標
 };
 
 // 静的メンバ変数
@@ -313,11 +318,11 @@ bool CNetWork::DisConnect()
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
-		if (m_nMyIdx != i)
-		{
-			m_aConnect[i] = false;
-		}
+		m_aConnect[i] = false;
 	}
+
+	m_nMyIdx = -1;
+	m_state = STATE::STATE_SINGLE;
 
 	return true;
 }
@@ -544,6 +549,13 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 	// 確認バイト数を加算
 	*pByte += sizeof(D3DXVECTOR3);
 
+	// 座標に変換
+	D3DXVECTOR3 rot = VECTOR3_ZERO;
+	memcpy(&rot, &pRecvData[sizeof(D3DXVECTOR3)], sizeof(D3DXVECTOR3));
+
+	// 確認バイト数を加算
+	*pByte += sizeof(D3DXVECTOR3);
+
 	// プレイヤーの存在確認
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT || nId == m_nMyIdx) { return; }
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
@@ -556,31 +568,6 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 
 	// 座標設定
 	pPlayer->SetRecvPosition(pos);
-}
-
-//===================================================
-// プレイヤーの向きを取得
-//===================================================
-void CNetWork::RecvPlRot(int* pByte, const int nId, const char* pRecvData)
-{
-	// 向きに変換
-	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	memcpy(&rot, pRecvData, sizeof(D3DXVECTOR3));
-
-	// 確認バイト数を加算
-	*pByte += sizeof(D3DXVECTOR3);
-
-	// プレイヤーの存在確認
-	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
-
-	// 生成していない場合
-	if (pPlayer == nullptr) {
-		RecvJoin(pByte, nId, pRecvData);
-		return;
-	}
-
-	// 座標設定
 	pPlayer->SetRecvRotation(rot);
 }
 
@@ -597,7 +584,7 @@ void CNetWork::RecvPlDamage(int* pByte, const int nId, const char* pRecvData)
 	*pByte += sizeof(float);
 
 	// プレイヤーの存在確認
-	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT || nId == m_nMyIdx) { return; }
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
 
 	// 生成していない場合
@@ -705,9 +692,17 @@ void CNetWork::RecvGameStart(int* pByte, const int nId, const char* pRecvData)
 }
 
 //===================================================
-// チュートリアル終了
+// チュートリアルOk
 //===================================================
 void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
+{
+
+}
+
+//===================================================
+// チュートリアルOkキャンセル
+//===================================================
+void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 {
 
 }
@@ -755,6 +750,12 @@ void CNetWork::RecvSetInspection(int* pByte, const int nId, const char* pRecvDat
 	*pByte += sizeof(int);
 	byte += sizeof(int);
 
+	// 警察の開始ID取得
+	int startpdid = -1;
+	memcpy(&startpdid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
 	CInspection* pInsp = CInspectionManager::GetInstance()->Get(inspid);
 
 	if (pInsp != nullptr) { return; }
@@ -766,7 +767,7 @@ void CNetWork::RecvSetInspection(int* pByte, const int nId, const char* pRecvDat
 	}
 
 	// 検問生成
-	CInspection::Create(pos, rot, pRoad, inspid);
+	CInspection::Create(pos, rot, pRoad, inspid, startpdid);
 }
 
 //===================================================
@@ -908,6 +909,163 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 }
 
 //===================================================
+// 警察の追跡開始
+//===================================================
+void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// プレイヤーIDを取得
+	int plyid = -1;
+	memcpy(&plyid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(plyid);
+
+	// プレイヤーがいない
+	if (pPlayer == nullptr)
+	{
+		RecvJoin(pByte, nId, pRecvData);
+		return;
+	}
+
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		pCar = CPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
+
+	// 自分自身
+	if (plyid == m_nMyIdx)
+	{
+		pCar->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
+		pCar->SetNextPlayer(pPlayer);
+	}
+	// それ以外
+	else
+	{
+		pCar->SetTypeNext(CCar::TYPE::TYPE_RECV);
+		pCar->SetNextPlayer(pPlayer);
+	}
+}
+
+//===================================================
+// 追加警察の追跡開始
+//===================================================
+void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	// プレイヤーIDを取得
+	int plyid = -1;
+	memcpy(&plyid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(plyid);
+
+	// プレイヤーがいない
+	if (pPlayer == nullptr)
+	{
+		RecvJoin(pByte, nId, pRecvData);
+		return;
+	}
+
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		pCar = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	// 追跡状態にする
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
+
+	// 自分自身
+	if (plyid == m_nMyIdx)
+	{
+		pCar->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
+		pCar->SetNextPlayer(pPlayer);
+	}
+	// それ以外
+	else
+	{
+		pCar->SetTypeNext(CCar::TYPE::TYPE_RECV);
+		pCar->SetNextPlayer(pPlayer);
+	}
+}
+
+//===================================================
+// 警察の追跡終了
+//===================================================
+void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		pCar = CPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	// 追跡終了状態にする
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_END);
+}
+
+//===================================================
+// 追加警察の追跡終了
+//===================================================
+void CNetWork::RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
+{
+	int byte = 0;
+
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		pCar = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
+	}
+
+	// 追跡終了状態にする
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_END);
+}
+
+//===================================================
 // 何も送信しない
 //===================================================
 void CNetWork::SendNone()
@@ -964,11 +1122,11 @@ void CNetWork::SendDelete()
 //===================================================
 // プレイヤーの座標送信
 //===================================================
-void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
+void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PL_POS;
 	int byte = 0;
 
@@ -980,26 +1138,7 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos)
 	memcpy(&aSendData[byte], &pos, sizeof(D3DXVECTOR3));
 	byte += sizeof(D3DXVECTOR3);
 
-	// 送信
-	m_pClient->SetData(&aSendData[0], byte);
-}
-
-//===================================================
-// プレイヤーの向き送信
-//===================================================
-void CNetWork::SendPlRot(const D3DXVECTOR3& rot)
-{
-	if (!GetActive()) { return; }
-
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) ] = {};	// 送信用
-	int nProt = NetWork::COMMAND_PL_ROT;
-	int byte = 0;
-
-	// protocolを挿入
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
-
-	// 座標を挿入
+	// 向きを挿入
 	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
 	byte += sizeof(D3DXVECTOR3);
 
@@ -1146,13 +1285,32 @@ void CNetWork::SendTutorialOk()
 }
 
 //===================================================
-// 検問設置を送信
+// チュートリアルOkキャンセル
 //===================================================
-void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx)
+void CNetWork::SendTutorialNo()
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int)] = {};	// 送信用
+	char aSendData[sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_TUTORIAL_NO;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 検問設置を送信
+//===================================================
+void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx, int nStartPdId)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int) + sizeof(int)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_SET_INSP;
 	int byte = 0;
 
@@ -1174,6 +1332,10 @@ void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3
 
 	// 道のID
 	memcpy(&aSendData[byte], &nIdx, sizeof(int));
+	byte += sizeof(int);
+
+	// 警察の開始ID
+	memcpy(&aSendData[byte], &nStartPdId, sizeof(int));
 	byte += sizeof(int);
 
 	// 送信
@@ -1291,6 +1453,106 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 	// 向きを挿入
 	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
 	byte += sizeof(D3DXVECTOR3);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 警察の追跡開始送信
+//===================================================
+void CNetWork::SendPdChase(int nId, int plyid)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_PD_CHASE;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Idを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 追跡するプレイヤーIdを挿入
+	memcpy(&aSendData[byte], &plyid, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 追加警察の追跡開始送信
+//===================================================
+void CNetWork::SendAddPdChase(int nId, int plyid)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_ADDPD_CHASE;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Idを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 追跡するプレイヤーIdを挿入
+	memcpy(&aSendData[byte], &plyid , sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 警察の追跡終了送信
+//===================================================
+void CNetWork::SendPdChaseEnd(int nId)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_PD_CHASEEND;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Idを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// 送信
+	m_pClient->SetData(&aSendData[0], byte);
+}
+
+//===================================================
+// 追加警察の追跡終了送信
+//===================================================
+void CNetWork::SendAddPdChaseEnd(int nId)
+{
+	if (!GetActive()) { return; }
+
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// 送信用
+	int nProt = NetWork::COMMAND_ADDPD_CHASEEND;
+	int byte = 0;
+
+	// protocolを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// Idを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
 	// 送信
 	m_pClient->SetData(&aSendData[0], byte);

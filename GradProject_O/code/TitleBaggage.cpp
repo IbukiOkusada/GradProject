@@ -10,13 +10,6 @@
 #include "road.h"
 #include "goal_manager.h"
 
-//<*********************************************************
-//ゴールの際に使う名前宣言
-//<*********************************************************
-namespace GOAL
-{
-	const D3DXVECTOR3 SCALE = D3DXVECTOR3(2.0f, 2.0f, 2.0f);		//スケール
-}
 //<=========================================================
 //初期化
 //<=========================================================
@@ -48,7 +41,8 @@ CTitleBaggage* CTitleBaggage::Create(const D3DXVECTOR3& pos)
 //<=========================================================
 HRESULT CTitleGoal::Init(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 {
-	const char* MOTION_HUMAN = "data\\TXT\\motion_kidsboy.txt";	//ゴールとなる人間のモーション
+	constexpr char* MOTION_HUMAN = "data\\TXT\\motion_kidsboy.txt";	//ゴールとなる人間のモーション
+	const D3DXVECTOR3 SCALE = D3DXVECTOR3(2.0f, 2.0f, 2.0f);		//スケール
 
 	//初期化
 	m_pPeople = nullptr;
@@ -56,7 +50,7 @@ HRESULT CTitleGoal::Init(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 
 	//人間の設定
 	m_pPeople = CCharacter::Create(pos, rot,MOTION_HUMAN);
-	m_pPeople->SetScale(GOAL::SCALE);
+	m_pPeople->SetScale(SCALE);
 
 	//位置設定
 	m_rPos = pos;

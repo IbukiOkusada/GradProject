@@ -24,7 +24,6 @@ namespace NetWork
 		COMMAND_GETID,			// ID取得
 		COMMAND_DELETE,			// 削除
 		COMMAND_PL_POS,			// プレイヤー座標
-		COMMAND_PL_ROT,			// プレイヤーの向き
 		COMMAND_PL_DAMAGE,		// プレイヤ―ダメージ
 		COMMAND_PL_GOAL,		// プレイヤーゴール
 		COMMAND_GM_HIT,			// ギミックに衝突
@@ -32,12 +31,17 @@ namespace NetWork
 		COMMAND_GAMESTART_OK,	// ゲーム準備完了
 		COMMAND_GAMESTART,		// ゲーム開始
 		COMMAND_TUTORIAL_OK,	// チュートリアル準備完了
+		COMMAND_TUTORIAL_NO,	// チュートリアル準備完了
 		COMMAND_TUTORIAL_END,	// エントリー終了
 		COMMAND_SET_INSP,		// 検問設置
 		COMMAND_END_INSP,		// 検問廃棄
 		COMMAND_CAR_POS,		// 車座標
 		COMMAND_PD_POS,			// 警察座標
 		COMMAND_ADDPD_POS,		// 追加警察座標
+		COMMAND_PD_CHASE,		// 警察追跡
+		COMMAND_ADDPD_CHASE,	// 追加警察座標
+		COMMAND_PD_CHASEEND,	// 警察追跡
+		COMMAND_ADDPD_CHASEEND,	// 追加警察座標
 		COMMAND_MAX
 	};
 

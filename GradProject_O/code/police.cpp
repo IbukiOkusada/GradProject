@@ -65,7 +65,7 @@ CPolice::CPolice(int nId) : CCar(nId)
 	m_pSiren = nullptr;
 	m_stateInfo = SState();
 	m_pPoliceAI = nullptr;
-	CPoliceManager::GetInstance()->GetList()->Regist(this);
+	CPoliceManager::GetInstance()->ListIn(this);
 }
 
 //==========================================================
@@ -84,7 +84,7 @@ HRESULT CPolice::Init(void)
 	TailLamp();
 	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
 	m_pSiren->Stop();
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car003.x");
+	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\police.x");
 	m_pPoliceAI = CPoliceAI::Create(this);
 	return S_OK;
 }
@@ -95,7 +95,7 @@ HRESULT CPolice::Init(void)
 void CPolice::Uninit(void)
 {
 	CCar::Uninit();
-	CPoliceManager::GetInstance()->GetList()->Delete(this);
+	CPoliceManager::GetInstance()->ListOut(this);
 	SAFE_DELETE(m_pPatrolLamp);
 	SAFE_UNINIT_DELETE(m_pSiren);
 	Release();
@@ -194,7 +194,6 @@ void CPolice::MoveRoad()
 		}
 		else
 		{
-			//SetSpeedDest(0.0f);
 			if (m_Info.pPlayer != nullptr)
 			{
 				SetPosTarget(m_Info.pPlayer->GetPosition());
@@ -210,7 +209,7 @@ void CPolice::MoveRoad()
 			m_pSiren->Stop();
 		}
 
-		if (pRoadTarget != nullptr)
+		if (pRoadTarget != nullptr || IsActive())
 		{
 			pRoadStart = GetRoadStart();
 			pRoadTarget = GetRoadTarget();
@@ -277,7 +276,7 @@ void CPolice::SearchPlayer()
 void CPolice::ChasePlayer()
 {
 	// 追跡する
-	if (m_pPoliceAI == nullptr) { return; }
+	if (m_pPoliceAI == nullptr || !IsActive()) { return; }
 
 	m_pPoliceAI->Chase();
 
@@ -466,4 +465,59 @@ void CPolice::SendPosition()
 	CNetWork* pNet = CNetWork::GetInstance();
 
 	pNet->SendPdPos(GetId(), GetPosition(), GetRotation());
+}
+
+//===============================================
+// 警察の追跡開始送信
+//===============================================
+void CPolice::SendChase()
+{
+	if (m_Info.pPlayer == nullptr) { return; }
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendPdChase(GetId(), m_Info.pPlayer->GetId());
+}
+
+//===============================================
+// 警察の追跡終了送信
+//===============================================
+void CPolice::SendChaseEnd()
+{
+	CNetWork* pNet = CNetWork::GetInstance();
+
+	pNet->SendPdChaseEnd(GetId());
+}
+
+//===============================================
+// 受信した種類設定
+//===============================================
+void CPolice::RecvTypeSet()
+{
+	// 種類設定
+	CCar::RecvTypeSet();
+
+	if (m_stateInfo.chasenext == CHASE::CHASE_MAX) { return; }
+
+	// 次の指定された状態での設定
+	switch (m_stateInfo.chasenext)
+	{
+	case CHASE::CHASE_BEGIN:
+	{
+		// 追跡開始
+		m_pPoliceAI->BeginChase(m_stateInfo.pNextPlayer);
+		m_stateInfo.pNextPlayer = nullptr;
+	}
+	break;
+
+	case CHASE::CHASE_END:
+	{
+		m_pPoliceAI->EndChase();
+	}
+	break;
+
+	default:
+		break;
+	}
+
+	m_stateInfo.chasenext = CHASE::CHASE_MAX;
 }

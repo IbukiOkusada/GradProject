@@ -16,6 +16,7 @@
 #include "network.h"
 #include "inspection_manager.h"
 #include "input_keyboard.h"
+#include "car_manager.h"
 
 // 名前空間
 namespace
@@ -36,6 +37,7 @@ CPoliceManager::CPoliceManager()
 	m_pList = nullptr;
 	m_InspInfo = SInspInfo();
 	m_nNum = 0;
+	m_maplist.Clear();
 }
 
 //==========================================================
@@ -184,7 +186,7 @@ void CPoliceManager::Warning(CPolice* pPolice)
 		pP->SetState(CPolice::STATE::STATE_SEARCH);
 	}
 
-	if (m_InspInfo.fInterval >= m_InspInfo.fTime)
+	if (m_InspInfo.fInterval >= m_InspInfo.fTime && pPolice->IsActive())
 	{
 		m_InspInfo.fInterval = 0.0f;
 		// 検問を配置する
@@ -223,10 +225,12 @@ void CPoliceManager::SetInspection()
 	pos.x += sinf(targetrot) * pRoad->GetInfo()->size.x;
 	pos.z += cosf(targetrot) * pRoad->GetInfo()->size.y;
 
+	int startid = CCarManager::GetInstance()->GetMapList()->GetInCnt();
+
 	// 検問生成
-	CInspection* pInsp = CInspection::Create(pos, rot, pRoad, CInspectionManager::GetInstance()->GetCreateCnt());
+	CInspection* pInsp = CInspection::Create(pos, rot, pRoad, CInspectionManager::GetInstance()->GetCreateCnt(), startid);
 
 	// 検問送信
 	auto net = CNetWork::GetInstance();
-	net->SendSetInspection(pInsp->GetId(), pos, rot, pRoad->GetIdx());
+	net->SendSetInspection(pInsp->GetId(), pos, rot, pRoad->GetIdx(), startid);
 }

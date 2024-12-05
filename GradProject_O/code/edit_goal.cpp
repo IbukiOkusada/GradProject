@@ -425,5 +425,5 @@ void CEdit_Goal::Create()
 	setpos = static_cast<int>(pos.z);
 	pos.z -= setpos % movelength;
 
-	CGoal::Create(pos, 600.0f, 20.0f, 0);
+	CGoal::Create(pos, 600.0f, 20.0f, CGoalManager::GetInstance()->GetList().GetInCnt());
 }

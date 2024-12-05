@@ -1105,6 +1105,9 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 {
 	if (pTarget == nullptr) { return nullptr; }
 
+	CBaggage* pBag = m_pBaggage;
+	m_pBaggage = nullptr;
+
 	/*CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	float rotY = atan2f(m_Info.pos.z - pTarget->z, m_Info.pos.x - pTarget->x);
 	pCamera->GetAction()->Set(pCamera, D3DXVECTOR3(0.0f, rotY, D3DX_PI * 0.35f), 600.0f, 0.5f, 1.0f, CCameraAction::MOVE_POSV, true);*/
@@ -1113,18 +1116,13 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 
 	pos.y += 100.0f;
 
-	// Žg—p‚³‚ê‚Ä‚¢‚È‚¢
-	if (CBaggage::GetList()->GetNum() == 0 || m_pBaggage == nullptr)
-	{
-		m_pBaggage = CBaggage::Create(pos);
-	}
-
 	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.65f, 0.95f, 1.0f);
 
 	// ‰×•¨‚ð“Š‚°‚é
-	CBaggage* pBag = m_pBaggage;
-	m_pBaggage->Set(pos, pTarget, 0.75f);
-	m_pBaggage = nullptr;
+	if (pBag != nullptr)
+	{
+		pBag->Set(pos, pTarget, 0.75f);
+	}
 
 	return pBag;
 }
@@ -1182,6 +1180,7 @@ void CPlayer::SetStateRecv()
 	{
 		if (m_pFont[i] == nullptr) { continue; }
 		SAFE_UNINIT(m_pFont[i]);
+		m_pFont[i]->Uninit();
 	}
 }
 
@@ -1333,8 +1332,7 @@ void CPlayer::SendData()
 
 	if (pNet->GetTime()->IsOK())
 	{
-		pNet->SendPlPos(m_Info.pos);
-		pNet->SendPlRot(m_Info.rot);
+		pNet->SendPlPos(m_Info.pos, m_Info.rot);
 
 		if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME)
 		{

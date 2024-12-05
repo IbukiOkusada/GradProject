@@ -47,7 +47,8 @@ private:	// 自分だけがアクセス可能
 		D3DXVECTOR3 posTarget;	// 目標位置
 		CRoad* pRoadStart;		// 移動開始地点
 		CRoad* pRoadTarget;		// 目標地点
-		TYPE type;
+		TYPE type;				// 状態
+		TYPE typeNext;			// 次の状態
 		int nBackTime;
 		float fSpeed;
 		float fSpeedDest;
@@ -59,7 +60,7 @@ private:	// 自分だけがアクセス可能
 		// コンストラクタ
 		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), rotDest(VECTOR3_ZERO),
 			move(VECTOR3_ZERO), posOld(VECTOR3_ZERO), posTarget(VECTOR3_ZERO), pRoadStart(nullptr), pRoadTarget(nullptr),
-			type(TYPE::TYPE_SEND), nBackTime(0), fSpeed(0.0f), fSpeedDest(0.0f), fRotMulti(0.0f), bBreak(false), bBack(0.0f),
+			type(TYPE::TYPE_SEND), typeNext(TYPE::TYPE_MAX), nBackTime(0), fSpeed(0.0f), fSpeedDest(0.0f), fRotMulti(0.0f), bBreak(false), bBack(0.0f),
 			nId(-1) {}
 	};
 
@@ -96,11 +97,12 @@ public:	// 誰でもアクセス可能
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
 	bool GetBack(void) { return m_Info.bBack; }
 	TYPE GetType() { return m_Info.type; }
+	TYPE GetTypeNext() { return m_Info.typeNext; }
 	virtual int GetId() { return m_Info.nId; }
 
 	// 自分で動くときはtrue 動かないときはfalse
 	bool IsActive() {
-		if (m_Info.type == TYPE::TYPE_SEND) return false;
+		if (m_Info.type == TYPE::TYPE_RECV) return false;
 		return true;
 	}
 
@@ -117,6 +119,7 @@ public:	// 誰でもアクセス可能
 	void SetBack(bool bBack) { m_Info.bBack = bBack; }
 	void SetBackTime(int nBackTime) { m_Info.nBackTime = nBackTime; }
 	void SetType(TYPE type) { m_Info.type = type; }
+	void SetTypeNext(TYPE type) { m_Info.typeNext = type; }
 	void BinfId(int nId) { m_Info.nId = nId; }
 
 	// 受信用情報
@@ -134,6 +137,13 @@ protected:	// 派生クラスからもアクセス可能
 	virtual void Break();
 	void Set();
 	virtual void SendPosition();
+	virtual void RecvTypeSet() {
+		if (m_Info.typeNext != TYPE::TYPE_MAX)
+		{
+			m_Info.type = m_Info.typeNext;
+			m_Info.typeNext = TYPE::TYPE_MAX;
+		}
+	}
 
 	// メンバ変数
 	CObjectX* m_pObj;

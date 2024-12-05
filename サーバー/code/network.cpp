@@ -29,7 +29,6 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandGetId,			// ID取得
 	&CNetWork::CommandDelete,			// 削除
 	&CNetWork::CommandPlPos,			// プレイヤー位置
-	&CNetWork::CommandPlRot,			// プレイヤー向き
 	&CNetWork::CommandPlDamage,			// プレイヤーダメ―ジ
 	&CNetWork::CommandPlGoal,			// プレイヤーゴール
 	&CNetWork::CommandGmHit,			// ギミック衝突
@@ -37,12 +36,17 @@ CNetWork::COMMAND_FUNC CNetWork::m_CommandFunc[] =
 	&CNetWork::CommandGameStartOk,		// ゲーム開始可能になったよ
 	&CNetWork::CommandGameStart,		// ゲーム開始
 	&CNetWork::CommandTutorialOk,		// ゲーム開始可能になったよ
+	&CNetWork::CommandTutorialNo,		// ゲーム開始可能キャンセル
 	&CNetWork::CommandTutorialEnd,		// ゲーム開始
 	&CNetWork::CommandSetInspection,	// 検問配置
 	&CNetWork::CommandEndInspection,	// 検問廃棄
 	&CNetWork::CommandCarPos,			// 車位置
 	&CNetWork::CommandPdPos,			// 警察位置
 	&CNetWork::CommandAddPdPos,			// 追加警察位置
+	&CNetWork::CommandPdChase,			// 警察位置
+	&CNetWork::CommandAddPdChase,		// 追加警察位置
+	&CNetWork::CommandPdChaseEnd,		// 警察位置
+	&CNetWork::CommandAddPdChaseEnd,	// 追加警察位置
 };
 
 // 静的メンバ変数
@@ -509,7 +513,7 @@ void CNetWork::CommandDelete(const int nId, const char* pRecvData, CClient* pCli
 void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
 	int byte = 0;
 
 	nProt = NetWork::COMMAND_PL_POS;
@@ -527,31 +531,8 @@ void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClie
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
 
-	// 挿入
-	pClient->SetData(&aSendData[0], byte);
-}
-
-//==========================================================
-// プレイヤーの向き
-//==========================================================
-void CNetWork::CommandPlRot(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
-{
-	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
-	int byte = 0;
-
-	nProt = NetWork::COMMAND_PL_ROT;
-
-	// IDを挿入
-	memcpy(&aSendData[byte], &nId, sizeof(int));
-	byte += sizeof(int);
-
-	// プロトコル挿入
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
-
 	// 座標挿入
-	memcpy(&aSendData[byte], pRecvData, sizeof(D3DXVECTOR3));
+	memcpy(&aSendData[byte], &pRecvData[sizeof(D3DXVECTOR3)], sizeof(D3DXVECTOR3));
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
 
@@ -757,6 +738,15 @@ void CNetWork::CommandTutorialOk(const int nId, const char* pRecvData, CClient* 
 }
 
 //==========================================================
+// チュートリアルOK
+//==========================================================
+void CNetWork::CommandTutorialNo(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	// フラグオフ
+	m_aFlag[nId].bTutorial = false;
+}
+
+//==========================================================
 // チュートリアル終了
 //==========================================================
 void CNetWork::CommandTutorialEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
@@ -811,7 +801,7 @@ void CNetWork::CommandTutorialEnd(const int nId, const char* pRecvData, CClient*
 //==========================================================
 void CNetWork::CommandSetInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
-	char aRecv[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int)] = {};
+	char aRecv[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int) + sizeof(int)] = {};
 	int command = NetWork::COMMAND_SET_INSP;
 	int byte = 0;
 	int recvbyte = 0;
@@ -843,6 +833,12 @@ void CNetWork::CommandSetInspection(const int nId, const char* pRecvData, CClien
 	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 道IDを挿入
+	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(int));
+	byte += sizeof(int);
+	*pNowByte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 開始IDを挿入
 	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(int));
 	byte += sizeof(int);
 	*pNowByte += sizeof(int);
@@ -999,6 +995,138 @@ void CNetWork::CommandAddPdPos(const int nId, const char* pRecvData, CClient* pC
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
 	recvbyte += sizeof(D3DXVECTOR3);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// 警察の追跡開始
+//==========================================================
+void CNetWork::CommandPdChase(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(int)] = {};	// 送信用まとめデータ
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_PD_CHASE;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 車のID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// プレイヤーのID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// 追加警察の追跡開始
+//==========================================================
+void CNetWork::CommandAddPdChase(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(int)] = {};	// 送信用まとめデータ
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_ADDPD_CHASE;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 車のID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// プレイヤーのID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// 警察の追跡終了
+//==========================================================
+void CNetWork::CommandPdChaseEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(int)] = {};	// 送信用まとめデータ
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_PD_CHASEEND;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 車のID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// 挿入
+	pClient->SetData(&aSendData[0], byte);
+}
+
+//==========================================================
+// 追跡警察の追跡終了
+//==========================================================
+void CNetWork::CommandAddPdChaseEnd(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
+{
+	int nProt = -1;	// プロトコル番号
+	char aSendData[sizeof(int) * 2 + sizeof(int)] = {};	// 送信用まとめデータ
+	int byte = 0;
+	int recvbyte = 0;
+
+	nProt = NetWork::COMMAND_ADDPD_CHASEEND;
+
+	// IDを挿入
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
+
+	// 車のID挿入
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(int));
+	*pNowByte += sizeof(int);
+	byte += sizeof(int);
+	recvbyte += sizeof(int);
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);

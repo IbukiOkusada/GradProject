@@ -19,7 +19,7 @@ namespace
 {
 	const D3DXCOLOR ALPHACOLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);	// マルチターゲット透明度
 	const D3DXCOLOR NONE_ALPHACOLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	const D3DXVECTOR2 NORMALSIZE = D3DXVECTOR2(640.0f, 360.0f);
+	const D3DXVECTOR2 NORMALSIZE = D3DXVECTOR2(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
 	const D3DXVECTOR2 MINISIZE = NORMALSIZE * 1.0f;
 }
 
@@ -633,20 +633,20 @@ void CRenderer::DrawMultiTargetScreen(int texIdx, const D3DXCOLOR& col, const D3
 	m_Multitarget.pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	// 頂点座標の設定
-	pVtx[0].pos.x = 640.0f - size.x;
-	pVtx[0].pos.y = 360.0f - size.y;
+	pVtx[0].pos.x = SCREEN_WIDTH*0.5f - size.x;
+	pVtx[0].pos.y = SCREEN_HEIGHT * 0.5f - size.y;
 	pVtx[0].pos.z = 0.0f;
 
-	pVtx[1].pos.x = 640.0f + size.x;
-	pVtx[1].pos.y = 360.0f - size.y;
+	pVtx[1].pos.x = SCREEN_WIDTH * 0.5f + size.x;
+	pVtx[1].pos.y = SCREEN_HEIGHT * 0.5f - size.y;
 	pVtx[1].pos.z = 0.0f;
 
-	pVtx[2].pos.x = 640.0f - size.x;
-	pVtx[2].pos.y = 360.0f + size.y;
+	pVtx[2].pos.x = SCREEN_WIDTH * 0.5f - size.x;
+	pVtx[2].pos.y = SCREEN_HEIGHT * 0.5f + size.y;
 	pVtx[2].pos.z = 0.0f;
 
-	pVtx[3].pos.x = 640.0f + size.x;
-	pVtx[3].pos.y = 360.0f + size.y;
+	pVtx[3].pos.x = SCREEN_WIDTH * 0.5f + size.x;
+	pVtx[3].pos.y = SCREEN_HEIGHT * 0.5f + size.y;
 	pVtx[3].pos.z = 0.0f;
 
 	// 頂点カラーの設定

@@ -50,13 +50,23 @@ public:
 		//<*******************************************
 	}
 
+	//サイレン情報設定
+	inline static void SetSiren(const bool bStart)
+	{
+		//開始なら再生、していないなら止める
+		if (bStart) { m_pSound->Start(); }
+		else{ m_pSound->Stop(); }
+	}
+
 	//追跡処理
 	void Chasing(const float fMoveZ);
 
 private:
 
-	CEffekseer::CEffectData* m_pPatrolLamp;		//テスト用
-	CEffekseer::CEffectData* m_pTailLamp;
+	CEffekseer::CEffectData* m_pPatrolLamp;		//パトランプ
+	CEffekseer::CEffectData* m_pTailLamp;		//ているらんぷ
+
+	static CMasterSound::CObjectSound* m_pSound;		//パトロール(追跡時の音)
 
 };
 

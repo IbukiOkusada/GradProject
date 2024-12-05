@@ -29,6 +29,7 @@ public:	// 誰でもアクセス可能
 	{
 		TYPE_NORMAL = 0,	// 通常
 		TYPE_ELITE,			// 回り込み型
+		TYPE_GENTLE,		// 緩やか型
 		TYPE_MAX
 	};
 
@@ -40,6 +41,9 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Search(void);
 	void Chase(void);
+
+	void BeginChase(CPlayer* pPlayer);
+	void EndChase(void);
 
 	static CPoliceAI* Create(CPolice* pPolice, TYPE type = TYPE_NORMAL);
 
@@ -53,11 +57,14 @@ protected:
 	// メンバ関数
 	virtual void SelectRoad(void);
 	virtual void ReachRoad(void);
+	virtual void ChaseAStar(void);
 
 	// メンバ変数
 	CPolice* m_pPolice;
 	CRoad* m_pRoadStart;		// 移動開始地点
 	CRoad* m_pRoadTarget;		// 目標地点
+	CRoad::SInfoSearch* m_pSearchTarget;
+	vector<CRoad::SInfoSearch*> m_searchRoad;
 
 private:	// 自分だけがアクセス可能
 
@@ -69,20 +76,40 @@ private:	// 自分だけがアクセス可能
 	void CheckCollision(CPlayer* pPlayer);
 
 	// メンバ変数
-	CRoad::SInfoSearch* m_pSearchTarget;
 	float m_fSearchTimer;
-	vector<CRoad::SInfoSearch*> m_searchRoad;
 	TYPE m_type;
 };
 
+//==========================================================
+// 警察AIのクラス定義
+//==========================================================
 class CPoliceAINomal : public CPoliceAI
 {
+	// メンバ関数
 	HRESULT Init(void) override;
 	void SelectRoad(void) override;
 };
 
+//==========================================================
+// 警察AIのクラス定義
+//==========================================================
 class CPoliceAIElite : public CPoliceAI
 {
+	// メンバ関数
+	HRESULT Init(void) override;
+	void SelectRoad(void) override;
+	void ChaseAStar(void) override;
+
+	// メンバ変数
+	CRoad* m_pRoadRelay;		// 目標地点
+};
+
+//==========================================================
+// 警察AIのクラス定義
+//==========================================================
+class CPoliceAIGentle : public CPoliceAI
+{
+	// メンバ関数
 	HRESULT Init(void) override;
 	void SelectRoad(void) override;
 };
