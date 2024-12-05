@@ -384,14 +384,17 @@ void CInspection::Collision()
 				return;
 			}
 		}
-		// ŒxŽ@‚ªŠù‚Éo”­Ï‚Ý
-		if (m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_STOP &&
-			m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_NORMAL)
+		if (m_aPoliceInfo[i].pPolice != nullptr)
 		{
-			// ’ÇÕ
-			Start();
-			net->SendEndInspection(m_Info.nId);
-			return;
+			// ŒxŽ@‚ªŠù‚Éo”­Ï‚Ý
+			if (m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_STOP &&
+				m_aPoliceInfo[i].pPolice->GetState() != CPolice::STATE::STATE_NORMAL)
+			{
+				// ’ÇÕ
+				Start();
+				net->SendEndInspection(m_Info.nId);
+				return;
+			}
 		}
 	}
 
