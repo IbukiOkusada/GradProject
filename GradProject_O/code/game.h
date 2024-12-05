@@ -23,7 +23,7 @@ class CDeliveryStatus;
 class CTimer;
 class CMultiCamera;
 class CGoalManager;
-
+class CFog;
 class CScrollText2D;
 // É}ÉNÉçíËã`
 #define NUM_FILTER	(2)
@@ -107,6 +107,7 @@ private:
 	STATE m_GameState;
 	CScrollText2D* m_pEndText;
 	CMasterSound::CObjectSound* m_pEndSound;
+	CFog * pFog;
 };
 
 #endif
