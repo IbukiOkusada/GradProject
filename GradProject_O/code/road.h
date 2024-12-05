@@ -77,10 +77,10 @@ public:	// 誰でもアクセス可能な定義
 		float fGCost;			//移動コスト
 		float fHCost;			//予想コスト
 		SInfoSearch* pParent;
-		SInfoSearch* pChaild;
+		SInfoSearch* pChild;
 
 		// コンストラクタ
-		SInfoSearch() : pConnectLength(0.0f), fFCost(0.0f), fGCost(0.0f), fHCost(0.0f), pParent(nullptr), pChaild(nullptr) {}
+		SInfoSearch() : pConnectLength(0.0f), fFCost(0.0f), fGCost(0.0f), fHCost(0.0f), pParent(nullptr), pChild(nullptr) {}
 	};
 
 public:	// 誰でもアクセス可能

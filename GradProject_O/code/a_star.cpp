@@ -91,7 +91,8 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 		Current = *std::min_element(OpenList.begin(), OpenList.end(),
 			[](CRoad::SInfoSearch* a, CRoad::SInfoSearch* b) { return a->fFCost < b->fFCost; });		// 総計コストが最少のノードを選ぶ
 
-		if (Current->pConnectRoad == Goal)		// ゴール到達時
+		// ゴール到達時
+		if (Current->pConnectRoad == Goal)
 		{// 親ノードを辿って順序を入れ替えたのち返す
 
 			std::vector<CRoad::SInfoSearch*> path;	// 返り値用変数
@@ -101,7 +102,7 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 				// 親がいるなら親の子に自分を設定
 				if (Current->pParent != nullptr)
 				{
-					Current->pParent->pChaild = Current;
+					Current->pParent->pChild = Current;
 				}
 
 				path.push_back(Current);
@@ -144,7 +145,31 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 			}
 		}
 	}
+
 	return {};
+}
+
+//==========================================================
+// AStarでの迂回経路探索
+//==========================================================
+std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Relay, CRoad* Goal)
+{
+	std::vector<CRoad::SInfoSearch*> pathRelay;
+	std::vector<CRoad::SInfoSearch*> pathGoal;
+
+	// 初期地点から中継地点まで探索
+	pathRelay = AStarPolice(Start, Relay);
+
+	// 中継地点から目標地点まで探索
+	pathGoal = AStarPolice(Relay, Goal);
+
+	if (pathRelay.empty() || pathGoal.empty()) { return {}; }
+
+	pathRelay.back()->pChild = pathGoal.front();
+	pathGoal.front()->pParent = pathRelay.back();
+	std::copy(pathGoal.begin(), pathGoal.end(), std::back_inserter(pathRelay));
+
+	return pathRelay;
 }
 
 //==========================================================
@@ -168,7 +193,8 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceLimit(CRoad* Start, CRoad* Goal, int
 		Current = *std::min_element(OpenList.begin(), OpenList.end(),
 			[](CRoad::SInfoSearch* a, CRoad::SInfoSearch* b) { return a->fFCost < b->fFCost; });		// 総計コストが最少のノードを選ぶ
 
-		if (Current->pConnectRoad == Goal || nCntSearch == nLimitSearch)		// ゴール到達時
+		// ゴール到達時か一定回数探索時
+		if (Current->pConnectRoad == Goal || nCntSearch == nLimitSearch)
 		{// 親ノードを辿って順序を入れ替えたのち返す
 
 			std::vector<CRoad::SInfoSearch*> path;
@@ -177,7 +203,7 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceLimit(CRoad* Start, CRoad* Goal, int
 			{
 				if (Current->pParent != nullptr)
 				{
-					Current->pParent->pChaild = Current;
+					Current->pParent->pChild = Current;
 				}
 				path.push_back(Current);
 				Current = Current->pParent;
@@ -213,8 +239,10 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceLimit(CRoad* Start, CRoad* Goal, int
 			}
 		}
 
+		// 探索回数を増加
 		nCntSearch++;
 	}
+
 	return {};
 }
 }
