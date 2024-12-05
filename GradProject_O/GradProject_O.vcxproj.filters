@@ -172,6 +172,9 @@
     <Filter Include="mode\entry">
       <UniqueIdentifier>{6cd61a25-2827-4e7d-803b-cdfab08e0de4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fog">
+      <UniqueIdentifier>{bcd35556-6727-4360-92ce-315edce9db2f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -512,6 +515,9 @@
     </ClCompile>
     <ClCompile Include="code\map_list.cpp">
       <Filter>system</Filter>
+    </ClCompile>
+    <ClCompile Include="code\Fog.cpp">
+      <Filter>fog</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -856,6 +862,9 @@
     </ClInclude>
     <ClInclude Include="code\map_list.h">
       <Filter>system</Filter>
+    </ClInclude>
+    <ClInclude Include="code\fog.h">
+      <Filter>fog</Filter>
     </ClInclude>
     <ClInclude Include="code\PoliceTitle.h">
       <Filter>ヘッダー ファイル</Filter>

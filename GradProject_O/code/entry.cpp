@@ -382,7 +382,7 @@ void CEntry::AddPlayer(void)
         }
         else
         {
-
+            net->SendTutorialNo();
         }
     }
 }
