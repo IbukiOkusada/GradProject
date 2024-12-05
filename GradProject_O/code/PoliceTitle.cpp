@@ -44,11 +44,7 @@ HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 //<======================================
 void CPoliceTitle::Uninit(void)
 {
-	//Realese–³‚µ‚¾‚Æƒƒ‚ƒŠ”j‰ó‚ª‹N‚«‚é
-	CPoliceManager::GetInstance()->GetList()->Delete(this);
-	SAFE_DELETE(m_pPatrolLamp);
-	SAFE_DELETE(m_pTailLamp);
-	Release();
+	CPolice::Uninit();
 
 }
 //<======================================

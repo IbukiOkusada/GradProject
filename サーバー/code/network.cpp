@@ -791,7 +791,7 @@ void CNetWork::CommandTutorialEnd(const int nId, const char* pRecvData, CClient*
 //==========================================================
 void CNetWork::CommandSetInspection(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
-	char aRecv[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int)] = {};
+	char aRecv[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int) + sizeof(int)] = {};
 	int command = NetWork::COMMAND_SET_INSP;
 	int byte = 0;
 	int recvbyte = 0;
@@ -823,6 +823,12 @@ void CNetWork::CommandSetInspection(const int nId, const char* pRecvData, CClien
 	recvbyte += sizeof(D3DXVECTOR3);
 
 	// “¹ID‚ð‘}“ü
+	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(int));
+	byte += sizeof(int);
+	*pNowByte += sizeof(int);
+	recvbyte += sizeof(int);
+
+	// ŠJŽnID‚ð‘}“ü
 	memcpy(&aRecv[byte], &pRecvData[recvbyte], sizeof(int));
 	byte += sizeof(int);
 	*pNowByte += sizeof(int);

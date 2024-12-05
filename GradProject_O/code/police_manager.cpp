@@ -16,6 +16,7 @@
 #include "network.h"
 #include "inspection_manager.h"
 #include "input_keyboard.h"
+#include "car_manager.h"
 
 // –¼‘O‹óŠÔ
 namespace
@@ -36,6 +37,7 @@ CPoliceManager::CPoliceManager()
 	m_pList = nullptr;
 	m_InspInfo = SInspInfo();
 	m_nNum = 0;
+	m_maplist.Clear();
 }
 
 //==========================================================
@@ -223,10 +225,12 @@ void CPoliceManager::SetInspection()
 	pos.x += sinf(targetrot) * pRoad->GetInfo()->size.x;
 	pos.z += cosf(targetrot) * pRoad->GetInfo()->size.y;
 
+	int startid = CCarManager::GetInstance()->GetMapList()->GetInCnt();
+
 	// ŒŸ–â¶¬
-	CInspection* pInsp = CInspection::Create(pos, rot, pRoad, CInspectionManager::GetInstance()->GetCreateCnt());
+	CInspection* pInsp = CInspection::Create(pos, rot, pRoad, CInspectionManager::GetInstance()->GetCreateCnt(), startid);
 
 	// ŒŸ–â‘—M
 	auto net = CNetWork::GetInstance();
-	net->SendSetInspection(pInsp->GetId(), pos, rot, pRoad->GetIdx());
+	net->SendSetInspection(pInsp->GetId(), pos, rot, pRoad->GetIdx(), startid);
 }

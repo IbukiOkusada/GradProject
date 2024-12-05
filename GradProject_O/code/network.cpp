@@ -323,6 +323,9 @@ bool CNetWork::DisConnect()
 		}
 	}
 
+	m_nMyIdx = -1;
+	m_state = STATE::STATE_SINGLE;
+
 	return true;
 }
 
@@ -583,7 +586,7 @@ void CNetWork::RecvPlDamage(int* pByte, const int nId, const char* pRecvData)
 	*pByte += sizeof(float);
 
 	// プレイヤーの存在確認
-	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT || nId == m_nMyIdx) { return; }
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
 
 	// 生成していない場合
@@ -741,6 +744,12 @@ void CNetWork::RecvSetInspection(int* pByte, const int nId, const char* pRecvDat
 	*pByte += sizeof(int);
 	byte += sizeof(int);
 
+	// 警察の開始ID取得
+	int startpdid = -1;
+	memcpy(&startpdid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
+
 	CInspection* pInsp = CInspectionManager::GetInstance()->Get(inspid);
 
 	if (pInsp != nullptr) { return; }
@@ -752,7 +761,7 @@ void CNetWork::RecvSetInspection(int* pByte, const int nId, const char* pRecvDat
 	}
 
 	// 検問生成
-	CInspection::Create(pos, rot, pRoad, inspid);
+	CInspection::Create(pos, rot, pRoad, inspid, startpdid);
 }
 
 //===================================================
@@ -1269,11 +1278,11 @@ void CNetWork::SendTutorialOk()
 //===================================================
 // 検問設置を送信
 //===================================================
-void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx)
+void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx, int nStartPdId)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int)] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int) + sizeof(int)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_SET_INSP;
 	int byte = 0;
 
@@ -1295,6 +1304,10 @@ void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3
 
 	// 道のID
 	memcpy(&aSendData[byte], &nIdx, sizeof(int));
+	byte += sizeof(int);
+
+	// 警察の開始ID
+	memcpy(&aSendData[byte], &nStartPdId, sizeof(int));
 	byte += sizeof(int);
 
 	// 送信

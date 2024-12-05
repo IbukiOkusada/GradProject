@@ -65,7 +65,7 @@ CPolice::CPolice(int nId) : CCar(nId)
 	m_pSiren = nullptr;
 	m_stateInfo = SState();
 	m_pPoliceAI = nullptr;
-	CPoliceManager::GetInstance()->GetList()->Regist(this);
+	CPoliceManager::GetInstance()->ListIn(this);
 }
 
 //==========================================================
@@ -95,7 +95,7 @@ HRESULT CPolice::Init(void)
 void CPolice::Uninit(void)
 {
 	CCar::Uninit();
-	CPoliceManager::GetInstance()->GetList()->Delete(this);
+	CPoliceManager::GetInstance()->ListOut(this);
 	SAFE_DELETE(m_pPatrolLamp);
 	SAFE_UNINIT_DELETE(m_pSiren);
 	Release();
@@ -486,4 +486,15 @@ void CPolice::SendChaseEnd()
 	CNetWork* pNet = CNetWork::GetInstance();
 
 	pNet->SendPdChaseEnd(GetId());
+}
+
+//===============================================
+// éÛêMÇµÇΩéÌóﬁê›íË
+//===============================================
+void CPolice::RecvTypeSet()
+{
+	if (GetTypeNext() == TYPE::TYPE_MAX) { return; }
+
+	SetType(GetTypeNext());
+	SetTypeNext(TYPE::TYPE_MAX);
 }

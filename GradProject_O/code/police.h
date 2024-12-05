@@ -55,6 +55,7 @@ protected:
 	// 状態管理構造体
 	struct SState
 	{
+		STATE statenext;
 		STATE state;
 		float fTimer;
 		float fTimerOrigin;
@@ -141,6 +142,7 @@ private:	// 自分だけがアクセス可能
 	void Collision();
 	void Hit() override;
 	void Break() override;
+	void RecvTypeSet() override;
 
 	// メンバ変数
 	SInfo m_Info;					// 自分自身の情報

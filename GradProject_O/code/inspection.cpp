@@ -84,7 +84,7 @@ HRESULT CInspection::Init(void)
 		goalpos.x += sinf(rot.y) * POLICE_SETLENGTH;
 		goalpos.z += cosf(rot.y) * POLICE_SETLENGTH;
 
-		m_aPoliceInfo[i].pPolice = CAddPolice::Create(pos, VECTOR3_ZERO, VECTOR3_ZERO, 0);
+		m_aPoliceInfo[i].pPolice = CAddPolice::Create(pos, VECTOR3_ZERO, VECTOR3_ZERO, m_Info.nStartPdId + i);
 		m_aPoliceInfo[i].goalpos = goalpos;
 
 		// Œo˜H‚ðÝ’è
@@ -150,7 +150,7 @@ void CInspection::Update(void)
 //==========================================================
 // ¶¬
 //==========================================================
-CInspection* CInspection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId)
+CInspection* CInspection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId, int startpdid)
 {
 	CInspection* pInsp = nullptr;
 
@@ -159,6 +159,7 @@ CInspection* CInspection::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot,
 	if (pInsp != nullptr)
 	{
 		// ’lÝ’è
+		pInsp->m_Info.nStartPdId = startpdid;
 		pInsp->SetPosition(pos);
 		pInsp->SetRotation(rot);
 		pInsp->m_pRoad = pRoad;
