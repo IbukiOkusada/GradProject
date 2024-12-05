@@ -11,15 +11,17 @@ namespace AStar
 //==========================================================
 // AStarでの経路探索
 //==========================================================
-std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
+std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* Start, CRoad::SSearch* Goal)
 {
+	if (Start == nullptr || Goal == nullptr) return {};
+
 	std::vector<CRoad::SSearch*> OpenList;//探索候補リスト
 	std::vector<CRoad::SSearch*> CloseList;//探索終了リスト
 	
-	State->fGCost = 0.0f;
-	State->fHCost = D3DXVec3Length(&(State->pos - Gole->pos));
-	State->fFCost = State->fGCost + State->fHCost;
-	OpenList.push_back(State);
+	Start->fGCost = 0.0f;
+	Start->fHCost = D3DXVec3Length(&(Start->pos - Goal->pos));
+	Start->fFCost = Start->fGCost + Start->fHCost;
+	OpenList.push_back(Start);
 
 	// オープンリストが空になるまで探索
 	while (!OpenList.empty())
@@ -28,7 +30,7 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 		Current = *std::min_element(OpenList.begin(), OpenList.end(),
 			[](CRoad::SSearch* a, CRoad::SSearch* b) { return a->fFCost < b->fFCost; });		// 総計コストが最少のノードを選ぶ
 
-		if (Current->pRoad == Gole->pRoad)		// ゴール到達時
+		if (Current->pRoad == Goal->pRoad)		// ゴール到達時
 		{// 親ノードを辿って順序を入れ替えたのち返す
 
 			std::vector<CRoad::SSearch*> path;
@@ -56,7 +58,7 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* State, CRoad::SSearch* Gole)
 			
 			// コスト計算
 			neighbor->fGCost = D3DXVec3Length(&(neighbor->pos - Current->pos));
-			neighbor->fHCost = D3DXVec3Length(&(neighbor->pos - Gole->pos));
+			neighbor->fHCost = D3DXVec3Length(&(neighbor->pos - Goal->pos));
 			neighbor->fFCost = neighbor->fGCost + neighbor->fHCost;
 			neighbor->pParent = Current;
 			

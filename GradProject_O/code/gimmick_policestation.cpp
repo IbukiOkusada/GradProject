@@ -131,9 +131,9 @@ void CGimmickPoliceStation::Update(void)
 	// îÕàÕì‡ÇÃÇ›åxé@ê∂ê¨
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	//CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
-	//pP->SetRoadTarget(m_pRoad);
-	//pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+	pP->SetRoadTarget(m_pRoad);
+	pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 }
 
 //==========================================================
