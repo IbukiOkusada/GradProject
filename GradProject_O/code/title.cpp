@@ -933,11 +933,11 @@ void CTitle::SelectSingleMulti(void)
 	}
 
 	//人数選択をする
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW)) 
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW) || CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_RIGHT, 0))
 	{ 
 		m_nSelect = (m_nSelect + 1) % SELECT_MAX; 
 	}
-	else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW)) 
+	else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW) || CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_LEFT, 0))
 	{ m_nSelect = (m_nSelect + (SELECT_MAX - 1)) % SELECT_MAX; }
 
 	//"YES"を選択している時
@@ -974,8 +974,10 @@ void CTitle::SelectYesNO(void)
 	}
 
 	//人数選択をする
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW)) { m_nSelectYN = (m_nSelectYN + 1) % SELECT_YN_MAX; }
-	else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW)) { m_nSelectYN = (m_nSelectYN + (SELECT_YN_MAX - 1)) % SELECT_YN_MAX; }
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW) || CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_RIGHT, 0)) 
+	{ m_nSelectYN = (m_nSelectYN + 1) % SELECT_YN_MAX; }
+	else if (CInputKeyboard::GetInstance()->GetTrigger(DIK_LEFTARROW) || CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_LEFT, 0))
+	{ m_nSelectYN = (m_nSelectYN + (SELECT_YN_MAX - 1)) % SELECT_YN_MAX; }
 
 	//キーボード入力かパッド入力があれば
 	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
