@@ -373,7 +373,7 @@ void CGame::Update(void)
             }
         }
     }
-    if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_ONLINE)
+    if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_SINGLE)
     {
         End_Fail();
     }
