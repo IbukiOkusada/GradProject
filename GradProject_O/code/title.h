@@ -92,10 +92,10 @@ public:
 	//Get系関数
 	//<************************************
 	//シングルとマルチどっちが選択されているかの取得関数
-	int GetSelectSingleMulti(void) { return m_nSelect; }
+	inline int GetSelectSingleMulti(void) { return m_nSelect; }
 
 	//警察取得関数
-	static CPoliceTitle* GetPoliTitle(int nNum)
+	inline static CPoliceTitle* GetPoliTitle(int nNum)
 	{
 		//中身なければnullptrを返す
 		if (!m_apPolice[nNum]){return nullptr;}
