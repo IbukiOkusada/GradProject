@@ -255,7 +255,7 @@ void CDeliveryStatus::Gage(void)
 
 	if (pPlayer == nullptr) { return; }
 
-	if (nNum <= 0 && nNum > m_nNumDeliveryPoint)
+	if (nNum <= 0 || nNum > m_nNumDeliveryPoint)
 		return;
 
 	if (m_pGage[nNum - 1] == nullptr)
