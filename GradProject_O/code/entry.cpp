@@ -97,7 +97,7 @@ CEntry::~CEntry()
 HRESULT CEntry::Init(void)
 {
     auto net = CNetWork::GetInstance();
-    //net->ReConnect();
+    net->ReConnect();
 
     // IDŽæ“¾‚ð‘Ò‚Â
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
