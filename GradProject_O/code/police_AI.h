@@ -47,8 +47,11 @@ public:	// 誰でもアクセス可能
 
 	static CPoliceAI* Create(CPolice* pPolice, TYPE type = TYPE_NORMAL);
 
+	virtual void ChaseAStar(void);
+
 	// メンバ関数(取得)
 	CRoad::SInfoSearch* GetSearchRoad() { return m_pSearchTarget; }
+	CPolice* GetPolice() { return m_pPolice; }
 
 	// メンバ関数(設定)
 
@@ -57,7 +60,6 @@ protected:
 	// メンバ関数
 	virtual void SelectRoad(void);
 	virtual void ReachRoad(void);
-	virtual void ChaseAStar(void);
 
 	// メンバ変数
 	CPolice* m_pPolice;
@@ -65,6 +67,7 @@ protected:
 	CRoad* m_pRoadTarget;		// 目標地点
 	CRoad::SInfoSearch* m_pSearchTarget;
 	vector<CRoad::SInfoSearch*> m_searchRoad;
+	int m_nCntThread;
 
 private:	// 自分だけがアクセス可能
 
@@ -78,6 +81,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	float m_fSearchTimer;
 	TYPE m_type;
+	bool bCross;
 };
 
 //==========================================================

@@ -240,6 +240,7 @@
     <ClCompile Include="code\police.cpp" />
     <ClCompile Include="code\PoliceTitle.cpp" />
     <ClCompile Include="code\police_AI.cpp" />
+    <ClCompile Include="code\police_AI_manager.cpp" />
     <ClCompile Include="code\police_manager.cpp" />
     <ClCompile Include="code\precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -357,6 +358,7 @@
     <ClInclude Include="code\police.h" />
     <ClInclude Include="code\PoliceTitle.h" />
     <ClInclude Include="code\police_AI.h" />
+    <ClInclude Include="code\police_AI_manager.h" />
     <ClInclude Include="code\police_manager.h" />
     <ClInclude Include="code\precompile.h" />
     <ClInclude Include="code\protocol_online.h" />

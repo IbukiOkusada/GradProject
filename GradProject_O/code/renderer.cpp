@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "input_keyboard.h"
 #include "effekseerControl.h"
+#include "edit_manager.h"
 
 namespace
 {
@@ -290,8 +291,19 @@ void CRenderer::Draw(void)
 		// オブジェクトの描画
 		CObjectManager::GetInstance()->Draw();
 
-		pCamera->SetCamera();
-		CEffekseer::GetInstance()->Draw();
+		if (CEditManager::GetInstance() == nullptr)
+		{
+			pCamera->SetCamera();
+			CEffekseer::GetInstance()->Draw();
+		}
+		else
+		{
+			if (CEditManager::GetInstance()->GetSelectType() == CEdit::TYPE_GOAL)
+			{
+				pCamera->SetCamera();
+				CEffekseer::GetInstance()->Draw();
+			}
+		}
 
 		// フィードバックエフェクトにテクスチャ[1]を貼り付けて描画
 		float multidef = m_MultitargetInfo.fMulti - m_MultitargetInfo.fStartMulti;
