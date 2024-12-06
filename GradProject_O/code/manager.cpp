@@ -196,7 +196,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CEffekseer::GetInstance()->Init();
 	
 	// ƒ‚[ƒh‚Ì¶¬
-	SetMode(CScene::MODE_RESULT);
+	SetMode(CScene::MODE_TITLE);
 
 	return S_OK;
 }
@@ -397,7 +397,6 @@ void CManager::Draw(void)
 {
 	if (m_pScene != nullptr)
 	{
-		
 		m_pScene->Draw();
 	}
 }
