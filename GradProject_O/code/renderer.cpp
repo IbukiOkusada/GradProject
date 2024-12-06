@@ -296,6 +296,14 @@ void CRenderer::Draw(void)
 			pCamera->SetCamera();
 			CEffekseer::GetInstance()->Draw();
 		}
+		else
+		{
+			if (CEditManager::GetInstance()->GetSelectType() == CEdit::TYPE_GOAL)
+			{
+				pCamera->SetCamera();
+				CEffekseer::GetInstance()->Draw();
+			}
+		}
 
 		// フィードバックエフェクトにテクスチャ[1]を貼り付けて描画
 		float multidef = m_MultitargetInfo.fMulti - m_MultitargetInfo.fStartMulti;
