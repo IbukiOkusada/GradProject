@@ -26,6 +26,7 @@
 #include "police.h"
 #include "add_police.h"
 #include "police_AI.h"
+#include "manager.h"
 
 //===============================================
 // –¼‘O‹óŠÔ
@@ -696,7 +697,14 @@ void CNetWork::RecvGameStart(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 {
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
 
+	CScene* pScene = CManager::GetInstance()->GetScene();
+
+	if (pScene == nullptr) { return; }
+
+	pScene->SetID(nId);
+	pScene->ChangeTex(pRecvData);
 }
 
 //===================================================
@@ -704,7 +712,7 @@ void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 {
-
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
 }
 
 //===================================================
@@ -712,11 +720,11 @@ void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
 {
-	// ŽŸ‚Ì‰æ–Ê‚É‘JˆÚ
-	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
-	{
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
-	}
+	//// ŽŸ‚Ì‰æ–Ê‚É‘JˆÚ
+	//if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
+	//{
+	//	CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
+	//}
 }
 
 //===================================================

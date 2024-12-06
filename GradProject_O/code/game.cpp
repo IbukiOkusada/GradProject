@@ -56,6 +56,7 @@
 #include "radio.h"
 #include "fog.h"
 #include "inspection_manager.h"
+#include "deltatime.h"
 // ネットワーク
 #include "network.h"
 
@@ -238,6 +239,8 @@ HRESULT CGame::Init(void)
 void CGame::Uninit(void)
 {
    CManager::GetInstance()->GetSound()->Stop();
+
+   CManager::GetInstance()->GetDeltaTime()->SetSlow(1.0f);
 
     m_bEnd = true;
 
