@@ -43,6 +43,7 @@ CPoliceAI::CPoliceAI()
 	m_pSearchTarget = nullptr;
 	m_fSearchTimer = 0.0f;
 	m_nCntThread = 0;
+	bCross = false;
 }
 
 //==========================================================
@@ -115,6 +116,9 @@ void CPoliceAI::Search(void)
 			// 追跡開始処理
 			BeginChase(pPlayer);
 
+			// 接近状態を設定
+			bCross = true;
+
 			// 速度を設定
 			m_pPolice->SetSpeedDest(SECURE_SPEEDDEST);
 			m_pPolice->SetSpeed(m_pPolice->GetSpeed() * SECURE_SPEED);
@@ -136,6 +140,9 @@ void CPoliceAI::Search(void)
 
 			// 追跡開始処理
 			BeginChase(pPlayer);
+
+			// 接近状態を設定
+			bCross = true;
 		}
 		else if (length < CHASE_FAR)
 		{// 遠距離
@@ -159,6 +166,9 @@ void CPoliceAI::Search(void)
 
 			// 追跡状態でなければ抜ける
 			if (!m_pPolice->GetChase()) { continue; }
+
+			// 一度も接近していなければ抜ける
+			if (!bCross) { continue; }
 
 			// 追跡時間を減らす
 			m_pPolice->SetChaseCount(m_pPolice->GetChaseCount() - 1);
@@ -217,6 +227,9 @@ void CPoliceAI::EndChase(void)
 	// 追跡状態を解除
 	m_pPolice->SetChase(false);
 
+	// 接近状態を解除
+	bCross = false;
+
 	// 警戒状態に
 	m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
 
@@ -257,7 +270,7 @@ void CPoliceAI::CheckDamage(CPlayer* pPlayer)
 	if (pPlayer == nullptr) { return; }
 
 	// ライフが一定値以下の時
-	if (pPlayer->GetLife() < 50.0f)
+	if (pPlayer->GetLife() < 80.0f)
 	{
 		m_pPolice->SetChase(true);
 	}
@@ -272,7 +285,7 @@ void CPoliceAI::CheckSmoke(CPlayer* pPlayer)
 	if (pPlayer == nullptr) { return; }
 
 	// ライフが一定値以下の時
-	if (pPlayer->GetLife() < 20.0f)
+	if (pPlayer->GetLife() < 50.0f)
 	{
 		m_pPolice->SetChase(true);
 	}
