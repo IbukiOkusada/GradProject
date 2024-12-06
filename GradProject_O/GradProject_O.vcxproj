@@ -194,6 +194,7 @@
     <ClCompile Include="code\Fog.cpp" />
     <ClCompile Include="code\font.cpp" />
     <ClCompile Include="code\fontChar.cpp" />
+    <ClCompile Include="code\fxmanager.cpp" />
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\gimmick.cpp" />
     <ClCompile Include="code\gimmick_firehydrant.cpp" />
@@ -308,6 +309,7 @@
     <ClInclude Include="code\fog.h" />
     <ClInclude Include="code\font.h" />
     <ClInclude Include="code\fontChar.h" />
+    <ClInclude Include="code\fxmanager.h" />
     <ClInclude Include="code\gimmick.h" />
     <ClInclude Include="code\gimmick_firehydrant.h" />
     <ClInclude Include="code\gimmick_guardrail.h" />
@@ -396,6 +398,12 @@
     <ClInclude Include="code\pred_route.h" />
     <ClInclude Include="code\inspection_manager.h" />
     <ClInclude Include="code\player_result.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="code\shader\draw.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

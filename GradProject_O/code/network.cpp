@@ -614,7 +614,7 @@ void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
 		return;
 	}
 
-	pGoal->SetEnd(nId);
+	pGoal->RecvEnd(nId);
 }
 
 //===================================================
