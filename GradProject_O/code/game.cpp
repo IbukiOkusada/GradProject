@@ -51,6 +51,7 @@
 #include "gimmick_guardrail.h"
 #include "goal_manager.h"
 #include "police_manager.h"
+#include "police_AI_manager.h"
 #include "objectsound.h"
 #include "scrollText2D.h"
 #include "radio.h"
@@ -279,6 +280,7 @@ void CGame::Uninit(void)
     CCarManager::Release();
     CGoalManager::Release();
     CPoliceManager::Release();
+    CPoliceAIManager::Release();
     CInspectionManager::Release();
     CPlayerManager::Release();
 }
@@ -372,6 +374,7 @@ void CGame::Update(void)
         End_Fail();
     }
     CPoliceManager::GetInstance()->Update();
+    CPoliceAIManager::GetInstance()->Update();
     CScene::Update();
     switch (m_GameState)
     {

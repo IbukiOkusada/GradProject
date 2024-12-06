@@ -519,6 +519,9 @@
     <ClCompile Include="code\Fog.cpp">
       <Filter>fog</Filter>
     </ClCompile>
+    <ClCompile Include="code\police_AI_manager.cpp">
+      <Filter>car</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -868,6 +871,9 @@
     </ClInclude>
     <ClInclude Include="code\PoliceTitle.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\police_AI_manager.h">
+      <Filter>car</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
