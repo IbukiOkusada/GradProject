@@ -734,6 +734,22 @@ void CNetWork::CommandTutorialOk(const int nId, const char* pRecvData, CClient* 
 	// フラグオン
 	m_aFlag[nId].bTutorial = true;
 
+	char aRecv[sizeof(int) * 2] = {};
+	int command = NetWork::COMMAND_TUTORIAL_OK;
+	int byte = 0;
+
+	// IDを挿入
+	memcpy(&aRecv[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aRecv[byte], &command, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを送信
+	pClient->SetData(&aRecv[0], byte);
+
+	// 終了確認
 	CommandTutorialEnd(nId, pRecvData, pClient, pNowByte);
 }
 
@@ -744,6 +760,21 @@ void CNetWork::CommandTutorialNo(const int nId, const char* pRecvData, CClient* 
 {
 	// フラグオフ
 	m_aFlag[nId].bTutorial = false;
+
+	char aRecv[sizeof(int) * 2] = {};
+	int command = NetWork::COMMAND_TUTORIAL_NO;
+	int byte = 0;
+
+	// IDを挿入
+	memcpy(&aRecv[byte], &nId, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを挿入
+	memcpy(&aRecv[byte], &command, sizeof(int));
+	byte += sizeof(int);
+
+	// プロトコルを送信
+	pClient->SetData(&aRecv[0], byte);
 }
 
 //==========================================================
