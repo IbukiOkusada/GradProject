@@ -65,6 +65,7 @@ protected:
 	CRoad* m_pRoadTarget;		// 目標地点
 	CRoad::SInfoSearch* m_pSearchTarget;
 	vector<CRoad::SInfoSearch*> m_searchRoad;
+	int m_nCntThread;
 
 private:	// 自分だけがアクセス可能
 

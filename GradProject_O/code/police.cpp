@@ -94,6 +94,13 @@ HRESULT CPolice::Init(void)
 //==========================================================
 void CPolice::Uninit(void)
 {
+	if (m_pPoliceAI != nullptr)
+	{
+		m_pPoliceAI->Uninit();
+		delete m_pPoliceAI;
+		m_pPoliceAI = nullptr;
+	}
+	
 	CCar::Uninit();
 	CPoliceManager::GetInstance()->ListOut(this);
 	SAFE_DELETE(m_pPatrolLamp);

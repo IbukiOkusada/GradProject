@@ -27,7 +27,6 @@
 #include "map_manager.h"
 #include "player_result.h"
 
-
 //==========================================================
 // 定数定義
 //==========================================================
@@ -35,22 +34,30 @@ namespace OBJ
 {
 	const char* CLEAR_TEX_PATH = "data\\TEXTURE\\result_clear.png";
 	const float CLEAR_WIDTH = 250.0f;		// 横幅
-	const float CLEAR_HEIGHT = 70.0f;		// 横幅
+	const float CLEAR_HEIGHT = 70.0f;		// 高さ
 	const D3DXVECTOR3 CLEAR_POS = D3DXVECTOR3(300.0f, 100.0f, 0.0f);
 
 	const char* DELI_TEX_PATH = "data\\TEXTURE\\result_deli.png";
+	const char* DELI_TEX_PATH_MAX = "data\\TEXTURE\\result_deli_max.png";	// 最大評価の時のテクスチャ
 	const float DELI_WIDTH = 120.0f;		// 横幅
 
 	const char* TIME_TEX_PATH = "data\\TEXTURE\\result_time.png";
+	const char* TIME_TEX_PATH_MAX = "data\\TEXTURE\\result_time_max.png";	// 最大評価の時のテクスチャ
 	const float TIME_WIDTH = 150.0f;		// 横幅
 	const float TIME_POS_ADJUST = 30.0f;	// 位置の調整
 
 	const char* LIFE_TEX_PATH = "data\\TEXTURE\\result_life.png";
+	const char* LIFE_TEX_PATH_MAX = "data\\TEXTURE\\result_life_max.png";	// 最大評価の時のテクスチャ
 	const float LIFE_WIDTH = 120.0f;		// 横幅
 
+	const char* EVAL_TEX_PATH = "data\\TEXTURE\\result_eval.png";
+	const char* EVAL_TEX_PATH_MAX = "data\\TEXTURE\\result_eval_max.png";	// 最大評価の時のテクスチャ
+	const float EVAL_WIDTH = 80.0f;			// 横幅
+	const float EVAL_HEIGHT = 40.0f;		// 高さ
+	const D3DXVECTOR3 EVAL_POS = D3DXVECTOR3(300.0f, 600.0f, 0.0f);
 
-	const float HEIGHT = 50.0f;			// 高さ
-	const float INTERVAL_Y = 110.0f;	// 間隔
+	const float HEIGHT = 40.0f;			// 高さ
+	const float INTERVAL_Y = 100.0f;	// 間隔
 	const D3DXVECTOR3 POS = D3DXVECTOR3(300.0f, 240.0f, 0.0f);
 }
 
@@ -72,6 +79,7 @@ namespace PLAYER
 
 namespace
 {
+	const int SCORE_OBJ_MAX = 4;
 	const float ALPHA_ADD = 0.015f;
 	const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 }
@@ -92,6 +100,26 @@ CResult::CResult()
 	m_TimeObj[0] = {};
 	m_LifeObj[0] = {};
 	m_Display = 0;
+
+	for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ; Cnt++)
+	{
+		m_TimeObj[Cnt] = 0.0f;
+	}
+
+	for (int Cnt = 0; Cnt < NUMBER::LIFE_OBJ; Cnt++)
+	{
+		m_LifeObj[Cnt] = 0.0f;
+	}
+
+	for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
+	{
+		m_EvalObj[Cnt] = 0.0f;
+	}
+
+	for (int Cnt = 0; Cnt < 5; Cnt++)
+	{
+		m_RankinScore[Cnt] = 0.0f;
+	}
 }
 
 //===============================================
@@ -108,23 +136,6 @@ CResult::~CResult()
 HRESULT CResult::Init(void)
 {
 
-	//カメラ初期化
-	{
-		CManager::GetInstance()->GetCamera()->SetLength(300.0f);
-		CManager::GetInstance()->GetCamera()->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		CManager::GetInstance()->GetCamera()->SetPositionR(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-		D3DVIEWPORT9 viewport;
-
-		//プレイヤー追従カメラの画面位置設定
-		viewport.X = 0;
-		viewport.Y = 0;
-		viewport.Width = (DWORD)(SCREEN_WIDTH * 1.0f);
-		viewport.Height = (DWORD)(SCREEN_HEIGHT * 1.0f);
-		viewport.MinZ = 0.0f;
-		viewport.MaxZ = 1.0f;
-		CManager::GetInstance()->GetCamera()->SetViewPort(viewport);
-	}
-
 	// マップ読み込み
 	CMapManager::GetInstance()->Load();
 
@@ -137,7 +148,13 @@ HRESULT CResult::Init(void)
 
 	m_nScore = ((float)m_nDeli + m_fTime / 100.0f + m_fLife / 100.0f) * 10.0f;
 
-	for (int nCnt = 0; nCnt < 3; nCnt++)
+	if (m_nScore >= 50.0f)
+	{
+		m_nScore = 50.0f;
+	}
+
+
+	for (int nCnt = 0; nCnt < SCORE_OBJ_MAX; nCnt++)
 	{
 		switch (nCnt)
 		{
@@ -147,7 +164,14 @@ HRESULT CResult::Init(void)
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				7);
 
-			m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::DELI_TEX_PATH));
+			if (m_nDeli >= 3)
+			{
+				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::DELI_TEX_PATH_MAX));
+			}
+			else
+			{
+				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::DELI_TEX_PATH));
+			}
 			m_pScoreObj[nCnt]->SetSize(OBJ::DELI_WIDTH, OBJ::HEIGHT);
 			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
@@ -172,7 +196,14 @@ HRESULT CResult::Init(void)
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				7);
 
-			m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::TIME_TEX_PATH));
+			if (m_fTime >= 100)
+			{
+				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::TIME_TEX_PATH_MAX));
+			}
+			else
+			{
+				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::TIME_TEX_PATH));
+			}
 			m_pScoreObj[nCnt]->SetSize(OBJ::TIME_WIDTH, OBJ::HEIGHT);
 			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
@@ -201,7 +232,14 @@ HRESULT CResult::Init(void)
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				7);
 
-			m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::LIFE_TEX_PATH));
+			if (m_fLife >= 100)
+			{
+				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::LIFE_TEX_PATH_MAX));
+			}
+			else
+			{
+				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::LIFE_TEX_PATH));
+			}
 			m_pScoreObj[nCnt]->SetSize(OBJ::LIFE_WIDTH, OBJ::HEIGHT);
 			m_pScoreObj[nCnt]->SetCol(INIT_COL);
 
@@ -221,12 +259,47 @@ HRESULT CResult::Init(void)
 
 			break;
 
+		case 3:
+
+			// 残り体力の文字のオブジェクト生成
+			m_pScoreObj[nCnt] = CObject2D::Create(D3DXVECTOR3(OBJ::EVAL_POS.x, OBJ::EVAL_POS.y, 0.0f),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				7);
+
+			if (m_nScore >= 5.0f)
+			{
+				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::EVAL_TEX_PATH_MAX));
+			}
+			else
+			{
+				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::EVAL_TEX_PATH));
+			}
+			m_pScoreObj[nCnt]->SetSize(OBJ::EVAL_WIDTH, OBJ::EVAL_HEIGHT);
+			m_pScoreObj[nCnt]->SetCol(INIT_COL);
+
+			// 総合評価のオブジェクト生成
+			for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
+			{
+				m_pEvalNumber[Cnt] = CNumber::Create(D3DXVECTOR3(
+					m_pScoreObj[nCnt]->GetPosition().x + NUMBER::INTERVAL_OBJ * 2.5f + NUMBER::INTERVAL * Cnt,
+					m_pScoreObj[nCnt]->GetPosition().y,
+					0.0f),
+					NUMBER::WIDTH,
+					NUMBER::HEIGHT);
+
+				Calculation(&m_EvalObj[Cnt], m_nScore, Cnt, NUMBER::EVAL_OBJ, CResult::TYPE_EVAL);
+				m_pEvalNumber[Cnt]->SetIdx(m_EvalObj[Cnt]);
+				m_pEvalNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
+			}
+
+			break;
+
 		default:
 			break;
 		}
 	}
 
-	// 届けた数の文字のオブジェクト生成
+	// 失敗or成功のオブジェクト生成
 	m_pObj = CObject2D::Create(D3DXVECTOR3(OBJ::CLEAR_POS.x, OBJ::CLEAR_POS.y, 0.0f),
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		7);
@@ -234,20 +307,8 @@ HRESULT CResult::Init(void)
 	m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::CLEAR_TEX_PATH));
 	m_pObj->SetSize(OBJ::CLEAR_WIDTH, OBJ::CLEAR_HEIGHT);
 
-	//m_nScore = 4.8f * 10.0f;
-
-	// 総合評価のオブジェクト生成
-	for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
-	{
-		m_pEvalNumber[Cnt] = CNumber::Create(D3DXVECTOR3(300.0f + NUMBER::INTERVAL * Cnt, 600.0f, 0.0f),
-			NUMBER::WIDTH,
-			NUMBER::HEIGHT);
-
-		Calculation(&m_EvalObj[Cnt], m_nScore, Cnt, NUMBER::EVAL_OBJ, CResult::TYPE_EVAL);
-		m_pEvalNumber[Cnt]->SetIdx(m_EvalObj[Cnt]);
-		//m_pEvalNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
-	}
-
+	//SaveScore();
+	RoadScore();
 
 	//CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT);
 
@@ -259,7 +320,13 @@ HRESULT CResult::Init(void)
 //===============================================
 void CResult::Uninit(void)
 {
-	for (int Cnt = 0; Cnt < 3; Cnt++)
+	if (m_pObj != NULL)
+	{
+		m_pObj->Uninit();
+		m_pObj = NULL;
+	}
+
+	for (int Cnt = 0; Cnt < SCORE_OBJ_MAX; Cnt++)
 	{
 		if (m_pScoreObj[Cnt] != NULL)
 		{
@@ -274,7 +341,7 @@ void CResult::Uninit(void)
 		m_pDeliNumber = NULL;
 	}
 
-	for (int Cnt = 0; Cnt < 3; Cnt++)
+	for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ; Cnt++)
 	{
 		if (m_pTimeNumber[Cnt] != NULL)
 		{
@@ -283,12 +350,21 @@ void CResult::Uninit(void)
 		}
 	}
 
-	for (int Cnt = 0; Cnt < 3; Cnt++)
+	for (int Cnt = 0; Cnt < NUMBER::LIFE_OBJ; Cnt++)
 	{
 		if (m_pLifeNumber[Cnt] != NULL)
 		{
 			m_pLifeNumber[Cnt]->Uninit();
 			m_pLifeNumber[Cnt] = NULL;
+		}
+	}
+
+	for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
+	{
+		if (m_pEvalNumber[Cnt] != NULL)
+		{
+			m_pEvalNumber[Cnt]->Uninit();
+			m_pEvalNumber[Cnt] = NULL;
 		}
 	}
 
@@ -317,52 +393,7 @@ void CResult::Update(void)
 
 	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
 	{
-		D3DXCOLOR col;
-
-		switch (m_Display)
-		{
-		case 0:
-			col = m_pScoreObj[m_Display]->GetCol();
-
-			col.a += ALPHA_ADD;
-			m_pScoreObj[m_Display]->SetCol(col);
-			m_pDeliNumber->GetObject2D()->SetCol(col);
-
-			AlphaJudge(col.a);
-
-			break;
-
-		case 1:
-			col = m_pScoreObj[m_Display]->GetCol();
-
-			col.a += ALPHA_ADD;
-			m_pScoreObj[m_Display]->SetCol(col);
-			for (int Cnt = 0; Cnt < 3; Cnt++)
-			{
-				m_pTimeNumber[Cnt]->GetObject2D()->SetCol(col);
-			}
-
-			AlphaJudge(col.a);
-
-			break;
-
-		case 2:
-			col = m_pScoreObj[m_Display]->GetCol();
-
-			col.a += ALPHA_ADD;
-			m_pScoreObj[m_Display]->SetCol(col);
-			for (int Cnt = 0; Cnt < 3; Cnt++)
-			{
-				m_pLifeNumber[Cnt]->GetObject2D()->SetCol(col);
-			}
-
-			AlphaJudge(col.a);
-
-			break;
-
-		default:
-			break;
-		}
+		Display(m_Display);
 	}
 
 	CScene::Update();
@@ -470,4 +501,106 @@ void CResult::AlphaJudge(float Alpha)
 	{
 		m_Display++;
 	}
+}
+
+//===============================================
+// 表示処理
+//===============================================
+void CResult::Display(int nDisplay)
+{
+	D3DXCOLOR col;
+
+	if (nDisplay >= SCORE_OBJ_MAX)
+	{
+		return;
+	}
+
+	else
+	{
+		col = m_pScoreObj[nDisplay]->GetCol();
+
+		col.a += ALPHA_ADD;
+		m_pScoreObj[nDisplay]->SetCol(col);
+	}
+
+	switch (nDisplay)
+	{
+	case 0:
+		m_pDeliNumber->GetObject2D()->SetCol(col);
+
+		break;
+
+	case 1:
+		for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ; Cnt++)
+		{
+			m_pTimeNumber[Cnt]->GetObject2D()->SetCol(col);
+		}
+
+		break;
+
+	case 2:
+		for (int Cnt = 0; Cnt < NUMBER::LIFE_OBJ; Cnt++)
+		{
+			m_pLifeNumber[Cnt]->GetObject2D()->SetCol(col);
+		}
+
+		break;
+
+	case 3:
+		for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
+		{
+			m_pEvalNumber[Cnt]->GetObject2D()->SetCol(col);
+		}
+
+		break;
+
+	default:
+		break;
+	}
+
+
+	AlphaJudge(col.a);
+}
+
+//===============================================
+// ランキングスコアのロード
+//===============================================
+void CResult::RoadScore()
+{
+	std::ifstream pFile("data\\FILE\\map\\ranking.bin", std::ios::binary);
+
+	if (!pFile.is_open())
+	{
+		return;
+	}
+
+	if (pFile)
+	{
+		pFile.read(reinterpret_cast<char*>(&m_RankinScore), sizeof(m_RankinScore) * 5);
+	}
+
+	// ファイルを閉じる
+	pFile.close();
+}
+
+//===============================================
+// ランキングスコアのセーブ
+//===============================================
+void CResult::SaveScore()
+{
+	// ファイルを開く
+	std::ofstream File("data\\FILE\\map\\ranking.bin", std::ios::binary);
+	
+	if (!File.is_open()) 
+	{
+		return;
+	}
+
+	if (File)
+	{
+		File.write(reinterpret_cast<char*>(&m_RankinScore), sizeof(m_RankinScore) * 5);
+	}
+
+	// ファイルを閉じる
+	File.close();
 }
