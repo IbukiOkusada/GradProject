@@ -304,12 +304,6 @@ void CPoliceAI::Chase(void)
 			// マルチスレッド
 			std::thread th(&CPoliceAI::ChaseAStar, this);
 			th.detach();
-
-			// リストが空でなければ移動先設定
-			if (!m_searchRoad.empty())
-			{
-				m_pSearchTarget = m_searchRoad.front();
-			}
 		}
 		else
 		{
@@ -333,6 +327,12 @@ void CPoliceAI::ChaseAStar(void)
 
 	// 経路探索
 	m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
+
+	// リストが空でなければ移動先設定
+	if (!m_searchRoad.empty())
+	{
+		m_pSearchTarget = m_searchRoad.front();
+	}
 
 	m_nCntThread--;
 }
@@ -407,7 +407,7 @@ void CPoliceAI::ReachRoad(void)
 		D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
 		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
 		float length = D3DXVec3Length(&(posRoad - posPolice));
-		if (length < 500.0f)
+		if (length < 800.0f)
 		{
 			m_pSearchTarget = m_pSearchTarget->pChild;
 		}
@@ -480,6 +480,12 @@ void CPoliceAIElite::ChaseAStar(void)
 
 	// 経路探索
 	m_searchRoad = AStar::AStarPoliceDetour(m_pRoadStart, m_pRoadRelay, m_pRoadTarget);
+
+	// リストが空でなければ移動先設定
+	if (!m_searchRoad.empty())
+	{
+		m_pSearchTarget = m_searchRoad.front();
+	}
 
 	m_nCntThread--;
 }
