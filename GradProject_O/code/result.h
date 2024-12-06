@@ -60,7 +60,11 @@ private:
 	};
 
 	void Calculation(int* Obj, float Score, int Cnt, int ObjMax, TYPE_OBJ Type);
-	void AlphaJudge(float Alpha);
+	void AlphaJudge(float Alpha);	// アルファ値の判定
+	void Display(int nDisplay);		// 表示処理
+	void RoadScore();
+	void SaveScore();
+
 
 	// メンバ変数
 	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
@@ -69,8 +73,8 @@ private:
 	CObject2D *m_pObjClear;		// clearしたかどうか
 	CPlayerResult* m_pPlayer;	// リザルトプレイヤーのポインタ
 
-	CObject2D* m_pObj;			// オブジェクト
-	CObject2D* m_pScoreObj[3];	// 各スコアの文字のオブジェクト
+	CObject2D* m_pObj;			// 失敗or成功のオブジェクト
+	CObject2D* m_pScoreObj[4];	// 各スコアの文字のオブジェクト
 	CNumber* m_pDeliNumber;		// 届けた数のオブジェクト
 	CNumber* m_pTimeNumber[3];	// 残りタイムのオブジェクト
 	CNumber* m_pLifeNumber[3];	// 残り体力のオブジェクト
@@ -85,6 +89,8 @@ private:
 	int m_LifeObj[3];
 	int m_EvalObj[2];
 	int m_Display;
+
+	float m_RankinScore[5];
 };
 
 #endif

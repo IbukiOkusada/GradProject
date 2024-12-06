@@ -397,7 +397,6 @@ void CManager::Draw(void)
 {
 	if (m_pScene != nullptr)
 	{
-		
 		m_pScene->Draw();
 	}
 }

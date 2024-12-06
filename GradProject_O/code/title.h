@@ -124,7 +124,7 @@ private:
 	void MoveP_E(void);
 	void StateP_E(void);
 	void InitingP_E(void);
-	void ColChange(CObject2D *pObj2D);
+	void ColChange(CObject2D *pObj2D,const int nCntMax);
 	void MovingLogo(void);
 	void BlackCoverM(void);
 	void SkipMovement(void);

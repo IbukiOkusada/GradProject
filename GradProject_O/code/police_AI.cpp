@@ -12,6 +12,7 @@
 #include "player_manager.h"
 #include "police.h"
 #include "police_manager.h"
+#include "police_AI_manager.h"
 #include "deltatime.h"
 #include "a_star.h"
 #include "pred_route.h"
@@ -41,6 +42,8 @@ CPoliceAI::CPoliceAI()
 	m_pRoadTarget = nullptr;
 	m_pSearchTarget = nullptr;
 	m_fSearchTimer = 0.0f;
+	m_nCntThread = 0;
+	bCross = false;
 }
 
 //==========================================================
@@ -56,6 +59,8 @@ CPoliceAI::~CPoliceAI()
 //==========================================================
 HRESULT CPoliceAI::Init(void)
 {
+	CPoliceAIManager::GetInstance()->ListIn(this);
+
 	return S_OK;
 }
 
@@ -64,7 +69,8 @@ HRESULT CPoliceAI::Init(void)
 //==========================================================
 void CPoliceAI::Uninit(void)
 {
-	CDeltaTime::GetInstance()->GetDeltaTime();
+	while (m_nCntThread == 1) {}
+	CPoliceAIManager::GetInstance()->ListOut(this);
 }
 
 //==========================================================
@@ -110,6 +116,9 @@ void CPoliceAI::Search(void)
 			// 追跡開始処理
 			BeginChase(pPlayer);
 
+			// 接近状態を設定
+			bCross = true;
+
 			// 速度を設定
 			m_pPolice->SetSpeedDest(SECURE_SPEEDDEST);
 			m_pPolice->SetSpeed(m_pPolice->GetSpeed() * SECURE_SPEED);
@@ -131,6 +140,9 @@ void CPoliceAI::Search(void)
 
 			// 追跡開始処理
 			BeginChase(pPlayer);
+
+			// 接近状態を設定
+			bCross = true;
 		}
 		else if (length < CHASE_FAR)
 		{// 遠距離
@@ -154,6 +166,9 @@ void CPoliceAI::Search(void)
 
 			// 追跡状態でなければ抜ける
 			if (!m_pPolice->GetChase()) { continue; }
+
+			// 一度も接近していなければ抜ける
+			if (!bCross) { continue; }
 
 			// 追跡時間を減らす
 			m_pPolice->SetChaseCount(m_pPolice->GetChaseCount() - 1);
@@ -212,6 +227,9 @@ void CPoliceAI::EndChase(void)
 	// 追跡状態を解除
 	m_pPolice->SetChase(false);
 
+	// 接近状態を解除
+	bCross = false;
+
 	// 警戒状態に
 	m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
 
@@ -252,7 +270,7 @@ void CPoliceAI::CheckDamage(CPlayer* pPlayer)
 	if (pPlayer == nullptr) { return; }
 
 	// ライフが一定値以下の時
-	if (pPlayer->GetLife() < 50.0f)
+	if (pPlayer->GetLife() < 80.0f)
 	{
 		m_pPolice->SetChase(true);
 	}
@@ -267,7 +285,7 @@ void CPoliceAI::CheckSmoke(CPlayer* pPlayer)
 	if (pPlayer == nullptr) { return; }
 
 	// ライフが一定値以下の時
-	if (pPlayer->GetLife() < 20.0f)
+	if (pPlayer->GetLife() < 50.0f)
 	{
 		m_pPolice->SetChase(true);
 	}
@@ -297,17 +315,16 @@ void CPoliceAI::Chase(void)
 	// 一定時間ごともしくはターゲットが存在しない時
 	if (m_fSearchTimer > 3.0f || m_pSearchTarget == nullptr)
 	{
-		// 現在地と目的地が別の時
-		if (m_pRoadStart != m_pRoadTarget || m_pRoadStart == nullptr || m_pRoadTarget == nullptr)
+		// リストが空でなければ移動先設定
+		if (!m_searchRoad.empty())
 		{
-			// マルチスレッド
-			std::thread th(&CPoliceAI::ChaseAStar, this);
-			th.detach();
+			m_pSearchTarget = m_searchRoad.front();
 		}
 		else
 		{
 			m_pSearchTarget = nullptr;
 		}
+		
 		m_fSearchTimer = 0.0f;
 	}
 
@@ -322,14 +339,20 @@ void CPoliceAI::Chase(void)
 //==========================================================
 void CPoliceAI::ChaseAStar(void)
 {
-	// 経路探索
-	m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
+	m_nCntThread = 1;
 
-	// リストが空でなければ移動先設定
-	if (!m_searchRoad.empty())
+	// 現在地と目的地が別の時
+	if (m_pRoadStart != m_pRoadTarget || m_pRoadStart == nullptr || m_pRoadTarget == nullptr)
 	{
-		m_pSearchTarget = m_searchRoad.front();
+		// 経路探索
+		m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
 	}
+	else
+	{
+		m_searchRoad.clear();
+	}
+	
+	m_nCntThread--;
 }
 
 //==========================================================
@@ -402,7 +425,7 @@ void CPoliceAI::ReachRoad(void)
 		D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
 		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
 		float length = D3DXVec3Length(&(posRoad - posPolice));
-		if (length < 500.0f)
+		if (length < 1500.0f)
 		{
 			m_pSearchTarget = m_pSearchTarget->pChild;
 		}
@@ -414,6 +437,7 @@ void CPoliceAI::ReachRoad(void)
 //==========================================================
 HRESULT CPoliceAINomal::Init(void)
 {
+	CPoliceAI::Init();
 	return S_OK;
 }
 
@@ -442,6 +466,7 @@ void CPoliceAINomal::SelectRoad(void)
 //==========================================================
 HRESULT CPoliceAIElite::Init(void)
 {
+	CPoliceAI::Init();
 	return S_OK;
 }
 
@@ -471,14 +496,20 @@ void CPoliceAIElite::SelectRoad(void)
 //==========================================================
 void CPoliceAIElite::ChaseAStar(void)
 {
-	// 経路探索
-	m_searchRoad = AStar::AStarPoliceDetour(m_pRoadStart, m_pRoadRelay, m_pRoadTarget);
+	m_nCntThread = 1;
 
-	// リストが空でなければ移動先設定
-	if (!m_searchRoad.empty())
+	// 現在地と目的地が別の時
+	if (m_pRoadStart != m_pRoadTarget || m_pRoadStart == nullptr || m_pRoadTarget == nullptr)
 	{
-		m_pSearchTarget = m_searchRoad.front();
+		// 経路探索
+		m_searchRoad = AStar::AStarPoliceDetour(m_pRoadStart, m_pRoadRelay, m_pRoadTarget);
 	}
+	else
+	{
+		m_searchRoad.clear();
+	}
+
+	m_nCntThread--;
 }
 
 //==========================================================
@@ -486,6 +517,7 @@ void CPoliceAIElite::ChaseAStar(void)
 //==========================================================
 HRESULT CPoliceAIGentle::Init(void)
 {
+	CPoliceAI::Init();
 	return S_OK;
 }
 
