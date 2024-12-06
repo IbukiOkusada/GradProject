@@ -703,8 +703,11 @@ void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 
 	if (pScene == nullptr) { return; }
 
+	// IDŽæ“¾
 	pScene->SetID(nId);
-	pScene->ChangeTex(pRecvData);
+
+	// €”õŠ®—¹ƒtƒ‰ƒO‚ð—§‚Ä‚é
+	pScene->ChangeFlag(true);
 }
 
 //===================================================
@@ -713,6 +716,16 @@ void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 {
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+
+	CScene* pScene = CManager::GetInstance()->GetScene();
+
+	if (pScene == nullptr) { return; }
+
+	// IDŽæ“¾
+	pScene->SetID(nId);
+
+	// €”õŠ®—¹ƒtƒ‰ƒO‚ðÜ‚é
+	pScene->ChangeFlag(false);
 }
 
 //===================================================
@@ -720,11 +733,11 @@ void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
 {
-	//// ŽŸ‚Ì‰æ–Ê‚É‘JˆÚ
-	//if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
-	//{
-	//	CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
-	//}
+	// ŽŸ‚Ì‰æ–Ê‚É‘JˆÚ
+	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
+	{
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
+	}
 }
 
 //===================================================

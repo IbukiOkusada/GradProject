@@ -47,7 +47,7 @@ public:
 	void Draw(void);
 
 	void SetID(const int id) override;
-	void ChangeTex(const char* path) override;
+	void ChangeFlag(bool value) override;
 
 private:
 
@@ -65,6 +65,7 @@ private:
 	int m_nID;
 
 	bool m_IsFinish;   // チュートリアルが終了しているかどうか
+	bool m_bSetReady;  // 準備が完了しているかどうか
 };
 
 #endif
