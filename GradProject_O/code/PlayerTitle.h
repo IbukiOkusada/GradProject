@@ -70,6 +70,14 @@ public:
 	//ゴール情報を取得
 	inline CTitleGoal* GetTitleGoal(void) { return m_pTitleGoal; }
 
+	//サイレン情報設定
+	inline void SetS(const bool bStart)
+	{
+		//開始なら再生、していないなら止める
+		if (bStart) { m_pSound->Start(); }
+		else { m_pSound->Stop(); }
+	}
+
 private:
 
 	void PoliceRotSet(void);
@@ -79,14 +87,17 @@ private:
 	int m_nNumDestNext;					//次の目的地の番号
 	float m_fBDustValue;				//煙の大きさの値
 	float m_fDestrot;					//プレイヤー自身の向きの目的地
+	float m_fMoveRot;					//回転速度
 	float m_fDestPoliceRot;				//警察の向きの目的地
 	bool m_bNextMove;					//次の動きに移行するときになったら
 	bool m_bMoved;
+	bool m_bFirst;						//最初の位置
 	STATE m_eState;						//デバッグ用のステート
 	bool m_bReached;					//着いたかどうか
 	CTitleBaggage* m_pTitleBaggage;		//タイトル用の荷物
 	CTitleGoal *m_pTitleGoal;			//タイトル用のゴール
 
+	
 
 };
 

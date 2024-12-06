@@ -62,7 +62,7 @@ namespace
 {
 	const float RECV_INER = (0.65f);		// 受信したデータの慣性
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
-	const float DEATH_INTERVAL = (120.0f);	// 死亡インターバル
+	const float DEATH_INTERVAL = (180.0f);	// 死亡インターバル
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
 	const float CAMROT_INER = (0.2f);			// カメラ慣性
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
@@ -862,6 +862,8 @@ void CPlayer::Damage(float fDamage)
 		m_fLife = 0.0f;
 		
 		m_pDamageEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\explosion.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, false, false);
+		m_Info.state = STATE::STATE_DEATH;
+		m_Info.fStateCounter = DEATH_INTERVAL;
 	}
 	else if (m_fLife <= LIFE * 0.5f)
 	{
@@ -901,14 +903,15 @@ void CPlayer::Nitro()
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	if (m_fNitroCool==0.0f&& (pInputKey->GetTrigger(DIK_SPACE)|| pInputPad->GetTrigger(CInputPad::BUTTON_B,0)))
 	{
- 		Damage(LIFE * 0.1f);
+		m_Info.state = STATE::STATE_NITRO;
+		m_Info.fStateCounter = NITRO_COUNTER;
+		m_fNitroCool = NITRO_COOL;
+
+		Damage(LIFE * 0.1f);
 		if (m_fLife > 0.0f)
 		{
 			CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.3f, 1.035f, 2.0f);
 		}
-		m_Info.state = STATE::STATE_NITRO;
-		m_Info.fStateCounter = NITRO_COUNTER;
-		m_fNitroCool = NITRO_COOL;
 	}
 	if (m_Info.state == STATE::STATE_NITRO)
 	{
@@ -1027,8 +1030,18 @@ void CPlayer::StateSet(void)
 
 		if (m_Info.fStateCounter <= 0.0f)
 		{
-			m_Info.fStateCounter = DAMAGE_APPEAR;
-			m_Info.state = STATE_SPAWN;
+			m_Info.fStateCounter = SPAWN_INTERVAL;
+			m_Info.state = STATE_APPEAR;
+			Respawn();
+		}
+		else
+		{
+			float diff = m_Info.fStateCounter / DEATH_INTERVAL;
+
+			if (m_pObj != nullptr)
+			{
+				m_pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, diff));
+			}
 		}
 	}
 		break;
@@ -1041,6 +1054,7 @@ void CPlayer::StateSet(void)
 		{
 			m_Info.fStateCounter = SPAWN_INTERVAL;
 			m_Info.state = STATE_APPEAR;
+			Respawn();
 		}
 	}
 		break;
@@ -1343,5 +1357,27 @@ void CPlayer::SendData()
 				pNet->SendGameStartOk();
 			}
 		}
+	}
+}
+
+//===============================================
+// リスポーン
+//===============================================
+void CPlayer::Respawn()
+{
+	m_Info.rot = VECTOR3_ZERO;
+	m_Info.pos = VECTOR3_ZERO;
+	m_Info.move = VECTOR3_ZERO;
+	m_fBrake = 0.0f;
+	m_fEngine = 0.0f;
+	m_fTurnSpeed = 0.0f;
+	m_fHandle = 0.0f;
+
+	m_fLife = m_fLifeOrigin * 0.5f;
+	Damage(0.0f);
+
+	if (m_pObj != nullptr)
+	{
+		m_pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 }

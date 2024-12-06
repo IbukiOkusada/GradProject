@@ -173,6 +173,7 @@ protected:	// 自分だけがアクセス可能
 	void GetBestPath();
 	void DEBUGKEY();
 	void SendData();
+	void Respawn();
 
 	// 受信用メンバ関数
 	void RecvInerSet();
