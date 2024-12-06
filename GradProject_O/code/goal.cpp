@@ -41,7 +41,8 @@ CGoal::CGoal(int nId)
 	m_People = SPeople();
 	m_Info = SInfo();
 	m_pBaggage = nullptr;
-	
+	m_bRecvEnd = false;
+	m_RecvId = -1;
 	CGoalManager::GetInstance()->ListIn(this);
 }
 
@@ -132,6 +133,15 @@ void CGoal::Update(void)
 	{
 		m_People.pChara->Update();
 	}
+	else
+	{
+		return;
+	}
+
+	if (!CBaggage::GetThrowList()->Empty())
+	{
+		return;
+	}
 
 	if (!m_bEnd)
 	{
@@ -177,6 +187,10 @@ void CGoal::Update(void)
 				mgr->GoalCreate(mgr->GetNextIdx());
 			}
 		}
+		else if (m_bRecvEnd)
+		{
+			SetEnd(m_RecvId);
+		}
 	}
 	else
 	{
@@ -219,7 +233,7 @@ bool CGoal::CheckSpeed(int nId)
 //==========================================================
 // ê∂ê¨
 //==========================================================
-CGoal* CGoal::Create(D3DXVECTOR3 pos, float fRange, float fLimit, int nId)
+CGoal* CGoal::Create(const D3DXVECTOR3& pos, float fRange, float fLimit, int nId)
 {
 	CGoal* pGoal = nullptr;
 
