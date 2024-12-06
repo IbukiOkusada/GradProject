@@ -226,7 +226,7 @@ HRESULT CGame::Init(void)
     }
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
+    //CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
     pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);
     return S_OK;
@@ -428,7 +428,7 @@ CFileLoad *CGame::GetFileLoad(void)
 //===================================================
 void CGame::StartIntro(void)
 {
-    if (m_nStartCameraCount >= 4)
+  /*  if (m_nStartCameraCount >= 4)
         return;
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
@@ -442,7 +442,7 @@ void CGame::StartIntro(void)
     {
         CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, false);
         m_nStartCameraCount++;
-    }
+    }*/
 }
 
 //===================================================
