@@ -51,11 +51,13 @@
 #include "gimmick_guardrail.h"
 #include "goal_manager.h"
 #include "police_manager.h"
+#include "police_AI_manager.h"
 #include "objectsound.h"
 #include "scrollText2D.h"
 #include "radio.h"
 #include "fog.h"
 #include "inspection_manager.h"
+#include "deltatime.h"
 // ネットワーク
 #include "network.h"
 
@@ -225,8 +227,10 @@ HRESULT CGame::Init(void)
         m_pGameTimer = CTimer::Create();
     }
 
+#if NDEBUG
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
     CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
+#endif  
     pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);
     return S_OK;
@@ -238,6 +242,8 @@ HRESULT CGame::Init(void)
 void CGame::Uninit(void)
 {
    CManager::GetInstance()->GetSound()->Stop();
+
+   CManager::GetInstance()->GetDeltaTime()->SetSlow(1.0f);
 
     m_bEnd = true;
 
@@ -277,6 +283,7 @@ void CGame::Uninit(void)
     CCarManager::Release();
     CGoalManager::Release();
     CPoliceManager::Release();
+    CPoliceAIManager::Release();
     CInspectionManager::Release();
     CPlayerManager::Release();
 }
@@ -370,6 +377,7 @@ void CGame::Update(void)
         End_Fail();
     }
     CPoliceManager::GetInstance()->Update();
+    CPoliceAIManager::GetInstance()->Update();
     CScene::Update();
     switch (m_GameState)
     {
@@ -428,6 +436,7 @@ CFileLoad *CGame::GetFileLoad(void)
 //===================================================
 void CGame::StartIntro(void)
 {
+#if NDEBUG
     if (m_nStartCameraCount >= 4)
         return;
 
@@ -443,6 +452,7 @@ void CGame::StartIntro(void)
         CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, false);
         m_nStartCameraCount++;
     }
+#endif
 }
 
 //===================================================
@@ -523,7 +533,7 @@ void CGame::CreateMultiPlayer(void)
 //===================================================
 void CGame::CreatePolice()
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 1; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(-6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());

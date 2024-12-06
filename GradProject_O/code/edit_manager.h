@@ -23,6 +23,7 @@ public:
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
+	CEdit::TYPE GetSelectType(void) { return m_SelectType; }
 
 	// ƒVƒ“ƒOƒ‹ƒgƒ“
 	static CEditManager* Create(void);

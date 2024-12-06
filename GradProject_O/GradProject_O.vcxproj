@@ -194,6 +194,7 @@
     <ClCompile Include="code\Fog.cpp" />
     <ClCompile Include="code\font.cpp" />
     <ClCompile Include="code\fontChar.cpp" />
+    <ClCompile Include="code\fxmanager.cpp" />
     <ClCompile Include="code\game.cpp" />
     <ClCompile Include="code\gimmick.cpp" />
     <ClCompile Include="code\gimmick_firehydrant.cpp" />
@@ -240,6 +241,7 @@
     <ClCompile Include="code\police.cpp" />
     <ClCompile Include="code\PoliceTitle.cpp" />
     <ClCompile Include="code\police_AI.cpp" />
+    <ClCompile Include="code\police_AI_manager.cpp" />
     <ClCompile Include="code\police_manager.cpp" />
     <ClCompile Include="code\precompile.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -307,6 +309,7 @@
     <ClInclude Include="code\fog.h" />
     <ClInclude Include="code\font.h" />
     <ClInclude Include="code\fontChar.h" />
+    <ClInclude Include="code\fxmanager.h" />
     <ClInclude Include="code\gimmick.h" />
     <ClInclude Include="code\gimmick_firehydrant.h" />
     <ClInclude Include="code\gimmick_guardrail.h" />
@@ -357,6 +360,7 @@
     <ClInclude Include="code\police.h" />
     <ClInclude Include="code\PoliceTitle.h" />
     <ClInclude Include="code\police_AI.h" />
+    <ClInclude Include="code\police_AI_manager.h" />
     <ClInclude Include="code\police_manager.h" />
     <ClInclude Include="code\precompile.h" />
     <ClInclude Include="code\protocol_online.h" />
@@ -394,6 +398,12 @@
     <ClInclude Include="code\pred_route.h" />
     <ClInclude Include="code\inspection_manager.h" />
     <ClInclude Include="code\player_result.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="code\shader\draw.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
