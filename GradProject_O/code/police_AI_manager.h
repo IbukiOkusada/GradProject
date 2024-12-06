@@ -39,7 +39,7 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	void RouteSearch(void);
+	void Search(void);
 
 	// メンバ変数
 	Cmaplist<CPoliceAI*> m_maplist;

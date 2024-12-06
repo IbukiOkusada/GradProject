@@ -91,7 +91,7 @@ void CPoliceAI::Search(void)
 		D3DXVECTOR3 vecPlayer = pPlayer->GetPosition() - m_pPolice->GetPosition();		// ƒvƒŒƒCƒ„[‚ÆŒxŽ@ŠÔ‚ÌƒxƒNƒgƒ‹ŒvŽZ
 		float length = D3DXVec3Length(&vecPlayer);										// ‹——£ŒvŽZ
 		float rotVec = atan2f(vecPlayer.x, vecPlayer.z);								// Šp“xŒvŽZ
-		float rotView =m_pPolice->GetRotation().y - rotVec;								// Œü‚¢‚Ä‚é•ûŒü‚Æ‚Ì·‚ðŒvŽZ
+		float rotView = m_pPolice->GetRotation().y - rotVec;								// Œü‚¢‚Ä‚é•ûŒü‚Æ‚Ì·‚ðŒvŽZ
 
 		// Šp“x•â³
 		if (rotView > D3DX_PI)
@@ -533,7 +533,7 @@ void CPoliceAIGentle::SelectRoad(void)
 	CPlayer* pPlayer = m_pPolice->GetPlayer();
 	if (pPlayer != nullptr)
 	{
-		m_pRoadTarget = pPlayer->GetPredRoute()->GetPredRoad();
+		m_pRoadTarget = pPlayer->GetRoad();
 	}
 	else
 	{

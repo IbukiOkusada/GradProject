@@ -69,7 +69,7 @@ void CPoliceAIManager::Uninit(void)
 void CPoliceAIManager::Update(void)
 {
 	// マルチスレッド
-	std::thread th(&CPoliceAIManager::RouteSearch, this);
+	std::thread th(&CPoliceAIManager::Search, this);
 	th.detach();
 }
 
@@ -118,10 +118,14 @@ void CPoliceAIManager::ListOut(CPoliceAI* pPoliceAI)
 //==========================================================
 // AIの経路探索処理
 //==========================================================
-void  CPoliceAIManager::RouteSearch(void)
+void  CPoliceAIManager::Search(void)
 {
 	for (const auto& pair : *m_maplist.GetList())
 	{
+		// プレイヤー捜索
+		pair.second->Search();
+
+		// プレイヤーへの経路探索
 		pair.second->ChaseAStar();
 	}
 }

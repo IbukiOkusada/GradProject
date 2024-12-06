@@ -176,8 +176,6 @@ void CPolice::MoveRoad()
 	if (pRoadTarget == nullptr && IsActive())
 		SearchRoad();
 
-	SearchPlayer();
-
 	if (m_Info.bChase)
 	{
 		m_pSiren->Start();
@@ -247,14 +245,7 @@ void CPolice::ReachRoad()
 
 		pRoadNext = pRoadTarget->GetConnectRoad((CRoad::DIRECTION)roadPoint);
 
-		if (pRoadTarget->GetType() == CRoad::TYPE_STOP)
-		{
-
-		}
-		else
-		{
-			if (pRoadNext == pRoadStart) { continue; }
-		}
+		if (pRoadNext == pRoadStart && pRoadTarget->GetType() != CRoad::TYPE_STOP) { continue; }
 
 		if (pRoadNext != nullptr) { break; }
 	}
