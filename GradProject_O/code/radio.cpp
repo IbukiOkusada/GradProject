@@ -14,33 +14,33 @@ namespace
 	std::vector<std::vector<const char*>> Path =
 	{
 		{//リラックス
-			"data\\BGM\\morning_jazz.wav",
+			"data\\BGM\\jazz.wav",
 			"data\\BGM\\moment.wav",
 		},
 
 		{//メタル
-			"data\\BGM\\power_is_you.wav",
-			"data\\BGM\\rammstein_style.wav",
+			"data\\BGM\\power.wav",
+			"data\\BGM\\style.wav",
 		},
 
 		{//テクノ
 			"data\\BGM\\mantra.wav",
-			"data\\BGM\\theme_90s.wav",
+			"data\\BGM\\theme.wav",
 		},
 
 		{//ポップ
-			"data\\BGM\\maou_14_shining_star.wav",
+			"data\\BGM\\shiningstar.wav",
 			"data\\BGM\\typhoon.wav",
 		},
 
 		{//忍び
-			"data\\BGM\\AcceleHeartLove.wav",
-			"data\\BGM\\BGM_ShinobiDrift.wav",
+			"data\\BGM\\Accele.wav",
+			"data\\BGM\\ShinobiDrift.wav",
 		},
 
 		{//クラシック
 			"data\\BGM\\gline.wav",
-			"data\\BGM\\nocturne-op9-2_1.wav",
+			"data\\BGM\\nocturne.wav",
 		},
 	};
 	const char* BUTTON_SE = { "data\\SE\\switch_04_button.wav" };
