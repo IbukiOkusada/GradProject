@@ -81,6 +81,7 @@ CEntry::CEntry()
 	m_ppCamera = nullptr;
     m_ppObjX = nullptr;
     m_IsFinish = false;
+    m_bSetReady = false;
     m_nID = -1;
 
     for (int i = 0; i < MAX; i++)
@@ -270,6 +271,8 @@ void CEntry::Update(void)
     // プレイヤー参加取り消し処理
     DecreasePlayer();
 
+    ReadyUp();
+
     // シーンの更新
     CScene::Update();
 
@@ -298,16 +301,20 @@ void CEntry::Draw(void)
     CScene::Draw();
 }
 
+//===============================================
+// 準備完了したプレイヤーの番号を受け取る
+//===============================================
 void CEntry::SetID(const int id)
 {
     m_nID = id;
 }
 
-void CEntry::ChangeTex(const char* path)
+//===============================================
+// 準備完了しているかどうか受け取る
+//===============================================
+void CEntry::ChangeFlag(bool value)
 {
-    if (m_pReady[m_nID] == nullptr) { return; }
-
-    m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(path));
+    m_bSetReady = value;
 }
 
 //===============================================
@@ -400,7 +407,7 @@ void CEntry::AddPlayer(void)
         }
     }
 
-    if (pKey->GetTrigger(DIK_RETURN)/* || pPad->GetTrigger(CInputPad::BUTTON_A, 0)*/)
+    if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
         m_IsFinish ^= true;
 
@@ -408,8 +415,6 @@ void CEntry::AddPlayer(void)
         {// チュートリアルが終了している
 
             net->SendTutorialOk();
-
-            ReadyUp();
         }
         else
         {
@@ -513,14 +518,20 @@ void CEntry::ReadyUp(void)
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
 
-    for (int i = 0; i < NetWork::MAX_CONNECT; i++)
-    {
-        auto player = mgr->GetPlayer(i);
+    // 使用されていなかったら処理を抜ける
+    if (m_pReady[m_nID] == nullptr || m_nID == -1) { return; }
 
-        // 人数が多い
-        if (m_pReady[i] != nullptr && player != nullptr && !net->GetConnect(i))
-        {
-            m_pReady[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
-        }
+    if (m_bSetReady)
+    {// 準備完了できてる
+
+        m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
     }
+
+    if (!m_bSetReady)
+    {// 準備完了できてない
+
+        m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
+    }
+
+    m_nID = -1;
 }
