@@ -178,6 +178,7 @@ void CCamera::SetCamera(void)
 								10.0f,
 								40000.0f);
 	D3DXMatrixOrthoLH(&m_mtxProjection, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f);
+
 	//プロジェクションマトリックスの設定
 	pDevice->SetTransform(D3DTS_PROJECTION, &m_mtxProjection);
 

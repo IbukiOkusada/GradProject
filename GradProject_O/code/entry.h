@@ -46,18 +46,23 @@ public:
 	void Update(void);
 	void Draw(void);
 
+	void SetID(const int id) override;
+	void ChangeTex(const char* path) override;
+
 private:
 
 	// メンバ関数
-	void AddPlayer(void);  // プレイヤー参加処理
+	void AddPlayer(void);       // プレイヤー参加処理
 	void DecreasePlayer(void);  // プレイヤー参加取り消し処理
 	void ControlsUI(void);      // 操作方法のUI
+	void ReadyUp(void);         // 準備OK処理
 
 	// メンバ変数
 	CMultiCamera** m_ppCamera;   // カメラのポインタ
 	CObjectX** m_ppObjX;
 	CObject2D* m_pControlsUI[MAX];
 	CObject2D* m_pReady[MAX];
+	int m_nID;
 
 	bool m_IsFinish;   // チュートリアルが終了しているかどうか
 };

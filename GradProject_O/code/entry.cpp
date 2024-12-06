@@ -64,7 +64,12 @@ namespace
 
     const D3DXCOLOR TEX_COL_ALPHA = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);   // 半透明
     const D3DXCOLOR TEX_COL_OPAQUE = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);  // 不透明
-   
+}
+
+namespace READY
+{
+    const char* TEX_PATH_OK = "data\\TEXTURE\\GameOver-Yes.png";  // 準備できた
+    const char* TEX_PATH_NO = "data\\TEXTURE\\GameOver-No.png";   // 準備できてない
 }
 
 //===============================================
@@ -76,6 +81,7 @@ CEntry::CEntry()
 	m_ppCamera = nullptr;
     m_ppObjX = nullptr;
     m_IsFinish = false;
+    m_nID = -1;
 
     for (int i = 0; i < MAX; i++)
     {
@@ -139,6 +145,7 @@ HRESULT CEntry::Init(void)
     pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.1f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));*/
 
+    // 操作方法UIの生成
     for (int i = 0; i < MAX; i++)
     {
         m_pControlsUI[i] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.9f, SCREEN_HEIGHT * 0.3f + i * 60.0f, 0.0f), VECTOR3_ZERO, 7);
@@ -291,6 +298,18 @@ void CEntry::Draw(void)
     CScene::Draw();
 }
 
+void CEntry::SetID(const int id)
+{
+    m_nID = id;
+}
+
+void CEntry::ChangeTex(const char* path)
+{
+    if (m_pReady[m_nID] == nullptr) { return; }
+
+    m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(path));
+}
+
 //===============================================
 // プレイヤー参加処理
 //===============================================
@@ -302,35 +321,40 @@ void CEntry::AddPlayer(void)
     auto mgr = CPlayerManager::GetInstance();
     int id = mgr->GetNum();
 
-    //if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
-    //    pKey->GetTrigger(DIK_RETURN))
-    //{
-    //    D3DXVECTOR3 pos = m_ppCamera[id]->GetPositionR();
-    //    int playid = id;
-    //    if (net->GetState() == CNetWork::STATE::STATE_SINGLE && playid == 0)
-    //    {
-    //        playid = net->GetIdx();
-    //    }
+    if (pPad->GetTrigger(CInputPad::BUTTON_START, 0)/* ||*/
+        /*pKey->GetTrigger(DIK_RETURN)*/)
+    {
+        D3DXVECTOR3 pos = m_ppCamera[id]->GetPositionR();
+        int playid = id;
+        if (net->GetState() == CNetWork::STATE::STATE_SINGLE && playid == 0)
+        {
+            playid = net->GetIdx();
+        }
 
-    //    // プレイヤー生成
-    //    CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(4000.0f, 0.0f, 2000.0f), D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
+        // プレイヤー生成
+        CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(4000.0f, 0.0f, 2000.0f), D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
 
-    //    // データ受信
-    //    pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
-    //    pPlayer->SetRecvPosition(pos);
+        // データ受信
+        pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
+        pPlayer->SetRecvPosition(pos);
 
-    //    // チュートリアル時のアクティブに設定
-    //    pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
+        // チュートリアル時のアクティブに設定
+        pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
 
-    //    // エフェクトの終了
-    //    pPlayer->EffectUninit();
+        // エフェクトの終了
+        pPlayer->EffectUninit();
 
-    //    // 画面下にプレイヤーのモデルを表示
-    //    pos = m_ppCamera[id]->GetPositionR();
-    //    m_ppObjX[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), MODEL_PATH, 7);
-    //    m_ppObjX[id]->SetType(CObject::TYPE::TYPE_PLAYER);
-    //    m_ppObjX[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
-    //}
+        // 画面下にプレイヤーのモデルを表示
+        pos = m_ppCamera[id]->GetPositionR();
+        m_ppObjX[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), MODEL_PATH, 7);
+        m_ppObjX[id]->SetType(CObject::TYPE::TYPE_PLAYER);
+        m_ppObjX[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
+
+        // 準備できてるかどうかのUIの生成
+        m_pReady[id] = CObject2D::Create(D3DXVECTOR3(D3DXVECTOR3(SCREEN_WIDTH * 0.1f + id * 200.0f, SCREEN_HEIGHT * 0.75f, 0.0f)), VECTOR3_ZERO, 7);
+        m_pReady[id]->SetSize(100.0f, 50.0f);
+        m_pReady[id]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
+    }
 
     // 人数確認
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
@@ -367,11 +391,16 @@ void CEntry::AddPlayer(void)
                 m_ppObjX[i] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), MODEL_PATH, 7);
                 m_ppObjX[i]->SetType(CObject::TYPE::TYPE_PLAYER);
                 m_ppObjX[i]->SetRotateType(CObjectX::TYPE_QUATERNION);
+
+                // 準備できてるかどうかのUIの生成
+                m_pReady[i] = CObject2D::Create((D3DXVECTOR3(SCREEN_WIDTH * 0.1f + i * 200.0f, SCREEN_HEIGHT * 0.5f, 0.0f)), VECTOR3_ZERO, 7);
+                m_pReady[i]->SetSize(100.0f, 50.0f);
+                m_pReady[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
             }
         }
     }
 
-    if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
+    if (pKey->GetTrigger(DIK_RETURN)/* || pPad->GetTrigger(CInputPad::BUTTON_A, 0)*/)
     {
         m_IsFinish ^= true;
 
@@ -379,6 +408,8 @@ void CEntry::AddPlayer(void)
         {// チュートリアルが終了している
 
             net->SendTutorialOk();
+
+            ReadyUp();
         }
         else
         {
@@ -396,24 +427,23 @@ void CEntry::DecreasePlayer(void)
     auto mgr = CPlayerManager::GetInstance();
 
     // 人数確認
-    if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
+    if (net->GetState() == CNetWork::STATE::STATE_ONLINE) { return; }
+    
+    for (int i = 0; i < NetWork::MAX_CONNECT; i++)
     {
-        for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+        auto player = mgr->GetPlayer(i);
+
+        // 人数が多い
+        if (player != nullptr && !net->GetConnect(i))
         {
-            auto player = mgr->GetPlayer(i);
-   
-            // 人数が多い
-            if (player != nullptr && !net->GetConnect(i))
-            {
-                // プレイヤーの終了処理
-                player->Uninit();
+            // プレイヤーの終了処理
+            player->Uninit();
 
-                if (m_ppObjX[i] != nullptr)
-                {// 画面下に出てるプレイヤーモデルの終了
+            if (m_ppObjX[i] != nullptr)
+            {// 画面下に出てるプレイヤーモデルの終了
 
-                    m_ppObjX[i]->Uninit();
-                    m_ppObjX[i] = nullptr;   
-                }
+                m_ppObjX[i]->Uninit();
+                m_ppObjX[i] = nullptr;
             }
         }
     }
@@ -472,5 +502,25 @@ void CEntry::ControlsUI(void)
     if (pPad->GetPress(CInputPad::BUTTON_B, 0))
     {
         m_pControlsUI[3]->SetCol(TEX_COL_OPAQUE);
+    }
+}
+
+//===============================================
+// 準備OK処理
+//===============================================
+void CEntry::ReadyUp(void)
+{
+    auto net = CNetWork::GetInstance();
+    auto mgr = CPlayerManager::GetInstance();
+
+    for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+    {
+        auto player = mgr->GetPlayer(i);
+
+        // 人数が多い
+        if (m_pReady[i] != nullptr && player != nullptr && !net->GetConnect(i))
+        {
+            m_pReady[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
+        }
     }
 }
