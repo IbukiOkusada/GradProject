@@ -1230,43 +1230,45 @@ void CPlayer::SetStateActive()
 			m_pCollSound->Stop();
 		}
 
-		//// ï∂éöÇÃê∂ê¨
-		//if (m_pFont[0] == nullptr) {
-		//	m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
-		//		D3DXVECTOR3(400.0f, 200.0f, 0.0f), 0.0025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
+#if NDEBUG
+		// ï∂éöÇÃê∂ê¨
+		if (m_pFont[0] == nullptr) {
+			m_pFont[0] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+				D3DXVECTOR3(400.0f, 200.0f, 0.0f), 0.0025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP);
 
-		//	for (int j = 0; j < START_TEXT[0].size(); j++)
-		//	{
-		//		m_pFont[0]->PushBackString(START_TEXT[0][j]);
-		//	}
-		//}
-		//if (m_pFont[1] == nullptr) {
-		//	m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
-		//		D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+			for (int j = 0; j < START_TEXT[0].size(); j++)
+			{
+				m_pFont[0]->PushBackString(START_TEXT[0][j]);
+			}
+		}
+		if (m_pFont[1] == nullptr) {
+			m_pFont[1] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+				D3DXVECTOR3(500.0f, 150.0f, 0.0f), 0.0025f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
 
-		//	for (int j = 0; j < START_TEXT[1].size(); j++)
-		//	{
-		//		m_pFont[1]->PushBackString(START_TEXT[1][j]);
-		//	}
-		//}
-		//if (m_pFont[2] == nullptr) {
-		//	m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
-		//		D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
+			for (int j = 0; j < START_TEXT[1].size(); j++)
+			{
+				m_pFont[1]->PushBackString(START_TEXT[1][j]);
+			}
+		}
+		if (m_pFont[2] == nullptr) {
+			m_pFont[2] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+				D3DXVECTOR3(50.0f, 50.0f, 0.0f), 0.001f, 15.0f, 15.0f, XALIGN_LEFT, YALIGN_TOP);
 
-		//	for (int j = 0; j < START_TEXT[2].size(); j++)
-		//	{
-		//		m_pFont[2]->PushBackString(START_TEXT[2][j]);
-		//	}
-		//}
-		//if (m_pFont[3] == nullptr) {
-		//	m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
-		//		D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP, VECTOR3_ZERO, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
+			for (int j = 0; j < START_TEXT[2].size(); j++)
+			{
+				m_pFont[2]->PushBackString(START_TEXT[2][j]);
+			}
+		}
+		if (m_pFont[3] == nullptr) {
+			m_pFont[3] = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+				D3DXVECTOR3(300.0f, 300.0f, 0.0f), 0.025f, 20.0f, 20.0f, XALIGN_LEFT, YALIGN_TOP, VECTOR3_ZERO, D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f));
 
-		//	for (int j = 0; j < START_TEXT[3].size(); j++)
-		//	{
-		//		m_pFont[3]->PushBackString(START_TEXT[3][j]);
-		//	}
-		//}
+			for (int j = 0; j < START_TEXT[3].size(); j++)
+			{
+				m_pFont[3]->PushBackString(START_TEXT[3][j]);
+			}
+		}
+#endif
 	}
 
 	m_type = TYPE::TYPE_ACTIVE;

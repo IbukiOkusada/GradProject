@@ -225,8 +225,10 @@ HRESULT CGame::Init(void)
         m_pGameTimer = CTimer::Create();
     }
 
+#if NDEBUG
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    //CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
+    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
+#endif  
     pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);
     return S_OK;
@@ -428,7 +430,8 @@ CFileLoad *CGame::GetFileLoad(void)
 //===================================================
 void CGame::StartIntro(void)
 {
-  /*  if (m_nStartCameraCount >= 4)
+#if NDEBUG
+    if (m_nStartCameraCount >= 4)
         return;
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
@@ -442,7 +445,8 @@ void CGame::StartIntro(void)
     {
         CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, false);
         m_nStartCameraCount++;
-    }*/
+    }
+#endif
 }
 
 //===================================================
@@ -536,7 +540,7 @@ void CGame::CreatePolice()
 //===================================================
 void CGame::CreateCar()
 {
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 30; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
