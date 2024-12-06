@@ -399,6 +399,19 @@ void CResult::Uninit(void)
 		}
 	}
 
+	for (int CntFst = 0; CntFst < RANKING_OBJ_MAX; CntFst++)
+	{
+		// 残りタイムのオブジェクト生成
+		for (int CntSec = 0; CntSec < NUMBER::RANKING_OBJ; CntSec++)
+		{
+			if (m_pRankingNumber[CntFst][CntSec] != nullptr)
+			{
+				m_pRankingNumber[CntFst][CntSec]->Uninit();
+				m_pRankingNumber[CntFst][CntSec] = nullptr;
+			}
+		}
+	}
+
 	// マップ情報廃棄
 	CMapManager::Release();
 	CRanking::SetScore(m_nScore);
