@@ -17,6 +17,8 @@
 //マクロ定義
 #define SCREEN_WIDTH		(1280)			//ウインドウの幅
 #define SCREEN_HEIGHT		(720)			//ウインドウの高さ
+#define RENDER_WIDTH		(720)			//描画テクスチャの幅
+#define RENDER_HEIGHT		(480)			//描画テクスチャの高さ
 #define SCREEN_CENTER		(D3DXVECTOR3(SCREEN_WIDTH*0.5f,SCREEN_HEIGHT*0.5f,0.0f))			//ウインドウの高さ
 #define FVF_VERTEX_2D		(D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1)
 #define FVF_VERTEX_3D		(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1)	//頂点フォーマット[3D]

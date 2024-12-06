@@ -9,11 +9,12 @@
 
 #include "goal.h"
 #include "map_list.h"
+#include "list_manager.h"
 
 //==========================================================
 // ゴール管理のクラス定義
 //==========================================================
-class CGoalManager
+class CGoalManager : public CListManager
 {
 public:
 	CGoalManager();      // コンストラクタ

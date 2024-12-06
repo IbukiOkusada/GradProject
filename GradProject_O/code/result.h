@@ -1,7 +1,7 @@
 //===============================================
 //
 // リザルト画面の管理処理 [result.h]
-// Author : Ibuki Okusada
+// Author : Kenta Hashimoto
 //
 //===============================================
 #ifndef _RESULT_H_		// このマクロが定義されていない場合
@@ -56,41 +56,48 @@ private:
 		TYPE_TIME = 0,
 		TYPE_LIFE,
 		TYPE_EVAL,
+		TYPE_RANKING,
 		TYPE_NUM
 	};
 
 	void Calculation(int* Obj, float Score, int Cnt, int ObjMax, TYPE_OBJ Type);
-	void AlphaJudge(float Alpha);	// アルファ値の判定
-	void Display(int nDisplay);		// 表示処理
+	void AlphaJudge(float Alpha);		// アルファ値の判定
+	void RankAlphaJudge(float Alpha);	// アルファ値の判定
+	void Display();						// 表示処理
+	void DisplayRanking();				// ランキングの表示処理
 	void RoadScore();
 	void SaveScore();
+	void SortScore();
 
 
 	// メンバ変数
-	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
-	CMeshDome *m_pMeshSky;		// 空用
-	CTime *m_pTime;				// タイマー
-	CObject2D *m_pObjClear;		// clearしたかどうか
-	CPlayerResult* m_pPlayer;	// リザルトプレイヤーのポインタ
+	CFileLoad *m_pFileLoad;			// ファイル読み込みのポインタ
+	CMeshDome *m_pMeshSky;			// 空用
+	CTime *m_pTime;					// タイマー
+	CObject2D *m_pObjClear;			// clearしたかどうか
+	CPlayerResult* m_pPlayer;		// リザルトプレイヤーのポインタ
 
-	CObject2D* m_pObj;			// 失敗or成功のオブジェクト
-	CObject2D* m_pScoreObj[4];	// 各スコアの文字のオブジェクト
-	CNumber* m_pDeliNumber;		// 届けた数のオブジェクト
-	CNumber* m_pTimeNumber[3];	// 残りタイムのオブジェクト
-	CNumber* m_pLifeNumber[3];	// 残り体力のオブジェクト
-	CNumber* m_pEvalNumber[2];	// 総合評価のオブジェクト
+	CObject2D* m_pObj;				// 失敗or成功のオブジェクト
+	CObject2D* m_pScoreObj[4];		// 各スコアの文字のオブジェクト
+	CNumber* m_pDeliNumber;			// 届けた数のオブジェクト
+	CNumber* m_pTimeNumber[3];		// 残りタイムのオブジェクト
+	CNumber* m_pLifeNumber[3];		// 残り体力のオブジェクト
+	CNumber* m_pEvalNumber[2];		// 総合評価のオブジェクト
+	CNumber* m_pRankingNumber[5][2];// ランキングのオブジェクト
 
 	static int m_nDeli;
 	static float m_fTime;
 	static float m_fLife;
 	static float m_nScore;
+	float m_RankingScore[5];
 
 	int m_TimeObj[3];
 	int m_LifeObj[3];
 	int m_EvalObj[2];
+	int m_RankingObj[5][2];
 	int m_Display;
+	int m_DisplayRank;
 
-	float m_RankinScore[5];
 };
 
 #endif

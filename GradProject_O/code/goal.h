@@ -58,9 +58,10 @@ public:	// 誰でもアクセス可能
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	static CGoal* Create(D3DXVECTOR3 pos,float fRange,float fLimit, int nId);
+	static CGoal* Create(const D3DXVECTOR3& pos,float fRange,float fLimit, int nId);
 
 	void SetEnd(int nId);
+	void RecvEnd(int nId) { m_bRecvEnd = true; m_RecvId = nId; }
 	
 	// 設定
 	void SetPos(const D3DXVECTOR3& pos);
@@ -84,6 +85,8 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	int m_nId;
 	bool m_bEnd;	// 終了地点
+	bool m_bRecvEnd;	// 通信用終了判定
+	int m_RecvId;		// 通信用通過プレイヤーID 
 	SInfo m_Info;
 	CRoad * m_pRoad;
 	CBaggage* m_pBaggage;

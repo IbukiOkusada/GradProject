@@ -66,6 +66,8 @@ public:
 	virtual CTime* GetTime(void) { return nullptr; }
 	void SetMode(MODE mode) { m_mode = mode; }
 	MODE GetMode(void) { return m_mode; }
+	virtual void SetID(const int id) {};
+	virtual void ChangeFlag(bool value) {};
 
 private:
 	MODE m_mode;	// ÉÇÅ[Éh

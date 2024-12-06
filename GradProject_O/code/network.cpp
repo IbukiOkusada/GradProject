@@ -26,6 +26,7 @@
 #include "police.h"
 #include "add_police.h"
 #include "police_AI.h"
+#include "manager.h"
 
 //===============================================
 // 名前空間
@@ -613,7 +614,7 @@ void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
 		return;
 	}
 
-	pGoal->SetEnd(nId);
+	pGoal->RecvEnd(nId);
 }
 
 //===================================================
@@ -696,7 +697,17 @@ void CNetWork::RecvGameStart(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 {
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
 
+	CScene* pScene = CManager::GetInstance()->GetScene();
+
+	if (pScene == nullptr) { return; }
+
+	// ID取得
+	pScene->SetID(nId);
+
+	// 準備完了フラグを立てる
+	pScene->ChangeFlag(true);
 }
 
 //===================================================
@@ -704,7 +715,17 @@ void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 {
+	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
 
+	CScene* pScene = CManager::GetInstance()->GetScene();
+
+	if (pScene == nullptr) { return; }
+
+	// ID取得
+	pScene->SetID(nId);
+
+	// 準備完了フラグを折る
+	pScene->ChangeFlag(false);
 }
 
 //===================================================

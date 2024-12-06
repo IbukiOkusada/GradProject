@@ -122,6 +122,8 @@ HRESULT CGoalManager::Init(void)
 //==========================================================
 void CGoalManager::Uninit(void)
 {
+	CListManager::Uninit();
+
 	// ƒS[ƒ‹‚Ì”jŠü
 	if (m_pGoal != nullptr)
 	{
@@ -134,10 +136,9 @@ void CGoalManager::Uninit(void)
 	// ©g‚Ì”jŠü
 	if (m_pInstance != nullptr)
 	{
+		delete this;
 		m_pInstance = nullptr;
 	}
-
-	delete this;
 }
 
 //==========================================================
