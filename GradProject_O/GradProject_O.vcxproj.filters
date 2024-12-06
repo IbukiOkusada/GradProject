@@ -175,6 +175,15 @@
     <Filter Include="fog">
       <UniqueIdentifier>{bcd35556-6727-4360-92ce-315edce9db2f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shader">
+      <UniqueIdentifier>{f48fd9c5-2eb4-4786-9e3b-035ec878b014}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader\FX">
+      <UniqueIdentifier>{4a3bcccf-c557-4bd7-a7a0-b2d4ddd8224a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shader\manager">
+      <UniqueIdentifier>{d120bd36-8d02-4682-8185-3062043024f7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -518,6 +527,9 @@
     </ClCompile>
     <ClCompile Include="code\Fog.cpp">
       <Filter>fog</Filter>
+    </ClCompile>
+    <ClCompile Include="code\fxmanager.cpp">
+      <Filter>shader\manager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -869,5 +881,13 @@
     <ClInclude Include="code\PoliceTitle.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="code\fxmanager.h">
+      <Filter>shader\manager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="code\shader\draw.fx">
+      <Filter>shader\FX</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
