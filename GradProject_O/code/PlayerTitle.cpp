@@ -228,10 +228,6 @@ void CPlayerTitle::MovingSelect(void)
 	constexpr float fMove = 0.12f,fRotation = 0.9f;	//移動速度と回転速度
 	const float fRad1 = 95.0f,fRad2 = 350.0f;		//範囲
 
-	//目的地まで移動
-	m_Info.pos.x += (DEST_POS_SELECT[m_nNumDest].x - m_Info.pos.x - m_Info.move.x) * fMove;//X軸
-	m_Info.pos.z += (DEST_POS_SELECT[m_nNumDest].z - m_Info.pos.z - m_Info.move.z) * fMove;//Z軸
-
 	//目的地に到着したら判定をtrueにする
 	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], fRad1))
 	{
@@ -290,6 +286,7 @@ void CPlayerTitle::PoliceRotSet(void)
 {
 	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };
 	D3DXVECTOR3 rRot = VECTOR3_ZERO;
+	float fMove = 150.0f;
 
 	//警察の情報を取得してくる
 	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
@@ -306,6 +303,9 @@ void CPlayerTitle::PoliceRotSet(void)
 		//最初の向きにする
 		rRot = DEST_ROT_SELECT[DEST::DEST_FIRST];
 
+		//移動
+		m_Info.pos.z += fMove;
+
 		break;
 
 		//二番目か四番目
@@ -314,6 +314,10 @@ void CPlayerTitle::PoliceRotSet(void)
 
 		//二番目の向きにする
 		rRot = DEST_ROT_SELECT[DEST::DEST_SECOND];
+
+
+		//移動
+		m_Info.pos.x -= fMove;
 
 		break;
 
@@ -324,6 +328,9 @@ void CPlayerTitle::PoliceRotSet(void)
 		//三番目の向きにする
 		rRot = DEST_ROT_SELECT[DEST::DEST_THIRD];
 
+		//移動
+		m_Info.pos.z -= fMove;
+
 		break;
 
 		//最後の番号
@@ -331,6 +338,9 @@ void CPlayerTitle::PoliceRotSet(void)
 
 		//最終地点の向きにする
 		rRot = DEST_ROT_SELECT[DEST::DEST_SIXTH];
+
+		//移動
+		m_Info.pos.x += fMove;
 
 		break;
 	}
@@ -347,7 +357,7 @@ void CPlayerTitle::PolicePosSet(void)
 {
 	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };	//警察ポインタ
 	D3DXVECTOR3 arPos[INITIAL::POLICE_MAX] = { VECTOR3_ZERO };	//警察の位置
-	constexpr float fDis = 550.0f;								//プレイヤーからの距離
+	constexpr float fDis = 650.0f;								//プレイヤーからの距離
 	constexpr float fDis_Police = 350.0f;						//警察間の距離
 	constexpr float fDiff = 250.0f;								//補正(警察用)
 
