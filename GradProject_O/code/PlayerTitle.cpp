@@ -60,11 +60,9 @@ namespace
 CPlayerTitle::CPlayerTitle()
 {
 	//初期化
-
 	//<*************************************
 	//int型
 	m_nNumDest = 0;
-	m_nNumDestNext = m_nNumDest + 1; 
 	//<*************************************
 	//float型
 	m_fDestrot = 0.0f;
@@ -76,7 +74,7 @@ CPlayerTitle::CPlayerTitle()
 	m_bReached = false;
 	m_bNextMove = false;
 	m_bMoved = false;
-	m_bFirst = false;
+	m_bFirst = true;
 	m_pTitleBaggage = nullptr;
 	m_pTitleGoal = nullptr;
 	//<*************************************
@@ -225,7 +223,7 @@ void CPlayerTitle::Moving(const int nNum)
 void CPlayerTitle::MovingSelect(void)
 {
 	constexpr float fMove = 0.12f;	//移動速度と回転速度
-	const float fRad1 = 95.0f,fRad2 = 850.0f;		//範囲
+	const float fRad1 = 95.0f,fRad2 = 500.0f;		//範囲
 
 	//目的地に到着したら判定をtrueにする
 	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], fRad1))
@@ -233,15 +231,9 @@ void CPlayerTitle::MovingSelect(void)
 		//目的地変更
 		m_nNumDest = (m_nNumDest + 1) % DEST_MAX;
 	}
-	//目的地に到着したら判定をtrueにする
-	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], fRad2))
-	{
-		//次の目的地の設定
-		m_nNumDestNext = (m_nNumDest + 1) % DEST_MAX;
-	}
 	//判定初期化用
-	if (m_nNumDest > DEST_SIXTH){m_bFirst = false;}
-
+	if (m_nNumDest >= DEST_SIXTH){m_bFirst = false;}
+	
 	PoliceRotSet();
 
 	//デバッグ表示
@@ -348,48 +340,9 @@ void CPlayerTitle::PoliceRotSet(void)
 	//回転向きを設定
 	m_fDestrot = rRot.y;
 
-	//超えていたら
-	if (m_nNumDestNext >= DEST_MAX)
+	//四番目以外だったら
+	if (m_nNumDest != DEST::DEST_FOUTH)
 	{
-		m_fDestrot = -3.14f;
-	}
-
-	//D3DXVECTOR3(0.0f, -3.14f, 0.0f),				//１個目
-	//D3DXVECTOR3(0.0f, 1.56f, 0.0f),				//２個目
-	//D3DXVECTOR3(0.0f, 0.0f, 0.0f),				//３個目
-	//D3DXVECTOR3(0.0f, 1.56f, 0.0f),				//４個目
-	//D3DXVECTOR3(0.0f, 0.0f, 0.0f),				//５個目
-	//D3DXVECTOR3(0.0f, -1.56f, 0.0f)				//６個目
-
-	//番号によって向きの移動速度を変更させる
-	switch (m_nNumDestNext)
-	{
-		//六番目以外
-	case DEST::DEST_FOUTH:
-
-		//移動速度設定
-		m_fMoveRot = fRotation;
-
-		//プレイヤー回転
-		m_Info.rot.y += m_fMoveRot;
-
-		if (m_Info.rot.y >= m_fDestrot)
-		{
-			m_Info.rot.y = m_fDestrot;
-		}
-		//
-		Adjust(m_Info.rot.y);
-
-		break;
-
-		//六番目以外
-	case DEST::DEST_FIRST:
-	case DEST::DEST_SECOND:
-	case DEST::DEST_THIRD:
-	case DEST::DEST_FIFTH:
-	case DEST::DEST_SIXTH:
-
-
 		//二番目の目的地且つまだ判定されてなかったら、判定と向きを設定
 		if (m_nNumDest == DEST::DEST_SECOND && !m_bFirst) { m_Info.rot.y = 3.14f; m_bFirst = true; }
 
@@ -400,13 +353,23 @@ void CPlayerTitle::PoliceRotSet(void)
 		m_Info.rot.y += m_fMoveRot;
 
 		//小さかったら
-		if (m_Info.rot.y <= m_fDestrot){m_Info.rot.y = m_fDestrot;}
-
-		//
-		Adjust(m_Info.rot.y);
-
-		break;
+		if (m_Info.rot.y <= m_fDestrot) { m_Info.rot.y = m_fDestrot; }
 	}
+	//四番目だったら
+	else
+	{
+		//移動速度設定
+		m_fMoveRot = fRotation;
+
+		//プレイヤー回転
+		m_Info.rot.y += m_fMoveRot;
+
+		//小さかったら
+		if (m_Info.rot.y >= m_fDestrot) { m_Info.rot.y = m_fDestrot; }
+	}
+
+	//調整
+	Adjust(m_Info.rot.y);
 
 	//その向きに設定
 	SetRotation(m_Info.rot);
