@@ -58,8 +58,13 @@ namespace OBJ
 
 	const float HEIGHT = 40.0f;			// 高さ
 	const float INTERVAL_Y = 100.0f;	// 縦の間隔
-	const float INTERVAL_RANKING_Y = 80.0f;	// ランキングの縦の間隔
-	const D3DXVECTOR3 POS = D3DXVECTOR3(300.0f, 240.0f, 0.0f);	// 初期位置
+	const D3DXVECTOR3 POS = D3DXVECTOR3(250.0f, 240.0f, 0.0f);	// 初期位置
+
+	const char* STAR_TEX_PATH = "data\\TEXTURE\\star.png";
+	const char* STAR_FREAM_TEX_PATH = "data\\TEXTURE\\star_fream.png";
+	const float STAR_INTERVAL_X = 80.0f;							// 星の間隔
+	const float STAR_INTERVAL_Y = 100.0f;							// 星の間隔
+	const D3DXVECTOR3 STAR_POS = D3DXVECTOR3(700.0f, 600.0f, 0.0f);	// 初期位置
 }
 
 namespace NUMBER
@@ -81,8 +86,9 @@ namespace PLAYER
 
 namespace
 {
-	const int SCORE_OBJ_MAX = 4;
-	const int RANKING_OBJ_MAX = 5;
+	const int SCORE_OBJ_NUM = 4;	// スコアのオブジェクトの個数
+	const int RANKING_OBJ_NUM = 5;	// ランキングのオブジェクトの個数
+	const int STAR_OBJ_NUM = 5;		// 星のオブジェクトの個数
 	const float ALPHA_ADD = 0.015f;
 	const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 }
@@ -118,11 +124,11 @@ CResult::CResult()
 		m_EvalObj[Cnt] = 0;
 	}
 
-	for (int CntFst = 0; CntFst < RANKING_OBJ_MAX; CntFst++)
+	for (int CntFst = 0; CntFst < RANKING_OBJ_NUM; CntFst++)
 	{
 		for (int CntSec = 0; CntSec < NUMBER::RANKING_OBJ; CntSec++)
 		{
-			m_RankingObj[CntFst][CntSec] = 0;
+			m_RankingObj[CntSec + CntFst * 2] = 0;
 		}
 	}
 }
@@ -153,13 +159,211 @@ HRESULT CResult::Init(void)
 
 	m_nScore = ((float)m_nDeli + m_fTime / 100.0f + m_fLife / 100.0f) * 10.0f;
 
+	ScoreObjInit();
+
+	// 失敗or成功のオブジェクト生成
+	m_pObj = CObject2D::Create(D3DXVECTOR3(OBJ::CLEAR_POS.x, OBJ::CLEAR_POS.y, 0.0f),
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		7);
+
+	m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::CLEAR_TEX_PATH));
+	m_pObj->SetSize(OBJ::CLEAR_WIDTH, OBJ::CLEAR_HEIGHT);
+
+	m_RankingScore[0] = 15.0f;
+	m_RankingScore[1] = 23.0f;
+	m_RankingScore[2] = 45.0f;
+	m_RankingScore[3] = 28.0f;
+	m_RankingScore[4] = 4.0f;
+
 	if (m_nScore >= 50.0f)
 	{
 		m_nScore = 50.0f;
 	}
 
+	// ランキングの読み込み等の処理
+	//RoadScore();
+	SortScore();
+	//SaveScore();
 
-	for (int nCnt = 0; nCnt < SCORE_OBJ_MAX; nCnt++)
+
+	float nStarTex = 0.0f;
+
+	for (int CntFst = 0; CntFst < RANKING_OBJ_NUM; CntFst++)
+	{
+		// 星のオブジェクト生成
+		for (int CntSec = 0; CntSec < STAR_OBJ_NUM; CntSec++)
+		{
+			nStarTex = (m_RankingScore[CntFst] / 10) - CntSec;
+
+			// 星
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM] = CObject2D::Create(D3DXVECTOR3(
+				OBJ::STAR_POS.x + OBJ::STAR_INTERVAL_X * CntSec,
+				OBJ::STAR_POS.y - OBJ::STAR_INTERVAL_Y * CntFst,
+				0.0f),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				7);
+
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::STAR_TEX_PATH));
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetObject2D()->SetCol(INIT_COL);
+
+			if (nStarTex >= 1.0f)
+			{
+				nStarTex = 1.0f;
+			}
+			else if (nStarTex <= 0.0f)
+			{
+				nStarTex = 0.0f;
+			}
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->SetVtxRatio(0.0f, 0.0f, 40.0f, 40.0f, nStarTex, 1.0f);
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->SetTex(0.0f, 0.0f, nStarTex, 1.0f);
+
+			// 枠
+			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM] = CObject2D::Create(D3DXVECTOR3(
+				m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetPosition().x,
+				m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetPosition().y,
+				0.0f),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				7);
+
+			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::STAR_FREAM_TEX_PATH));
+			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->GetObject2D()->SetCol(INIT_COL);
+			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->SetVtxRatio(0.0f, 0.0f, 40.0f, 40.0f, 1.0f, 1.0f);
+
+		}
+
+		// ランキングのオブジェクト生成
+		for (int CntSec = 0; CntSec < NUMBER::RANKING_OBJ; CntSec++)
+		{
+			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ] = CNumber::Create(D3DXVECTOR3(
+				m_pStarObj[(CntFst + 1) * STAR_OBJ_NUM - 1]->GetPosition().x + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * CntSec,
+				m_pStarObj[(CntFst + 1) * STAR_OBJ_NUM - 1]->GetPosition().y,
+				0.0f),
+				NUMBER::WIDTH,
+				NUMBER::HEIGHT);
+
+			Calculation(&m_RankingObj[CntSec + CntFst * NUMBER::RANKING_OBJ], m_RankingScore[CntFst], CntSec, NUMBER::RANKING_OBJ, CResult::TYPE_RANKING);
+			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->SetIdx(m_RankingObj[CntSec + CntFst * 2]);
+			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->GetObject2D()->SetCol(INIT_COL);
+		}
+
+	}
+
+	//CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT);
+
+	return S_OK;
+}
+
+//===============================================
+// 終了処理
+//===============================================
+void CResult::Uninit(void)
+{
+	if (m_pObj != NULL)
+	{
+		m_pObj->Uninit();
+		m_pObj = NULL;
+	}
+
+	for (int Cnt = 0; Cnt < SCORE_OBJ_NUM; Cnt++)
+	{
+		if (m_pScoreObj[Cnt] != NULL)
+		{
+			m_pScoreObj[Cnt]->Uninit();
+			m_pScoreObj[Cnt] = NULL;
+		}
+	}
+
+	if (m_pDeliNumber != NULL)
+	{
+		m_pDeliNumber->Uninit();
+		m_pDeliNumber = NULL;
+	}
+
+	for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ; Cnt++)
+	{
+		if (m_pTimeNumber[Cnt] != NULL)
+		{
+			m_pTimeNumber[Cnt]->Uninit();
+			m_pTimeNumber[Cnt] = NULL;
+		}
+	}
+
+	for (int Cnt = 0; Cnt < NUMBER::LIFE_OBJ; Cnt++)
+	{
+		if (m_pLifeNumber[Cnt] != NULL)
+		{
+			m_pLifeNumber[Cnt]->Uninit();
+			m_pLifeNumber[Cnt] = NULL;
+		}
+	}
+
+	for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
+	{
+		if (m_pEvalNumber[Cnt] != NULL)
+		{
+			m_pEvalNumber[Cnt]->Uninit();
+			m_pEvalNumber[Cnt] = NULL;
+		}
+	}
+
+	for (int CntFst = 0; CntFst < RANKING_OBJ_NUM; CntFst++)
+	{
+		// 残りタイムのオブジェクト生成
+		for (int CntSec = 0; CntSec < NUMBER::RANKING_OBJ; CntSec++)
+		{
+			if (m_pRankingNumber[CntSec + CntFst * 2] != nullptr)
+			{
+				m_pRankingNumber[CntSec + CntFst * 2]->Uninit();
+				m_pRankingNumber[CntSec + CntFst * 2] = nullptr;
+			}
+		}
+	}
+
+	// マップ情報廃棄
+	CMapManager::Release();
+	CRanking::SetScore(m_nScore);
+	m_nScore = 0;
+	CManager::GetInstance()->GetCamera()->SetActive(true);
+	CManager::GetInstance()->GetSound()->Stop();
+}
+
+//===============================================
+// 更新処理
+//===============================================
+void CResult::Update(void)
+{
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CInputPad* pPad = CInputPad::GetInstance();
+
+	if (pPad->GetTrigger(CInputPad::BUTTON_A, 0) ||
+		pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
+		pKey->GetTrigger(DIK_RETURN))
+	{
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
+	}
+
+	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
+	{
+		Display();
+	}
+
+	CScene::Update();
+}
+
+//===============================================
+// 描画処理
+//===============================================
+void CResult::Draw(void)
+{
+	CScene::Draw();
+}
+
+//===============================================
+// スコアオブジェクトの初期化処理
+//===============================================
+void CResult::ScoreObjInit()
+{
+	for (int nCnt = 0; nCnt < SCORE_OBJ_NUM; nCnt++)
 	{
 		switch (nCnt)
 		{
@@ -304,151 +508,6 @@ HRESULT CResult::Init(void)
 		}
 	}
 
-	// 失敗or成功のオブジェクト生成
-	m_pObj = CObject2D::Create(D3DXVECTOR3(OBJ::CLEAR_POS.x, OBJ::CLEAR_POS.y, 0.0f),
-		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-		7);
-
-	m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::CLEAR_TEX_PATH));
-	m_pObj->SetSize(OBJ::CLEAR_WIDTH, OBJ::CLEAR_HEIGHT);
-
-	m_nScore = 80.0f;
-	m_RankingScore[0] = 40.0f;
-	m_RankingScore[1] = 90.0f;
-	m_RankingScore[2] = 30.0f;
-	m_RankingScore[3] = 60.0f;
-	m_RankingScore[4] = 70.0f;
-	//SaveScore();
-	//RoadScore();
-	SortScore();
-
-	for (int CntFst = 0; CntFst < RANKING_OBJ_MAX; CntFst++)
-	{
-		// 残りタイムのオブジェクト生成
-		for (int CntSec = 0; CntSec < NUMBER::RANKING_OBJ; CntSec++)
-		{
-			m_pRankingNumber[CntFst][CntSec] = CNumber::Create(D3DXVECTOR3(
-				900.0f + NUMBER::INTERVAL * CntSec,
-				600.0f - OBJ::INTERVAL_RANKING_Y * CntFst,
-				0.0f),
-				NUMBER::WIDTH,
-				NUMBER::HEIGHT);
-
-			Calculation(&m_RankingObj[CntFst][CntSec], m_RankingScore[CntFst], CntSec, NUMBER::RANKING_OBJ, CResult::TYPE_RANKING);
-			m_pRankingNumber[CntFst][CntSec]->SetIdx(m_RankingObj[CntFst][CntSec]);
-			m_pRankingNumber[CntFst][CntSec]->GetObject2D()->SetCol(INIT_COL);
-		}
-
-	}
-
-	//CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT);
-
-	return S_OK;
-}
-
-//===============================================
-// 終了処理
-//===============================================
-void CResult::Uninit(void)
-{
-	if (m_pObj != NULL)
-	{
-		m_pObj->Uninit();
-		m_pObj = NULL;
-	}
-
-	for (int Cnt = 0; Cnt < SCORE_OBJ_MAX; Cnt++)
-	{
-		if (m_pScoreObj[Cnt] != NULL)
-		{
-			m_pScoreObj[Cnt]->Uninit();
-			m_pScoreObj[Cnt] = NULL;
-		}
-	}
-
-	if (m_pDeliNumber != NULL)
-	{
-		m_pDeliNumber->Uninit();
-		m_pDeliNumber = NULL;
-	}
-
-	for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ; Cnt++)
-	{
-		if (m_pTimeNumber[Cnt] != NULL)
-		{
-			m_pTimeNumber[Cnt]->Uninit();
-			m_pTimeNumber[Cnt] = NULL;
-		}
-	}
-
-	for (int Cnt = 0; Cnt < NUMBER::LIFE_OBJ; Cnt++)
-	{
-		if (m_pLifeNumber[Cnt] != NULL)
-		{
-			m_pLifeNumber[Cnt]->Uninit();
-			m_pLifeNumber[Cnt] = NULL;
-		}
-	}
-
-	for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
-	{
-		if (m_pEvalNumber[Cnt] != NULL)
-		{
-			m_pEvalNumber[Cnt]->Uninit();
-			m_pEvalNumber[Cnt] = NULL;
-		}
-	}
-
-	for (int CntFst = 0; CntFst < RANKING_OBJ_MAX; CntFst++)
-	{
-		// 残りタイムのオブジェクト生成
-		for (int CntSec = 0; CntSec < NUMBER::RANKING_OBJ; CntSec++)
-		{
-			if (m_pRankingNumber[CntFst][CntSec] != nullptr)
-			{
-				m_pRankingNumber[CntFst][CntSec]->Uninit();
-				m_pRankingNumber[CntFst][CntSec] = nullptr;
-			}
-		}
-	}
-
-	// マップ情報廃棄
-	CMapManager::Release();
-	CRanking::SetScore(m_nScore);
-	m_nScore = 0;
-	CManager::GetInstance()->GetCamera()->SetActive(true);
-	CManager::GetInstance()->GetSound()->Stop();
-}
-
-//===============================================
-// 更新処理
-//===============================================
-void CResult::Update(void)
-{
-	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
-	CInputPad* pPad = CInputPad::GetInstance();
-
-	if (pPad->GetTrigger(CInputPad::BUTTON_A, 0) ||
-		pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
-		pKey->GetTrigger(DIK_RETURN))
-	{
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
-	}
-
-	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
-	{
-		Display();
-	}
-
-	CScene::Update();
-}
-
-//===============================================
-// 描画処理
-//===============================================
-void CResult::Draw(void)
-{
-	CScene::Draw();
 }
 
 //===============================================
@@ -572,7 +631,7 @@ void CResult::RankAlphaJudge(float Alpha)
 	{
 		m_DisplayRank++;
 
-		if (m_DisplayRank >= RANKING_OBJ_MAX)
+		if (m_DisplayRank >= RANKING_OBJ_NUM)
 		{
 			m_Display++;
 		}
@@ -646,18 +705,26 @@ void CResult::Display()
 }
 
 //===============================================
-// 表示処理
+// ランキングの表示処理
 //===============================================
 void CResult::DisplayRanking()
 {
 	D3DXCOLOR col;
 
-	col = m_pRankingNumber[m_DisplayRank][0]->GetObject2D()->GetCol();
+	col = m_pRankingNumber[m_DisplayRank * 2]->GetObject2D()->GetCol();
 	col.a += ALPHA_ADD;
 
 	for (int Cnt = 0; Cnt < NUMBER::RANKING_OBJ; Cnt++)
 	{
-		m_pRankingNumber[m_DisplayRank][Cnt]->GetObject2D()->SetCol(col);
+		// ランキングスコアの表示
+		m_pRankingNumber[Cnt + m_DisplayRank * NUMBER::RANKING_OBJ]->GetObject2D()->SetCol(col);
+	}
+
+	for (int Cnt = 0; Cnt < STAR_OBJ_NUM; Cnt++)
+	{
+		// 星の表示
+		m_pStarObj[Cnt + m_DisplayRank * STAR_OBJ_NUM]->SetCol(col);
+		m_pStarFreamObj[Cnt + m_DisplayRank * STAR_OBJ_NUM]->SetCol(col);
 	}
 
 	RankAlphaJudge(col.a);
@@ -672,6 +739,13 @@ void CResult::RoadScore()
 
 	if (!pFile.is_open())
 	{
+		// ファイルを開く
+		std::ofstream File("data\\FILE\\map\\ranking.bin", std::ios::binary);
+
+		for (int Cnt = 0; Cnt < RANKING_OBJ_NUM; Cnt++)
+		{
+			m_RankingScore[Cnt] = 0.0f;
+		}
 		return;
 	}
 
@@ -711,11 +785,10 @@ void CResult::SaveScore()
 //===============================================
 void CResult::SortScore()
 {
-	float nPreScore = m_nScore;		// 今回のスコアを保持
 	float nScore = m_nScore;		// 比較用スコア
 	int nTemp = -1;
 
-	for (int nCnt = 0; nCnt < RANKING_OBJ_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < RANKING_OBJ_NUM; nCnt++)
 	{
 		if (m_RankingScore[nCnt] < nScore)
 		{// 値が大きい場合
@@ -726,15 +799,15 @@ void CResult::SortScore()
 
 	if (nTemp != -1)
 	{// 変更する場合
-		m_RankingScore[nTemp] = nPreScore;
+		m_RankingScore[nTemp] = m_nScore;
 	}
 
 	// 降順ソート
-	for (int nCntFst = 0; nCntFst < RANKING_OBJ_MAX - 1; nCntFst++)
+	for (int nCntFst = 0; nCntFst < RANKING_OBJ_NUM - 1; nCntFst++)
 	{
 		int nTempNum = nCntFst;	// 仮の一番大きい番号
 
-		for (int nCntSec = nCntFst + 1; nCntSec < RANKING_OBJ_MAX; nCntSec++)
+		for (int nCntSec = nCntFst + 1; nCntSec < RANKING_OBJ_NUM; nCntSec++)
 		{
 			if (m_RankingScore[nCntSec] < m_RankingScore[nTempNum])
 			{// 値が大きい場合

@@ -80,6 +80,7 @@ public:	// 誰でもアクセス可能
 	void SetVtx(void);
 	void SetVtx(const int nPatternAnim, const int nTexWidth, const int nTexHeight);
 	void SetVtx(const float fTexU, const float fTexV, const float fWidth, const float fHeight);
+	void SetVtxRatio(const float fTexU, const float fTexV, const float fWidth, const float fHeight, const float fRatioX, const float fRatioY);
 	void SetTex(const float fTexU = 0.0f, const float fTexV = 0.0f, const float fWidth = 1.0f, const float fHeight = 1.0f);
 	void SetPlayerVtx(void);
 	void SetCol(const D3DXCOLOR col);

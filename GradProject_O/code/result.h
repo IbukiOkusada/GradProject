@@ -59,6 +59,7 @@ private:
 		TYPE_RANKING,
 		TYPE_NUM
 	};
+	void ScoreObjInit();
 
 	void Calculation(int* Obj, float Score, int Cnt, int ObjMax, TYPE_OBJ Type);
 	void AlphaJudge(float Alpha);		// アルファ値の判定
@@ -79,11 +80,13 @@ private:
 
 	CObject2D* m_pObj;				// 失敗or成功のオブジェクト
 	CObject2D* m_pScoreObj[4];		// 各スコアの文字のオブジェクト
+	CObject2D* m_pStarObj[25];		// 星のオブジェクト
+	CObject2D* m_pStarFreamObj[25];	// 星の枠のオブジェクト
 	CNumber* m_pDeliNumber;			// 届けた数のオブジェクト
 	CNumber* m_pTimeNumber[3];		// 残りタイムのオブジェクト
 	CNumber* m_pLifeNumber[3];		// 残り体力のオブジェクト
 	CNumber* m_pEvalNumber[2];		// 総合評価のオブジェクト
-	CNumber* m_pRankingNumber[5][2];// ランキングのオブジェクト
+	CNumber* m_pRankingNumber[10];// ランキングのオブジェクト
 
 	static int m_nDeli;
 	static float m_fTime;
@@ -94,7 +97,7 @@ private:
 	int m_TimeObj[3];
 	int m_LifeObj[3];
 	int m_EvalObj[2];
-	int m_RankingObj[5][2];
+	int m_RankingObj[10];
 	int m_Display;
 	int m_DisplayRank;
 
