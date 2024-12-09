@@ -13,10 +13,12 @@ class CPlayer;
 class CMultiCamera;
 class CObjectX;
 class CObject2D;
+class CGoalManager;
 
 namespace
 {
-	const int MAX = 4;
+	const int MAX_PLAYER = 4;      // プレイヤーの最大数
+	const int NUM_CONTROL_UI = 4;  // 操作UIの総数
 }
 
 //===============================================
@@ -32,6 +34,16 @@ public:
 		TYPE_MULTI_WIN,		// マルチ勝利
 		TYPE_MULTI_LOSE,	// マルチ敗北
 		TYPE_MAX			// 通常
+	};
+
+	// 操作UI種類
+	enum CONTROL_UI_TYPE
+	{
+		UI_TURN,   // 旋回
+		UI_ACCEL,  // アクセル
+		UI_BRAKE,  // ブレーキ
+		UI_BOOST,  // ブースト
+		UI_MAX
 	};
 
 public:
@@ -58,14 +70,28 @@ private:
 	void ReadyUp(void);         // 準備OK処理
 
 	// メンバ変数
-	CMultiCamera** m_ppCamera;   // カメラのポインタ
-	CObjectX** m_ppObjX;
-	CObject2D* m_pControlsUI[MAX];
-	CObject2D* m_pReady[MAX];
-	int m_nID;
+	CMultiCamera** m_ppCamera;                 // カメラのポインタ
+	CObjectX** m_ppObjX;                       // 画面下にでるプレイヤーのポインタ
+	CObject2D* m_pControlsUI[NUM_CONTROL_UI];  // 操作UIのポインタ
+	CObject2D* m_pReady[MAX_PLAYER];           // 準備UIのポインタ
+	CGoalManager* m_pGoalManager;              // ゴールマネージャーのポインタ
 
+	int m_nID;
 	bool m_IsFinish;   // チュートリアルが終了しているかどうか
 	bool m_bSetReady;  // 準備が完了しているかどうか
+};
+
+// チュートリアルステップクラス
+class CTutorialStep
+{
+public:
+	CTutorialStep();
+	~CTutorialStep();
+
+	virtual void Update(CEntry* pEntry) = 0;
+
+private:
+
 };
 
 #endif

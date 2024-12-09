@@ -28,6 +28,16 @@ namespace
 	const float CHASE_CROSS = (500.0f);				// すれ違い判定距離
 	const float CHASE_NEAR = (2000.0f);				// 近距離判定
 	const float CHASE_FAR = (3500.0f);				// 遠距離判定
+	const float	LIFE_DAMAGE = (80.0f);				// 傷判定のダメージ
+	const float	LIFE_SMOKE = (50.0f);				// 煙判定のダメージ
+	const float	LEVEL_MAX = (30.0f);				// 警戒度の最大値
+	const float	LEVEL_MIN = (0.0f);					// 警戒度の最小値
+	const float	LEVEL_NORMAL = (-0.1f);				// 警戒度の減少値
+	const float	LEVEL_NEAR = (0.3f);				// 近距離時の警戒度増加量
+	const float	LEVEL_FAR = (0.2f);					// 遠距離時の警戒度増加量
+	const float	LEVEL_NITRO = (1.0f);				// ニトロ時の警戒度増加量
+	const float	LEVEL_DAMAGE = (0.3f);				// 傷状態時の警戒度増加量
+	const float	LEVEL_SMOKE = (0.5f);				// 煙状態時の警戒度増加量
 	const int CHASE_TIME = (100);					// 追跡時間
 }
 
@@ -127,7 +137,7 @@ void CPoliceAI::Search(void)
 			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
 
 			// 警戒度を増加させる
-			m_fLevelSearch += 0.3f;
+			m_fLevelSearch += LEVEL_NEAR;
 
 			// 各状況確認
 			CheckSpeed(pPlayer);
@@ -152,7 +162,7 @@ void CPoliceAI::Search(void)
 			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
 
 			// 警戒度を増加させる
-			m_fLevelSearch += 0.2f;
+			m_fLevelSearch += LEVEL_FAR;
 
 			// 各状況確認
 			CheckSpeed(pPlayer);
@@ -195,11 +205,12 @@ void CPoliceAI::Search(void)
 	CDebugProc::GetInstance()->Print("警戒度 : %f\n", m_fLevelSearch);
 
 	// 警戒度を減少させる
-	m_fLevelSearch -= 0.1f;
+	m_fLevelSearch += LEVEL_NORMAL;
 
-	if (m_fLevelSearch < 0.0f)
+	// 最小値を下回ったら補正する
+	if (m_fLevelSearch < LEVEL_MIN)
 	{
-		m_fLevelSearch = 0.0f;
+		m_fLevelSearch = LEVEL_MIN;
 	}
 }
 
@@ -246,7 +257,7 @@ void CPoliceAI::EndChase(void)
 	bCross = false;
 
 	// 警戒度をリセット
-	m_fLevelSearch = 0.0f;
+	m_fLevelSearch = LEVEL_MIN;
 
 	// 警戒状態に
 	m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
@@ -266,7 +277,7 @@ void CPoliceAI::CheckSpeed(CPlayer* pPlayer)
 	 // ニトロを使っている時
 	if (pPlayer->GetState() == CPlayer::STATE_NITRO)
 	{
-		m_fLevelSearch += 1.0f;
+		m_fLevelSearch += LEVEL_NITRO;
 	}
 }
 
@@ -292,9 +303,9 @@ void CPoliceAI::CheckDamage(CPlayer* pPlayer)
 	if (pPlayer == nullptr) { return; }
 
 	// ライフが一定値以下の時
-	if (pPlayer->GetLife() < 80.0f)
+	if (pPlayer->GetLife() < LIFE_DAMAGE)
 	{
-		m_fLevelSearch += 0.3f;
+		m_fLevelSearch += LEVEL_DAMAGE;
 	}
 }
 
@@ -307,9 +318,9 @@ void CPoliceAI::CheckSmoke(CPlayer* pPlayer)
 	if (pPlayer == nullptr) { return; }
 
 	// ライフが一定値以下の時
-	if (pPlayer->GetLife() < 50.0f)
+	if (pPlayer->GetLife() < LIFE_SMOKE)
 	{
-		m_fLevelSearch += 0.5f;
+		m_fLevelSearch += LEVEL_SMOKE;
 	}
 }
 
@@ -330,10 +341,10 @@ void CPoliceAI::CheckLevel(CPlayer* pPlayer)
 	// プレイヤーが存在しないなら抜ける
 	if (pPlayer == nullptr) { return; }
 
-	if (m_fLevelSearch > 30.0f)
+	if (m_fLevelSearch > LEVEL_MAX)
 	{
 		m_pPolice->SetChase(true);
-		m_fLevelSearch = 30.0f;
+		m_fLevelSearch = LEVEL_MAX;
 	}
 }
 
