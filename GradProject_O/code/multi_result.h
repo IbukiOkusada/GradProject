@@ -9,6 +9,9 @@
 
 #include "manager.h"
 
+// 前方宣言
+class CMultiResultManager;
+
 //===============================================
 // リザルトクラスの定義(派生クラス)
 //===============================================
@@ -31,10 +34,10 @@ public:
 	~CMultiResult();	// デストラクタ
 
 	// メンバ関数
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
+	HRESULT Init(void) override;
+	void Uninit(void) override;
+	void Update(void) override;
+	void Draw(void) override;
 
 private:
 
@@ -50,6 +53,7 @@ private:
 	// メンバ変数
 	CFileLoad* m_pFileLoad;			// ファイル読み込みのポインタ
 	CTime* m_pTime;					// タイマー
+	CMultiResultManager* m_pMgr;	// マネージャー
 };
 
 #endif
