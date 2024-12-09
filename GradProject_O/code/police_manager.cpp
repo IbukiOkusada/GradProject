@@ -228,9 +228,9 @@ void CPoliceManager::SetInspection()
 	int startid = CCarManager::GetInstance()->GetMapList()->GetInCnt();
 
 	// ŒŸ–â¶¬
-	CInspection* pInsp = CInspection::Create(pos, rot, pRoad, CInspectionManager::GetInstance()->GetCreateCnt(), startid);
+	CInspectionManager::GetInstance()->SetNextInspection(pos, rot, pRoad, CInspectionManager::GetInstance()->GetCreateCnt(), startid);
 
 	// ŒŸ–â‘—M
 	auto net = CNetWork::GetInstance();
-	net->SendSetInspection(pInsp->GetId(), pos, rot, pRoad->GetIdx(), startid);
+	net->SendSetInspection(CInspectionManager::GetInstance()->GetCreateCnt(), pos, rot, pRoad->GetIdx(), startid);
 }

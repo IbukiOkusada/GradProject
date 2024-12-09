@@ -24,6 +24,7 @@ namespace
 CInspectionManager::CInspectionManager()
 {
 	m_pInstance = this;
+	m_NextInfo = SNextInfo();
 	m_List.Clear();
 }
 
@@ -117,5 +118,28 @@ void CInspectionManager::Uninit(void)
 //==========================================================
 void CInspectionManager::Update(void)
 {
-	
+	if (m_NextInfo.bActive)
+	{
+		// ë∂ç›ÇµÇƒÇ¢Ç»Ç©Ç¡ÇΩÇÁê∂ê¨
+		if (Get(m_NextInfo.nId) == nullptr)
+		{
+			CInspection::Create(m_NextInfo.pos, m_NextInfo.rot, m_NextInfo.pRoad, m_NextInfo.nId, m_NextInfo.nStartpdid);
+		}
+		m_NextInfo = SNextInfo();
+		m_NextInfo.bActive = false;
+	}
+}
+
+//==========================================================
+// éüÇÃåüñ‚ÇÃèÓïÒê›íË
+//==========================================================
+void CInspectionManager::SetNextInspection(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, CRoad* pRoad, int nId, int startpdid)
+{
+	if (m_NextInfo.bActive) { return; }
+	m_NextInfo.bActive = true;
+	m_NextInfo.pos = pos;
+	m_NextInfo.rot = rot;
+	m_NextInfo.pRoad = pRoad;
+	m_NextInfo.nId = nId;
+	m_NextInfo.nStartpdid = startpdid;
 }

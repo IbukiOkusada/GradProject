@@ -184,6 +184,7 @@
     <ClCompile Include="code\edit_manager.cpp" />
     <ClCompile Include="code\edit_object.cpp" />
     <ClCompile Include="code\edit_road.cpp" />
+    <ClCompile Include="code\edit_rotate.cpp" />
     <ClCompile Include="code\edit_scale.cpp" />
     <ClCompile Include="code\effect2D.cpp" />
     <ClCompile Include="code\effect3D.cpp" />
@@ -223,6 +224,8 @@
     <ClCompile Include="code\meter.cpp" />
     <ClCompile Include="code\model.cpp" />
     <ClCompile Include="code\motion.cpp" />
+    <ClCompile Include="code\multi_result.cpp" />
+    <ClCompile Include="code\multi_result_manager.cpp" />
     <ClCompile Include="code\navi.cpp" />
     <ClCompile Include="code\network.cpp" />
     <ClCompile Include="code\number.cpp" />
@@ -297,6 +300,7 @@
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\edit_gimmick.h" />
     <ClInclude Include="code\edit_goal.h" />
+    <ClInclude Include="code\edit_rotate.h" />
     <ClInclude Include="code\edit_scale.h" />
     <ClInclude Include="code\effect2D.h" />
     <ClInclude Include="code\effekseerControl.h" />
@@ -342,6 +346,8 @@
     <ClInclude Include="code\meter.h" />
     <ClInclude Include="code\model.h" />
     <ClInclude Include="code\motion.h" />
+    <ClInclude Include="code\multi_result.h" />
+    <ClInclude Include="code\multi_result_manager.h" />
     <ClInclude Include="code\navi.h" />
     <ClInclude Include="code\network.h" />
     <ClInclude Include="code\number.h" />

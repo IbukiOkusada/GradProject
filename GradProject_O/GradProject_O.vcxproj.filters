@@ -184,6 +184,9 @@
     <Filter Include="shader\manager">
       <UniqueIdentifier>{d120bd36-8d02-4682-8185-3062043024f7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="mode\result\multi">
+      <UniqueIdentifier>{82e2590b-1023-483a-ada8-14b29de3effe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -533,6 +536,15 @@
     </ClCompile>
     <ClCompile Include="code\police_AI_manager.cpp">
       <Filter>car</Filter>
+    </ClCompile>
+    <ClCompile Include="code\multi_result.cpp">
+      <Filter>mode\result\multi</Filter>
+    </ClCompile>
+    <ClCompile Include="code\multi_result_manager.cpp">
+      <Filter>mode\result\multi</Filter>
+    </ClCompile>
+    <ClCompile Include="code\edit_rotate.cpp">
+      <Filter>edit\handle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -889,6 +901,15 @@
     </ClInclude>
     <ClInclude Include="code\police_AI_manager.h">
       <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\multi_result.h">
+      <Filter>mode\result\multi</Filter>
+    </ClInclude>
+    <ClInclude Include="code\multi_result_manager.h">
+      <Filter>mode\result\multi</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_rotate.h">
+      <Filter>edit\handle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

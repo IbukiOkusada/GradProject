@@ -25,14 +25,14 @@ namespace
 	const float SPEED_CURVE = (10.0f);			// カーブ時の速度
 	const float SPEED_STREET_BACK = (-10.0f);	// バックで直進時の速度
 	const float SPEED_CURVE_BACK = (-10.0f);	// バックでカーブ時の速度
-	const int TIME_BACK = (80);				// バックする時間
+	const int TIME_BACK = (80);					// バックする時間
 	const float SPEED_INER = (0.05f);			// 速度の慣性
 	const float ROT_MULTI = (0.06f);			// 向き補正倍率
 	const float ROT_MULTI_BACK = (0.015f);		// バック時の向き補正倍率
 	const float ROT_CURVE = (0.15f);			// カーブ判定角度
 	const float LENGTH_POINT = (200.0f);		// 到達判定距離
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
-	const float RECV_INER = (0.5f);		// 受信したデータの慣性
+	const float RECV_INER = (0.35f);			// 受信したデータの慣性
 }
 
 //==========================================================

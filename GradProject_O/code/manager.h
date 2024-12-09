@@ -48,6 +48,7 @@ public:
 		MODE_ENTRY,     // エントリー画面
 		MODE_GAME,		// ゲーム画面
 		MODE_RESULT,	// リザルト画面
+		MODE_MULTI_RESULT,	// マルチリザルト画面
 		MODE_MAX
 	};
 

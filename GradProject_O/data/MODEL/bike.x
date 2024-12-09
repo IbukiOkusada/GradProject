@@ -25836,7 +25836,7 @@ Mesh {
    0.100000;0.100000;0.100000;;
    0.200000;0.200000;0.200000;;
    TextureFilename {
-    "data\\TEXTURE\\Bike_Deffuse.tga.png";
+    "data\\TEXTURE\\Bike_Deffue.png";
    }
   }
   Material {

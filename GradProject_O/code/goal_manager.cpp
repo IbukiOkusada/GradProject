@@ -41,6 +41,7 @@ CGoalManager::CGoalManager()
 	m_nNumCreate = 0;
 	m_nNextIdx = 0;
 	m_nNowIdx = 0;
+	m_nNetId = -1;
 }
 
 //==========================================================
@@ -155,6 +156,13 @@ void CGoalManager::Update(void)
 	CDebugProc::GetInstance()->Print("ゴールの生成数 [ %d ] : 現在の配置数 [ %d ], 配置の番号[ %d ]\n",m_nNumCreate, m_List.GetNum(), m_nNowIdx);
 
 	if (m_pGoal == nullptr) { return; }
+
+	// 次の番号が設定されている
+	if (m_nNetId >= 0)
+	{
+		GoalCreate(m_nNetId);
+		m_nNetId = -1;
+	}
 }
 
 //==========================================================

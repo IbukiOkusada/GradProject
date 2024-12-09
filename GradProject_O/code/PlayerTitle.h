@@ -70,7 +70,7 @@ public:
 	//ゴール情報を取得
 	inline CTitleGoal* GetTitleGoal(void) { return m_pTitleGoal; }
 
-	//サイレン情報設定
+	//サウンド情報設定
 	inline void SetS(const bool bStart)
 	{
 		//開始なら再生、していないなら止める
@@ -84,7 +84,6 @@ private:
 	void PolicePosSet(void);
 
 	int m_nNumDest;						//目的地の番号
-	int m_nNumDestNext;					//次の目的地の番号
 	float m_fBDustValue;				//煙の大きさの値
 	float m_fDestrot;					//プレイヤー自身の向きの目的地
 	float m_fMoveRot;					//回転速度
