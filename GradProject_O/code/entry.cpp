@@ -269,7 +269,6 @@ void CEntry::Uninit(void)
 
     // ゴールマネージャーの破棄
     SAFE_RELEASE(m_pGoalManager);
-    CGoalManager::Release();
 }
 
 //===============================================
@@ -446,7 +445,8 @@ void CEntry::AddPlayer(void)
                 m_ppObjX[i]->SetColMulti(pPlayer->GetObj()->GetColMuliti());
 
                 // 準備できてるかどうかのUIの生成
-                m_pReady[i] = CObject2D::Create((D3DXVECTOR3(SCREEN_WIDTH * 0.1f + i * 200.0f, SCREEN_HEIGHT * 0.5f, 0.0f)), VECTOR3_ZERO, 7);
+                D3DXVECTOR3 POS = D3DXVECTOR3((SCREEN_WIDTH * (0.25f * float(i + 1)) - 150.0f), SCREEN_HEIGHT * 0.7f, 0.0f);
+                m_pReady[i] = CObject2D::Create(POS, VECTOR3_ZERO, 7);
                 m_pReady[i]->SetSize(100.0f, 50.0f);
                 m_pReady[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
             }
