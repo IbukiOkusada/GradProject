@@ -202,6 +202,7 @@ HRESULT CGame::Init(void)
     {
         // 車の生成
         CreateCar();
+
         // 警察の生成
         CreatePolice();
     }
@@ -270,10 +271,7 @@ void CGame::Uninit(void)
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
 
-    //Winsock終了処理
-    WSACleanup();	// WSACleanup関数 : winsockの終了処理
-
-    // エディット設定
+    // エディット廃棄
     CEditManager::Release();
 
     // マップマネージャー廃棄
@@ -301,6 +299,7 @@ void CGame::Update(void)
 		m_bPause = m_bPause ? false : true;
 	}
 
+    // タイマーの更新
     if (m_pGameTimer != nullptr)
     {
         CPlayer* player = CPlayerManager::GetInstance()->GetPlayer();
@@ -376,9 +375,14 @@ void CGame::Update(void)
     {
         End_Fail();
     }
+
+    // 各マネージャー更新
     CPoliceManager::GetInstance()->Update();
     CPoliceAIManager::GetInstance()->Update();
+
     CScene::Update();
+
+    // 状態による音量設定
     switch (m_GameState)
     {
     case CGame::STATE_NONE:
