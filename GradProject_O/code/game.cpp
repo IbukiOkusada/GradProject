@@ -403,6 +403,14 @@ void CGame::Update(void)
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
         }
         break;
+
+    case CGame::STATE_MULTIEND:
+        pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol() * 0.9f);
+        if (!m_pEndSound->GetPlay())
+        {
+            CManager::GetInstance()->GetFade()->Set(CScene::MODE_MULTI_RESULT);
+        }
+        break;
     case CGame::STATE_MAX:
         break;
     default:
@@ -489,6 +497,18 @@ void CGame::End_Fail()
         SetGameState(STATE::STATE_FAIL);
         m_pEndText = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, SCREEN_CENTER, 0.7f, 200.0f, 200.0f, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
         m_pEndText->PushBackString("配達失敗");
+        m_pEndText->SetEnableScroll(true);
+        m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\f_jingle.wav", 0);
+    }
+}
+
+void CGame::End_MultiEnd()
+{
+    if (m_GameState != STATE::STATE_MULTIEND)
+    {
+        SetGameState(STATE::STATE_MULTIEND);
+        m_pEndText = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, SCREEN_CENTER, 0.7f, 200.0f, 200.0f, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));
+        m_pEndText->PushBackString("配達終了");
         m_pEndText->SetEnableScroll(true);
         m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\f_jingle.wav", 0);
     }
