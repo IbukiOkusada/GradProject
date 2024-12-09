@@ -792,7 +792,7 @@ void CNetWork::RecvSetInspection(int* pByte, const int nId, const char* pRecvDat
 	}
 
 	// ŒŸ–â¶¬
-	CInspection::Create(pos, rot, pRoad, inspid, startpdid);
+	CInspectionManager::GetInstance()->SetNextInspection(pos, rot, pRoad, inspid, startpdid);
 }
 
 //===================================================

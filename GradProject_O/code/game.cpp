@@ -381,6 +381,7 @@ void CGame::Update(void)
     // 各マネージャー更新
     CPoliceManager::GetInstance()->Update();
     CPoliceAIManager::GetInstance()->Update();
+    CInspectionManager::GetInstance()->Update();
 
     CScene::Update();
 
