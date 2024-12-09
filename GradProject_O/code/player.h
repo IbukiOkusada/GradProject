@@ -174,6 +174,8 @@ protected:	// 自分だけがアクセス可能
 	void DEBUGKEY();
 	void SendData();
 	void Respawn();
+	void SetCol();
+	void CameraMove(const D3DXVECTOR3& rot);
 
 	// 受信用メンバ関数
 	void RecvInerSet();

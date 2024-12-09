@@ -42,6 +42,7 @@ public:
 		STATE_PROG,
 		STATE_SUCCESS,
 		STATE_FAIL,
+		STATE_MULTIEND,
 		STATE_MAX
 	};
 public:
@@ -66,6 +67,7 @@ public:
 
 	void End_Success();
 	void End_Fail();
+	void End_MultiEnd();
 private:
 
 	//=============================

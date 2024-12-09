@@ -169,9 +169,7 @@ void CNetWork::Uninit()
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
-
 		m_aConnect[i] = false;
-
 	}
 
 	m_nMyIdx = -1;
@@ -315,6 +313,8 @@ bool CNetWork::DisConnect()
 	if (m_pClient != nullptr)
 	{
 		m_pClient->Uninit();
+		delete m_pClient;
+		m_pClient = nullptr;
 	}
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
@@ -351,8 +351,12 @@ void CNetWork::Online(void)
 		if (*pRecvByte > 0)
 		{
 			// マルチスレッド
+#if 0
 			std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
 			th.detach();
+#else
+			ByteCheck(pData, pRecvByte);
+#endif
 		}
 		else
 		{
@@ -664,7 +668,7 @@ void CNetWork::RecvNextGoal(int* pByte, const int nId, const char* pRecvData)
 	memcpy(&goalid, &pRecvData[byte], sizeof(int));
 	*pByte += sizeof(int);
 
-	CGoalManager::GetInstance()->GoalCreate(goalid);
+	CGoalManager::GetInstance()->SetNetId(goalid);
 }
 
 //===================================================
