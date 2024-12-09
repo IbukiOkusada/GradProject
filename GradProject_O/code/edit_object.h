@@ -38,6 +38,7 @@ private:	// 自分だけがアクセス可能
 	void Delete();		// 削除
 	void Move();		// 移動
 	void Scale();		// スケール
+	void Rotate();		// 回転
 	void Save();		// 保存
 	void Create();		// 生成
 	void ModeChange();	// 変更
@@ -46,6 +47,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	D3DXVECTOR3 m_startScale;
+	D3DXVECTOR3 m_startRotate;
 	CEdit_Handle* m_pHandle;	// 矢印
 	float m_fMouseWheel;	// マウスホイールの移動量
 	CMapObstacle* m_pSelect;	// 選択中オブジェクト

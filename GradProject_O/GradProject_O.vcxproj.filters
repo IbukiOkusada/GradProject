@@ -543,6 +543,9 @@
     <ClCompile Include="code\multi_result_manager.cpp">
       <Filter>mode\result\multi</Filter>
     </ClCompile>
+    <ClCompile Include="code\edit_rotate.cpp">
+      <Filter>edit\handle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -904,6 +907,9 @@
     </ClInclude>
     <ClInclude Include="code\multi_result_manager.h">
       <Filter>mode\result\multi</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_rotate.h">
+      <Filter>edit\handle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
