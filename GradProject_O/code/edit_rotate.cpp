@@ -68,6 +68,7 @@ HRESULT CEdit_Rotate::Init(void)
 	for (int i = 0; i < VEC_MAX; i++)
 	{
 		m_aObj[i].pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, FILENAME[i], 2);
+		m_aObj[i].pObj->SetScale(D3DXVECTOR3(0.5f, 0.5f, 0.5f));
 		m_aObj[i].pObj->SetType(CObject::TYPE_EDIT);
 	}
 

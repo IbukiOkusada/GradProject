@@ -177,7 +177,7 @@ void CEdit_Handle::Update(void)
 		}
 		else if (m_type == TYPE::TYPE_ROT)
 		{
-			m_aObj[i].pObj->SetPosition(m_pos);
+			m_aObj[i].pObj->SetPosition(m_pos + SETPOS[i]);
 			m_aObj[i].pObj->SetRotation(m_rot);
 		}
 
