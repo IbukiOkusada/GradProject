@@ -58,6 +58,8 @@
 #include "fog.h"
 #include "inspection_manager.h"
 #include "deltatime.h"
+#include "multi_result_manager.h"
+
 // ネットワーク
 #include "network.h"
 
@@ -511,6 +513,9 @@ void CGame::End_MultiEnd()
         m_pEndText->PushBackString("配達終了");
         m_pEndText->SetEnableScroll(true);
         m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\f_jingle.wav", 0);
+
+        // データを保存
+        CMultiResultManager::GetInstance()->DataSet();
     }
 }
 //===================================================

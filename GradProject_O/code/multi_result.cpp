@@ -5,6 +5,7 @@
 //
 //===============================================
 #include "multi_result.h"
+#include "multi_result_manager.h"
 #include "map_manager.h"
 #include "manager.h"
 #include "sound.h"
@@ -19,7 +20,7 @@
 //===============================================
 CMultiResult::CMultiResult()
 {
-	
+	m_pMgr = nullptr;
 }
 
 //===============================================
@@ -38,6 +39,9 @@ HRESULT CMultiResult::Init(void)
 	// マップ読み込み
 	CMapManager::GetInstance()->Load();
 
+	// マネージャー取得
+	m_pMgr = CMultiResultManager::GetInstance();
+
 	return S_OK;
 }
 
@@ -46,6 +50,13 @@ HRESULT CMultiResult::Init(void)
 //===============================================
 void CMultiResult::Uninit(void)
 {
+	// マネージャー廃棄
+	if(m_pMgr != nullptr)
+	{
+		m_pMgr->Release();
+		m_pMgr = nullptr;
+	}
+
 	// マップ情報廃棄
 	CMapManager::Release();
 	CManager::GetInstance()->GetCamera()->SetActive(true);
