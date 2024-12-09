@@ -39,6 +39,7 @@ private:	// 自分だけがアクセス可能
 	void Move();		// 移動
 	void Scale();		// スケール
 	void Rotate();		// 回転
+	void RotateReset();	// 回転リセット
 	void Save();		// 保存
 	void Create();		// 生成
 	void ModeChange();	// 変更

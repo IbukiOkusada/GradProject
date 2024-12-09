@@ -324,6 +324,22 @@ void CEdit_Obj::Rotate()
 }
 
 //==========================================================
+// 回転リセット
+//==========================================================
+void CEdit_Obj::RotateReset()
+{
+	if (m_pSelect == nullptr) { return; }
+	CDebugProc::GetInstance()->Print("回転リセット : Enter, ");
+
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+
+	// 入力確認
+	if (!pKey->GetTrigger(DIK_RETURN)) { return; }
+
+	m_pSelect->SetRotation(VECTOR3_ZERO);
+}
+
+//==========================================================
 // モデル変更
 //==========================================================
 void CEdit_Obj::ModelChange()

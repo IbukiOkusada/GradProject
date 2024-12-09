@@ -122,6 +122,9 @@ void CEdit_Gimmick::Update(void)
 	// 回転
 	Rotate();
 
+	// 回転リセット
+	RotateReset();
+
 	// 削除
 	Delete();
 
@@ -321,6 +324,22 @@ void CEdit_Gimmick::Rotate()
 
 	// 選択した障害物の向き設定
 	m_pSelect->SetRot(rotate);
+}
+
+//==========================================================
+// 回転リセット
+//==========================================================
+void CEdit_Gimmick::RotateReset()
+{
+	if (m_pSelect == nullptr) { return; }
+	CDebugProc::GetInstance()->Print(" 回転リセット : Enter, ");
+
+	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+
+	// 入力確認
+	if (!pKey->GetTrigger(DIK_RETURN)) { return; }
+
+	m_pSelect->SetRot(VECTOR3_ZERO);
 }
 
 //==========================================================
