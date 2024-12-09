@@ -42,6 +42,7 @@ CPoliceAI::CPoliceAI()
 	m_pRoadTarget = nullptr;
 	m_pSearchTarget = nullptr;
 	m_fSearchTimer = 0.0f;
+	m_fLevelSearch = 0.0f;
 	m_nCntThread = 0;
 	bCross = false;
 }
@@ -91,7 +92,7 @@ void CPoliceAI::Search(void)
 		D3DXVECTOR3 vecPlayer = pPlayer->GetPosition() - m_pPolice->GetPosition();		// プレイヤーと警察間のベクトル計算
 		float length = D3DXVec3Length(&vecPlayer);										// 距離計算
 		float rotVec = atan2f(vecPlayer.x, vecPlayer.z);								// 角度計算
-		float rotView = m_pPolice->GetRotation().y - rotVec;								// 向いてる方向との差を計算
+		float rotView = m_pPolice->GetRotation().y - rotVec;							// 向いてる方向との差を計算
 
 		// 角度補正
 		if (rotView > D3DX_PI)
@@ -118,10 +119,6 @@ void CPoliceAI::Search(void)
 
 			// 接近状態を設定
 			bCross = true;
-
-			// 速度を設定
-			m_pPolice->SetSpeedDest(SECURE_SPEEDDEST);
-			m_pPolice->SetSpeed(m_pPolice->GetSpeed() * SECURE_SPEED);
 		}
 		else if (length < CHASE_NEAR)
 		{// 近距離
@@ -129,11 +126,15 @@ void CPoliceAI::Search(void)
 			// 視界内に入っているかどうか
 			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
 
+			// 警戒度を増加させる
+			m_fLevelSearch += 0.3f;
+
 			// 各状況確認
 			CheckSpeed(pPlayer);
 			CheckTurn(pPlayer);
 			CheckDamage(pPlayer);
 			CheckCollision(pPlayer);
+			CheckLevel(pPlayer);
 
 			// 追跡状態でなければ抜ける
 			if (!m_pPolice->GetChase()) { continue; }
@@ -150,10 +151,14 @@ void CPoliceAI::Search(void)
 			// 視界内に入っているかどうか
 			if (fabs(rotView) > D3DX_PI * 0.3f && !m_pPolice->GetChase()) { continue; }
 
+			// 警戒度を増加させる
+			m_fLevelSearch += 0.2f;
+
 			// 各状況確認
 			CheckSpeed(pPlayer);
 			CheckSmoke(pPlayer);
 			CheckCollision(pPlayer);
+			CheckLevel(pPlayer);
 
 			// 追跡状態でなければ抜ける
 			if (!m_pPolice->GetChase()) { continue; }
@@ -185,6 +190,16 @@ void CPoliceAI::Search(void)
 				m_pPolice->SendChaseEnd();
 			}
 		}
+	}
+
+	CDebugProc::GetInstance()->Print("警戒度 : %f\n", m_fLevelSearch);
+
+	// 警戒度を減少させる
+	m_fLevelSearch -= 0.1f;
+
+	if (m_fLevelSearch < 0.0f)
+	{
+		m_fLevelSearch = 0.0f;
 	}
 }
 
@@ -230,6 +245,9 @@ void CPoliceAI::EndChase(void)
 	// 接近状態を解除
 	bCross = false;
 
+	// 警戒度をリセット
+	m_fLevelSearch = 0.0f;
+
 	// 警戒状態に
 	m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
 
@@ -248,7 +266,7 @@ void CPoliceAI::CheckSpeed(CPlayer* pPlayer)
 	 // ニトロを使っている時
 	if (pPlayer->GetState() == CPlayer::STATE_NITRO)
 	{
-		m_pPolice->SetChase(true);
+		m_fLevelSearch += 1.0f;
 	}
 }
 
@@ -259,6 +277,10 @@ void CPoliceAI::CheckTurn(CPlayer* pPlayer)
 {
 	// プレイヤーが存在しないなら抜ける
 	if (pPlayer == nullptr) { return; }
+
+	D3DXVECTOR3 rotTurn = pPlayer->GetRotation() - pPlayer->GetOldRotation();
+
+	m_fLevelSearch += fabs(rotTurn.y);
 }
 
 //==========================================================
@@ -272,7 +294,7 @@ void CPoliceAI::CheckDamage(CPlayer* pPlayer)
 	// ライフが一定値以下の時
 	if (pPlayer->GetLife() < 80.0f)
 	{
-		m_pPolice->SetChase(true);
+		m_fLevelSearch += 0.3f;
 	}
 }
 
@@ -287,7 +309,7 @@ void CPoliceAI::CheckSmoke(CPlayer* pPlayer)
 	// ライフが一定値以下の時
 	if (pPlayer->GetLife() < 50.0f)
 	{
-		m_pPolice->SetChase(true);
+		m_fLevelSearch += 0.5f;
 	}
 }
 
@@ -298,6 +320,21 @@ void CPoliceAI::CheckCollision(CPlayer* pPlayer)
 {
 	// プレイヤーが存在しないなら抜ける
 	if (pPlayer == nullptr) { return; }
+}
+
+//==========================================================
+// 警戒度確認処理
+//==========================================================
+void CPoliceAI::CheckLevel(CPlayer* pPlayer)
+{
+	// プレイヤーが存在しないなら抜ける
+	if (pPlayer == nullptr) { return; }
+
+	if (m_fLevelSearch > 30.0f)
+	{
+		m_pPolice->SetChase(true);
+		m_fLevelSearch = 30.0f;
+	}
 }
 
 //==========================================================

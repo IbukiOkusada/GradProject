@@ -64,6 +64,7 @@ HRESULT CPlayerResult::Init(const char* pBodyName, const char* pLegName)
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
+	SetCol();
 
 	//エフェクト生成
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);

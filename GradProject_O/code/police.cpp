@@ -27,6 +27,8 @@ namespace
 {
 	const float LENGTH_POINT = (200.0f);		// “ž’B”»’è‹——£
 	const float CHASE_SPEED = (22.0f);			// ’ÇÕŽž‚Ì‰Á‘¬
+	const float SECURE_SPEEDDEST = (-35.0f);		// Šm•ÛŽž‚Ì–Ú•W‘¬“x
+	const float SECURE_SPEED = (0.8f);				// Šm•ÛŽž‚Ì‰Á‘¬”{—¦
 	const float ROT_MULTI_DEF = (0.06f);		// ’ÊíŽž‚ÌŒü‚«•â³”{—¦
 	const float ROT_MULTI_CHASE = (0.13f);		// ’ÇÕŽž‚ÌŒü‚«•â³”{—¦
 }
@@ -202,6 +204,14 @@ void CPolice::MoveRoad()
 			if (m_Info.pPlayer != nullptr)
 			{
 				SetPosTarget(m_Info.pPlayer->GetPosition());
+				
+
+				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) < 500.0f)
+				{
+					// ‘¬“x‚ðÝ’è
+					SetSpeedDest(SECURE_SPEEDDEST);
+					SetSpeed(GetSpeed() * SECURE_SPEED);
+				}
 			}
 		}
 
