@@ -30,6 +30,7 @@ CEdit_Gimmick::CEdit_Gimmick()
 	m_pHandle = nullptr;
 	m_fMouseWheel = 0.0f;
 	m_startScale = VECTOR3_ZERO;
+	m_startRotate = VECTOR3_ZERO;
 }
 
 //==========================================================
@@ -102,6 +103,7 @@ void CEdit_Gimmick::Update(void)
 		if (m_pHandle->GetOldHold() == nullptr && m_pHandle->GetHold() != nullptr)
 		{
 			m_startScale = m_pSelect->GetScale();
+			m_startRotate = m_pSelect->GetRot();
 		}
 	}
 
@@ -116,6 +118,9 @@ void CEdit_Gimmick::Update(void)
 
 	// スケール
 	Scale();
+
+	// 回転
+	Rotate();
 
 	// 削除
 	Delete();
@@ -139,7 +144,6 @@ void CEdit_Gimmick::ClickCheck()
 {
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 	Clist<CGimmick*>* pList = CGimmick::GetList();
-	float length = 10000000.0f;
 
 	if (CGimmick::GetList() == nullptr) { return; }
 
@@ -216,7 +220,7 @@ bool CEdit_Gimmick::CursorCollision(CGimmick* pGimmick)
 	{
 		if (m_pSelect != nullptr)
 		{
-			D3DXVECTOR3 vec = touchpos - origin;
+			vec = touchpos - origin;
 			float nowlength = D3DXVec3Length(&vec);
 
 			vec = m_pSelect->GetPos() - origin;
@@ -294,6 +298,29 @@ void CEdit_Gimmick::Scale()
 
 	// 選択した道の座標設定
 	m_pSelect->SetScale(scale);
+}
+
+//==========================================================
+// 回転
+//==========================================================
+void CEdit_Gimmick::Rotate()
+{
+	if (m_pSelect == nullptr) { return; }
+	if (m_pHandle == nullptr) { return; }
+	if (m_pHandle->GetType() != CEdit_Handle::TYPE_ROT) { return; }
+	if (m_pHandle->GetHold() == nullptr) { return; }
+
+	// ハンドルの移動から変更スケール取得
+	D3DXVECTOR3 handlerotate = m_pHandle->GetDiffRotation();	// 座標
+
+	// 調整
+	D3DXVECTOR3 rotate = m_startRotate;
+	rotate.x += handlerotate.x;
+	rotate.y += handlerotate.y;
+	rotate.z += handlerotate.z;
+
+	// 選択した障害物の向き設定
+	m_pSelect->SetRot(rotate);
 }
 
 //==========================================================
