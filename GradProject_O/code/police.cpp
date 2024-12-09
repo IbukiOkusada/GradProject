@@ -25,12 +25,13 @@
 // 無名名前空間を定義
 namespace
 {
-	const float LENGTH_POINT = (200.0f);		// 到達判定距離
-	const float CHASE_SPEED = (22.0f);			// 追跡時の加速
+	const float LENGTH_POINT = (200.0f);			// 到達判定距離
+	const float LENGTH_POINT_CHASE = (500.0f);		// すれ違い判定距離
+	const float CHASE_SPEED = (22.0f);				// 追跡時の加速
 	const float SECURE_SPEEDDEST = (-35.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
-	const float ROT_MULTI_DEF = (0.06f);		// 通常時の向き補正倍率
-	const float ROT_MULTI_CHASE = (0.13f);		// 追跡時の向き補正倍率
+	const float ROT_MULTI_DEF = (0.06f);			// 通常時の向き補正倍率
+	const float ROT_MULTI_CHASE = (0.13f);			// 追跡時の向き補正倍率
 }
 
 //==========================================================================
@@ -201,21 +202,16 @@ void CPolice::MoveRoad()
 		}
 		else
 		{
-			if (m_Info.pPlayer != nullptr)
-			{
-				SetPosTarget(m_Info.pPlayer->GetPosition());
-				
+			if (m_Info.pPlayer == nullptr) { return; }
 
-				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) < 500.0f)
-				{
-					// 速度を設定
-					SetSpeedDest(SECURE_SPEEDDEST);
-					SetSpeed(GetSpeed() * SECURE_SPEED);
-				}
-			}
+			SetPosTarget(m_Info.pPlayer->GetPosition());
+
+			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) < LENGTH_POINT_CHASE) { return; }
+
+			// 速度を設定
+			SetSpeedDest(SECURE_SPEEDDEST);
+			SetSpeed(GetSpeed() * SECURE_SPEED);
 		}
-
-		CDebugProc::GetInstance()->Print("追跡中\n");
 	}
 	else
 	{
