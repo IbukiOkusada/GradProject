@@ -144,6 +144,14 @@ namespace
 	">> [NEON TRAIL ACTIVATED]                        ",
 	}
 	};
+
+	const D3DXCOLOR MULTICOL[NetWork::MAX_CONNECT] =
+	{
+		{1.0f, 1.0f, 0.1f, 1.0f},	// â©êF
+		{1.0f, 0.1f, 0.7f, 1.0f},	// ê‘éá
+		{0.1f, 1.0f, 0.1f, 1.0f},	// óŒ
+		{0.3f, 0.6f, 1.0f, 1.0f},	// êÖêF
+	};
 }
 
 //===============================================
@@ -246,6 +254,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
+
+	SetCol();
+
 	SetMatrix();
 	
 	//m_pContainer = CContainer::Create();
@@ -1040,7 +1051,9 @@ void CPlayer::StateSet(void)
 
 			if (m_pObj != nullptr)
 			{
-				m_pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, diff));
+				D3DXCOLOR multi = m_pObj->GetColMuliti();
+				multi.a = diff;
+				m_pObj->SetColMulti(multi);
 			}
 		}
 	}
@@ -1378,6 +1391,20 @@ void CPlayer::Respawn()
 
 	if (m_pObj != nullptr)
 	{
-		m_pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		D3DXCOLOR multi = m_pObj->GetColMuliti();
+		multi.a = 1.0f;
+		m_pObj->SetColMulti(multi);
 	}
+}
+
+//===============================================
+// êFê›íË
+//===============================================
+void CPlayer::SetCol()
+{
+	if (m_pObj == nullptr) { return; }
+
+	int id = m_nId;
+	if (id < 0) id = 0;
+	m_pObj->SetColMulti(MULTICOL[id]);
 }

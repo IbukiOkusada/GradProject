@@ -108,7 +108,7 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
-	SetMatrix();
+	SetCol();
 	m_pNavi = CNavi::Create();
 
 	//ÉTÉEÉìÉhê∂ê¨

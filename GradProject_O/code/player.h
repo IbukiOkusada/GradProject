@@ -174,6 +174,7 @@ protected:	// 自分だけがアクセス可能
 	void DEBUGKEY();
 	void SendData();
 	void Respawn();
+	void SetCol();
 
 	// 受信用メンバ関数
 	void RecvInerSet();
