@@ -77,9 +77,11 @@ private:	// 自分だけがアクセス可能
 	void CheckDamage(CPlayer* pPlayer);
 	void CheckSmoke(CPlayer* pPlayer);
 	void CheckCollision(CPlayer* pPlayer);
+	void CheckLevel(CPlayer* pPlayer);
 
 	// メンバ変数
 	float m_fSearchTimer;
+	float m_fLevelSearch;
 	TYPE m_type;
 	bool bCross;
 };
