@@ -40,7 +40,7 @@ namespace
 	//D3DXVECTOR3型
 	//<************************************************ 
 	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.9f, 0.0f };			//プレスエンターの座標位置
-	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.19f, 0.0f };			//タイトルロゴの座標位置
+	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.23f, 0.0f };			//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
 	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -800.0f };									//警察位置
 	const D3DXVECTOR3 DEST_ROT = { 0.0f,-3.14f,0.0f };											//目的向き
@@ -499,8 +499,8 @@ void CTitle::InitingP_E(void)
 
 	//サイズ関連
 	constexpr float fSizeBlack[SIZING_MAX] = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f };	//サイズ(ブラックカバー)
-	constexpr float fSizeTitleLogo[SIZING_MAX] = { 600.0f,350.0f };							//サイズ(タイトルロゴ)
-	constexpr float fSizePressEnter[SIZING_MAX] = { 450.0f,100.0f };						//サイズ(プレスエンター)
+	constexpr float fSizeTitleLogo[SIZING_MAX] = { 650.0f,400.0f };							//サイズ(タイトルロゴ)
+	constexpr float fSizePressEnter[SIZING_MAX] = { 550.0f,80.0f };						//サイズ(プレスエンター)
 
 	//初期化済みではなければ
 	if (!m_bIniting)
@@ -609,7 +609,7 @@ void CTitle::ColChange(CObject2D* pObj2D,const int nCntMax)
 //<===============================================
 void CTitle::LightOff(void)
 {
-	constexpr int nCountMax = 75;													//カウンターの固定値
+	constexpr int nCountMax = 200;													//カウンターの固定値
 	constexpr char* TEX_LIGHTON = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴ(ライトオン)
 	constexpr char* TEX_LIGHTOFF = "data\\TEXTURE\\Title\\Title_logo_lightoff.png";	//タイトルロゴ(ライトオフVer);
 
@@ -637,7 +637,7 @@ void CTitle::LightOff(void)
 		//初期化
 		m_nLogoCou = 0;
 	}
-	else{m_nLogoCou++;}
+	else{m_nLogoCou += rand() % 7;}
 }
 //<===============================================
 //追跡ステートに移行した際の動き
@@ -765,17 +765,17 @@ void CTitle::InitingSelect(void)
 	};
 
 	//サイズ関連
-	constexpr float fSizeModeSelect[SIZING_MAX] = { 300.0f, 50.0f };					//サイズ(MODE SELECT)
-	constexpr float fSizeSINGLEMULTI[SIZING_MAX] = { 200.0f, 75.0f };					//サイズ(シングルとマルチ)
+	constexpr float fSizeModeSelect[SIZING_MAX] = { 300.0f, 40.0f };					//サイズ(MODE SELECT)
+	constexpr float fSizeSINGLEMULTI[SIZING_MAX] = { 200.0f, 50.0f };					//サイズ(シングルとマルチ)
 	constexpr float fSizeCHECK[SIZING_MAX] = { 400.0f, 50.0f };							//サイズ(確認文字)
-	constexpr float fSizeYESNO[SIZING_MAX] = { 80.0f, 35.0f };							//サイズ(選択肢YESNO)
+	constexpr float fSizeYESNO[SIZING_MAX] = { 52.0f, 40.0f };							//サイズ(選択肢YESNO)
 
 	//オブジェクト2D関連
 	const D3DXCOLOR InitFrameCol = D3DXCOLOR(0.0f,0.0f,0.0f,0.6f);					//フレームの初期色
 	const D3DXVECTOR3 NUMCHAR_POS = D3DXVECTOR3(625.0f, 100.0f, 0.0f);					//どっちか
 	const D3DXVECTOR3 CHECK_POS = D3DXVECTOR3(625.0f, 475.0f, 0.0f);					//確認
 		 
-	const D3DXVECTOR3 SELECT_POS = D3DXVECTOR3(400.0f, 300.0f, 0.0f);					//選択肢の位置
+	const D3DXVECTOR3 SELECT_POS = D3DXVECTOR3(400.0f, 275.0f, 0.0f);					//選択肢の位置
 	constexpr float fDis_SELECT = 475.0f;												//距離1	
 
 	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(485.0f, CHECK_POS.y + 150.0f, 0.0f);		//はいといいえの位置

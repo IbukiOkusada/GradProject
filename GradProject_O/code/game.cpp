@@ -333,31 +333,41 @@ void CGame::Update(void)
     // エディター更新
     if (pMgr != nullptr) { pMgr->Update(); }
 
-#endif
-
     if (pInputKey->GetTrigger(DIK_J))
     {
         CPoliceManager::GetInstance()->SetInspection();
-}
+    }
+
+#endif
+
+    auto net = CNetWork::GetInstance();
+    auto mgr = CPlayerManager::GetInstance();
 
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
     int nNum = pPlayer->GetNumDeliverStatus();
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
     if (m_nTotalDeliveryStatus <= nNum && pCamera->GetAction()->IsFinish() && CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_SINGLE)
     {// 配達する総数以上かつカメラの演出が終了している
-
         End_Success();
     }
     else if (m_pGameTimer != nullptr)
     {
+        // 時間切れ
         if (m_pGameTimer->GetTime() <= 0.0f)
         {
-            End_Fail();
+            // 通信状態で終了変更
+            if (net->GetState() == CNetWork::STATE::STATE_SINGLE)
+            {
+                // 配達失敗
+                End_Fail();
+            }
+            else
+            {   // 複数人終了
+                End_MultiEnd();
+            }
+            
         }
     }
-   
-    auto net = CNetWork::GetInstance();
-    auto mgr = CPlayerManager::GetInstance();
 
     // 人数確認
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
@@ -373,6 +383,8 @@ void CGame::Update(void)
             }
         }
     }
+
+    // シングルモードで体力がキレた
     if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_SINGLE)
     {
         End_Fail();
