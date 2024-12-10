@@ -42,7 +42,7 @@ namespace
 	const D3DXVECTOR3 PRESSENTER_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.9f, 0.0f };			//プレスエンターの座標位置
 	const D3DXVECTOR3 TITLELOGO_POS = { SCREEN_WIDTH, SCREEN_HEIGHT * 0.23f, 0.0f };			//タイトルロゴの座標位置
 	const D3DXVECTOR3 TEAMLOGO_POS = { SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f ,0.0f };		//チームロゴの座標位置
-	const D3DXVECTOR3 PolicePos = { 2530.0f, 0.0f, -800.0f };									//警察位置
+	const D3DXVECTOR3 PolicePos = { 2530.0f, 50.0f, -800.0f };									//警察位置
 	const D3DXVECTOR3 DEST_ROT = { 0.0f,-3.14f,0.0f };											//目的向き
 
 	constexpr int nNatPriority = 5;																//共通して使う優先度変数
@@ -610,6 +610,7 @@ void CTitle::ColChange(CObject2D* pObj2D,const int nCntMax)
 void CTitle::LightOff(void)
 {
 	constexpr int nCountMax = 200;													//カウンターの固定値
+	constexpr int nRandMax = 7;														//ランダム変数の最大値
 	constexpr char* TEX_LIGHTON = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴ(ライトオン)
 	constexpr char* TEX_LIGHTOFF = "data\\TEXTURE\\Title\\Title_logo_lightoff.png";	//タイトルロゴ(ライトオフVer);
 
@@ -637,7 +638,7 @@ void CTitle::LightOff(void)
 		//初期化
 		m_nLogoCou = 0;
 	}
-	else{m_nLogoCou += rand() % 7;}
+	else{m_nLogoCou += rand() % nRandMax;}
 }
 //<===============================================
 //追跡ステートに移行した際の動き
@@ -847,25 +848,20 @@ void CTitle::InitingSelect(void)
 void CTitle::Sizing(void)
 {
 	D3DXVECTOR3 FrameSize = m_pObject2D[OBJ2D::OBJ2D_FRAME]->GetSize();		//フレームサイズ
-	constexpr float fSpeed = 0.09f;												//スピード
+	constexpr float fSpeedX = 21.0f,fSpeedY = 15.0f;						//スピード
 
 	const D3DXVECTOR3 FRAME_DEST = { 500.0f,320.0f,0.0f };					//フレームの目標値
 
 	//X軸
 	if (FrameSize.x >= FRAME_DEST.x) { FrameSize.x = FRAME_DEST.x; }
-	else { FrameSize.x += (FRAME_DEST.x - FrameSize.x - 0.0f) * fSpeed; }
+	else { FrameSize.x += fSpeedX;}
 
 	//Y軸
 	if (FrameSize.y >= FRAME_DEST.y) { FrameSize.y = FRAME_DEST.y; }
-	else { FrameSize.y += (FRAME_DEST.y - FrameSize.y - 0.0f) * fSpeed; }
+	else { FrameSize.y += fSpeedY;}
 
-	//目的地に着いたら
-	if (Function::BoolToDest(m_pObject2D[OBJ2D::OBJ2D_FRAME]->GetSize(),
-		D3DXVECTOR3(FRAME_DEST), 1.0f, false))
-	{
-		//サイズ調整完了合図を設定
-		m_bSizing = true;
-	}
+	//サイズ調整が終わったら、合図をtrueにする
+	if (FrameSize.y >= FRAME_DEST.y&& FrameSize.x >= FRAME_DEST.x) { m_bSizing = true; }
 
 	//サイズを設定
 	m_pObject2D[OBJ2D::OBJ2D_FRAME]->SetSize(FrameSize.x,FrameSize.y);
