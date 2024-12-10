@@ -52,6 +52,7 @@ public:	// 誰でもアクセス可能
 	// メンバ関数(取得)
 	CRoad::SInfoSearch* GetSearchRoad() { return m_pSearchTarget; }
 	CPolice* GetPolice() { return m_pPolice; }
+	float GetChaseSpeed() { return m_fChaseSpeed; }
 
 	// メンバ関数(設定)
 
@@ -68,6 +69,8 @@ protected:
 	CRoad::SInfoSearch* m_pSearchTarget;
 	vector<CRoad::SInfoSearch*> m_searchRoad;
 	int m_nCntThread;
+	float m_fChaseSpeed;
+	float m_fSearchInterval;
 
 private:	// 自分だけがアクセス可能
 
@@ -83,7 +86,7 @@ private:	// 自分だけがアクセス可能
 	float m_fSearchTimer;
 	float m_fLevelSearch;
 	TYPE m_type;
-	bool bCross;
+	bool m_bCross;
 };
 
 //==========================================================
