@@ -12,6 +12,7 @@
 // 前方宣言
 class CMultiResultManager;
 class CScrollText2D;
+class CPlayer;
 
 //===============================================
 // リザルトクラスの定義(派生クラス)
@@ -23,13 +24,15 @@ private:
 	// プレイヤー情報
 	struct SPlayerInfo
 	{
-		bool bActive;	// 使用されているか否か
-		int nScore;	// スコア
-		int nId;	// ID
+		bool bActive;			// 使用されているか否か
+		int nScore;				// スコア
+		int nId;				// ID
 		CScrollText2D* pString;	// 文字
+		CPlayer* pPlayer;		// プレイヤー
 
 		// コンストラクタ
-		SPlayerInfo(bool _active = false,int _score = 0, int _id = 0, CScrollText2D* _string = nullptr) :bActive(_active), nScore(_score), nId(_id), pString(_string) {}
+		SPlayerInfo(bool _active = false,int _score = 0, int _id = 0, CScrollText2D* _string = nullptr, CPlayer* _player = nullptr) :
+			bActive(_active), nScore(_score), nId(_id), pString(_string), pPlayer(_player) {}
 	};
 
 public:
@@ -58,9 +61,14 @@ private:
 
 	// メンバ関数
 	void Sort();
+	void StrCheck();
+	void EndStr();
+	void InitCameraSet();
 
 	// メンバ変数
 	CMultiResultManager* m_pMgr;	// マネージャー
+	CScrollText2D* m_pEndStr;		// 最終文字
+	CScrollText2D* m_pTitleStr;	// 最終文字
 	SPlayerInfo* m_pInfo;			// 情報
 	int m_nNowScrPlayer;
 
