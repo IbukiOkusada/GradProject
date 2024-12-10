@@ -64,6 +64,7 @@ private:
 	void StrCheck();
 	void EndStr();
 	void InitCameraSet();
+	void RankPlayerMove();
 
 	// メンバ変数
 	CMultiResultManager* m_pMgr;	// マネージャー

@@ -22,18 +22,26 @@ namespace TEXT
 {
 	const D3DXVECTOR3 TITLE_POS = D3DXVECTOR3(SCREEN_CENTER.x, 100.0f, 0.0f);	// タイトル座標
 	const D3DXVECTOR3 RESULT_POS = D3DXVECTOR3(SCREEN_CENTER.x, SCREEN_HEIGHT - 150.0f, 0.0f);	// 結果座標
-	const D3DXVECTOR3 SETPOS = D3DXVECTOR3(170.0f, SCREEN_CENTER.y, 0.0f);		// プレイヤーごとの基本座標
+	const D3DXVECTOR3 SETPOS = D3DXVECTOR3(170.0f, SCREEN_CENTER.y * 0.9f, 0.0f);		// プレイヤーごとの基本座標
 
 	const float STR_SPACE = 300.0f;	// プレイヤーの文字間
 	const float STR_SIZE = 80.0f;	// プレイヤー使用の文字サイズ
 	const float TITLE_SIZE = 150.0f;	// タイトルの文字サイズ
+	const float RESULT_SIZE = 100.0f;	// タイトルの文字サイズ
 }
 
 namespace CAMERA
 {
 	const D3DXVECTOR3 POSV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	const D3DXVECTOR3 ROT = D3DXVECTOR3(0.0f, D3DX_PI * 1.0f, D3DX_PI * 0.3f);
-	const float LENGTH = 1500.0f;
+	const float LENGTH = 1700.0f;
+}
+
+namespace
+{
+	const float PLAYER_INER = 0.075f;			// プレイヤー移動量慣性
+	const float PLAYER_TARGET_POSZ = -800.0f;	// プレイヤーランク表示時目標Z座標
+	const float PLAYER_SPACE = 275.0f;
 }
 
 // using定義
@@ -82,12 +90,15 @@ HRESULT CMultiResult::Init(void)
 		m_pInfo[i].nScore = pInfo[i].nNumDelv;
 		m_pInfo[i].bActive = pInfo[i].bActive;
 
+		// アクティブではない
 		if (!m_pInfo[i].bActive) { m_pInfo[i].nScore = 100; continue; }
 
 		// プレイヤーの座標設定
 		D3DXVECTOR3 pos = TEXT::SETPOS;
-		pos.z += 200.0f * 2;
-		pos.z -= 200.0f * m_pInfo[i].nId;
+		pos.z -= PLAYER_SPACE * 0.5f;
+		pos.z += PLAYER_SPACE * m_pMgr->GetNumPlayer() * 0.5f;
+		pos.z -= PLAYER_SPACE * m_pInfo[i].nId;
+		pos.x = -PLAYER_TARGET_POSZ * 2;
 
 		// 向き設定
 		D3DXVECTOR3 rot = VECTOR3_ZERO;
@@ -157,7 +168,7 @@ HRESULT CMultiResult::Init(void)
 	if (m_pMgr != nullptr) { myId = m_pMgr->GetMyId(); }
 
 	m_pEndStr = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, RESULT_POS,
-		0.1f, STR_SIZE, STR_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, m_pInfo[topid].pPlayer->GetObj()->GetColMuliti());
+		0.1f, RESULT_SIZE, RESULT_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, m_pInfo[topid].pPlayer->GetObj()->GetColMuliti());
 	if (m_pEndStr != nullptr)
 	{
 		// 文字設定
@@ -276,6 +287,9 @@ void CMultiResult::StrCheck()
 	// 開始文字無し
 	if (m_pTitleStr == nullptr) { return; }
 
+	// 開始文字終了していない
+	if (!m_pTitleStr->GetEnd()) { return; }
+
 	// 最後まで見た
 	if (m_nNowScrPlayer >= m_pMgr->GetNumPlayer()) {
 		EndStr(); 
@@ -287,7 +301,7 @@ void CMultiResult::StrCheck()
 	if (pStr == nullptr) { m_nNowScrPlayer++;  return; }
 
 	// 文字をスクロールしていない
-	if (!pStr->IsScroll() && m_pTitleStr->GetEnd()) {
+	if (!pStr->IsScroll()) {
 		pStr->SetEnableScroll(true);
 	}
 
@@ -295,7 +309,11 @@ void CMultiResult::StrCheck()
 	if (pStr == nullptr) { return; }
 
 	// 文字を最後まで表示していない
-	if (!pStr->GetEnd()) { return; }
+	if (!pStr->GetEnd()) {
+		// プレイヤー移動
+		RankPlayerMove(); 
+		return; 
+	}
 
 	// 表示していたら次の文字を表示する
 	m_nNowScrPlayer++;
@@ -328,4 +346,28 @@ void CMultiResult::InitCameraSet()
 	pCamera->SetLength(CAMERA::LENGTH);
 	pCamera->SetRotation(CAMERA::ROT);
 	pCamera->SetPositionR(CAMERA::POSV);
+}
+
+//===============================================
+// ランク表示中のプレイヤーの動き制作
+//===============================================
+void CMultiResult::RankPlayerMove()
+{
+	// マネージャー無し
+	if (m_pMgr == nullptr) { return; }
+
+	// 最後まで見た
+	if (m_nNowScrPlayer >= m_pMgr->GetNumPlayer()) { return; }
+
+	// プレイヤー取得
+	CPlayer* pPlayer = m_pInfo[m_nNowScrPlayer].pPlayer;
+	if (pPlayer == nullptr) { return; }
+
+	// 座標を補正する
+	D3DXVECTOR3 pos = pPlayer->GetPosition();
+	D3DXVECTOR3 posdest = pos;
+	posdest.x = PLAYER_TARGET_POSZ;
+	pos += ((posdest - pos) * PLAYER_INER);
+
+	pPlayer->SetPosition(pos);
 }
