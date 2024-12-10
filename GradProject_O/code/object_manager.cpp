@@ -103,7 +103,9 @@ void CObjectManager::Draw(void)
 			else
 			{
 				// リストの全描画
-				DrawAll();
+				//DrawAll();
+				DrawAllShader();
+				DrawAllnotShader();
 			}
 			
 			//DrawOneDimension(TYPE_3D);
@@ -165,7 +167,65 @@ void CObjectManager::DrawAll(void)
 		}
 	}
 }
+//===============================================
+// 全てのシェーダー使用オブジェクトの描画
+//===============================================
+void CObjectManager::DrawAllShader(void)
+{
+	// 死亡フラグをチェック
+	DeathCheck();
+	CFXManager* pFx = CFXManager::GetInstance();	
+	pFx->SetView(CCameraManager::GetInstance()->GetTop()->GetMtxView());
+	pFx->SetProj(CCameraManager::GetInstance()->GetTop()->GetMtxProjection());
+	pFx->Begin();
+	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
+	{
+		CObject* pObject = m_apTop[nCntPri];	// 先頭を取得
 
+		while (pObject != nullptr)
+		{// 使用されていない状態まで
+
+			CObject* pObjectNext = pObject->GetNext();	// 次のオブジェクトへのポインタを取得
+
+			// 描画処理
+			if (pObject->GetDraw()&&pObject->GetDrawShader())
+			{
+			
+				pObject->DrawOnShader();
+			}
+
+			pObject = pObjectNext;	// 次のオブジェクトに移動
+		}
+	}
+	pFx->End();
+}
+//===============================================
+// 全てのシェーダー不使用オブジェクトの描画
+//===============================================
+void CObjectManager::DrawAllnotShader(void)
+{
+	// 死亡フラグをチェック
+	DeathCheck();
+	
+	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
+	{
+		CObject* pObject = m_apTop[nCntPri];	// 先頭を取得
+
+		while (pObject != nullptr)
+		{// 使用されていない状態まで
+
+			CObject* pObjectNext = pObject->GetNext();	// 次のオブジェクトへのポインタを取得
+
+			// 描画処理
+			if (pObject->GetDraw()&&!pObject->GetDrawShader())
+			{
+				pObject->Draw();
+			}
+
+			pObject = pObjectNext;	// 次のオブジェクトに移動
+		}
+	}
+}
 //===============================================
 // プレイヤーのみ描画
 //===============================================

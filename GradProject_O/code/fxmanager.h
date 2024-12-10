@@ -1,6 +1,6 @@
 //============================================================
 //
-//	トゥーンシャドウヘッダー [FXManager.h]
+//	シェーダー管理[FXManager.h]
 //	Author：丹野竜之介
 //
 //============================================================
@@ -36,8 +36,22 @@ public:
 	// メンバ関数
 	void SetMaterial(const D3DMATERIAL9& rMaterial);		// マテリアル設定
 	void SetDiffuse(const D3DXCOLOR& rDiffuse);				// 拡散光設定
-	void SetMatrix(const D3DXMATRIX& rmtxWorld);
+	void SetLightVec(const D3DXVECTOR4& rVec);
+	void SetMatrixWorld(const D3DXMATRIX& rmtxWorld);
+	void SetView(const D3DXMATRIX& rmtxView);
+	void SetProj(const D3DXMATRIX& rmtxPorj);
+	void SetScale(const D3DXMATRIX& rmtxScale);
 	void SetTechnique(const D3DXHANDLE pTechnique);
+	void SetParamToEffect();
+	// 描画の開始を宣言する
+	HRESULT Begin();
+	// 描画の終了を宣言する
+	HRESULT End();
+	// パスの開始を宣言する
+	HRESULT BeginPass();
+	// パスの終了を宣言する
+	HRESULT EndPass();
+	LPD3DXEFFECT GetEffect() { return m_pEffect; }
 	// 静的メンバ関数
 	static CFXManager* Create(void);		// 生成
 	static CFXManager* GetInstance(void);	// 取得
@@ -50,6 +64,8 @@ private:
 	static CFXManager* m_pShader;	// シェーダー情報
 
 	// メンバ変数
+
+
 	LPD3DXEFFECT m_pEffect;						// エフェクト
 
 	D3DXHANDLE m_pTechnique;					// テクニック
@@ -62,10 +78,17 @@ private:
 	D3DXHANDLE m_hWorldMat;						// ワールド変換行列ハンドル
 	D3DXHANDLE m_hViewMat;						// ビュー変換行列ハンドル
 	D3DXHANDLE m_hProjMat;						// 射影変換行列ハンドル
+	D3DXHANDLE m_hMatScaleReverse;				// スケーリング逆行列
 
 	D3DXMATRIX m_matWorld;						// ワールド変換行列
 	D3DXMATRIX m_matView;						// ビュー変換行列
 	D3DXMATRIX m_matProj;						// 射影変換行列
+	D3DXMATRIX m_matScaleReverse;				// スケーリング逆行列
+	D3DXVECTOR4 m_DirectLight;					// 平行光源の方向ベクトル
+	D3DXVECTOR4 m_LightDiffuse;					// 拡散光色
+	D3DXVECTOR4 m_MatDiffuse;					// マテリアル拡散光色
+
+	bool m_bBegin;
 };
 
 #endif	// _TOON_SHADOW_H_

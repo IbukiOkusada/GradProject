@@ -28,6 +28,7 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void DrawOnShader(void);
 	static CObject3D *Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 	void SetpVtx(float fWidth, float fHeight);
 	void SetTextureVtx(float fWidth, float fHeight);

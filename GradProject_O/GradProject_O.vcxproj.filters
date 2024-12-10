@@ -534,6 +534,9 @@
     <ClCompile Include="code\police_AI_manager.cpp">
       <Filter>car</Filter>
     </ClCompile>
+    <ClCompile Include="code\shaderlight.cpp">
+      <Filter>shader\manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -889,6 +892,9 @@
     </ClInclude>
     <ClInclude Include="code\police_AI_manager.h">
       <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\shaderlight.h">
+      <Filter>shader\manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

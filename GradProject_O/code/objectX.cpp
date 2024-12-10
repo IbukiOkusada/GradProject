@@ -10,7 +10,7 @@
 #include "renderer.h"
 #include "texture.h"
 #include "Xfile.h"
-
+#include "fxmanager.h"
 // 静的メンバ変数宣言
 Clist<CObjectX*> CObjectX::m_List = {};
 
@@ -30,7 +30,7 @@ CObjectX::CObjectX(int nPriority) : CObject(nPriority)
 	m_bHit = false;
 	m_bHitOld = false;
 	m_bShadow = true;
-
+	SetDrawShader(true);
 	m_List.Regist(this);
 }
 
@@ -105,20 +105,45 @@ void CObjectX::Draw(void)
 	// 影の描画
 	DrawShadow();
 }
+//==========================================================
+//モデルの描画処理
+//==========================================================
+void CObjectX::DrawOnShader(void)
+{
+	//Update();
 
+	m_bHitOld = m_bHit;
+	m_bHit = false;
+
+	// マトリックス計算
+	if (m_Type == TYPE_NORMAL)
+	{
+		CalWorldMtx();
+	}
+	else
+	{
+		Quaternion();
+	}
+
+	// 描画
+	DrawOnryShader();
+
+	// 影の描画
+	DrawShadow();
+}
 //==========================================================
 // ワールドマトリックス計算
 //==========================================================
 void CObjectX::CalWorldMtx()
 {
-	D3DXMATRIX mtxRot, mtxTrans, mtxscale;			//計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
 
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 
 	// スケールの反映
-	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
+	D3DXMatrixScaling(&m_mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxscale);
 
 	//向きを反映
 	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
@@ -134,7 +159,7 @@ void CObjectX::CalWorldMtx()
 //==========================================================
 void CObjectX::Quaternion()
 {
-	D3DXMATRIX mtxRot, mtxTrans, mtxscale;			//計算用マトリックス
+	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
 	D3DXQUATERNION qYaw, qPitch, qRoll;
 	// ヨー: Y軸回転
 	D3DXQuaternionRotationAxis(&qYaw, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), m_rot.y);
@@ -152,8 +177,8 @@ void CObjectX::Quaternion()
 	D3DXMatrixIdentity(&m_mtxWorld);
 
 	// スケールの反映
-	D3DXMatrixScaling(&mtxscale, m_scale.x, m_scale.y, m_scale.z);
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxscale);
+	D3DXMatrixScaling(&m_mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxscale);
 
 	//向きを反映
 	D3DXMatrixRotationQuaternion(&mtxRot, &qResult);
@@ -227,7 +252,72 @@ void CObjectX::DrawOnry()
 	// 正規化を無効にする
 	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
 }
+//==========================================================
+// シェーダー描画
+//==========================================================
+void CObjectX::DrawOnryShader()
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
+	CFXManager* pFx = CFXManager::GetInstance();
+	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
+	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	D3DMATERIAL9 matDef;					//現在のマテリアル保存用
+	D3DXMATERIAL* pMat;						//マテリアルデータへのポインタ
 
+	// 正規化を有効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+
+	// モデル使用されていない
+	if (pFileData == nullptr) { return; }
+
+	//アルファテストを有効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 10);
+	pDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+	pDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+	pDevice->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_LINEAR);
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	pFx->SetMatrixWorld(m_mtxWorld);
+	pFx->SetScale(m_mtxscale);
+	//現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
+
+	//マテリアルデータへのポインタを取得
+	pMat = (D3DXMATERIAL*)pFileData->pBuffMat->GetBufferPointer();
+	for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
+	{
+		D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
+
+		
+		//マテリアルの設定
+		pDevice->SetMaterial(&mat);
+		pFx->SetMaterial(mat);
+		//テクスチャの設定
+	
+		pFx->SetParamToEffect();
+		pFx->Begin();
+		pFx->BeginPass();
+		pDevice->SetTexture(0, pTexture->SetAddress(pFileData->pIdexTexture[nCntMat]));
+		//モデル(パーツ)の描画
+		pFileData->pMesh->DrawSubset(nCntMat);
+		pFx->EndPass();
+		pFx->End();
+	}
+
+	//保存していたマテリアルを戻す
+	pDevice->SetMaterial(&matDef);
+
+	//アルファテストを無効にする
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
+	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_ALWAYS);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 255);
+
+	// 正規化を無効にする
+	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+}
 //==========================================================
 // シャドウマトリックスでの影の描画
 //==========================================================

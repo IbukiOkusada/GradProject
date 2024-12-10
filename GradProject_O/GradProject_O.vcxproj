@@ -259,6 +259,7 @@
     <ClCompile Include="code\sample\sample_task.cpp" />
     <ClCompile Include="code\scrollString2D.cpp" />
     <ClCompile Include="code\scrollText2D.cpp" />
+    <ClCompile Include="code\shaderlight.cpp" />
     <ClCompile Include="code\slow.cpp" />
     <ClCompile Include="code\sound.cpp" />
     <ClCompile Include="code\speedmeter.cpp" />
@@ -376,6 +377,7 @@
     <ClInclude Include="code\inspection.h" />
     <ClInclude Include="code\scrollString2D.h" />
     <ClInclude Include="code\scrollText2D.h" />
+    <ClInclude Include="code\shaderlight.h" />
     <ClInclude Include="code\slow.h" />
     <ClInclude Include="code\sound.h" />
     <ClInclude Include="code\speedmeter.h" />

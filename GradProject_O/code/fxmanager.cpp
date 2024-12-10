@@ -15,7 +15,9 @@
 //============================================================
 namespace
 {
-	const char* EFFECT_FX = "code\shader\draw.fx";	// シェーダーのエフェクトファイル
+	const char* EFFECT_FX = "code\\shader\\draw.fx";	// シェーダーのエフェクトファイル
+	const D3DXCOLOR LIGHT_COLOR = D3DXVECTOR4(0.6f, 0.6f, 0.7f, 1.0f);
+	const D3DXVECTOR4 LIGHT_VEC = D3DXVECTOR4(-0.5f, -0.87f, 0.05f, 0.0f);
 }
 //************************************************************
 //	静的メンバ変数宣言
@@ -97,14 +99,15 @@ HRESULT CFXManager::Init(void)
 			SetTechnique(pEffect->GetTechniqueByName("TShader"));
 
 			// ハンドルを取得
-			m_hWorldMat = pEffect->GetParameterByName(nullptr, "s_mtxWorld");
+			m_hWorldMat = pEffect->GetParameterByName(nullptr, "g_mtxWorld");
 			m_hViewMat	= pEffect->GetParameterByName(nullptr, "g_mtxView");
 			m_hProjMat	= pEffect->GetParameterByName(nullptr, "g_mtxProj");
 
 			m_hDirectLight	 = pEffect->GetParameterByName(nullptr, "m_LightDir");
 			m_hLightDiffuse	 = pEffect->GetParameterByName(nullptr, "m_LightCol");
 			m_hMatDiffuse	 = pEffect->GetParameterByName(nullptr, "m_diffus");
-			m_hUseTex		 = pEffect->GetParameterByName(nullptr, "bUseTex");
+			m_hUseTex = pEffect->GetParameterByName(nullptr, "bUseTex");
+			m_hMatScaleReverse = pEffect->GetParameterByName(nullptr, "g_mMatScaleReverse");
 		}
 		else
 		{ // 読込に失敗した場合
@@ -126,7 +129,9 @@ HRESULT CFXManager::Init(void)
 		assert(false);
 		return E_FAIL;
 	}
-
+	
+	SetLightVec(LIGHT_VEC);
+	SetDiffuse(LIGHT_COLOR);
 	// 成功を返す
 	return S_OK;
 }
@@ -211,4 +216,116 @@ void CFXManager::SetTechnique(const D3DXHANDLE pTechnique)
 		m_pEffect->SetTechnique(m_pTechnique);
 	}
 	else { assert(false); }	// エフェクト使用不可
+}
+//============================================================
+// マテリアル設定
+//============================================================
+void CFXManager::SetMaterial(const D3DMATERIAL9& rMaterial)
+{
+	D3DXVECTOR4 Diff;
+	Diff.x = rMaterial.Diffuse.r;
+	Diff.y = rMaterial.Diffuse.g;
+	Diff.z = rMaterial.Diffuse.b;
+	Diff.w = rMaterial.Diffuse.a;
+	m_MatDiffuse = Diff;
+
+}
+//============================================================
+// 拡散光設定
+//============================================================
+void CFXManager::SetDiffuse(const D3DXCOLOR& rDiffuse)
+{
+	D3DXVECTOR4 Diff;
+	Diff.x = rDiffuse.r;
+	Diff.y = rDiffuse.g;
+	Diff.z = rDiffuse.b;
+	Diff.w = rDiffuse.a;
+	m_LightDiffuse = Diff;
+
+}
+//============================================================
+// 光源方向設定
+//============================================================
+void CFXManager::SetLightVec(const D3DXVECTOR4& rVec)
+{
+	D3DXVECTOR4 vec = rVec;
+	D3DXVec4Normalize(&vec, &vec);
+	m_DirectLight = vec;
+
+}
+//============================================================
+//	マトリックスの設定
+//============================================================
+void  CFXManager::SetMatrixWorld(const D3DXMATRIX& rmtxWorld)
+{
+	m_matWorld = rmtxWorld;
+
+}
+void  CFXManager::SetView(const D3DXMATRIX& rmtxView)
+{
+	m_matView = rmtxView;
+
+}
+void  CFXManager::SetProj(const D3DXMATRIX& rmtxProj)
+{
+	m_matProj = rmtxProj;
+
+}
+void CFXManager::SetScale(const D3DXMATRIX& rmtxScale)
+{
+	m_matScaleReverse = rmtxScale;
+	D3DXMatrixInverse(&m_matScaleReverse, NULL, &m_matWorld);
+	D3DXMatrixTranspose(&m_matScaleReverse, &m_matScaleReverse);
+}
+void CFXManager::SetParamToEffect()
+{
+	m_pEffect->SetMatrix(m_hWorldMat, &m_matWorld);
+	m_pEffect->SetMatrix(m_hViewMat, &m_matView);
+	m_pEffect->SetMatrix(m_hProjMat, &m_matProj);
+	m_pEffect->SetMatrix(m_hMatScaleReverse, &m_matScaleReverse);
+	m_pEffect->SetVector(m_hLightDiffuse, &m_DirectLight);
+	m_pEffect->SetVector(m_hDirectLight, &m_LightDiffuse);
+	m_pEffect->SetVector(m_hMatDiffuse, &m_MatDiffuse);
+}	
+// 描画の開始を宣言する
+HRESULT CFXManager::Begin()
+{
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイス情報
+	
+	// プログラマブルシェーダのテクニックを設定
+	m_pEffect->SetTechnique(m_pTechnique);
+
+	// シェーダの開始を宣言
+	UINT Tmp;
+	m_pEffect->Begin(&Tmp, 0);
+	m_bBegin = true;
+	return S_OK;
+}
+
+
+// パスの開始を宣言する
+HRESULT CFXManager::BeginPass()
+{
+	m_pEffect->BeginPass(0);	// Z値計算は1パス
+	return S_OK;
+}
+// パスの終了を宣言する
+HRESULT CFXManager::EndPass()
+{
+	m_pEffect->EndPass();
+	return S_OK;
+}
+// 描画の終了を宣言する
+HRESULT CFXManager::End()
+{
+	// ポインタを宣言
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイス情報
+	m_pEffect->End();
+
+	// 固定機能に戻す
+	pDevice->SetVertexShader(NULL);
+	pDevice->SetPixelShader(NULL);
+	m_bBegin = false;
+	return S_OK;
 }
