@@ -59,6 +59,7 @@ public:
 	void Update(void);
 	static CPlayerTitle* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move, const char* pBodyName, const char* pLegName);
 
+	//動きに関する処理
 	void Moving(const int nNum);
 	void MovingSelect(void);
 	void BaggageMove(void);
@@ -80,6 +81,7 @@ public:
 
 private:
 
+	//警察関連処理
 	void PoliceRotSet(void);
 	void PolicePosSet(void);
 
@@ -87,9 +89,7 @@ private:
 	float m_fBDustValue;				//煙の大きさの値
 	float m_fDestrot;					//プレイヤー自身の向きの目的地
 	float m_fMoveRot;					//回転速度
-	float m_fDestPoliceRot;				//警察の向きの目的地
 	bool m_bNextMove;					//次の動きに移行するときになったら
-	bool m_bMoved;
 	bool m_bFirst;						//最初の位置
 	STATE m_eState;						//デバッグ用のステート
 	bool m_bReached;					//着いたかどうか

@@ -12,7 +12,7 @@
 
 //サウンド再生
 CMasterSound::CObjectSound* CPoliceTitle::m_pSound = nullptr;
-// 
+ 
 //<======================================
 //コンストラクタ
 //<======================================
@@ -57,20 +57,11 @@ HRESULT CPoliceTitle::Init(const D3DXVECTOR3 pos)
 //<======================================
 void CPoliceTitle::Uninit(void)
 {
+	//終了処理
 	CPolice::Uninit();
 	SAFE_UNINIT_DELETE(m_pSound);
-
 	SAFE_DELETE(m_pPatrolLamp);
 	SAFE_DELETE(m_pTailLamp);
-}
-//<======================================
-//更新処理
-//<======================================
-void CPoliceTitle::Update(void)
-{
-	//唯のデバッグ用
-	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]",
-		this->GetPosition().x, this->GetPosition().y, this->GetPosition().z);
 }
 //<======================================
 //追いかけている処理
@@ -79,26 +70,8 @@ void CPoliceTitle::Chasing(const float fMoveZ)
 {
 	D3DXVECTOR3 PolicePos = this->GetPosition();		//警察の位置取得
 
-	//<*******************************************
-	//パトランプ生成
-	if (!m_pPatrolLamp)
-	{
-		m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	}
-	//ているらんぷ生成
-	if (!m_pTailLamp)
-	{
-		m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	}
-	//位置と向きを設定
-	m_pPatrolLamp->m_pos = this->GetPosition();
-	m_pPatrolLamp->m_rot = this->GetRotation();
-
-	//位置と向きを設定
-	m_pTailLamp->m_pos = this->GetPosition();
-	m_pTailLamp->m_rot = this->GetRotation();
-	//
-	//<*******************************************
+	//エフェクト生成
+	SettingPatLamp();
 
 	///警察の位置を移動させ、位置を設定する
 	PolicePos.z += fMoveZ;

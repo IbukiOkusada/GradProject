@@ -21,7 +21,7 @@ public:
 	// メンバ関数
 	HRESULT Init(const D3DXVECTOR3 pos);
 	void Uninit(void);
-	void Update(void);
+	void Update(void) {}
 	static CPoliceTitle* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move);
 
 	//パトランプ生成

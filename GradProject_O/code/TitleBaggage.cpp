@@ -79,8 +79,10 @@ void CTitleGoal::Update(void)
 //<=========================================================
 CTitleGoal* CTitleGoal::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 {
+	//生成用オブジェクト
 	CTitleGoal* pTitleGoal = DEBUG_NEW CTitleGoal;
 
+	//初期化
 	if (pTitleGoal) { pTitleGoal->Init(pos, rot); }
 	else { return nullptr; }
 

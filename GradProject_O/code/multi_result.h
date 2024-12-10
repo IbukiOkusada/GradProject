@@ -11,12 +11,27 @@
 
 // 前方宣言
 class CMultiResultManager;
+class CScrollText2D;
 
 //===============================================
 // リザルトクラスの定義(派生クラス)
 //===============================================
 class CMultiResult : public CScene
 {
+private:
+
+	// プレイヤー情報
+	struct SPlayerInfo
+	{
+		bool bActive;	// 使用されているか否か
+		int nScore;	// スコア
+		int nId;	// ID
+		CScrollText2D* pString;	// 文字
+
+		// コンストラクタ
+		SPlayerInfo(bool _active = false,int _score = 0, int _id = 0, CScrollText2D* _string = nullptr) :bActive(_active), nScore(_score), nId(_id), pString(_string) {}
+	};
+
 public:
 
 	// 種類列挙型
@@ -41,19 +56,14 @@ public:
 
 private:
 
-	enum TYPE_OBJ
-	{
-		TYPE_TIME = 0,
-		TYPE_LIFE,
-		TYPE_EVAL,
-		TYPE_RANKING,
-		TYPE_NUM
-	};
+	// メンバ関数
+	void Sort();
 
 	// メンバ変数
-	CFileLoad* m_pFileLoad;			// ファイル読み込みのポインタ
-	CTime* m_pTime;					// タイマー
 	CMultiResultManager* m_pMgr;	// マネージャー
+	SPlayerInfo* m_pInfo;			// 情報
+	int m_nNowScrPlayer;
+
 };
 
 #endif

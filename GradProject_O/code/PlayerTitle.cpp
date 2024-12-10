@@ -73,7 +73,6 @@ CPlayerTitle::CPlayerTitle()
 	m_eState = STATE_NONE;
 	m_bReached = false;
 	m_bNextMove = false;
-	m_bMoved = false;
 	m_bFirst = true;
 	m_pTitleBaggage = nullptr;
 	m_pTitleGoal = nullptr;
@@ -121,7 +120,7 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 
 	//エフェクト生成
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 
 	return S_OK;
@@ -131,6 +130,7 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 //<================================================
 void CPlayerTitle::Uninit(void)
 {
+	//終了処理
 	CPlayer::Uninit();
 	SAFE_UNINIT_DELETE(m_pSound);
 	SAFE_UNINIT(m_pTitleBaggage);
@@ -202,6 +202,7 @@ void CPlayerTitle::Update(void)
 void CPlayerTitle::Moving(const int nNum)
 {
 	constexpr float DEST_DIFF = 5.0f;										//距離の差
+	constexpr float fSpeed = 0.075f;										//速さ
 
 	//正規状態をなくす
 	if (m_bReached) { m_bReached = false; }
@@ -210,8 +211,8 @@ void CPlayerTitle::Moving(const int nNum)
 	if (m_eState == STATE_NONE)
 	{
 		//目的地まで移動
-		m_Info.pos.x += (DEST_POS[nNum].x - m_Info.pos.x - m_Info.move.x) * 0.075f;//X軸
-		m_Info.pos.z += (DEST_POS[nNum].z - m_Info.pos.z - m_Info.move.z) * 0.075f;//Z軸
+		m_Info.pos.x += (DEST_POS[nNum].x - m_Info.pos.x - m_Info.move.x) * fSpeed;//X軸
+		m_Info.pos.z += (DEST_POS[nNum].z - m_Info.pos.z - m_Info.move.z) * fSpeed;//Z軸
 
 		//目的地に到着したら判定をtrueにする
 		if (Function::BoolDis(m_Info.pos, DEST_POS[nNum], DEST_DIFF)) { m_bReached = true; }
@@ -222,7 +223,7 @@ void CPlayerTitle::Moving(const int nNum)
 //<================================================
 void CPlayerTitle::MovingSelect(void)
 {
-	constexpr float fMove = 0.12f;	//移動速度と回転速度
+	constexpr float fMove = 0.12f;					//移動速度と回転速度
 	const float fRad1 = 95.0f,fRad2 = 500.0f;		//範囲
 
 	//目的地に到着したら判定をtrueにする
@@ -273,12 +274,6 @@ void CPlayerTitle::PoliceRotSet(void)
 	D3DXVECTOR3 rRot = VECTOR3_ZERO;							//向き
 	float fMove = 125.0f;										//移動速度
 	constexpr float fRotation = 0.3f;							//回転速度
-
-	//警察の情報を取得してくる
-	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
-	{
-		apPolice[nCnt] = CTitle::GetPoliTitle(nCnt);
-	}
 
 	//番号によって変更させる
 	switch (m_nNumDest)
@@ -331,9 +326,10 @@ void CPlayerTitle::PoliceRotSet(void)
 		break;
 	}
 
-	//警察の向きを設定
 	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 	{
+		//警察情報取得と向き設定
+		apPolice[nCnt] = CTitle::GetPoliTitle(nCnt);
 		apPolice[nCnt]->SetRotation(rRot);
 	}
 
@@ -368,10 +364,8 @@ void CPlayerTitle::PoliceRotSet(void)
 		if (m_Info.rot.y >= m_fDestrot) { m_Info.rot.y = m_fDestrot; }
 	}
 
-	//調整
+	//向き調整と設定
 	Adjust(m_Info.rot.y);
-
-	//その向きに設定
 	SetRotation(m_Info.rot);
 
 	PolicePosSet();
@@ -395,11 +389,7 @@ void CPlayerTitle::PolicePosSet(void)
 		//情報取得+位置情報取得
 		apPolice[nCnt] = CTitle::GetPoliTitle(nCnt);
 		arPos[nCnt] = apPolice[nCnt]->GetPosition();
-	}
 
-	//警察の情報を取得してくる
-	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
-	{
 		//パトランプ
 		apPolice[nCnt]->SettingPatLamp();
 
