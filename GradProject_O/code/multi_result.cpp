@@ -6,6 +6,7 @@
 //===============================================
 #include "multi_result.h"
 #include "multi_result_manager.h"
+#include "multi_result_state.h"
 #include "map_manager.h"
 #include "manager.h"
 #include "sound.h"
@@ -39,7 +40,6 @@ namespace CAMERA
 
 namespace
 {
-	const float PLAYER_INER = 0.075f;			// プレイヤー移動量慣性
 	const float PLAYER_TARGET_POSZ = -800.0f;	// プレイヤーランク表示時目標Z座標
 	const float PLAYER_SPACE = 275.0f;
 }
@@ -52,6 +52,7 @@ using namespace TEXT;
 //===============================================
 CMultiResult::CMultiResult() :
 m_pMgr(nullptr),
+m_pState(nullptr),
 m_pInfo(nullptr),
 m_pTitleStr(nullptr),
 m_pEndStr(nullptr),
@@ -193,6 +194,9 @@ HRESULT CMultiResult::Init(void)
 		}
 	}
 
+	// 状態設定
+	ChangeState(DEBUG_NEW CMultiResultStateStart);
+
 	// カメラ初期設定
 	InitCameraSet();
 
@@ -218,6 +222,9 @@ void CMultiResult::Uninit(void)
 		m_pInfo = nullptr;
 	}
 
+	// 状態廃棄
+	ChangeState(nullptr);
+
 	// マップ情報廃棄
 	CMapManager::Release();
 
@@ -233,8 +240,10 @@ void CMultiResult::Uninit(void)
 //===============================================
 void CMultiResult::Update(void)
 {
-	// 文字確認
-	StrCheck();
+	if (m_pState != nullptr)
+	{
+		m_pState->Update(this);
+	}
 
 	CScene::Update();
 }
@@ -277,63 +286,6 @@ void CMultiResult::Sort()
 }
 
 //===============================================
-// 文字列確認
-//===============================================
-void CMultiResult::StrCheck()
-{
-	// マネージャー無し
-	if (m_pMgr == nullptr) { return; }
-
-	// 開始文字無し
-	if (m_pTitleStr == nullptr) { return; }
-
-	// 開始文字終了していない
-	if (!m_pTitleStr->GetEnd()) { return; }
-
-	// 最後まで見た
-	if (m_nNowScrPlayer >= m_pMgr->GetNumPlayer()) {
-		EndStr(); 
-		return; 
-	}
-
-	CScrollText2D* pStr = m_pInfo[m_nNowScrPlayer].pString;
-
-	if (pStr == nullptr) { m_nNowScrPlayer++;  return; }
-
-	// 文字をスクロールしていない
-	if (!pStr->IsScroll()) {
-		pStr->SetEnableScroll(true);
-	}
-
-	// 文字がない
-	if (pStr == nullptr) { return; }
-
-	// 文字を最後まで表示していない
-	if (!pStr->GetEnd()) {
-		// プレイヤー移動
-		RankPlayerMove(); 
-		return; 
-	}
-
-	// 表示していたら次の文字を表示する
-	m_nNowScrPlayer++;
-}
-
-//===============================================
-// 終了文字表示
-//===============================================
-void CMultiResult::EndStr()
-{
-	// 文字がない
-	if (m_pEndStr == nullptr) { return; }
-
-	// 文字がスクロールされている
-	if (m_pEndStr->IsScroll()) { return; }
-
-	m_pEndStr->SetEnableScroll(true);
-}
-
-//===============================================
 // 初期カメラ設定
 //===============================================
 void CMultiResult::InitCameraSet()
@@ -349,25 +301,15 @@ void CMultiResult::InitCameraSet()
 }
 
 //===============================================
-// ランク表示中のプレイヤーの動き制作
+// 状態変更
 //===============================================
-void CMultiResult::RankPlayerMove()
+void CMultiResult::ChangeState(CMultiResultState* pNext)
 {
-	// マネージャー無し
-	if (m_pMgr == nullptr) { return; }
+	if (m_pState != nullptr)
+	{
+		delete m_pState;
+		m_pState = nullptr;
+	}
 
-	// 最後まで見た
-	if (m_nNowScrPlayer >= m_pMgr->GetNumPlayer()) { return; }
-
-	// プレイヤー取得
-	CPlayer* pPlayer = m_pInfo[m_nNowScrPlayer].pPlayer;
-	if (pPlayer == nullptr) { return; }
-
-	// 座標を補正する
-	D3DXVECTOR3 pos = pPlayer->GetPosition();
-	D3DXVECTOR3 posdest = pos;
-	posdest.x = PLAYER_TARGET_POSZ;
-	pos += ((posdest - pos) * PLAYER_INER);
-
-	pPlayer->SetPosition(pos);
+	m_pState = pNext;
 }

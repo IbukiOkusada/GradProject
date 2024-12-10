@@ -11,6 +11,7 @@
 
 // 前方宣言
 class CMultiResultManager;
+class CMultiResultState;
 class CScrollText2D;
 class CPlayer;
 
@@ -19,7 +20,7 @@ class CPlayer;
 //===============================================
 class CMultiResult : public CScene
 {
-private:
+public:
 
 	// プレイヤー情報
 	struct SPlayerInfo
@@ -37,16 +38,6 @@ private:
 
 public:
 
-	// 種類列挙型
-	enum TYPE
-	{
-		TYPE_MULTI_WIN,		// マルチ勝利
-		TYPE_MULTI_LOSE,	// マルチ敗北
-		TYPE_MAX			// 通常
-	};
-
-public:
-
 	// メンバ関数
 	CMultiResult();	// コンストラクタ
 	~CMultiResult();	// デストラクタ
@@ -57,6 +48,17 @@ public:
 	void Update(void) override;
 	void Draw(void) override;
 
+	// 設定系メンバ関数
+	void ChangeState(CMultiResultState* pNext);
+	void SetNowScr(int nNum) { m_nNowScrPlayer = nNum; }
+
+	// 取得系メンバ関数
+	SPlayerInfo* GetInfo() { return m_pInfo; }
+	CScrollText2D* GetEndStr() { return m_pEndStr; }
+	CScrollText2D* GetTitleStr() { return m_pTitleStr; }
+	CMultiResultManager* GetMgr() { return m_pMgr; }
+	int GetNowScr() { return m_nNowScrPlayer; }
+
 private:
 
 	// メンバ関数
@@ -64,12 +66,12 @@ private:
 	void StrCheck();
 	void EndStr();
 	void InitCameraSet();
-	void RankPlayerMove();
 
 	// メンバ変数
 	CMultiResultManager* m_pMgr;	// マネージャー
+	CMultiResultState* m_pState;	// 状態
 	CScrollText2D* m_pEndStr;		// 最終文字
-	CScrollText2D* m_pTitleStr;	// 最終文字
+	CScrollText2D* m_pTitleStr;		// 最終文字
 	SPlayerInfo* m_pInfo;			// 情報
 	int m_nNowScrPlayer;
 
