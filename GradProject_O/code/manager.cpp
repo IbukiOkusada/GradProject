@@ -329,12 +329,13 @@ void CManager::Uninit(void)
 		m_pNetWork->Release();
 		m_pNetWork = nullptr;
 	}
-	CFXManager::GetInstance()->Release();
+	CFXManager::Release();
 	SAFE_UNINIT_DELETE(m_pFont);
 	// 各種マネージャの破棄
 	CListManager::Release();
 	CMasterSound::GetInstance()->Uninit();
 	CMasterSound::Release();
+
 	// エフェクシア破棄
 	CEffekseer::GetInstance()->Uninit();
 }

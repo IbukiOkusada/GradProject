@@ -103,9 +103,14 @@ HRESULT CFXManager::Init(void)
 			m_hViewMat	= pEffect->GetParameterByName(nullptr, "g_mtxView");
 			m_hProjMat	= pEffect->GetParameterByName(nullptr, "g_mtxProj");
 
+			m_hViewvec = pEffect->GetParameterByName(nullptr, "viewDir");
 			m_hDirectLight	 = pEffect->GetParameterByName(nullptr, "m_LightDir");
 			m_hLightDiffuse	 = pEffect->GetParameterByName(nullptr, "m_LightCol");
 			m_hMatDiffuse	 = pEffect->GetParameterByName(nullptr, "m_diffus");
+			m_hMatAmbient = pEffect->GetParameterByName(nullptr, "m_ambient");
+			m_hMatEmissive = pEffect->GetParameterByName(nullptr, "m_Emissive");
+			m_hMatSpecula = pEffect->GetParameterByName(nullptr, "m_specula");
+			m_hMatPower = pEffect->GetParameterByName(nullptr, "m_power");
 			m_hUseTex = pEffect->GetParameterByName(nullptr, "bUseTex");
 			m_hMatScaleReverse = pEffect->GetParameterByName(nullptr, "g_mMatScaleReverse");
 		}
@@ -228,7 +233,25 @@ void CFXManager::SetMaterial(const D3DMATERIAL9& rMaterial)
 	Diff.z = rMaterial.Diffuse.b;
 	Diff.w = rMaterial.Diffuse.a;
 	m_MatDiffuse = Diff;
-
+	D3DXVECTOR4 ambient;
+	ambient.x = rMaterial.Ambient.r;
+	ambient.y = rMaterial.Ambient.g;
+	ambient.z = rMaterial.Ambient.b;
+	ambient.w = rMaterial.Ambient.a;
+	m_MatAmbient = ambient;
+	D3DXVECTOR4 Emissive;
+	Emissive.x = rMaterial.Emissive.r;
+	Emissive.y = rMaterial.Emissive.g;
+	Emissive.z = rMaterial.Emissive.b;
+	Emissive.w = rMaterial.Emissive.a;
+	m_MatEmissive = Emissive;
+	D3DXVECTOR4 specula;
+	specula.x = rMaterial.Specular.r;
+	specula.y = rMaterial.Specular.g;
+	specula.z = rMaterial.Specular.b;
+	specula.w = rMaterial.Specular.a;
+	m_MatSpecula = specula;
+	m_MatPower = rMaterial.Power;
 }
 //============================================================
 // 拡散光設定
@@ -252,6 +275,15 @@ void CFXManager::SetLightVec(const D3DXVECTOR4& rVec)
 	D3DXVec4Normalize(&vec, &vec);
 	m_DirectLight = vec;
 
+}
+//============================================================
+// 視点方向設定
+//============================================================
+void  CFXManager::SetCameraVec(const D3DXVECTOR3& rVec)
+{
+	D3DXVECTOR4 vec = rVec;
+	D3DXVec4Normalize(&vec, &vec);
+	m_Viewvec = vec;
 }
 //============================================================
 //	マトリックスの設定
@@ -283,9 +315,14 @@ void CFXManager::SetParamToEffect()
 	m_pEffect->SetMatrix(m_hViewMat, &m_matView);
 	m_pEffect->SetMatrix(m_hProjMat, &m_matProj);
 	m_pEffect->SetMatrix(m_hMatScaleReverse, &m_matScaleReverse);
-	m_pEffect->SetVector(m_hLightDiffuse, &m_DirectLight);
-	m_pEffect->SetVector(m_hDirectLight, &m_LightDiffuse);
+	m_pEffect->SetVector(m_hLightDiffuse, &m_LightDiffuse);
+	m_pEffect->SetVector(m_hDirectLight, &m_DirectLight);
 	m_pEffect->SetVector(m_hMatDiffuse, &m_MatDiffuse);
+	m_pEffect->SetVector(m_hMatAmbient, &m_MatAmbient);
+	m_pEffect->SetVector(m_hMatEmissive, &m_MatEmissive);
+	m_pEffect->SetVector(m_hMatSpecula, &m_MatSpecula);
+	m_pEffect->SetFloat(m_hMatPower, m_MatPower);
+	m_pEffect->SetVector(m_hViewvec, &m_Viewvec);
 }	
 // 描画の開始を宣言する
 HRESULT CFXManager::Begin()

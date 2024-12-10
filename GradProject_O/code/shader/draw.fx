@@ -4,8 +4,12 @@ float4x4 g_mtxProj	: PROJECTION;	// プロジェクションマトリックス
 float4x4 g_mMatScaleReverse;
 float4 m_LightDir;                //平行光源の方向ベクトル
 float4 m_LightCol;                //平行光源の色
-float4 m_diffus = 0.0f;		  //オブジェクトのマテリアル色
-
+float4 viewDir;                    //視点方向
+float4 m_diffus = 0.0f;		  //オブジェクトのマテリアル拡散色
+float4 m_ambient = 0.0f;		  //オブジェクトのマテリアル環境色
+float4  m_Emissive = 0.0f;//オブジェクトのマテリアル発光色
+float4  m_specula = 0.0f;//オブジェクトのマテリアル反射色
+float m_power=0.0f;//反射強度
 sampler tex0 : register(s0);      //オブジェクトのテクスチャ
 bool bUseTex = false;
 
@@ -89,23 +93,19 @@ float4 PS(VS_OUTPUT In) : COLOR0
    //テクスチャの使用可否確認
   
  
-   Out = m_diffus * p;
+   Out = m_diffus * p * m_LightCol;
+   Out += m_ambient * m_LightCol;
    Out.w = m_diffus.w;
-
    if ((tex2D(tex0, In.Tex).r+ tex2D(tex0, In.Tex).g+ tex2D(tex0, In.Tex).b)!= 0.0f)
    {
        In.Tex.xy = frac(In.Tex.xy);
        Out *= tex2D(tex0, In.Tex);
    }
-   else
-   {
-      // Out = float4(1.0f, 0.0f, 1.0f, 1.0f);
-   }
-
-  
-
-  // Out *= m_LightCol;
-  
+   Out.rgb += m_Emissive.rgb;
+   float3 reflection = reflect(-m_LightDir.xyz, In.Normal.xyz);
+   float specFactor = saturate(dot(reflection, viewDir));
+   float specPower = pow(specFactor, m_power);
+   Out += m_specula * m_LightCol * specPower;
    return Out;
 }
 

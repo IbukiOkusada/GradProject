@@ -175,8 +175,10 @@ void CObjectManager::DrawAllShader(void)
 	// 死亡フラグをチェック
 	DeathCheck();
 	CFXManager* pFx = CFXManager::GetInstance();	
-	pFx->SetView(CCameraManager::GetInstance()->GetTop()->GetMtxView());
-	pFx->SetProj(CCameraManager::GetInstance()->GetTop()->GetMtxProjection());
+	CCamera* pCam = CCameraManager::GetInstance()->GetTop();
+	pFx->SetView(pCam->GetMtxView());
+	pFx->SetProj(pCam->GetMtxProjection());
+	pFx->SetCameraVec(pCam->GetPositionR() - pCam->GetPositionV());
 	pFx->Begin();
 	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
 	{

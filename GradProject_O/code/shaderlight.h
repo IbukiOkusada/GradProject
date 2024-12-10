@@ -14,7 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include "list.h"
-
+#define MAX_LIGHT (8)
 //************************************************************
 //	クラス定義
 //************************************************************
@@ -57,7 +57,7 @@ private:
 	static CShaderLight* m_pShaderLight;	// シェーダー情報
 
 	// メンバ変数
-	Clist<SLight> m_List;
+	static Clist<SLight> * m_List;
 };
 
 #endif	// _ShaderLight_#pragma once

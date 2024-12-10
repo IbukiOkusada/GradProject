@@ -37,6 +37,7 @@ public:
 	void SetMaterial(const D3DMATERIAL9& rMaterial);		// マテリアル設定
 	void SetDiffuse(const D3DXCOLOR& rDiffuse);				// 拡散光設定
 	void SetLightVec(const D3DXVECTOR4& rVec);
+	void SetCameraVec(const D3DXVECTOR3& rVec);
 	void SetMatrixWorld(const D3DXMATRIX& rmtxWorld);
 	void SetView(const D3DXMATRIX& rmtxView);
 	void SetProj(const D3DXMATRIX& rmtxPorj);
@@ -73,8 +74,12 @@ private:
 	D3DXHANDLE m_hDirectLight;					// 平行光源の方向ベクトル
 	D3DXHANDLE m_hLightDiffuse;					// 拡散光色
 	D3DXHANDLE m_hMatDiffuse;					// マテリアル拡散光色
+	D3DXHANDLE m_hMatAmbient;					// マテリアル環境色
+	D3DXHANDLE m_hMatEmissive;					// マテリアル発光色
+	D3DXHANDLE m_hMatSpecula;					// マテリアル反射色
+	D3DXHANDLE m_hMatPower;					// マテリアル強度
 	D3DXHANDLE m_hUseTex;						// テクスチャの使用可否
-
+	D3DXHANDLE m_hViewvec;					//視点ベクトル
 	D3DXHANDLE m_hWorldMat;						// ワールド変換行列ハンドル
 	D3DXHANDLE m_hViewMat;						// ビュー変換行列ハンドル
 	D3DXHANDLE m_hProjMat;						// 射影変換行列ハンドル
@@ -87,7 +92,11 @@ private:
 	D3DXVECTOR4 m_DirectLight;					// 平行光源の方向ベクトル
 	D3DXVECTOR4 m_LightDiffuse;					// 拡散光色
 	D3DXVECTOR4 m_MatDiffuse;					// マテリアル拡散光色
-
+	D3DXVECTOR4 m_MatAmbient;					// マテリアル環境色
+	D3DXVECTOR4 m_MatEmissive;					// マテリアル発光色
+	D3DXVECTOR4 m_Viewvec;					//視点ベクトル
+	D3DXVECTOR4 m_MatSpecula;					// マテリアル反射色
+	float m_MatPower;					// マテリアル強度
 	bool m_bBegin;
 };
 

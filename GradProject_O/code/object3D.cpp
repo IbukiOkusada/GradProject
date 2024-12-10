@@ -230,7 +230,7 @@ void CObject3D::DrawOnShader(void)
 	CFXManager* pFx = CFXManager::GetInstance();
 
 	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	//計算用マトリックス
-	D3DMATERIAL9 mat;
+	D3DMATERIAL9 mat = {};
 	mat.Diffuse.r = 2.0f;
 	mat.Diffuse.g = 2.0f;
 	mat.Diffuse.b = 2.0f;
