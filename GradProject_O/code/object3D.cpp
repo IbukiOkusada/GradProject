@@ -13,7 +13,7 @@
 #include "debugproc.h"
 #include "player.h"
 #include "sound.h"
-
+#include "fxmanager.h"
 //==========================================================
 //マクロ定義
 //==========================================================
@@ -27,7 +27,7 @@ CObject3D::CObject3D(int nPriority) : CObject(nPriority)
 	m_nIdxTexture = -1;
 	m_bLighting = false;
 	m_pVtx = nullptr;
-
+	SetDrawShader(true);
 	//各種変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -220,6 +220,77 @@ void CObject3D::Draw(void)
 	}
 }
 
+//==========================================================
+//ポリゴンの描画処理
+//==========================================================
+void CObject3D::DrawOnShader(void)
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
+	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
+	CFXManager* pFx = CFXManager::GetInstance();
+
+	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	//計算用マトリックス
+	D3DMATERIAL9 mat = {};
+	mat.Diffuse.r = 2.0f;
+	mat.Diffuse.g = 2.0f;
+	mat.Diffuse.b = 2.0f;
+	mat.Diffuse.a = 2.0f;
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxWorld);
+	D3DXMatrixIdentity(&mtxscale);
+	//向きを反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+	//位置を反映
+	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	pFx->SetMatrixWorld(m_mtxWorld);
+	pFx->SetScale(mtxscale);
+	pFx->SetMaterial(mat);
+	//頂点バッファをデータストリームに設定
+	pDevice->SetStreamSource(
+		0,
+		m_pVtxBuff,
+		0,
+		sizeof(VERTEX_3D));
+
+	//頂点フォーマットの設定
+	pDevice->SetFVF(FVF_VERTEX_3D);
+
+	//テクスチャの設定
+	pDevice->SetTexture(0, pTexture->SetAddress(m_nIdxTexture));
+
+	if (m_bLighting) {
+		//ライティングをオンにする
+		pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+	}
+
+	// カリング設定
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
+	pFx->SetParamToEffect();
+	pFx->Begin();
+	pFx->BeginPass();
+
+	//ポリゴンの描画
+	pDevice->DrawPrimitive(
+		D3DPT_TRIANGLESTRIP,	//プリミティブの種類
+		0,
+		2	//頂点情報構造体のサイズ
+	);
+	pFx->EndPass();
+	pFx->End();
+	// カリング設定直す
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+
+	if (m_bLighting) {
+		//ライティングをオンにする
+		pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	}
+}
 //==========================================================
 //生成処理
 //==========================================================

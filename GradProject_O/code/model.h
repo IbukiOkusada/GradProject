@@ -26,6 +26,7 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
+	void DrawOnShader(void);
 	static CModel *Create(const char *pFileName);
 	void SetParent(D3DXMATRIX *pMtx);
 	void SetCharaParent(D3DXMATRIX *pMtx) { m_pCharacterMtx = pMtx; }
@@ -77,6 +78,7 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_CurRot;		// 現在の向き
 	D3DXVECTOR3 m_mtxpos;		// マトリックス座標
 	D3DXMATRIX m_mtxWorld;		// ワールドマトリックス
+	D3DXMATRIX m_mtxscale;
 	D3DXMATRIX *m_pParentMtx;	// 親のワールドマトリックス
 	D3DXMATRIX *m_pCharacterMtx;	// まとめている親のマトリックス
 	bool m_bShadow;		// 影も描画するか否か

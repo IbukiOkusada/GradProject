@@ -36,6 +36,7 @@ public:	// 誰でもアクセス可能
 	virtual void Uninit(void);
 	virtual void Update(void);
 	virtual void Draw(void);
+	virtual void DrawOnShader(void);
 	void BindFile(int nIdx);
 	void BindFile(const char* file);
 
@@ -77,6 +78,7 @@ public:	// 誰でもアクセス可能
 protected:
 	void Quaternion();
 	void DrawOnry();
+	void DrawOnryShader();
 	void DrawShadow();
 	void CalWorldMtx();
 
@@ -90,6 +92,7 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_rot;	// 向き
 	D3DXVECTOR3 m_scale;	// 拡大縮小
 	D3DXMATRIX m_mtxWorld;	//ワールドマトリックス
+	D3DXMATRIX m_mtxscale;
 	D3DXCOLOR m_ColMulti;
 	D3DXCOLOR m_AddCol;
 	TYPE m_Type;		// 回転種類

@@ -8,7 +8,7 @@
 #define _MANAGER_H_		// 二重インクルード防止用マクロを定義
 
 #include "main.h"
-
+#include "fxmanager.h"
 // 前方宣言
 class CRenderer;
 class CInput;
@@ -102,6 +102,7 @@ public:	// 誰でもアクセス可能
 	CFade *GetFade(void);
 	CFont *GetFont(void);
 	CDeltaTime *GetDeltaTime(void);
+	
 	void SetMode(CScene::MODE mode);
 	CScene::MODE GetMode(void) { return m_pScene->GetMode(); }
 	CScene *GetScene(void) { return m_pScene; }
@@ -133,6 +134,7 @@ private:	// 自分だけがアクセス可能
 	CDeltaTime* m_pDeltaTime;  // タイマーのポインタ
 	CFont* m_pFont;
 	CNetWork* m_pNetWork;
+
 	static CManager *m_pManager;	// マネージャーのポインタ
 
 	int m_nDeliveryStatus;

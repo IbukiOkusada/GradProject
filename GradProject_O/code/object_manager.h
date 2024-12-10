@@ -30,6 +30,8 @@ public:
 	void Uninit(void);
 	void Draw(void);
 	void DrawAll(void);
+	void DrawAllShader(void);
+	void DrawAllnotShader(void);
 	void DrawOnlyPlayer(void);
 	void ListIn(CObject *pObject);
 	CObject *GetTop(const int nPriority) { return m_apTop[nPriority]; }

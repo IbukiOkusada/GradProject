@@ -537,6 +537,9 @@
     <ClCompile Include="code\police_AI_manager.cpp">
       <Filter>car</Filter>
     </ClCompile>
+    <ClCompile Include="code\shaderlight.cpp">
+      <Filter>shader\manager</Filter>
+    </ClCompile>
     <ClCompile Include="code\multi_result.cpp">
       <Filter>mode\result\multi</Filter>
     </ClCompile>
@@ -901,6 +904,9 @@
     </ClInclude>
     <ClInclude Include="code\police_AI_manager.h">
       <Filter>car</Filter>
+    </ClInclude>
+    <ClInclude Include="code\shaderlight.h">
+      <Filter>shader\manager</Filter>
     </ClInclude>
     <ClInclude Include="code\multi_result.h">
       <Filter>mode\result\multi</Filter>

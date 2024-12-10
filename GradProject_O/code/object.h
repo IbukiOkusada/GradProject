@@ -47,7 +47,7 @@ public:	// 誰でもアクセス可能
 	virtual HRESULT Init(void) = 0;
 	virtual void Uninit(void) = 0;
 	virtual void Draw(void) = 0;
-
+	virtual void DrawOnShader(void) {};
 	// メンバ関数(設定)
 	virtual void SetPosition(const D3DXVECTOR3) {}
 	virtual void SetRotation(const D3DXVECTOR3) {}
@@ -71,7 +71,8 @@ public:	// 誰でもアクセス可能
 	CObject *GetNext(void) { return m_pNext; }
 	CObject *GetPrev(void) { return m_pPrev; }
 	bool GetDraw(void) { return m_bDraw; }
-
+	bool GetDrawShader(void) { return m_bShader; }
+	void SetDrawShader(bool value) { m_bShader = value; }
 	// メンバ関数(設定)
 	void SetType(const TYPE type);
 	void SetPriOrity(int nPriority) { m_nPriority = nPriority; }
@@ -90,6 +91,7 @@ private:	// 自分だけがアクセス可能
 	CObject *m_pNext;	// 次のオブジェクトへのポインタ
 	bool m_bDeath;		// 死亡フラグ
 	bool m_bDraw;		// 描画フラグ
+	bool m_bShader;		//シェーダーを使用した描画フラグ
 	int m_nPriority;	// 優先順位の位置
 	TYPE m_type;		// 種類
 };

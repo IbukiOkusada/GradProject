@@ -25845,7 +25845,7 @@ Mesh {
    1.000000;1.000000;1.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "data\\TEXTURE\\Glass_Deffuse.tga.png";
+    "data\\TEXTURE\\Glass_Deffuse.png";
    }
   }
  }

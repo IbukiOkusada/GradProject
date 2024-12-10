@@ -35,7 +35,7 @@
 #include "deltatime.h"
 #include "entry.h"
 #include "network.h"
-
+#include "fxmanager.h"
 //===============================================
 // 静的メンバ変数
 //===============================================
@@ -60,6 +60,7 @@ CManager::CManager()
 	m_pDeltaTime = nullptr;     // タイマーへのポインタ
 	m_pFont = nullptr;
 	m_pNetWork = nullptr;
+
 	m_nDeliveryStatus = 0;
 }
 
@@ -328,12 +329,13 @@ void CManager::Uninit(void)
 		m_pNetWork->Release();
 		m_pNetWork = nullptr;
 	}
-
+	CFXManager::Release();
 	SAFE_UNINIT_DELETE(m_pFont);
 	// 各種マネージャの破棄
 	CListManager::Release();
 	CMasterSound::GetInstance()->Uninit();
 	CMasterSound::Release();
+
 	// エフェクシア破棄
 	CEffekseer::GetInstance()->Uninit();
 }

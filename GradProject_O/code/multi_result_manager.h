@@ -41,7 +41,9 @@ public:	// 誰でもアクセス可能
 	void Update(void);
 
 	// 取得系
-	SInfo (&GetInfo())[NetWork::MAX_CONNECT] { return m_aInfo; }
+	SInfo* GetInfo() { return &m_aInfo[0]; }
+	int GetNumPlayer() { return m_nNumPlayer; }
+	int GetMyId() { return m_nMyId; }
 
 	// 設定系
 	void DataSet(void);
@@ -56,6 +58,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	int m_nMyId;
+	int m_nNumPlayer;
 	SInfo m_aInfo[NetWork::MAX_CONNECT];
 
 	// 静的メンバ変数
