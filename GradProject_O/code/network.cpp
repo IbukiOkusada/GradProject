@@ -169,9 +169,7 @@ void CNetWork::Uninit()
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
-
 		m_aConnect[i] = false;
-
 	}
 
 	m_nMyIdx = -1;
@@ -315,6 +313,8 @@ bool CNetWork::DisConnect()
 	if (m_pClient != nullptr)
 	{
 		m_pClient->Uninit();
+		delete m_pClient;
+		m_pClient = nullptr;
 	}
 
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
@@ -351,8 +351,12 @@ void CNetWork::Online(void)
 		if (*pRecvByte > 0)
 		{
 			// マルチスレッド
+#if 0
 			std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
 			th.detach();
+#else
+			ByteCheck(pData, pRecvByte);
+#endif
 		}
 		else
 		{
@@ -614,7 +618,7 @@ void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
 		return;
 	}
 
-	pGoal->SetEnd(nId);
+	pGoal->RecvEnd(nId);
 }
 
 //===================================================
@@ -664,7 +668,7 @@ void CNetWork::RecvNextGoal(int* pByte, const int nId, const char* pRecvData)
 	memcpy(&goalid, &pRecvData[byte], sizeof(int));
 	*pByte += sizeof(int);
 
-	CGoalManager::GetInstance()->GoalCreate(goalid);
+	CGoalManager::GetInstance()->SetNetId(goalid);
 }
 
 //===================================================
@@ -703,8 +707,11 @@ void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 
 	if (pScene == nullptr) { return; }
 
+	// ID取得
 	pScene->SetID(nId);
-	pScene->ChangeTex(pRecvData);
+
+	// 準備完了フラグを立てる
+	pScene->ChangeFlag(true);
 }
 
 //===================================================
@@ -713,6 +720,16 @@ void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 {
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+
+	CScene* pScene = CManager::GetInstance()->GetScene();
+
+	if (pScene == nullptr) { return; }
+
+	// ID取得
+	pScene->SetID(nId);
+
+	// 準備完了フラグを折る
+	pScene->ChangeFlag(false);
 }
 
 //===================================================
@@ -720,11 +737,11 @@ void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
 {
-	//// 次の画面に遷移
-	//if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
-	//{
-	//	CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
-	//}
+	// 次の画面に遷移
+	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
+	{
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
+	}
 }
 
 //===================================================
@@ -775,7 +792,7 @@ void CNetWork::RecvSetInspection(int* pByte, const int nId, const char* pRecvDat
 	}
 
 	// 検問生成
-	CInspection::Create(pos, rot, pRoad, inspid, startpdid);
+	CInspectionManager::GetInstance()->SetNextInspection(pos, rot, pRoad, inspid, startpdid);
 }
 
 //===================================================

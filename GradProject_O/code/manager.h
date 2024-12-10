@@ -48,6 +48,7 @@ public:
 		MODE_ENTRY,     // エントリー画面
 		MODE_GAME,		// ゲーム画面
 		MODE_RESULT,	// リザルト画面
+		MODE_MULTI_RESULT,	// マルチリザルト画面
 		MODE_MAX
 	};
 
@@ -67,7 +68,7 @@ public:
 	void SetMode(MODE mode) { m_mode = mode; }
 	MODE GetMode(void) { return m_mode; }
 	virtual void SetID(const int id) {};
-	virtual void ChangeTex(const char* path) {};
+	virtual void ChangeFlag(bool value) {};
 
 private:
 	MODE m_mode;	// モード

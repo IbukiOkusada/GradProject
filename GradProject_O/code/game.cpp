@@ -58,6 +58,8 @@
 #include "fog.h"
 #include "inspection_manager.h"
 #include "deltatime.h"
+#include "multi_result_manager.h"
+
 // ネットワーク
 #include "network.h"
 
@@ -202,6 +204,7 @@ HRESULT CGame::Init(void)
     {
         // 車の生成
         CreateCar();
+
         // 警察の生成
         CreatePolice();
     }
@@ -270,10 +273,7 @@ void CGame::Uninit(void)
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
 
-    //Winsock終了処理
-    WSACleanup();	// WSACleanup関数 : winsockの終了処理
-
-    // エディット設定
+    // エディット廃棄
     CEditManager::Release();
 
     // マップマネージャー廃棄
@@ -301,6 +301,7 @@ void CGame::Update(void)
 		m_bPause = m_bPause ? false : true;
 	}
 
+    // タイマーの更新
     if (m_pGameTimer != nullptr)
     {
         CPlayer* player = CPlayerManager::GetInstance()->GetPlayer();
@@ -376,9 +377,15 @@ void CGame::Update(void)
     {
         End_Fail();
     }
+
+    // 各マネージャー更新
     CPoliceManager::GetInstance()->Update();
     CPoliceAIManager::GetInstance()->Update();
+    CInspectionManager::GetInstance()->Update();
+
     CScene::Update();
+
+    // 状態による音量設定
     switch (m_GameState)
     {
     case CGame::STATE_NONE:
@@ -397,6 +404,14 @@ void CGame::Update(void)
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+        }
+        break;
+
+    case CGame::STATE_MULTIEND:
+        pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol() * 0.9f);
+        if (!m_pEndSound->GetPlay())
+        {
+            CManager::GetInstance()->GetFade()->Set(CScene::MODE_MULTI_RESULT);
         }
         break;
     case CGame::STATE_MAX:
@@ -487,6 +502,21 @@ void CGame::End_Fail()
         m_pEndText->PushBackString("配達失敗");
         m_pEndText->SetEnableScroll(true);
         m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\f_jingle.wav", 0);
+    }
+}
+
+void CGame::End_MultiEnd()
+{
+    if (m_GameState != STATE::STATE_MULTIEND)
+    {
+        SetGameState(STATE::STATE_MULTIEND);
+        m_pEndText = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, SCREEN_CENTER, 0.7f, 200.0f, 200.0f, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f));
+        m_pEndText->PushBackString("配達終了");
+        m_pEndText->SetEnableScroll(true);
+        m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\f_jingle.wav", 0);
+
+        // データを保存
+        CMultiResultManager::GetInstance()->DataSet();
     }
 }
 //===================================================

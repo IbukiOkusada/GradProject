@@ -41,6 +41,7 @@ CGoalManager::CGoalManager()
 	m_nNumCreate = 0;
 	m_nNextIdx = 0;
 	m_nNowIdx = 0;
+	m_nNetId = -1;
 }
 
 //==========================================================
@@ -122,6 +123,8 @@ HRESULT CGoalManager::Init(void)
 //==========================================================
 void CGoalManager::Uninit(void)
 {
+	CListManager::Uninit();
+
 	// ƒS[ƒ‹‚Ì”jŠü
 	if (m_pGoal != nullptr)
 	{
@@ -134,10 +137,9 @@ void CGoalManager::Uninit(void)
 	// Ž©g‚Ì”jŠü
 	if (m_pInstance != nullptr)
 	{
+		delete this;
 		m_pInstance = nullptr;
 	}
-
-	delete this;
 }
 
 //==========================================================
@@ -154,6 +156,13 @@ void CGoalManager::Update(void)
 	CDebugProc::GetInstance()->Print("ƒS[ƒ‹‚Ì¶¬” [ %d ] : Œ»Ý‚Ì”z’u” [ %d ], ”z’u‚Ì”Ô†[ %d ]\n",m_nNumCreate, m_List.GetNum(), m_nNowIdx);
 
 	if (m_pGoal == nullptr) { return; }
+
+	// ŽŸ‚Ì”Ô†‚ªÝ’è‚³‚ê‚Ä‚¢‚é
+	if (m_nNetId >= 0)
+	{
+		GoalCreate(m_nNetId);
+		m_nNetId = -1;
+	}
 }
 
 //==========================================================

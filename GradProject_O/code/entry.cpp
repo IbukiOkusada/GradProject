@@ -20,6 +20,8 @@
 #include "map_manager.h"
 #include "objectX.h"
 #include "meshfield.h"
+#include "goal_manager.h"
+#include "edit_manager.h"
 
 //===============================================
 // 定数定義
@@ -28,7 +30,6 @@ namespace
 {
     const int WIDTH_NUM = 4;   // 横の分割数
     const int HEIGHT_NUM = 2;  // 縦の分割数
-    const int MAX_PLAYER = 4;  // プレイヤーの最大数
 
     const float LENGTH = 500.0f;
     const float ROTATION_Y = 0.005f;
@@ -36,7 +37,7 @@ namespace
     const char* MODEL_PATH = "data\\MODEL\\bike.x";  // プレイヤーのモデルパス
 
     // 操作方法UIのテクスチャパス
-    const char* TEX_PATH[MAX] =
+    const char* TEX_PATH[NUM_CONTROL_UI] =
     {
         "data\\TEXTURE\\result_clear.png",
         "data\\TEXTURE\\result_deli.png",
@@ -80,15 +81,17 @@ CEntry::CEntry()
     // 値をクリア
 	m_ppCamera = nullptr;
     m_ppObjX = nullptr;
+    m_pGoalManager = nullptr;
     m_IsFinish = false;
+    m_bSetReady = false;
     m_nID = -1;
 
-    for (int i = 0; i < MAX; i++)
+    for (int i = 0; i < NUM_CONTROL_UI; i++)
     {
         m_pControlsUI[i] = nullptr;
     }
 
-    for (int i = 0; i < MAX; i++)
+    for (int i = 0; i < MAX_PLAYER; i++)
     {
         m_pReady[i] = nullptr;
     }
@@ -141,12 +144,17 @@ HRESULT CEntry::Init(void)
     // メッシュフィールド生成
     CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 
-   /* CObject2D* pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.9f, 0.0f), VECTOR3_ZERO, 4);
-    pObj->SetSize(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.1f);
-    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\concrete002.jpg"));*/
+    if (m_pGoalManager == nullptr)
+    {
+        m_pGoalManager = CGoalManager::Create();
+        if (m_pGoalManager->GetCreateIdx() <= 0)
+        {
+            m_pGoalManager->Init();
+        }
+    }
 
     // 操作方法UIの生成
-    for (int i = 0; i < MAX; i++)
+    for (int i = 0; i < NUM_CONTROL_UI; i++)
     {
         m_pControlsUI[i] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.9f, SCREEN_HEIGHT * 0.3f + i * 60.0f, 0.0f), VECTOR3_ZERO, 7);
         m_pControlsUI[i]->SetSize(100.0f, 40.0f);
@@ -234,6 +242,33 @@ void CEntry::Uninit(void)
         delete[] m_ppObjX;
         m_ppObjX = nullptr;
     }
+
+    // 操作UIの破棄
+    if (m_pControlsUI != nullptr)
+    {
+        for (int i = 0; i < NUM_CONTROL_UI; i++)
+        {
+            if (m_pControlsUI[i] == nullptr) { continue; }
+
+            m_pControlsUI[i]->Uninit();
+            m_pControlsUI[i] = nullptr;
+        }
+    }
+
+    // 準備UIの破棄
+    if (m_pReady != nullptr)
+    {
+        for (int i = 0; i < MAX_PLAYER; i++)
+        {
+            if (m_pReady[i] == nullptr) { continue; }
+
+            m_pReady[i]->Uninit();
+            m_pReady[i] = nullptr;
+        }
+    }
+
+    // ゴールマネージャーの破棄
+    SAFE_RELEASE(m_pGoalManager);
 }
 
 //===============================================
@@ -244,13 +279,16 @@ void CEntry::Update(void)
     CInputKeyboard* pKey = CInputKeyboard::GetInstance();
     CInputPad* pPad = CInputPad::GetInstance();
 
-    if (pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
-        pKey->GetTrigger(DIK_RETURN))
+    CEditManager* pMgr = CEditManager::GetInstance();
+    // エディター生成
+    if (pKey->GetTrigger(DIK_F4) && CEditManager::GetInstance() == nullptr)
     {
-        //m_IsFinish = true;
-        
-        //CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+        pMgr = CEditManager::Create();
     }
+
+    // エディター更新
+    if (pMgr != nullptr) { pMgr->Update(); }
+
     for (int i = 0; i < MAX_PLAYER; i++)
     {
         if (m_ppObjX[i] != nullptr)
@@ -261,8 +299,17 @@ void CEntry::Update(void)
         }
     }
 
+    // ゴールマネージャーの更新
+    if (m_pGoalManager != nullptr)
+    {
+        m_pGoalManager->Update();
+    }
+
     // 操作方法UI
     ControlsUI();
+
+    // 準備UI
+    ReadyUp();
 
     // プレイヤー参加処理
     AddPlayer();
@@ -298,16 +345,20 @@ void CEntry::Draw(void)
     CScene::Draw();
 }
 
+//===============================================
+// 準備完了したプレイヤーの番号を受け取る
+//===============================================
 void CEntry::SetID(const int id)
 {
     m_nID = id;
 }
 
-void CEntry::ChangeTex(const char* path)
+//===============================================
+// 準備完了しているかどうか受け取る
+//===============================================
+void CEntry::ChangeFlag(bool value)
 {
-    if (m_pReady[m_nID] == nullptr) { return; }
-
-    m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(path));
+    m_bSetReady = value;
 }
 
 //===============================================
@@ -391,16 +442,18 @@ void CEntry::AddPlayer(void)
                 m_ppObjX[i] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), MODEL_PATH, 7);
                 m_ppObjX[i]->SetType(CObject::TYPE::TYPE_PLAYER);
                 m_ppObjX[i]->SetRotateType(CObjectX::TYPE_QUATERNION);
+                m_ppObjX[i]->SetColMulti(pPlayer->GetObj()->GetColMuliti());
 
                 // 準備できてるかどうかのUIの生成
-                m_pReady[i] = CObject2D::Create((D3DXVECTOR3(SCREEN_WIDTH * 0.1f + i * 200.0f, SCREEN_HEIGHT * 0.5f, 0.0f)), VECTOR3_ZERO, 7);
+                D3DXVECTOR3 POS = D3DXVECTOR3((SCREEN_WIDTH * (0.25f * float(i + 1)) - 150.0f), SCREEN_HEIGHT * 0.7f, 0.0f);
+                m_pReady[i] = CObject2D::Create(POS, VECTOR3_ZERO, 7);
                 m_pReady[i]->SetSize(100.0f, 50.0f);
                 m_pReady[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
             }
         }
     }
 
-    if (pKey->GetTrigger(DIK_RETURN)/* || pPad->GetTrigger(CInputPad::BUTTON_A, 0)*/)
+    if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
         m_IsFinish ^= true;
 
@@ -408,8 +461,6 @@ void CEntry::AddPlayer(void)
         {// チュートリアルが終了している
 
             net->SendTutorialOk();
-
-            ReadyUp();
         }
         else
         {
@@ -464,7 +515,7 @@ void CEntry::ControlsUI(void)
     CInputPad* pPad = CInputPad::GetInstance();
 
     // 半透明にする
-    for (int i = 0; i < MAX; i++)
+    for (int i = 0; i < NUM_CONTROL_UI; i++)
     {
         if (m_pControlsUI[i] == nullptr) { continue; }
 
@@ -483,25 +534,25 @@ void CEntry::ControlsUI(void)
     // 旋回
     if (1.0f <= fLStick || -1.0f >= fLStick)
     {
-        m_pControlsUI[0]->SetCol(TEX_COL_OPAQUE);
+        m_pControlsUI[UI_TURN]->SetCol(TEX_COL_OPAQUE);
     }
 
     // アクセル
     if (1.0f <= fAccel)
     {
-        m_pControlsUI[1]->SetCol(TEX_COL_OPAQUE);
+        m_pControlsUI[UI_ACCEL]->SetCol(TEX_COL_OPAQUE);
     }
 
     // ブレーキ
     if (1.0f <= fBrake)
     {
-        m_pControlsUI[2]->SetCol(TEX_COL_OPAQUE);
+        m_pControlsUI[UI_BRAKE]->SetCol(TEX_COL_OPAQUE);
     }
 
     // ブースト
     if (pPad->GetPress(CInputPad::BUTTON_B, 0))
     {
-        m_pControlsUI[3]->SetCol(TEX_COL_OPAQUE);
+        m_pControlsUI[UI_BOOST]->SetCol(TEX_COL_OPAQUE);
     }
 }
 
@@ -513,14 +564,34 @@ void CEntry::ReadyUp(void)
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
 
-    for (int i = 0; i < NetWork::MAX_CONNECT; i++)
-    {
-        auto player = mgr->GetPlayer(i);
+    // 使用されていなかったら処理を抜ける
+    if (m_pReady[m_nID] == nullptr || m_nID == -1) { return; }
 
-        // 人数が多い
-        if (m_pReady[i] != nullptr && player != nullptr && !net->GetConnect(i))
-        {
-            m_pReady[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
-        }
+    if (m_bSetReady)
+    {// 準備完了できてる
+
+        // テクスチャ変更
+        m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
+
+        //net->SendTutorialOk();
     }
+
+    if (!m_bSetReady)
+    {// 準備完了できてない
+
+        // テクスチャ変更
+        m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
+
+        //net->SendTutorialNo();
+    }
+
+    m_nID = -1;
+}
+
+CTutorialStep::CTutorialStep()
+{
+}
+
+CTutorialStep::~CTutorialStep()
+{
 }

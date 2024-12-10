@@ -17,6 +17,7 @@
 #include "title.h"
 #include "result.h"
 #include "tutorial.h"
+#include "multi_result.h"
 #include "fade.h"
 #include "object.h"
 #include "ranking.h"
@@ -676,6 +677,10 @@ CScene *CScene::Create(MODE mode)
 
 	case MODE_RESULT:
 		pScene = DEBUG_NEW CResult;
+		break;
+
+	case MODE_MULTI_RESULT:
+		pScene = DEBUG_NEW CMultiResult;
 		break;
 	}
 

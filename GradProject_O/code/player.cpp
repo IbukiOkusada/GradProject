@@ -144,6 +144,14 @@ namespace
 	">> [NEON TRAIL ACTIVATED]                        ",
 	}
 	};
+
+	const D3DXCOLOR MULTICOL[NetWork::MAX_CONNECT] =
+	{
+		{1.0f, 1.0f, 0.1f, 1.0f},	// 黄色
+		{1.0f, 0.1f, 0.7f, 1.0f},	// 赤紫
+		{0.1f, 1.0f, 0.1f, 1.0f},	// 緑
+		{0.3f, 0.6f, 1.0f, 1.0f},	// 水色
+	};
 }
 
 //===============================================
@@ -246,12 +254,12 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
+
+	SetCol();
+
 	SetMatrix();
 	
-	//m_pContainer = CContainer::Create();
-	
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	return S_OK;
@@ -1040,7 +1048,9 @@ void CPlayer::StateSet(void)
 
 			if (m_pObj != nullptr)
 			{
-				m_pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, diff));
+				D3DXCOLOR multi = m_pObj->GetColMuliti();
+				multi.a = diff;
+				m_pObj->SetColMulti(multi);
 			}
 		}
 	}
@@ -1225,6 +1235,12 @@ void CPlayer::SetStateActive()
 			m_pRadio = CRadio::Create();
 		}
 
+		// アイスContainer生成
+		if (m_pContainer == nullptr)
+		{
+			m_pContainer = CContainer::Create();
+		}
+
 		// ナビ生成
 		if (m_pNavi == nullptr)
 		{
@@ -1378,6 +1394,28 @@ void CPlayer::Respawn()
 
 	if (m_pObj != nullptr)
 	{
-		m_pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		D3DXCOLOR multi = m_pObj->GetColMuliti();
+		multi.a = 1.0f;
+		m_pObj->SetColMulti(multi);
 	}
+}
+
+//===============================================
+// 色設定
+//===============================================
+void CPlayer::SetCol()
+{
+	if (m_pObj == nullptr) { return; }
+
+	int id = m_nId;
+	if (id < 0) id = 0;
+	m_pObj->SetColMulti(MULTICOL[id]);
+}
+
+//===============================================
+// カメラ移動
+//===============================================
+void CPlayer::CameraMove(const D3DXVECTOR3& rot)
+{
+
 }

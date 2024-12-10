@@ -9,12 +9,14 @@
 
 #include "goal.h"
 #include "map_list.h"
+#include "list_manager.h"
 
 //==========================================================
 // ゴール管理のクラス定義
 //==========================================================
-class CGoalManager
+class CGoalManager : public CListManager
 {
+
 public:
 	CGoalManager();      // コンストラクタ
 	~CGoalManager();     // デストラクタ
@@ -40,17 +42,22 @@ public:
 	int GetCreateIdx() { return m_nNumCreate; }
 	int GetNextIdx() { return m_nNextIdx; }
 
+	// 設定系
+	void SetNetId(int nIdx) { m_nNetId = nIdx; }
+
 private:
 
 	void Uninit(void);   // 終了処理
 
-	int m_nNextIdx;
-	int m_nOldIdx;
-	int m_nNowIdx;
-	int m_nNumCreate;
+	int m_nNextIdx;	// 次の生成ID
+	int m_nOldIdx;	// 前回の生成ID
+	int m_nNowIdx;	// 現在の生成ID
+	int m_nNumCreate;	// 総生成数
+	int m_nNetId;	// 通信で受け取った次の生成番号
 	std::vector<CGoal::SInfo> m_InfoList;
 	CGoal* m_pGoal;		// ゴールのポインタ
 	CGoal* m_pGoalOld;  // 前回のゴールのポインタ
+	bool m_bNextGoal;	// 次のゴールが設定されている
 	static CGoalManager *m_pInstance;  // 自身のポインタ
 	Cmaplist<CGoal*> m_List;
 };

@@ -437,6 +437,57 @@ void CObject2D::SetVtx(const float fTexU, const float fTexV, const float fWidth,
 }
 
 //===============================================
+// 頂点情報設定(テクスチャアニメーション)
+//===============================================
+void CObject2D::SetVtxRatio(const float fTexU, const float fTexV, const float fWidth, const float fHeight, const float fRatioX, const float fRatioY)
+{
+	VERTEX_2D* pVtx;
+
+	//頂点バッファをロックし頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(
+		0,
+		0,
+		(void**)&pVtx,
+		0
+	);
+
+	//頂点座標の設定
+	pVtx[0].pos.x = m_pos.x - fWidth;
+	pVtx[0].pos.y = m_pos.y - fHeight;
+	pVtx[0].pos.z = 0.0f;
+	pVtx[1].pos.x = m_pos.x + fWidth - (fWidth * (1.0f - fRatioX) * 2);
+	pVtx[1].pos.y = m_pos.y - fHeight;
+	pVtx[1].pos.z = 0.0f;
+	pVtx[2].pos.x = m_pos.x - fWidth;
+	pVtx[2].pos.y = m_pos.y + fHeight - (fHeight * (1.0f - fRatioY) * 2);
+	pVtx[2].pos.z = 0.0f;
+	pVtx[3].pos.x = m_pos.x + fWidth - (fWidth * (1.0f - fRatioX) * 2);
+	pVtx[3].pos.y = m_pos.y + fHeight - (fHeight * (1.0f - fRatioY) * 2);
+	pVtx[3].pos.z = 0.0f;
+
+	// rhwの設定
+	pVtx[0].rhw = 1.0f;
+	pVtx[1].rhw = 1.0f;
+	pVtx[2].rhw = 1.0f;
+	pVtx[3].rhw = 1.0f;
+
+	// 頂点カラーの設定
+	pVtx[0].col = m_col;
+	pVtx[1].col = m_col;
+	pVtx[2].col = m_col;
+	pVtx[3].col = m_col;
+
+	// テクスチャ座標の設定
+	pVtx[0].tex = D3DXVECTOR2(fTexU, fTexV);
+	pVtx[1].tex = D3DXVECTOR2(fTexU + 1.0f, fTexV);
+	pVtx[2].tex = D3DXVECTOR2(fTexU, fTexV + 1.0f);
+	pVtx[3].tex = D3DXVECTOR2(fTexU + 1.0f, fTexV + 1.0f);
+
+	//頂点バッファをアンロックする
+	m_pVtxBuff->Unlock();
+}
+
+//===============================================
 // 頂点情報設定
 //===============================================
 CObject2D *CObject2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nPriority)

@@ -41,10 +41,11 @@ private:
 	struct SInfo
 	{
 		D3DXVECTOR3 startpos;		// 座標
+		D3DXVECTOR3 startrot;	// 座標
 		D3DXVECTOR3 touchpos;		// 前回の座標
 		D3DXVECTOR3 touchworldpos;	// 触れたスクリーン座標
 
-		SInfo() : startpos(VECTOR3_ZERO), touchpos(VECTOR3_ZERO), touchworldpos(VECTOR3_ZERO) {}
+		SInfo() : startpos(VECTOR3_ZERO), startrot(VECTOR3_ZERO), touchpos(VECTOR3_ZERO), touchworldpos(VECTOR3_ZERO) {}
 	};
 
 	struct SObj
@@ -66,7 +67,9 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(取得)
 	D3DXVECTOR3& GetPosition() { return m_pos; }
-	D3DXVECTOR3& GetDiffPosition() { return m_pos - m_Info.startpos; }
+	D3DXVECTOR3& GetRotation() { return m_rot; }
+	D3DXVECTOR3& GetDiffPosition() { return m_posDiff; }
+	D3DXVECTOR3& GetDiffRotation() { return m_rotDiff; }
 	SObj* GetHold() { return m_pHold; }
 	SObj* GetOldHold() { return m_pOldHold; }
 	// メンバ関数(設定)
@@ -83,6 +86,9 @@ protected:
 
 	// メンバ変数
 	D3DXVECTOR3 m_pos;	// 座標
+	D3DXVECTOR3 m_rot;	// 向き
+	D3DXVECTOR3 m_posDiff;	// 座標
+	D3DXVECTOR3 m_rotDiff;	// 向き
 	SInfo m_Info;
 	SObj m_aObj[VEC_MAX];
 

@@ -35,7 +35,7 @@ public:	// 誰でもアクセス可能な定義
 public:	// 誰でもアクセス可能
 
 	CEdit();	// コンストラクタ(オーバーロード)
-	~CEdit();	// デストラクタ
+	virtual ~CEdit();	// デストラクタ
 
 	// メンバ関数
 	virtual HRESULT Init(void) = 0;

@@ -25,10 +25,13 @@
 // –³–¼–¼‘O‹óŠÔ‚ð’è‹`
 namespace
 {
-	const float LENGTH_POINT = (200.0f);		// “ž’B”»’è‹——£
-	const float CHASE_SPEED = (22.0f);			// ’ÇÕŽž‚Ì‰Á‘¬
-	const float ROT_MULTI_DEF = (0.06f);		// ’ÊíŽž‚ÌŒü‚«•â³”{—¦
-	const float ROT_MULTI_CHASE = (0.13f);		// ’ÇÕŽž‚ÌŒü‚«•â³”{—¦
+	const float LENGTH_POINT = (200.0f);			// “ž’B”»’è‹——£
+	const float LENGTH_POINT_CHASE = (500.0f);		// ‚·‚êˆá‚¢”»’è‹——£
+	const float CHASE_SPEED = (22.0f);				// ’ÇÕŽž‚Ì‰Á‘¬
+	const float SECURE_SPEEDDEST = (-35.0f);		// Šm•ÛŽž‚Ì–Ú•W‘¬“x
+	const float SECURE_SPEED = (0.8f);				// Šm•ÛŽž‚Ì‰Á‘¬”{—¦
+	const float ROT_MULTI_DEF = (0.06f);			// ’ÊíŽž‚ÌŒü‚«•â³”{—¦
+	const float ROT_MULTI_CHASE = (0.13f);			// ’ÇÕŽž‚ÌŒü‚«•â³”{—¦
 }
 
 //==========================================================================
@@ -176,8 +179,6 @@ void CPolice::MoveRoad()
 	if (pRoadTarget == nullptr && IsActive())
 		SearchRoad();
 
-	SearchPlayer();
-
 	if (m_Info.bChase)
 	{
 		m_pSiren->Start();
@@ -201,13 +202,16 @@ void CPolice::MoveRoad()
 		}
 		else
 		{
-			if (m_Info.pPlayer != nullptr)
-			{
-				SetPosTarget(m_Info.pPlayer->GetPosition());
-			}
-		}
+			if (m_Info.pPlayer == nullptr) { return; }
 
-		CDebugProc::GetInstance()->Print("’ÇÕ’†\n");
+			SetPosTarget(m_Info.pPlayer->GetPosition());
+
+			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) < LENGTH_POINT_CHASE) { return; }
+
+			// ‘¬“x‚ðÝ’è
+			SetSpeedDest(SECURE_SPEEDDEST);
+			SetSpeed(GetSpeed() * SECURE_SPEED);
+		}
 	}
 	else
 	{
@@ -247,14 +251,7 @@ void CPolice::ReachRoad()
 
 		pRoadNext = pRoadTarget->GetConnectRoad((CRoad::DIRECTION)roadPoint);
 
-		if (pRoadTarget->GetType() == CRoad::TYPE_STOP)
-		{
-
-		}
-		else
-		{
-			if (pRoadNext == pRoadStart) { continue; }
-		}
+		if (pRoadNext == pRoadStart && pRoadTarget->GetType() != CRoad::TYPE_STOP) { continue; }
 
 		if (pRoadNext != nullptr) { break; }
 	}
