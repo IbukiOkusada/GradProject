@@ -24,21 +24,34 @@ namespace
 {
 	const float SECURE_SPEEDDEST = (-35.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
+
 	const float CHASE_SECURE = (400.0f);			// 追跡確保距離
 	const float CHASE_CROSS = (500.0f);				// すれ違い判定距離
 	const float CHASE_NEAR = (2000.0f);				// 近距離判定
 	const float CHASE_FAR = (3500.0f);				// 遠距離判定
+
 	const float	LIFE_DAMAGE = (80.0f);				// 傷判定のダメージ
 	const float	LIFE_SMOKE = (50.0f);				// 煙判定のダメージ
 	const float	LEVEL_MAX = (30.0f);				// 警戒度の最大値
 	const float	LEVEL_MIN = (0.0f);					// 警戒度の最小値
-	const float	LEVEL_NORMAL = (-0.1f);				// 警戒度の減少値
+	const float	LEVEL_NORMAL = (-0.1f);				// 通常時の警戒度減少量
 	const float	LEVEL_NEAR = (0.3f);				// 近距離時の警戒度増加量
 	const float	LEVEL_FAR = (0.2f);					// 遠距離時の警戒度増加量
 	const float	LEVEL_NITRO = (1.0f);				// ニトロ時の警戒度増加量
 	const float	LEVEL_DAMAGE = (0.3f);				// 傷状態時の警戒度増加量
 	const float	LEVEL_SMOKE = (0.5f);				// 煙状態時の警戒度増加量
+
 	const int CHASE_TIME = (100);					// 追跡時間
+
+	const float CHASE_SPEED_DEF = (22.0f);			// デフォルトの追跡時の加速
+	const float CHASE_SPEED_NORMAL = (22.0f);		// 通常タイプの追跡時の加速
+	const float CHASE_SPEED_ELITE = (24.0f);		// 回り込みタイプの追跡時の加速
+	const float CHASE_SPEED_GENTLE = (18.0f);		// 緩やかタイプの追跡時の加速
+
+	const float SEARCH_TIME_DEF = (3.0f);			// デフォルトの経路確認間隔
+	const float SEARCH_TIME_NORMAL = (3.0f);		// 通常タイプの経路確認間隔
+	const float SEARCH_TIME_ELITE = (2.5f);			// 回り込みタイプの経路確認間隔
+	const float SEARCH_TIME_GENTLE = (5.0f);		// 緩やかタイプの経路確認間隔
 }
 
 //==========================================================
@@ -53,8 +66,10 @@ CPoliceAI::CPoliceAI()
 	m_pSearchTarget = nullptr;
 	m_fSearchTimer = 0.0f;
 	m_fLevelSearch = 0.0f;
+	m_fChaseSpeed = 0.0f;
+	m_fSearchInterval = 0.0f;
 	m_nCntThread = 0;
-	bCross = false;
+	m_bCross = false;
 }
 
 //==========================================================
@@ -71,6 +86,8 @@ CPoliceAI::~CPoliceAI()
 HRESULT CPoliceAI::Init(void)
 {
 	CPoliceAIManager::GetInstance()->ListIn(this);
+	m_fChaseSpeed = CHASE_SPEED_DEF;
+	m_fSearchInterval = SEARCH_TIME_DEF;
 
 	return S_OK;
 }
@@ -128,7 +145,7 @@ void CPoliceAI::Search(void)
 			BeginChase(pPlayer);
 
 			// 接近状態を設定
-			bCross = true;
+			m_bCross = true;
 		}
 		else if (length < CHASE_NEAR)
 		{// 近距離
@@ -153,7 +170,7 @@ void CPoliceAI::Search(void)
 			BeginChase(pPlayer);
 
 			// 接近状態を設定
-			bCross = true;
+			m_bCross = true;
 		}
 		else if (length < CHASE_FAR)
 		{// 遠距離
@@ -183,7 +200,7 @@ void CPoliceAI::Search(void)
 			if (!m_pPolice->GetChase()) { continue; }
 
 			// 一度も接近していなければ抜ける
-			if (!bCross) { continue; }
+			if (!m_bCross) { continue; }
 
 			// 追跡時間を減らす
 			m_pPolice->SetChaseCount(m_pPolice->GetChaseCount() - 1);
@@ -201,8 +218,6 @@ void CPoliceAI::Search(void)
 			}
 		}
 	}
-
-	CDebugProc::GetInstance()->Print("警戒度 : %f\n", m_fLevelSearch);
 
 	// 警戒度を減少させる
 	m_fLevelSearch += LEVEL_NORMAL;
@@ -254,7 +269,7 @@ void CPoliceAI::EndChase(void)
 	m_pPolice->SetChase(false);
 
 	// 接近状態を解除
-	bCross = false;
+	m_bCross = false;
 
 	// 警戒度をリセット
 	m_fLevelSearch = LEVEL_MIN;
@@ -361,7 +376,7 @@ void CPoliceAI::Chase(void)
 	SelectRoad();
 
 	// 一定時間ごともしくはターゲットが存在しない時
-	if (m_fSearchTimer > 3.0f || m_pSearchTarget == nullptr)
+	if (m_fSearchTimer > m_fSearchInterval || m_pSearchTarget == nullptr)
 	{
 		// リストが空でなければ移動先設定
 		if (!m_searchRoad.empty())
@@ -486,6 +501,10 @@ void CPoliceAI::ReachRoad(void)
 HRESULT CPoliceAINomal::Init(void)
 {
 	CPoliceAI::Init();
+
+	m_fChaseSpeed = CHASE_SPEED_NORMAL;
+	m_fSearchInterval = SEARCH_TIME_NORMAL;
+
 	return S_OK;
 }
 
@@ -515,6 +534,10 @@ void CPoliceAINomal::SelectRoad(void)
 HRESULT CPoliceAIElite::Init(void)
 {
 	CPoliceAI::Init();
+
+	m_fChaseSpeed = CHASE_SPEED_ELITE;
+	m_fSearchInterval = SEARCH_TIME_ELITE;
+
 	return S_OK;
 }
 
@@ -566,6 +589,10 @@ void CPoliceAIElite::ChaseAStar(void)
 HRESULT CPoliceAIGentle::Init(void)
 {
 	CPoliceAI::Init();
+
+	m_fChaseSpeed = CHASE_SPEED_GENTLE;
+	m_fSearchInterval = SEARCH_TIME_GENTLE;
+
 	return S_OK;
 }
 

@@ -167,11 +167,11 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Relay, C
 	// 中継地点から目標地点まで探索
 	pathGoal = AStarPolice(Relay, Goal);
 
-	if (pathRelay.empty() || pathGoal.empty()) { return {}; }
-
 	pathRelay.back()->pChild = pathGoal.front();
 	pathGoal.front()->pParent = pathRelay.back();
 	std::copy(pathGoal.begin(), pathGoal.end(), std::back_inserter(pathRelay));
+
+	if (pathRelay.empty()) { return {}; }
 
 	return pathRelay;
 }
