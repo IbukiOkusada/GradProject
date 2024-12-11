@@ -633,7 +633,7 @@ void CEntry::ReadyUp(void)
         //net->SendTutorialNo();
     }
 
-    m_nID = -1;
+    //m_nID = -1;
 }
 
 CTutorialStep::CTutorialStep()
