@@ -134,7 +134,7 @@ HRESULT CTitle::Init(void)
 	constexpr char* TEX_TEAMLOGO = "data\\TEXTURE\\team_logo.png";				//チームロゴ
 	const D3DXVECTOR3 CAMERA_POS = { 3350.0f, 95.0f, 260.0f };					//カメラの初期位置
 	constexpr int MOVE_LOGO = 135;												//次のステートに遷移するまでの時間
-	constexpr int AUTOMOVE_RANKING = 1000;										//ランキング自動遷移時間
+	constexpr int AUTOMOVE_RANKING = 10000;										//ランキング自動遷移時間
 	constexpr float fSize[SIZING::SIZING_MAX] = { 250.0f, 125.0f };				//サイズ(チームロゴ)
 
 	//int型変数の設定
@@ -382,7 +382,7 @@ void CTitle::MovingLogo(void)
 {
 	constexpr float fSpeed = 0.09f;													//タイトルロゴが動くスピード
 	D3DXVECTOR3 TitlePos = m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->GetPosition();	//タイトルロゴの位置
-
+	
 	//描画設定をオンにし、移動用の変数にタイトルロゴの位置を取得させる
 	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO]->SetDraw(true);
 
@@ -425,6 +425,7 @@ void CTitle::PreMove(void)
 	if (Function::BoolToDest(m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetPosition(),
 		D3DXVECTOR3(TITLELOGO_DEST, 0.0f, 0.0f), 3.0f, false))
 	{
+		//プレスエンターとタイトルロゴに関する処理
 		ColChange(m_pObject2D[OBJ2D_PressEnter],20);
 		LightOff();
 
@@ -526,6 +527,7 @@ void CTitle::InitingP_E(void)
 		//ブラックカバー
 		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = InitObj2D(PRESSENTER_POS, VECTOR3_ZERO, nNatPriority,
 			fSizePressEnter[SIZING_WIDTH], fSizePressEnter[SIZING_HEIGHT], false, TEX_PRESSENTER);
+		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetVtx();
 
 		//必要なオブジェクトの生成
 		CMapManager::GetInstance()->Load();
@@ -791,6 +793,7 @@ void CTitle::InitingSelect(void)
 
 		//サウンドを止める
 		m_pPlayer->SetS(false);
+		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, -3.14f, 0.0f));
 
 		//フレーム
 		m_pObject2D[OBJ2D::OBJ2D_FRAME] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO, nNatPriority,
@@ -1090,6 +1093,7 @@ void CTitle::InitingIce(void)
 	{
 		//初期化したことにする
 		m_bIniting = true;
+		m_bPush = false;
 
 		//位置情報初期化
 		m_pPlayer->SetPosition(PLAYER_POS);
@@ -1160,7 +1164,6 @@ void CTitle::IceMovement(void)
 		//マルチプレイが選択されていたら、エントリー画面に遷移
 		else if (GetSelectSingleMulti() == SELECT::SELECT_MULTI)
 		{CManager::GetInstance()->GetFade()->Set(CScene::MODE_ENTRY);}
-	
 	}
 
 	//超えていなかったらカウント増加
@@ -1173,9 +1176,15 @@ void CTitle::IceMovement(void)
 		if (m_fDis >= fDisMax) { m_fDis = fDisMax; }
 		else { m_fDis += fMoveValue;}
 
-		//サイレン音を鳴らす
+		//サイレン音を止める
 		CPoliceTitle::SetSiren(false);
 	}
+
+	//スキップ用の入力処理
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
+		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
+		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0)) 
+	{CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
 }
 //<===============================================
 //オブジェクト2Dの初期化
