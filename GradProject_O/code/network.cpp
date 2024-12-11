@@ -737,11 +737,17 @@ void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
 {
-	// ŽŸ‚Ì‰æ–Ê‚É‘JˆÚ
-	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
-	{
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
-	}
+	//// ŽŸ‚Ì‰æ–Ê‚É‘JˆÚ
+	//if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
+	//{
+	//	CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
+	//}
+
+	CScene* pScene = CManager::GetInstance()->GetScene();
+
+	if (pScene == nullptr) { return; }
+
+	pScene->EndTutorial();
 }
 
 //===================================================
