@@ -14,6 +14,7 @@ class CMultiCamera;
 class CObjectX;
 class CObject2D;
 class CGoalManager;
+class CScrollText2D;
 
 namespace
 {
@@ -60,6 +61,7 @@ public:
 
 	void SetID(const int id) override;
 	void ChangeFlag(bool value) override;
+	void EndTutorial(void) override;
 
 private:
 
@@ -75,6 +77,7 @@ private:
 	CObject2D* m_pControlsUI[NUM_CONTROL_UI];  // 操作UIのポインタ
 	CObject2D* m_pReady[MAX_PLAYER];           // 準備UIのポインタ
 	CGoalManager* m_pGoalManager;              // ゴールマネージャーのポインタ
+	CScrollText2D* m_pString;	               // 文字
 
 	int m_nID;
 	bool m_IsFinish;   // チュートリアルが終了しているかどうか
