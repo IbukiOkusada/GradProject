@@ -170,6 +170,7 @@ void CCar::Move()
 		// 角度調整
 		Rot();
 
+		// バック中の処理
 		if (m_Info.bBack)
 		{
 			m_Info.nBackTime--;
@@ -180,9 +181,11 @@ void CCar::Move()
 			}
 		}
 
+		// 速度を追加
 		m_Info.fSpeed += (m_Info.fSpeedDest - m_Info.fSpeed) * SPEED_INER;
 		CManager::GetInstance()->GetDebugProc()->Print("一般車の速度 [ %f ]\n", m_Info.fSpeed);
 
+		// 移動量設定
 		m_Info.move.x = m_Info.fSpeed * sinf(m_Info.rot.y);
 		m_Info.move.y = 0.0f;
 		m_Info.move.z = m_Info.fSpeed * cosf(m_Info.rot.y);
@@ -190,6 +193,7 @@ void CCar::Move()
 		// デルタタイム取得
 		float DeltaTime = CDeltaTime::GetInstance()->GetDeltaTime();
 
+		// 位置に加算
 		m_Info.pos += m_Info.move * FRAME_RATE_SCALER * DeltaTime;
 	}
 }
@@ -203,10 +207,12 @@ void CCar::Rot()
 
 	D3DXVECTOR3 vecTarget = m_Info.posTarget - m_Info.pos;
 
+	// 計算用変数
 	fRotMove = m_Info.rot.y;
 	fRotDest = atan2f(vecTarget.x, vecTarget.z);
 	fRotDiff = fRotDest - fRotMove;
 
+	// 角度補正
 	if (fRotDiff > D3DX_PI)
 	{
 		fRotDiff -= D3DX_PI * 2.0f;
@@ -219,6 +225,7 @@ void CCar::Rot()
 	//角度一致判定
 	if (m_Info.bBack)
 	{
+		// 補正の値を変更
 		m_Info.fRotMulti = ROT_MULTI_BACK;
 
 		//差分追加
@@ -227,6 +234,7 @@ void CCar::Rot()
 			fRotMove += fRotDiff * m_Info.fRotMulti;
 		}
 
+		// 状況によって速度を変更する
 		if (fabsf(fRotDiff) >= ROT_CURVE)
 		{
 			m_Info.fSpeedDest += SPEED_CURVE_BACK;
@@ -241,6 +249,7 @@ void CCar::Rot()
 		//差分追加
 		fRotMove += fRotDiff * m_Info.fRotMulti;
 
+		// 状況によって速度を変更する
 		if (fabsf(fRotDiff) >= ROT_CURVE)
 		{
 			m_Info.fSpeedDest += SPEED_CURVE;
@@ -251,6 +260,7 @@ void CCar::Rot()
 		}
 	}
 
+	// 角度補正
 	if (fRotMove > D3DX_PI)
 	{
 		fRotMove -= D3DX_PI * 2.0f;
@@ -260,8 +270,10 @@ void CCar::Rot()
 		fRotMove += D3DX_PI * 2.0f;
 	}
 
+	// 角度を加算
 	m_Info.rot.y = fRotMove;
 
+	// 角度補正
 	if (m_Info.rot.y > D3DX_PI)
 	{
 		m_Info.rot.y -= D3DX_PI * 2.0f;
@@ -278,18 +290,20 @@ void CCar::Rot()
 void CCar::MoveRoad()
 {
 	if (!IsActive()) { return; }
+
+	// 目的地が存在しなければ最寄りの道を設定
 	if (m_Info.pRoadTarget == nullptr)
 		SearchRoad();
 
-	if (m_Info.pRoadTarget == nullptr) 
-	{
-		return;
-	}
+	// 最寄りの道が見つからなかった場合抜ける
+	if (m_Info.pRoadTarget == nullptr) { return; }
 
+	// 目的地への到着判定処理
 	float length = D3DXVec3Length(&(m_Info.pRoadTarget->GetPosition() - m_Info.pos));
 	if (length < LENGTH_POINT)
 		ReachRoad();
 
+	// 目標地点の座標を取得
 	m_Info.posTarget = m_Info.pRoadTarget->GetPosition();
 }
 
@@ -299,17 +313,22 @@ void CCar::MoveRoad()
 void CCar::SearchRoad()
 {
 	if (!IsActive()) { return; }
+
+	// 道のリスト取得
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
 	auto list = pRoadManager->GetList();
 
 	CRoad* pRoad = pRoadManager->GetList()->Get(0);
 	CRoad* pRoadClose = pRoadManager->GetList()->Get(0);
 
+	// 道が存在しなければ抜ける
 	if (pRoad == nullptr) { return; }
 
+	// 距離計算用変数
 	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
 	float lengthClose = 0.0f;
 
+	// 最寄りの道を見つける
 	for (int i = 0; i < pRoadManager->GetList()->GetNum() - 1; i++)
 	{
 		pRoad = list->Get(i);
@@ -323,7 +342,8 @@ void CCar::SearchRoad()
 			pRoadClose = pRoad;
 		}
 	}
-
+	
+	// 目的地を最寄りの道に設定する
 	m_Info.pRoadTarget = pRoadClose;
 }
 
@@ -341,18 +361,21 @@ void CCar::ReachRoad()
 
 		pRoadNext = m_Info.pRoadTarget->GetConnectRoad((CRoad::DIRECTION)roadPoint);
 
+		// 直線の道はそのまま進
 		if (m_Info.pRoadTarget->GetType() == CRoad::TYPE_STOP)
 		{
 			
 		}
 		else
 		{
+			// Uターンする場合道を探しなおす
 			if (pRoadNext == m_Info.pRoadStart) { continue; }
 		}
 
 		if (pRoadNext != nullptr) { break; }
 	}
 
+	// 目標地点と出発地点をずらす
 	m_Info.pRoadStart = m_Info.pRoadTarget;
 	m_Info.pRoadTarget = pRoadNext;
 }
@@ -372,22 +395,24 @@ bool CCar::Collision()
 
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
+		// オブジェクトの情報取得
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
 		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
 		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
 
+		// OBBとの当たり判定を実行
 		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		
+		// 衝突していない場合繰り返す
+		if (!bCollision) { continue; }
 
-		if (bCollision)
+		if (pObjectX->GetType() == TYPE_PLAYER)
 		{
-			if (pObjectX->GetType() == TYPE_PLAYER)
-			{
-				Break();
-			}
-
-			return true;
+			Break();
 		}
+
+		return true;
 	}
 
 	return false;
