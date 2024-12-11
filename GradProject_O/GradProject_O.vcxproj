@@ -226,6 +226,7 @@
     <ClCompile Include="code\motion.cpp" />
     <ClCompile Include="code\multi_result.cpp" />
     <ClCompile Include="code\multi_result_manager.cpp" />
+    <ClCompile Include="code\multi_result_state.cpp" />
     <ClCompile Include="code\navi.cpp" />
     <ClCompile Include="code\network.cpp" />
     <ClCompile Include="code\number.cpp" />
@@ -349,6 +350,7 @@
     <ClInclude Include="code\motion.h" />
     <ClInclude Include="code\multi_result.h" />
     <ClInclude Include="code\multi_result_manager.h" />
+    <ClInclude Include="code\multi_result_state.h" />
     <ClInclude Include="code\navi.h" />
     <ClInclude Include="code\network.h" />
     <ClInclude Include="code\number.h" />

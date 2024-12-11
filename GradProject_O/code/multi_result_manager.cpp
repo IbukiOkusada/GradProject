@@ -22,10 +22,10 @@ CMultiResultManager::CMultiResultManager()
 		m_aInfo[i] = SInfo();
 		m_aInfo[i].bActive = true;
 		m_aInfo[i].nId = i;
-		m_aInfo[i].nNumDelv = 1 * i;
+		m_aInfo[i].nNumDelv = rand() % 9;
 	}
 
-	m_nMyId = -1;
+	m_nMyId = 1;
 	m_nNumPlayer = NetWork::MAX_CONNECT;
 }
 

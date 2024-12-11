@@ -164,6 +164,7 @@ CPlayer::SETTYPE_FUNC CPlayer::m_SetTypeFunc[] =
 	&CPlayer::SetStateRecv,		// 接続した
 	&CPlayer::SetStateActive,	// ID取得
 	&CPlayer::SetStateTutorialActive,  // チュートリアル
+	&CPlayer::SetStateNone,		// 
 };
 
 // 前方宣言
@@ -1339,6 +1340,30 @@ void CPlayer::SetStateTutorialActive()
 	}
 
 	m_type = TYPE::TYPE_TUTOLERIAL_ACTIVE;
+}
+
+//===============================================
+// 何もしない
+//===============================================
+void CPlayer::SetStateNone()
+{
+	m_type = TYPE::TYPE_NONE;
+
+	// 不必要な情報を廃棄
+	SAFE_UNINIT(m_pNavi);
+	SAFE_UNINIT(m_pPredRoute);
+	SAFE_UNINIT(m_pContainer);
+
+	SAFE_UNINIT_DELETE(m_pSound);
+	SAFE_UNINIT_DELETE(m_pSoundBrake);
+	SAFE_UNINIT_DELETE(m_pRadio);
+	SAFE_UNINIT_DELETE(m_pCollSound);
+
+	for (int i = 0; i < NUM_TXT; i++)
+	{
+		if (m_pFont[i] == nullptr) { continue; }
+		SAFE_UNINIT(m_pFont[i]);
+	}
 }
 
 //===============================================
