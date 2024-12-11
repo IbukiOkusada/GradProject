@@ -22,6 +22,7 @@
 #include "meshfield.h"
 #include "goal_manager.h"
 #include "edit_manager.h"
+#include "scrollText2D.h"
 
 //===============================================
 // 定数定義
@@ -36,13 +37,17 @@ namespace
 
     const char* MODEL_PATH = "data\\MODEL\\bike.x";  // プレイヤーのモデルパス
 
+    const D3DXVECTOR3 TITLE_POS = D3DXVECTOR3(SCREEN_CENTER.x, 100.0f, 0.0f);	// タイトル座標
+
+    const float TITLE_SIZE = 150.0f;	// タイトルの文字サイズ
+
     // 操作方法UIのテクスチャパス
     const char* TEX_PATH[NUM_CONTROL_UI] =
     {
-        "data\\TEXTURE\\result_clear.png",
-        "data\\TEXTURE\\result_deli.png",
-        "data\\TEXTURE\\result_life.png",
-        "data\\TEXTURE\\result_time.png",
+        "data\\TEXTURE\\controlUI\\01_controlUI_Turn.png",
+        "data\\TEXTURE\\controlUI\\02_controlUI_Accel.png",
+        "data\\TEXTURE\\controlUI\\03_controlUI_Brake.png",
+        "data\\TEXTURE\\controlUI\\04_controlUI_Boost.png",
     };
 
     const D3DXVECTOR3 CAMERA_ROT[4] =
@@ -82,6 +87,7 @@ CEntry::CEntry()
 	m_ppCamera = nullptr;
     m_ppObjX = nullptr;
     m_pGoalManager = nullptr;
+    m_pString = nullptr;
     m_IsFinish = false;
     m_bSetReady = false;
     m_nID = -1;
@@ -153,11 +159,15 @@ HRESULT CEntry::Init(void)
         }
     }
 
+    CObject2D *pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.85f, SCREEN_HEIGHT * 0.2f, 0.0f), VECTOR3_ZERO, 7);
+    pObj->SetSize(100.0f, 40.0f);
+    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\controlUI\\00_controlUI_Header.png"));
+
     // 操作方法UIの生成
     for (int i = 0; i < NUM_CONTROL_UI; i++)
     {
         m_pControlsUI[i] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.9f, SCREEN_HEIGHT * 0.3f + i * 60.0f, 0.0f), VECTOR3_ZERO, 7);
-        m_pControlsUI[i]->SetSize(100.0f, 40.0f);
+        m_pControlsUI[i]->SetSize(125.0f, 30.0f);
         m_pControlsUI[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PATH[i]));
         m_pControlsUI[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
     }
@@ -267,6 +277,12 @@ void CEntry::Uninit(void)
         }
     }
 
+    if (m_pString != nullptr)
+    {
+        m_pString->Uninit();
+        m_pString = nullptr;
+    }
+
     // ゴールマネージャーの破棄
     SAFE_RELEASE(m_pGoalManager);
 }
@@ -320,6 +336,19 @@ void CEntry::Update(void)
     // シーンの更新
     CScene::Update();
 
+    if (m_pString != nullptr)
+    {
+        if (m_pString->GetEnd())
+        {// 文字読み込みが終わった
+
+            // 次の画面に遷移
+            if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
+            {
+                CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
+            }
+        }
+    }
+
     CPlayerManager* mgr = CPlayerManager::GetInstance();
 
     // デバック表示
@@ -359,6 +388,23 @@ void CEntry::SetID(const int id)
 void CEntry::ChangeFlag(bool value)
 {
     m_bSetReady = value;
+}
+
+//===============================================
+// チュートリアル終了演出処理
+//===============================================
+void CEntry::EndTutorial(void)
+{
+    // 配達開始の文字生成
+    m_pString = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, TITLE_POS,
+        0.4f, TITLE_SIZE, TITLE_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+    if (m_pString != nullptr)
+    {
+        // 文字設定
+        m_pString->PushBackString(" 配達開始!!");
+        m_pString->SetEnableScroll(true);
+    }
 }
 
 //===============================================
@@ -455,6 +501,8 @@ void CEntry::AddPlayer(void)
 
     if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
+        if (m_pString != nullptr) { return; }
+
         m_IsFinish ^= true;
 
         if (m_IsFinish)
@@ -585,7 +633,7 @@ void CEntry::ReadyUp(void)
         //net->SendTutorialNo();
     }
 
-    m_nID = -1;
+    //m_nID = -1;
 }
 
 CTutorialStep::CTutorialStep()
