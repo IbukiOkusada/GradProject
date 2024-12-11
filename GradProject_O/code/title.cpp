@@ -1184,7 +1184,20 @@ void CTitle::IceMovement(void)
 	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
 		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
 		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0)) 
-	{CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
+	{
+		//シングルプレイが選択されていたら、そのままゲーム画面に遷移
+		if (GetSelectSingleMulti() == SELECT::SELECT_SINGLE)
+		{
+			CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
+		}
+
+		//マルチプレイが選択されていたら、エントリー画面に遷移
+		else if (GetSelectSingleMulti() == SELECT::SELECT_MULTI)
+		{
+			CManager::GetInstance()->GetFade()->Set(CScene::MODE_ENTRY);
+		}
+	
+	}
 }
 //<===============================================
 //オブジェクト2Dの初期化
