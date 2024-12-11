@@ -173,8 +173,8 @@ HRESULT CEntry::Init(void)
     }
 
     CCameraManager* mgr = CCameraManager::GetInstance();
-	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
-    m_ppObjX = new CObjectX * [MAX_PLAYER];
+	m_ppCamera = DEBUG_NEW CMultiCamera*[MAX_PLAYER];
+    m_ppObjX = DEBUG_NEW CObjectX * [MAX_PLAYER];
 
     for (int i = 0; i < MAX_PLAYER; i++)
     {
@@ -212,6 +212,17 @@ HRESULT CEntry::Init(void)
         viewport.MaxZ = 1.0f;
 
         m_ppCamera[i]->SetViewPort(viewport);
+    }
+
+    // 配達開始の文字生成
+    m_pString = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, TITLE_POS,
+        0.4f, TITLE_SIZE, TITLE_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+    if (m_pString != nullptr)
+    {
+        // 文字設定
+        m_pString->PushBackString("配達開始!!");
+        m_pString->SetEnableScroll(false);
     }
   
 	return S_OK;
@@ -325,7 +336,7 @@ void CEntry::Update(void)
     ControlsUI();
 
     // 準備UI
-    ReadyUp();
+    //ReadyUp();
 
     // プレイヤー参加処理
     AddPlayer();
@@ -395,15 +406,38 @@ void CEntry::ChangeFlag(bool value)
 //===============================================
 void CEntry::EndTutorial(void)
 {
-    // 配達開始の文字生成
-    m_pString = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, TITLE_POS,
-        0.4f, TITLE_SIZE, TITLE_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
     if (m_pString != nullptr)
     {
-        // 文字設定
-        m_pString->PushBackString(" 配達開始!!");
         m_pString->SetEnableScroll(true);
+    }
+}
+
+//===============================================
+// 準備OK
+//===============================================
+void CEntry::ReadyUp(const int id)
+{
+    auto mgr = CPlayerManager::GetInstance();
+
+    // 使用されていなかったら処理を抜ける
+    if (m_pReady[id] == nullptr) { return; }
+
+    if (m_bSetReady)
+    {// 準備完了できてる
+
+        // テクスチャ変更
+        m_pReady[id]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
+
+        return;
+    }
+
+    if (!m_bSetReady)
+    {// 準備完了できてない
+
+        // テクスチャ変更
+        m_pReady[id]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
+
+        return;
     }
 }
 
@@ -417,41 +451,6 @@ void CEntry::AddPlayer(void)
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
     int id = mgr->GetNum();
-
-    if (pPad->GetTrigger(CInputPad::BUTTON_START, 0)/* ||*/
-        /*pKey->GetTrigger(DIK_RETURN)*/)
-    {
-        D3DXVECTOR3 pos = m_ppCamera[id]->GetPositionR();
-        int playid = id;
-        if (net->GetState() == CNetWork::STATE::STATE_SINGLE && playid == 0)
-        {
-            playid = net->GetIdx();
-        }
-
-        // プレイヤー生成
-        CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(4000.0f, 0.0f, 2000.0f), D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
-
-        // データ受信
-        pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
-        pPlayer->SetRecvPosition(pos);
-
-        // チュートリアル時のアクティブに設定
-        pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
-
-        // エフェクトの終了
-        pPlayer->EffectUninit();
-
-        // 画面下にプレイヤーのモデルを表示
-        pos = m_ppCamera[id]->GetPositionR();
-        m_ppObjX[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), MODEL_PATH, 7);
-        m_ppObjX[id]->SetType(CObject::TYPE::TYPE_PLAYER);
-        m_ppObjX[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
-
-        // 準備できてるかどうかのUIの生成
-        m_pReady[id] = CObject2D::Create(D3DXVECTOR3(D3DXVECTOR3(SCREEN_WIDTH * 0.1f + id * 200.0f, SCREEN_HEIGHT * 0.75f, 0.0f)), VECTOR3_ZERO, 7);
-        m_pReady[id]->SetSize(100.0f, 50.0f);
-        m_pReady[id]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
-    }
 
     // 人数確認
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
@@ -501,7 +500,7 @@ void CEntry::AddPlayer(void)
 
     if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
-        if (m_pString != nullptr) { return; }
+        if (m_pString->IsScroll() || m_pString->GetEnd()) { return; }
 
         m_IsFinish ^= true;
 
@@ -609,28 +608,23 @@ void CEntry::ControlsUI(void)
 //===============================================
 void CEntry::ReadyUp(void)
 {
-    auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
 
     // 使用されていなかったら処理を抜ける
-    if (m_pReady[m_nID] == nullptr || m_nID == -1) { return; }
+    if (m_pPPP == nullptr || m_nID == -1) { return; }
 
     if (m_bSetReady)
     {// 準備完了できてる
 
         // テクスチャ変更
-        m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
-
-        //net->SendTutorialOk();
+        m_pPPP->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
     }
 
     if (!m_bSetReady)
     {// 準備完了できてない
 
         // テクスチャ変更
-        m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
-
-        //net->SendTutorialNo();
+        m_pPPP->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
     }
 
     //m_nID = -1;

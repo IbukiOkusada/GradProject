@@ -712,6 +712,8 @@ void CNetWork::RecvTutorialOk(int* pByte, const int nId, const char* pRecvData)
 
 	// 準備完了フラグを立てる
 	pScene->ChangeFlag(true);
+
+	pScene->ReadyUp(nId);
 }
 
 //===================================================
@@ -730,6 +732,8 @@ void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 
 	// 準備完了フラグを折る
 	pScene->ChangeFlag(false);
+
+	pScene->ReadyUp(nId);
 }
 
 //===================================================
