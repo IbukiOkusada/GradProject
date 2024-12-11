@@ -15,6 +15,7 @@
 #include "scrollText2D.h"
 #include "player.h"
 #include "objectX.h"
+#include "fade.h"
 
 //==========================================================
 // 定数定義
@@ -33,15 +34,15 @@ namespace TEXT
 
 namespace CAMERA
 {
-	const D3DXVECTOR3 POSV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	const D3DXVECTOR3 POSV = D3DXVECTOR3(-300.0f, 0.0f, 0.0f);
 	const D3DXVECTOR3 ROT = D3DXVECTOR3(0.0f, D3DX_PI * 1.0f, D3DX_PI * 0.3f);
-	const float LENGTH = 1700.0f;
+	const float LENGTH = 1500.0f;
 }
 
 namespace
 {
 	const float PLAYER_TARGET_POSZ = -800.0f;	// プレイヤーランク表示時目標Z座標
-	const float PLAYER_SPACE = 275.0f;
+	const float PLAYER_SPACE = 400.0f;
 }
 
 // using定義
@@ -56,7 +57,8 @@ m_pState(nullptr),
 m_pInfo(nullptr),
 m_pTitleStr(nullptr),
 m_pEndStr(nullptr),
-m_nNowScrPlayer(0)
+m_nNowScrPlayer(0),
+m_nTopId(0)
 {
 
 }
@@ -96,6 +98,7 @@ HRESULT CMultiResult::Init(void)
 
 		// プレイヤーの座標設定
 		D3DXVECTOR3 pos = TEXT::SETPOS;
+		pos.y = 0.0f;
 		pos.z -= PLAYER_SPACE * 0.5f;
 		pos.z += PLAYER_SPACE * m_pMgr->GetNumPlayer() * 0.5f;
 		pos.z -= PLAYER_SPACE * m_pInfo[i].nId;
@@ -177,6 +180,7 @@ HRESULT CMultiResult::Init(void)
 		str.clear();
 
 		// ID
+		m_nTopId = m_pInfo[topid].nId;
 		std::ostringstream id;
 		id.clear();
 		id << m_pInfo[topid].nId + 1;
@@ -240,6 +244,7 @@ void CMultiResult::Uninit(void)
 //===============================================
 void CMultiResult::Update(void)
 {
+	// 状態更新
 	if (m_pState != nullptr)
 	{
 		m_pState->Update(this);

@@ -25,7 +25,7 @@ CMultiResultManager::CMultiResultManager()
 		m_aInfo[i].nNumDelv = rand() % 9;
 	}
 
-	m_nMyId = 1;
+	m_nMyId = -1;
 	m_nNumPlayer = NetWork::MAX_CONNECT;
 }
 
