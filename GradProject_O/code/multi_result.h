@@ -58,6 +58,7 @@ public:
 	CScrollText2D* GetTitleStr() { return m_pTitleStr; }
 	CMultiResultManager* GetMgr() { return m_pMgr; }
 	int GetNowScr() { return m_nNowScrPlayer; }
+	int GetTopId() { return m_nTopId; }
 
 private:
 
@@ -73,7 +74,8 @@ private:
 	CScrollText2D* m_pEndStr;		// 最終文字
 	CScrollText2D* m_pTitleStr;		// 最終文字
 	SPlayerInfo* m_pInfo;			// 情報
-	int m_nNowScrPlayer;
+	int m_nNowScrPlayer;			// 移動したプレイヤー
+	int m_nTopId;					// 優勝者のID
 
 };
 
