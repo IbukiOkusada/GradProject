@@ -107,7 +107,7 @@ void CCar::Update(void)
 	{
 		RecvInerSet();
 	}
-	else
+	else if(m_Info.type != TYPE::TYPE_NONE)
 	{
 		CNetWork* pNet = CNetWork::GetInstance();
 

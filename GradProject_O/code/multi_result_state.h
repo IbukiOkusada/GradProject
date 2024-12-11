@@ -9,6 +9,7 @@
 
 // 前方宣言
 class CMultiResult;
+class CPolice;
 
 //===============================================
 // マルチリザルトの状態クラス定義(基底クラス)
@@ -51,8 +52,6 @@ public:
 	}
 
 protected:
-
-
 	
 	//===============================================
 	// メンバ関数
@@ -125,6 +124,13 @@ private:
 
 	// メンバ関数
 	void Controll(CMultiResult* pResult) override;
+	void Create(CMultiResult* pResult) override;
+	void Uninit(CMultiResult* pResult);
+	void PoliceUpdate(CMultiResult* pResult);
+
+	// メンバ変数
+	CPolice** m_ppPolice;	// 警察の生成数
+	int m_nNumCreatePolice;	// 警察の生成数
 };
 
 //===============================================
@@ -144,6 +150,9 @@ private:
 
 	// メンバ関数
 	void Controll(CMultiResult* pResult) override;
+
+	// メンバ変数
+	float m_fFadeCnt;	// フェードまでのカウント
 };
 
 #endif
