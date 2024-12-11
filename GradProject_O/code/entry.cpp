@@ -39,10 +39,10 @@ namespace
     // 操作方法UIのテクスチャパス
     const char* TEX_PATH[NUM_CONTROL_UI] =
     {
-        "data\\TEXTURE\\result_clear.png",
-        "data\\TEXTURE\\result_deli.png",
-        "data\\TEXTURE\\result_life.png",
-        "data\\TEXTURE\\result_time.png",
+        "data\\TEXTURE\\controlUI\\01_controlUI_Turn.png",
+        "data\\TEXTURE\\controlUI\\02_controlUI_Accel.png",
+        "data\\TEXTURE\\controlUI\\03_controlUI_Brake.png",
+        "data\\TEXTURE\\controlUI\\04_controlUI_Boost.png",
     };
 
     const D3DXVECTOR3 CAMERA_ROT[4] =
@@ -111,7 +111,7 @@ CEntry::~CEntry()
 HRESULT CEntry::Init(void)
 {
     auto net = CNetWork::GetInstance();
-    net->ReConnect();
+    //net->ReConnect();
 
     // ID取得を待つ
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
@@ -153,11 +153,15 @@ HRESULT CEntry::Init(void)
         }
     }
 
+    CObject2D *pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.85f, SCREEN_HEIGHT * 0.2f, 0.0f), VECTOR3_ZERO, 7);
+    pObj->SetSize(100.0f, 40.0f);
+    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\controlUI\\00_controlUI_Header.png"));
+
     // 操作方法UIの生成
     for (int i = 0; i < NUM_CONTROL_UI; i++)
     {
         m_pControlsUI[i] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.9f, SCREEN_HEIGHT * 0.3f + i * 60.0f, 0.0f), VECTOR3_ZERO, 7);
-        m_pControlsUI[i]->SetSize(100.0f, 40.0f);
+        m_pControlsUI[i]->SetSize(125.0f, 30.0f);
         m_pControlsUI[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PATH[i]));
         m_pControlsUI[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
     }
