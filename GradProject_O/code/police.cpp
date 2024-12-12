@@ -192,7 +192,10 @@ void CPolice::MoveRoad()
 
 		// プレイヤー追跡処理
 		ChasePlayer();
-	
+
+		// 応援要請処理
+		m_pPoliceAI->CallBackup();
+
 		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
 		float vol = 8000.0f - dis;
 		vol /= 8000.0f;
@@ -348,6 +351,23 @@ void CPolice::Break()
 {
 	CPlayer* p = CPlayerManager::GetInstance()->GetPlayer();
 	p->Damage(p->GetLifeOrigin() * 0.1f);
+}
+
+//==========================================================
+// AIタイプ変更処理
+//==========================================================
+void CPolice::SetTypeAI(CPoliceAI::TYPE type)
+{
+	// AIを破棄
+	if (m_pPoliceAI != nullptr)
+	{
+		m_pPoliceAI->Uninit();
+		delete m_pPoliceAI;
+		m_pPoliceAI = nullptr;
+	}
+
+	// AIを生成
+	m_pPoliceAI = CPoliceAI::Create(this, type);
 }
 
 //==========================================================

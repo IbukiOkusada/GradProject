@@ -60,11 +60,11 @@ namespace OBJ
 	const float INTERVAL_Y = 100.0f;	// 縦の間隔
 	const D3DXVECTOR3 POS = D3DXVECTOR3(250.0f, 240.0f, 0.0f);	// 初期位置
 
-	const char* STAR_TEX_PATH = "data\\TEXTURE\\star.png";
-	const char* STAR_FREAM_TEX_PATH = "data\\TEXTURE\\star_fream.png";
+	const char* STAR_TEX_PATH = "data\\TEXTURE\\star_dot.png";
+	const char* STAR_FREAM_TEX_PATH = "data\\TEXTURE\\star_fream_dot.png";
 	const float STAR_INTERVAL_X = 80.0f;							// 星の間隔
-	const float STAR_INTERVAL_Y = 100.0f;							// 星の間隔
-	const D3DXVECTOR3 STAR_POS = D3DXVECTOR3(700.0f, 600.0f, 0.0f);	// 初期位置
+	const float STAR_INTERVAL_Y = 110.0f;							// 星の間隔
+	const D3DXVECTOR3 STAR_POS = D3DXVECTOR3(740.0f, 660.0f, 0.0f);	// 初期位置
 }
 
 namespace NUMBER
@@ -89,7 +89,7 @@ namespace
 	const int SCORE_OBJ_NUM = 4;	// スコアのオブジェクトの個数
 	const int RANKING_OBJ_NUM = 5;	// ランキングのオブジェクトの個数
 	const int STAR_OBJ_NUM = 5;		// 星のオブジェクトの個数
-	const float ALPHA_ADD = 0.015f;
+	const float ALPHA_ADD = 0.025f;
 	const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
 }
 // 静的メンバ変数
@@ -210,6 +210,14 @@ HRESULT CResult::Init(void)
 			{
 				nStarTex = 1.0f;
 			}
+			else if (nStarTex >= 0.7f && nStarTex < 1.0f)
+			{
+				nStarTex = 0.65f;
+			}
+			else if (nStarTex <= 0.3f && nStarTex > 0.0f)
+			{
+				nStarTex = 0.35f;
+			}
 			else if (nStarTex <= 0.0f)
 			{
 				nStarTex = 0.0f;
@@ -315,6 +323,32 @@ void CResult::Uninit(void)
 			{
 				m_pRankingNumber[CntSec + CntFst * 2]->Uninit();
 				m_pRankingNumber[CntSec + CntFst * 2] = nullptr;
+			}
+		}
+	}
+
+	for (int CntFst = 0; CntFst < RANKING_OBJ_NUM; CntFst++)
+	{
+		// 星のオブジェクト生成
+		for (int CntSec = 0; CntSec < STAR_OBJ_NUM; CntSec++)
+		{
+			if (m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM] != nullptr)
+			{
+				m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->Uninit();
+				m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM] = nullptr;
+			}
+		}
+	}
+
+	for (int CntFst = 0; CntFst < RANKING_OBJ_NUM; CntFst++)
+	{
+		// 星の枠のオブジェクト生成
+		for (int CntSec = 0; CntSec < STAR_OBJ_NUM; CntSec++)
+		{
+			if (m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM] != nullptr)
+			{
+				m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->Uninit();
+				m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM] = nullptr;
 			}
 		}
 	}

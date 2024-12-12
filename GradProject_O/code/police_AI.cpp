@@ -16,6 +16,9 @@
 #include "deltatime.h"
 #include "a_star.h"
 #include "pred_route.h"
+#include "gimmick.h"
+#include "add_police.h"
+#include "car_manager.h"
 
 // マクロ定義
 
@@ -41,17 +44,32 @@ namespace
 	const float	LEVEL_DAMAGE = (0.3f);				// 傷状態時の警戒度増加量
 	const float	LEVEL_SMOKE = (0.5f);				// 煙状態時の警戒度増加量
 
-	const int CHASE_TIME = (100);					// 追跡時間
+	const int CHASE_TIME = (120);					// 追跡時間
+	const int NUM_BACKUP = (2);						// 追跡時間
 
-	const float CHASE_SPEED_DEF = (22.0f);			// デフォルトの追跡時の加速
-	const float CHASE_SPEED_NORMAL = (22.0f);		// 通常タイプの追跡時の加速
-	const float CHASE_SPEED_ELITE = (24.0f);		// 回り込みタイプの追跡時の加速
-	const float CHASE_SPEED_GENTLE = (18.0f);		// 緩やかタイプの追跡時の加速
+	const float CHASE_SPEED[CPoliceAI::TYPE_MAX] =
+	{
+		(22.0f),		// デフォルトの追跡時の加速
+		(22.0f),		// 通常タイプの追跡時の加速
+		(24.0f),		// 回り込みタイプの追跡時の加速
+		(18.0f),		// 緩やかタイプの追跡時の加速
+	};
 
-	const float SEARCH_TIME_DEF = (3.0f);			// デフォルトの経路確認間隔
-	const float SEARCH_TIME_NORMAL = (3.0f);		// 通常タイプの経路確認間隔
-	const float SEARCH_TIME_ELITE = (2.5f);			// 回り込みタイプの経路確認間隔
-	const float SEARCH_TIME_GENTLE = (5.0f);		// 緩やかタイプの経路確認間隔
+	const float SEARCH_TIME[CPoliceAI::TYPE_MAX] =
+	{
+		(3.0f),		// デフォルトの経路確認間隔
+		(3.0f),		// 通常タイプの経路確認間隔
+		(2.5f),		// 回り込みタイプの経路確認間隔
+		(5.0f),		// 緩やかタイプの経路確認間隔
+	};
+
+	const int CALL_TIME[CPoliceAI::TYPE_MAX] =
+	{
+		(180),		// デフォルトの応援呼び出し時間
+		(180),		// 通常タイプの応援呼び出し時間
+		(150),		// 回り込みタイプの応援呼び出し時間
+		(210),		// 緩やかタイプの応援呼び出し時間
+	};
 }
 
 //==========================================================
@@ -70,6 +88,7 @@ CPoliceAI::CPoliceAI()
 	m_fSearchInterval = 0.0f;
 	m_nCntThread = 0;
 	m_bCross = false;
+	m_bCall = false;
 }
 
 //==========================================================
@@ -86,8 +105,9 @@ CPoliceAI::~CPoliceAI()
 HRESULT CPoliceAI::Init(void)
 {
 	CPoliceAIManager::GetInstance()->ListIn(this);
-	m_fChaseSpeed = CHASE_SPEED_DEF;
-	m_fSearchInterval = SEARCH_TIME_DEF;
+	m_fChaseSpeed = CHASE_SPEED[m_type];
+	m_fSearchInterval = SEARCH_TIME[m_type];
+	m_nCntCall = 0;
 
 	return S_OK;
 }
@@ -274,6 +294,10 @@ void CPoliceAI::EndChase(void)
 	// 警戒度をリセット
 	m_fLevelSearch = LEVEL_MIN;
 
+	// 応援要請をリセット
+	m_nCntCall = 0;
+	m_bCall = false;
+
 	// 警戒状態に
 	m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
 
@@ -360,6 +384,54 @@ void CPoliceAI::CheckLevel(CPlayer* pPlayer)
 	{
 		m_pPolice->SetChase(true);
 		m_fLevelSearch = LEVEL_MAX;
+	}
+}
+
+//==========================================================
+// 応援要請処理
+//==========================================================
+void CPoliceAI::CallBackup(void)
+{
+	if (m_nCntCall < CALL_TIME[m_type]) 
+	{ 
+		m_nCntCall++; 
+		return; 
+	}
+
+	if (m_bCall) { return; }
+
+	m_bCall = true;
+
+	auto listGimmick = CGimmick::GetList();
+	Clist<CGimmick*> listStation;
+	int nNumStation = 0;
+
+	for (int i = 0; i < listGimmick->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		// 道確認
+		CGimmick* pGimmick = listGimmick->Get(i);	// 先頭を取得
+		if (pGimmick == nullptr) { continue; }
+
+		if (pGimmick->GetType() != CGimmick::TYPE_POLICESTATION) { continue; }
+
+		listStation.Regist(pGimmick);
+		nNumStation++;
+	}
+
+	
+
+	for (int i = 0; i < NUM_BACKUP; i++)
+	{
+		CGimmick* pPoliceStation = listStation.Get(rand() % nNumStation); 
+		CAddPolice* pP = CAddPolice::Create(pPoliceStation->GetPos(), pPoliceStation->GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+		//pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
+		pP->SetTypeAI(CPoliceAI::TYPE_ELITE);
+		pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(pPoliceStation->GetPos()));
+		pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+		pP->SetChase(true);
+		pP->GetAi()->BeginChase(m_pPolice->GetPlayer());
+		pP->GetAi()->m_bCall = true;
 	}
 }
 
@@ -501,9 +573,6 @@ HRESULT CPoliceAINomal::Init(void)
 {
 	CPoliceAI::Init();
 
-	m_fChaseSpeed = CHASE_SPEED_NORMAL;
-	m_fSearchInterval = SEARCH_TIME_NORMAL;
-
 	return S_OK;
 }
 
@@ -536,8 +605,6 @@ HRESULT CPoliceAIElite::Init(void)
 	
 	m_pRoadRelay = nullptr;
 	m_bRelay = false;
-	m_fChaseSpeed = CHASE_SPEED_ELITE;
-	m_fSearchInterval = SEARCH_TIME_ELITE;
 
 	return S_OK;
 }
@@ -629,9 +696,12 @@ void CPoliceAIElite::ReachRoad(void)
 	float length = D3DXVec3Length(&(posRoad - posPolice));
 	if (length < 1500.0f)
 	{
-		if (m_pSearchTarget->pConnectRoad == m_pRoadRelay)
+		if (m_pSearchTarget->pConnectRoad == m_pRoadRelay && !m_bRelay)
 		{ 
 			m_bRelay = true;
+			m_searchRoad.clear();
+			m_pSearchTarget = nullptr;
+			return;
 		}
 
 		m_pSearchTarget = m_pSearchTarget->pChild;
@@ -673,9 +743,6 @@ void CPoliceAIElite::ChaseAStar(void)
 HRESULT CPoliceAIGentle::Init(void)
 {
 	CPoliceAI::Init();
-
-	m_fChaseSpeed = CHASE_SPEED_GENTLE;
-	m_fSearchInterval = SEARCH_TIME_GENTLE;
 
 	return S_OK;
 }

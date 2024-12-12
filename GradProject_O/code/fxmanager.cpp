@@ -35,7 +35,9 @@ CFXManager::CFXManager() :
 	m_hWorldMat(nullptr),
 	m_hViewMat(nullptr),
 	m_hProjMat(nullptr),
-	m_pEffect(nullptr)
+	m_pEffect(nullptr),
+	m_lightArray(),
+	m_numLights(0)
 {
 
 }
@@ -104,6 +106,7 @@ HRESULT CFXManager::Init(void)
 			m_hProjMat	= pEffect->GetParameterByName(nullptr, "g_mtxProj");
 
 			m_hViewvec = pEffect->GetParameterByName(nullptr, "viewDir");
+			m_hviewPos = pEffect->GetParameterByName(nullptr, "viewPos");
 			m_hDirectLight	 = pEffect->GetParameterByName(nullptr, "m_LightDir");
 			m_hLightDiffuse	 = pEffect->GetParameterByName(nullptr, "m_LightCol");
 			m_hMatDiffuse	 = pEffect->GetParameterByName(nullptr, "m_diffus");
@@ -113,6 +116,8 @@ HRESULT CFXManager::Init(void)
 			m_hMatPower = pEffect->GetParameterByName(nullptr, "m_power");
 			m_hUseTex = pEffect->GetParameterByName(nullptr, "bUseTex");
 			m_hMatScaleReverse = pEffect->GetParameterByName(nullptr, "g_mMatScaleReverse");
+			m_hnumLights = pEffect->GetParameterByName(nullptr, "numLights");
+			m_hLights = pEffect->GetParameterByName(nullptr, "lights");
 		}
 		else
 		{ // 読込に失敗した場合
@@ -223,6 +228,25 @@ void CFXManager::SetTechnique(const D3DXHANDLE pTechnique)
 	else { assert(false); }	// エフェクト使用不可
 }
 //============================================================
+//	ライト設定処理
+//============================================================
+void CFXManager::SetLight()
+{
+	Clist<CShaderLight::SLight*>* List = CShaderLight::GetList();
+	if (List != nullptr)
+	{
+		m_numLights = List->GetNum();
+		for (int i = 0; i < m_numLights; i++)
+		{
+			m_lightArray[i] = *List->Get(i);
+		}
+	}
+	else
+	{
+		m_numLights = 0;
+	}
+}
+//============================================================
 // マテリアル設定
 //============================================================
 void CFXManager::SetMaterial(const D3DMATERIAL9& rMaterial)
@@ -298,6 +322,11 @@ void  CFXManager::SetView(const D3DXMATRIX& rmtxView)
 	m_matView = rmtxView;
 
 }
+void CFXManager::SetViewpos(const D3DXVECTOR3& rposView)
+{
+	D3DXVECTOR4 pos = rposView;
+	m_viewPos = pos;
+}
 void  CFXManager::SetProj(const D3DXMATRIX& rmtxProj)
 {
 	m_matProj = rmtxProj;
@@ -323,6 +352,9 @@ void CFXManager::SetParamToEffect()
 	m_pEffect->SetVector(m_hMatSpecula, &m_MatSpecula);
 	m_pEffect->SetFloat(m_hMatPower, m_MatPower);
 	m_pEffect->SetVector(m_hViewvec, &m_Viewvec);
+	m_pEffect->SetVector(m_hviewPos, &m_viewPos);
+	m_pEffect->SetInt(m_hnumLights, m_numLights);
+	m_pEffect->SetValue(m_hLights, m_lightArray, sizeof(m_lightArray));
 }	
 // 描画の開始を宣言する
 HRESULT CFXManager::Begin()
