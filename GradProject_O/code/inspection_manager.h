@@ -8,6 +8,7 @@
 #define _INSPECTION_MANAGER_H_		// 二重インクルード防止用マクロを定義
 
 #include "map_list.h"
+#include "list_manager.h"
 
 // 前方宣言
 class CInspection;
@@ -16,7 +17,7 @@ class CRoad;
 //==========================================================
 // ゴール管理のクラス定義
 //==========================================================
-class CInspectionManager
+class CInspectionManager : public CListManager
 {
 private:
 
@@ -55,7 +56,7 @@ public:
 private:
 
 	// メンバ関数
-	void Uninit(void);   // 終了処理
+	void Uninit(void) override;   // 終了処理
 
 	// メンバ変数
 	SNextInfo m_NextInfo;

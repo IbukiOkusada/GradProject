@@ -87,6 +87,40 @@ void CCameraAction::Update(CCamera* pCamera)
 	pCamera->SetRotation(rot);
 	pCamera->SetLength(length);
 
+	// 種類と別の座標移動
+	if (m_time.fNow > 0)
+	{
+		// 差分を補正
+		float multi = m_time.fNow / m_time.fEnd;
+		if (multi > 1.0f) { multi = 1.0f; }
+
+		switch (m_move)
+		{
+		case MOVE_POSV:
+		{
+			// 座標
+			D3DXVECTOR3 pos = m_startInfo.posR;
+			D3DXVECTOR3 posDiff = m_targetInfo.pos - pos;
+			pos += posDiff * multi;
+			pCamera->SetPositionR(pos);
+		}
+			break;
+
+		case MOVE_POSR:
+		{
+			// 座標
+			D3DXVECTOR3 pos = m_startInfo.posV;
+			D3DXVECTOR3 posDiff = m_targetInfo.pos - pos;
+			pos += posDiff * multi;
+			pCamera->SetPositionV(pos);
+		}
+			break;
+
+		default:
+			break;
+		}
+	}
+
 	// 種類ごとに変更
 	switch (m_move)
 	{
@@ -97,6 +131,7 @@ void CCameraAction::Update(CCamera* pCamera)
 	case MOVE_POSR:
 		pCamera->SetR();
 		break;
+
 	default:
 		break;
 	}
@@ -120,7 +155,7 @@ void CCameraAction::Update(CCamera* pCamera)
 //==========================================================
 // アクション設定
 //==========================================================
-void CCameraAction::Set(CCamera* pCamera, const D3DXVECTOR3& rot, const float& fLength,
+void CCameraAction::Set(CCamera* pCamera, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const float& fLength,
 	const float fTime, const float fStopTime, const MOVE& move, const bool& bNext)
 {
 	if (pCamera == nullptr) { return; }
@@ -133,6 +168,7 @@ void CCameraAction::Set(CCamera* pCamera, const D3DXVECTOR3& rot, const float& f
 	Adjust(m_startInfo.rot);
 	
 	// 目標地点の値の設定
+	m_targetInfo.pos = pos;
 	m_targetInfo.rot = rot;
 	m_targetInfo.fLength = fLength;
 	Adjust(m_targetInfo.rot);

@@ -22,6 +22,7 @@
 #include "meshfield.h"
 #include "goal_manager.h"
 #include "edit_manager.h"
+#include "scrollText2D.h"
 
 //===============================================
 // 定数定義
@@ -36,13 +37,17 @@ namespace
 
     const char* MODEL_PATH = "data\\MODEL\\bike.x";  // プレイヤーのモデルパス
 
+    const D3DXVECTOR3 TITLE_POS = D3DXVECTOR3(SCREEN_CENTER.x, 100.0f, 0.0f);	// タイトル座標
+
+    const float TITLE_SIZE = 150.0f;	// タイトルの文字サイズ
+
     // 操作方法UIのテクスチャパス
     const char* TEX_PATH[NUM_CONTROL_UI] =
     {
-        "data\\TEXTURE\\result_clear.png",
-        "data\\TEXTURE\\result_deli.png",
-        "data\\TEXTURE\\result_life.png",
-        "data\\TEXTURE\\result_time.png",
+        "data\\TEXTURE\\controlUI\\01_controlUI_Turn.png",
+        "data\\TEXTURE\\controlUI\\02_controlUI_Accel.png",
+        "data\\TEXTURE\\controlUI\\03_controlUI_Brake.png",
+        "data\\TEXTURE\\controlUI\\04_controlUI_Boost.png",
     };
 
     const D3DXVECTOR3 CAMERA_ROT[4] =
@@ -82,6 +87,7 @@ CEntry::CEntry()
 	m_ppCamera = nullptr;
     m_ppObjX = nullptr;
     m_pGoalManager = nullptr;
+    m_pString = nullptr;
     m_IsFinish = false;
     m_bSetReady = false;
     m_nID = -1;
@@ -153,18 +159,22 @@ HRESULT CEntry::Init(void)
         }
     }
 
+    CObject2D *pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.85f, SCREEN_HEIGHT * 0.2f, 0.0f), VECTOR3_ZERO, 7);
+    pObj->SetSize(100.0f, 40.0f);
+    pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\controlUI\\00_controlUI_Header.png"));
+
     // 操作方法UIの生成
     for (int i = 0; i < NUM_CONTROL_UI; i++)
     {
         m_pControlsUI[i] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.9f, SCREEN_HEIGHT * 0.3f + i * 60.0f, 0.0f), VECTOR3_ZERO, 7);
-        m_pControlsUI[i]->SetSize(100.0f, 40.0f);
+        m_pControlsUI[i]->SetSize(125.0f, 30.0f);
         m_pControlsUI[i]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(TEX_PATH[i]));
         m_pControlsUI[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
     }
 
     CCameraManager* mgr = CCameraManager::GetInstance();
-	m_ppCamera = new CMultiCamera*[MAX_PLAYER];
-    m_ppObjX = new CObjectX * [MAX_PLAYER];
+	m_ppCamera = DEBUG_NEW CMultiCamera*[MAX_PLAYER];
+    m_ppObjX = DEBUG_NEW CObjectX * [MAX_PLAYER];
 
     for (int i = 0; i < MAX_PLAYER; i++)
     {
@@ -202,6 +212,17 @@ HRESULT CEntry::Init(void)
         viewport.MaxZ = 1.0f;
 
         m_ppCamera[i]->SetViewPort(viewport);
+    }
+
+    // 配達開始の文字生成
+    m_pString = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, TITLE_POS,
+        0.4f, TITLE_SIZE, TITLE_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+    if (m_pString != nullptr)
+    {
+        // 文字設定
+        m_pString->PushBackString("配達開始!!");
+        m_pString->SetEnableScroll(false);
     }
   
 	return S_OK;
@@ -267,6 +288,12 @@ void CEntry::Uninit(void)
         }
     }
 
+    if (m_pString != nullptr)
+    {
+        m_pString->Uninit();
+        m_pString = nullptr;
+    }
+
     // ゴールマネージャーの破棄
     SAFE_RELEASE(m_pGoalManager);
 }
@@ -309,7 +336,7 @@ void CEntry::Update(void)
     ControlsUI();
 
     // 準備UI
-    ReadyUp();
+    //ReadyUp();
 
     // プレイヤー参加処理
     AddPlayer();
@@ -319,6 +346,19 @@ void CEntry::Update(void)
 
     // シーンの更新
     CScene::Update();
+
+    if (m_pString != nullptr)
+    {
+        if (m_pString->GetEnd())
+        {// 文字読み込みが終わった
+
+            // 次の画面に遷移
+            if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
+            {
+                CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
+            }
+        }
+    }
 
     CPlayerManager* mgr = CPlayerManager::GetInstance();
 
@@ -362,6 +402,46 @@ void CEntry::ChangeFlag(bool value)
 }
 
 //===============================================
+// チュートリアル終了演出処理
+//===============================================
+void CEntry::EndTutorial(void)
+{
+    if (m_pString != nullptr)
+    {
+        m_pString->SetEnableScroll(true);
+    }
+}
+
+//===============================================
+// 準備OK
+//===============================================
+void CEntry::ReadyUp(const int id)
+{
+    auto mgr = CPlayerManager::GetInstance();
+
+    // 使用されていなかったら処理を抜ける
+    if (m_pReady[id] == nullptr) { return; }
+
+    if (m_bSetReady)
+    {// 準備完了できてる
+
+        // テクスチャ変更
+        m_pReady[id]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
+
+        return;
+    }
+
+    if (!m_bSetReady)
+    {// 準備完了できてない
+
+        // テクスチャ変更
+        m_pReady[id]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
+
+        return;
+    }
+}
+
+//===============================================
 // プレイヤー参加処理
 //===============================================
 void CEntry::AddPlayer(void)
@@ -371,41 +451,6 @@ void CEntry::AddPlayer(void)
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
     int id = mgr->GetNum();
-
-    if (pPad->GetTrigger(CInputPad::BUTTON_START, 0)/* ||*/
-        /*pKey->GetTrigger(DIK_RETURN)*/)
-    {
-        D3DXVECTOR3 pos = m_ppCamera[id]->GetPositionR();
-        int playid = id;
-        if (net->GetState() == CNetWork::STATE::STATE_SINGLE && playid == 0)
-        {
-            playid = net->GetIdx();
-        }
-
-        // プレイヤー生成
-        CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(4000.0f, 0.0f, 2000.0f), D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), VECTOR3_ZERO, playid);
-
-        // データ受信
-        pPlayer->SetType(CPlayer::TYPE::TYPE_RECV);
-        pPlayer->SetRecvPosition(pos);
-
-        // チュートリアル時のアクティブに設定
-        pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
-
-        // エフェクトの終了
-        pPlayer->EffectUninit();
-
-        // 画面下にプレイヤーのモデルを表示
-        pos = m_ppCamera[id]->GetPositionR();
-        m_ppObjX[id] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[id].y, 0.0f), MODEL_PATH, 7);
-        m_ppObjX[id]->SetType(CObject::TYPE::TYPE_PLAYER);
-        m_ppObjX[id]->SetRotateType(CObjectX::TYPE_QUATERNION);
-
-        // 準備できてるかどうかのUIの生成
-        m_pReady[id] = CObject2D::Create(D3DXVECTOR3(D3DXVECTOR3(SCREEN_WIDTH * 0.1f + id * 200.0f, SCREEN_HEIGHT * 0.75f, 0.0f)), VECTOR3_ZERO, 7);
-        m_pReady[id]->SetSize(100.0f, 50.0f);
-        m_pReady[id]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
-    }
 
     // 人数確認
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
@@ -455,6 +500,8 @@ void CEntry::AddPlayer(void)
 
     if (pKey->GetTrigger(DIK_RETURN) || pPad->GetTrigger(CInputPad::BUTTON_A, 0))
     {
+        if (m_pString->IsScroll() || m_pString->GetEnd()) { return; }
+
         m_IsFinish ^= true;
 
         if (m_IsFinish)
@@ -561,31 +608,26 @@ void CEntry::ControlsUI(void)
 //===============================================
 void CEntry::ReadyUp(void)
 {
-    auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
 
     // 使用されていなかったら処理を抜ける
-    if (m_pReady[m_nID] == nullptr || m_nID == -1) { return; }
+    if (m_pPPP == nullptr || m_nID == -1) { return; }
 
     if (m_bSetReady)
     {// 準備完了できてる
 
         // テクスチャ変更
-        m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
-
-        //net->SendTutorialOk();
+        m_pPPP->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_OK));
     }
 
     if (!m_bSetReady)
     {// 準備完了できてない
 
         // テクスチャ変更
-        m_pReady[m_nID]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
-
-        //net->SendTutorialNo();
+        m_pPPP->BindTexture(CManager::GetInstance()->GetTexture()->Regist(READY::TEX_PATH_NO));
     }
 
-    m_nID = -1;
+    //m_nID = -1;
 }
 
 CTutorialStep::CTutorialStep()

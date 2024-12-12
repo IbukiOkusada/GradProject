@@ -27,7 +27,6 @@ namespace
 {
 	const float LENGTH_POINT = (200.0f);			// 到達判定距離
 	const float LENGTH_POINT_CHASE = (500.0f);		// すれ違い判定距離
-	const float CHASE_SPEED = (22.0f);				// 追跡時の加速
 	const float SECURE_SPEEDDEST = (-35.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
 	const float ROT_MULTI_DEF = (0.06f);			// 通常時の向き補正倍率
@@ -88,7 +87,9 @@ HRESULT CPolice::Init(void)
 	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
 	m_pSiren->Stop();
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\police.x");
-	m_pPoliceAI = CPoliceAI::Create(this);
+
+	// AIを生成
+	m_pPoliceAI = CPoliceAI::Create(this, CPoliceAI::TYPE_NORMAL);
 	return S_OK;
 }
 
@@ -97,6 +98,7 @@ HRESULT CPolice::Init(void)
 //==========================================================
 void CPolice::Uninit(void)
 {
+	// AIを破棄
 	if (m_pPoliceAI != nullptr)
 	{
 		m_pPoliceAI->Uninit();
@@ -123,7 +125,9 @@ void CPolice::Update(void)
 		return;
 	}
 
+	// アップデート
 	CCar::Update();
+
 	if (m_Info.bChase)
 	{
 		if (m_pPatrolLamp == nullptr)
@@ -173,16 +177,20 @@ CPolice *CPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D
 //==========================================================
 void CPolice::MoveRoad()
 {
+	// 移動地点用変数
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
+	// 目的地が存在しない時最寄りの道を目的地に設定する
 	if (pRoadTarget == nullptr && IsActive())
 		SearchRoad();
 
+	// 追跡状態の判定
 	if (m_Info.bChase)
 	{
 		m_pSiren->Start();
 
+		// プレイヤー追跡処理
 		ChasePlayer();
 	
 		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
@@ -194,19 +202,26 @@ void CPolice::MoveRoad()
 		}
 		m_pSiren->SetVolume(vol);
 
+		// 目的地が存在するかどうか
 		if (pRoadTarget != nullptr)
 		{
-			SetSpeedDest(GetSpeedDest() + CHASE_SPEED);
-			SetPosTarget(pRoadTarget->GetPosition());
+			// 追跡用に加速する
+			SetSpeedDest(GetSpeedDest() + m_pPoliceAI->GetChaseSpeed());
 			SetRotMulti(ROT_MULTI_CHASE);
+
+			// 目的地の座標を代入
+			SetPosTarget(pRoadTarget->GetPosition());
 		}
 		else
 		{
+			// プレイヤーが存在しないなら最寄りの道に戻る
 			if (m_Info.pPlayer == nullptr) { return; }
 
+			// プレイヤーの座標を目指す
 			SetPosTarget(m_Info.pPlayer->GetPosition());
 
-			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) < LENGTH_POINT_CHASE) { return; }
+			// 一定距離まで近づいたら減速させる
+			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
 
 			// 速度を設定
 			SetSpeedDest(SECURE_SPEEDDEST);
@@ -220,15 +235,18 @@ void CPolice::MoveRoad()
 			m_pSiren->Stop();
 		}
 
+		// 目的地が存在する時
 		if (pRoadTarget != nullptr || IsActive())
 		{
 			pRoadStart = GetRoadStart();
 			pRoadTarget = GetRoadTarget();
 
+			// 一定距離まで近づいたら到達判定処理を行う
 			float length = D3DXVec3Length(&(pRoadTarget->GetPosition() - GetPosition()));
 			if (length < LENGTH_POINT)
 				ReachRoad();
 
+			// 目的地の座標を代入
 			SetPosTarget(pRoadTarget->GetPosition());
 			SetRotMulti(ROT_MULTI_DEF);
 		}
@@ -240,6 +258,7 @@ void CPolice::MoveRoad()
 //==========================================================
 void CPolice::ReachRoad()
 {
+	// 移動地点用変数
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
 
@@ -256,6 +275,7 @@ void CPolice::ReachRoad()
 		if (pRoadNext != nullptr) { break; }
 	}
 
+	// 目標地点と出発地点をずらす
 	pRoadStart = pRoadTarget;
 	pRoadTarget = pRoadNext;
 

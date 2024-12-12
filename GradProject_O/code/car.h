@@ -31,6 +31,7 @@ public:
 		TYPE_RECV = 0,	// 受信のみ
 		TYPE_SEND,		// 送信のみ
 		TYPE_ACTIVE,	// 動く
+		TYPE_NONE,
 		TYPE_MAX
 	};
 
@@ -102,7 +103,7 @@ public:	// 誰でもアクセス可能
 
 	// 自分で動くときはtrue 動かないときはfalse
 	bool IsActive() {
-		if (m_Info.type == TYPE::TYPE_RECV) return false;
+		if (m_Info.type == TYPE::TYPE_RECV || m_Info.type == TYPE_NONE) return false;
 		return true;
 	}
 

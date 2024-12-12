@@ -154,26 +154,90 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 }
 
 //==========================================================
-// AStarでの迂回経路探索
+// AStarでの警察用迂回経路探索
 //==========================================================
-std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Relay, CRoad* Goal)
+std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Goal, CRoad* Arg...)
 {
-	std::vector<CRoad::SInfoSearch*> pathRelay;
-	std::vector<CRoad::SInfoSearch*> pathGoal;
+	if (Start == nullptr || Goal == nullptr) { return {}; }
 
-	// 初期地点から中継地点まで探索
-	pathRelay = AStarPolice(Start, Relay);
+	std::vector < CRoad::SInfoSearch* > OpenList;		//探索候補リスト
+	std::vector<CRoad::SInfoSearch*> CloseList;			//探索終了リスト
 
-	// 中継地点から目標地点まで探索
-	pathGoal = AStarPolice(Relay, Goal);
+	Start->GetInfoSearch()->fGCost = 0.0f;
+	Start->GetInfoSearch()->fHCost = D3DXVec3Length(&(Start->GetPosition() - Goal->GetPosition()));
+	Start->GetInfoSearch()->fFCost = Start->GetInfoSearch()->fGCost + Start->GetInfoSearch()->fHCost;
+	OpenList.push_back(Start->GetInfoSearch());
 
-	if (pathRelay.empty() || pathGoal.empty()) { return {}; }
+	// オープンリストが空になるまで探索
+	while (!OpenList.empty())
+	{
+		CRoad::SInfoSearch* Current;			// 現在の参照ノード
 
-	pathRelay.back()->pChild = pathGoal.front();
-	pathGoal.front()->pParent = pathRelay.back();
-	std::copy(pathGoal.begin(), pathGoal.end(), std::back_inserter(pathRelay));
+		Current = *std::min_element(OpenList.begin(), OpenList.end(),
+			[](CRoad::SInfoSearch* a, CRoad::SInfoSearch* b) { return a->fFCost < b->fFCost; });		// 総計コストが最少のノードを選ぶ
 
-	return pathRelay;
+		// ゴール到達時
+		if (Current->pConnectRoad == Goal)
+		{// 親ノードを辿って順序を入れ替えたのち返す
+
+			std::vector<CRoad::SInfoSearch*> path;	// 返り値用変数
+
+			while (Current != nullptr)
+			{
+				// 親がいるなら親の子に自分を設定
+				if (Current->pParent != nullptr)
+				{
+					Current->pParent->pChild = Current;
+				}
+
+				path.push_back(Current);
+				Current = Current->pParent;
+			}
+
+			// リストを反転させる
+			std::reverse(path.begin(), path.end());
+			return path;
+		}
+
+		// オープンリストから削除してクローズリストに追加
+		OpenList.erase(std::remove(OpenList.begin(), OpenList.end(), Current), OpenList.end());
+		CloseList.push_back(Current);
+
+		for (int i = 0; i < CRoad::DIC_MAX; i++)
+		{// 隣接ノードをコスト計算の後オープンリストに追加
+
+			// 目的の方向に道が存在する
+			if (Current->pConnectRoad->GetConnectRoad((CRoad::DIRECTION)i) == nullptr) { continue; }
+
+			// 隣接した道の情報を取得
+			CRoad::SInfoSearch* neighborInfo = Current->pConnectRoad->GetInfoSearchDic((CRoad::DIRECTION)i);
+
+			// クローズリストに入っていない事を確認
+			if (std::find(CloseList.begin(), CloseList.end(), neighborInfo) != CloseList.end()) { continue; }
+
+			// コスト計算
+			neighborInfo->fGCost = Current->pConnectRoad->GetConnectLength((CRoad::DIRECTION)i);
+
+			if (Arg == neighborInfo->pConnectRoad)
+			{
+				neighborInfo->fGCost = FLT_MAX * 0.1f;
+			}
+
+			neighborInfo->fHCost = D3DXVec3Length(&(neighborInfo->pConnectRoad->GetPosition() - Goal->GetPosition()));
+			neighborInfo->fFCost = neighborInfo->fGCost + neighborInfo->fHCost;
+
+			// 親に設定
+			neighborInfo->pParent = Current;
+
+			// オープンリストに追加
+			if (std::find(OpenList.begin(), OpenList.end(), neighborInfo) == OpenList.end())
+			{
+				OpenList.push_back(neighborInfo);
+			}
+		}
+	}
+
+	return {};
 }
 
 //==========================================================

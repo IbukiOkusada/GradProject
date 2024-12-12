@@ -44,6 +44,7 @@ public:
 		TYPE_RECV,		// データ受信他操作
 		TYPE_ACTIVE,	// 操作可能
 		TYPE_TUTOLERIAL_ACTIVE,  // チュートリアル時
+		TYPE_NONE,
 		TYPE_MAX
 	};
 
@@ -156,6 +157,7 @@ protected:	// 自分だけがアクセス可能
 	void SetStateRecv();
 	void SetStateActive();
 	void SetStateTutorialActive();
+	void SetStateNone();
 
 	// メンバ関数
 	void SetMatrix(void);
@@ -167,6 +169,7 @@ protected:	// 自分だけがアクセス可能
 	bool CollisionObjX(void);
 	bool CollisionRoad(void);
 	bool CollisionGimick(void);
+	bool CollisionField(void);
 	void Engine(float fThrottle);
 	void SearchRoad(void);
 	void Nitro();

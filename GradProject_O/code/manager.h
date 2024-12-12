@@ -69,6 +69,8 @@ public:
 	MODE GetMode(void) { return m_mode; }
 	virtual void SetID(const int id) {};
 	virtual void ChangeFlag(bool value) {};
+	virtual void EndTutorial(void) {};
+	virtual void ReadyUp(const int id) {};
 
 private:
 	MODE m_mode;	// ÉÇÅ[Éh
