@@ -470,9 +470,11 @@ CPlayer* CPlayer::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D
 
 		// 座標設定
 		pPlayer->SetPosition(pos);
+		pPlayer->m_pObj->SetPosition(pos);
 
 		// 向き設定
 		pPlayer->SetRotation(rot);
+		pPlayer->m_pObj->SetRotation(rot);
 
 		pPlayer->m_fRotDest = rot.y;
 
@@ -621,9 +623,7 @@ void CPlayer::Rotate(void)
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	float diff = 0.0f;
-	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-
-	if (pCamera->GetAction()->IsFinish())
+	
 	{
 		if (pInputKey->GetPress(DIK_D))
 		{
