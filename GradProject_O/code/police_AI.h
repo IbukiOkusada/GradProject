@@ -27,7 +27,8 @@ public:	// 誰でもアクセス可能
 	// AIタイプ列挙型
 	enum TYPE
 	{
-		TYPE_NORMAL = 0,	// 通常
+		TYPE_NONE = 0,		// タイプ無し
+		TYPE_NORMAL,		// 通常
 		TYPE_ELITE,			// 回り込み型
 		TYPE_GENTLE,		// 緩やか型
 		TYPE_MAX
@@ -41,6 +42,7 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Search(void);
 	void Chase(void);
+	void CallBackup(void);
 
 	void BeginChase(CPlayer* pPlayer);
 	void EndChase(void);
@@ -69,9 +71,11 @@ protected:
 	CRoad::SInfoSearch* m_pSearchTarget;
 	vector<CRoad::SInfoSearch*> m_searchRoad;
 	int m_nCntThread;
+	int m_nCntCall;
 	float m_fChaseSpeed;
 	float m_fSearchInterval;
 	bool m_bCross;
+	bool m_bCall;
 
 private:	// 自分だけがアクセス可能
 

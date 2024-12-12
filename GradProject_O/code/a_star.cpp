@@ -156,7 +156,7 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 //==========================================================
 // AStar‚Å‚ÌŒx@—p‰I‰ñŒo˜H’Tõ
 //==========================================================
-std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Goal, CRoad* Arg...)
+std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Goal, CRoad* Arg)
 {
 	if (Start == nullptr || Goal == nullptr) { return {}; }
 
