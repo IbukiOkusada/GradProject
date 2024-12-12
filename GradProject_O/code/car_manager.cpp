@@ -48,6 +48,8 @@ void CCarManager::Uninit(void)
 	// リスト廃棄
 	ListRelease();
 
+	m_List.Clear();
+
 	// インスタンスの廃棄
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		delete m_pInstance;

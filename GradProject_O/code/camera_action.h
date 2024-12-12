@@ -41,10 +41,11 @@ private:
 	// 目標地点構造体
 	struct STargetInfo
 	{
+		D3DXVECTOR3 pos;	// 座標
 		D3DXVECTOR3 rot;	// 向き
 		float fLength;		// 距離
 
-		STargetInfo() : rot(VECTOR3_ZERO), fLength(0.0f) {}
+		STargetInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), fLength(0.0f) {}
 	};
 
 	// 時間管理構造体
@@ -71,15 +72,16 @@ public:	// 誰でもアクセス可能
 	/**
 	@brief	カメラの移動地点設定
 	@param	pCamera		[in]	変更したいカメラ
+	@param	pos			[in]	移動後の指定していない方の視点
 	@param	rot			[in]	移動後の向き
 	@param	fLength		[in]	移動後の距離
 	@param	fTime		[in]	移動完了までの時間
-	@param	fStopTime	[in]	移動完了までの時間
+	@param	fStopTime	[in]	移動完了後の停止時間
 	@param	MOVE		[in]	移動する視点
 	@param	bNext		[in]	次もモーションさせる予定があるか
 	@return	void
 	 */
-	void Set(CCamera* pCamera, const D3DXVECTOR3& rot, const float& fLength, const float fTime, const float fStopTime, const MOVE& move, const bool& bNext = false);
+	void Set(CCamera* pCamera, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const float& fLength, const float fTime, const float fStopTime, const MOVE& move, const bool& bNext = false);
 
 	// メンバ関数(取得)
 	bool IsFinish() { return m_bFinish; }

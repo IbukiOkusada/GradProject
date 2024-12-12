@@ -129,8 +129,9 @@ private:
 	void PoliceUpdate(CMultiResult* pResult);
 
 	// メンバ変数
-	CPolice** m_ppPolice;	// 警察の生成数
+	CPolice** m_ppPolice;	// 警察のダブルポインタ
 	int m_nNumCreatePolice;	// 警察の生成数
+	int m_nPassingPolice;	// 警察の通過数
 };
 
 //===============================================
@@ -150,6 +151,7 @@ private:
 
 	// メンバ関数
 	void Controll(CMultiResult* pResult) override;
+	void Create(CMultiResult* pResult) override;
 
 	// メンバ変数
 	float m_fFadeCnt;	// フェードまでのカウント
