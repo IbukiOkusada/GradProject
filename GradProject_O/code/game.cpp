@@ -177,7 +177,7 @@ HRESULT CGame::Init(void)
     // 配達する総数
     m_nTotalDeliveryStatus = TOTAL_POINT;
 
-    CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
+    CMeshField::Create(D3DXVECTOR3(-5000.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2000.0f, 2000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 
     // マップ読み込み
     CMapManager::GetInstance()->Load();

@@ -104,7 +104,7 @@ void CEffect3D::Update(void)
 	m_Info.fLife -= slow;
 	D3DXVECTOR3 nor = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXVECTOR3 posOld = m_Info.pos;
-	float fHeight = CMeshField::GetHeight(m_Info.pos, posOld);
+	//float fHeight = CMeshField::GetHeight(m_Info.pos, posOld);
 
 	if (m_Info.fLife < 0)
 	{// Žõ–½‚ª‚È‚­‚È‚Á‚½ê‡

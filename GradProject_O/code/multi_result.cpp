@@ -17,6 +17,7 @@
 #include "player.h"
 #include "objectX.h"
 #include "fade.h"
+#include "meshdome.h"
 
 //==========================================================
 // ’è”’è‹`
@@ -216,6 +217,9 @@ HRESULT CMultiResult::Init(void)
 
 	// ƒJƒƒ‰‰Šúİ’è
 	InitCameraSet();
+
+	// ‹ó¶¬
+	CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 20000.0f, 1000.0f, 3, 20, 20);
 
 	return S_OK;
 }
