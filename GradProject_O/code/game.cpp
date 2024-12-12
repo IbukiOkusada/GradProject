@@ -177,7 +177,7 @@ HRESULT CGame::Init(void)
     // 配達する総数
     m_nTotalDeliveryStatus = TOTAL_POINT;
 
-    CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
+    CMeshField::Create(D3DXVECTOR3(-5000.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2000.0f, 2000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 
     // マップ読み込み
     CMapManager::GetInstance()->Load();
@@ -231,8 +231,9 @@ HRESULT CGame::Init(void)
     }
 
 #if NDEBUG
+    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 3.0f, 2.0f, CCameraAction::MOVE_POSV, true);
+    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 1.0f, 1.0f, CCameraAction::MOVE_POSV, true);
 #endif  
     pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);
@@ -280,12 +281,12 @@ void CGame::Uninit(void)
     CMapManager::Release();
 
     // 各種マネージャー廃棄
-    CCarManager::Release();
-    CGoalManager::Release();
-    CPoliceManager::Release();
-    CPoliceAIManager::Release();
-    CInspectionManager::Release();
-    CPlayerManager::Release();
+    //CCarManager::Release();
+    //CGoalManager::Release();
+    //CPoliceManager::Release();
+    //CPoliceAIManager::Release();
+    //CInspectionManager::Release();
+    //CPlayerManager::Release();
 }
 
 //===============================================
@@ -468,15 +469,16 @@ void CGame::StartIntro(void)
         return;
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 
     if (pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount < 3)
     {
         m_nStartCameraCount++;
-        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, true);
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 1.0f, CCameraAction::MOVE_POSV, true);
     }
     else if (m_nStartCameraCount >= 3)
     {
-        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 2.0f, CCameraAction::MOVE_POSV, false);
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 1.0f, CCameraAction::MOVE_POSV, false);
         m_nStartCameraCount++;
     }
 #endif

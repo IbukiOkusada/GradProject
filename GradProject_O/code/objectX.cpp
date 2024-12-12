@@ -290,7 +290,10 @@ void CObjectX::DrawOnryShader()
 	for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
 	{
 		D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
-
+		mat.Diffuse.r = mat.Diffuse.r * m_ColMulti.r + m_AddCol.r;
+		mat.Diffuse.g = mat.Diffuse.g * m_ColMulti.g + m_AddCol.g;
+		mat.Diffuse.b = mat.Diffuse.b * m_ColMulti.b + m_AddCol.b;
+		mat.Diffuse.a = mat.Diffuse.a * m_ColMulti.a + m_AddCol.a;
 		
 		//ƒ}ƒeƒŠƒAƒ‹‚ÌÝ’è
 		pDevice->SetMaterial(&mat);

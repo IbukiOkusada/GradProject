@@ -231,7 +231,7 @@ void CBaggage::SetCamera()
 
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	float rotY = atan2f(m_pos.z - m_pTarget->z, m_pos.x - m_pTarget->x);
-	pCamera->GetAction()->Set(pCamera, D3DXVECTOR3(0.0f, rotY, D3DX_PI * 0.35f), 600.0f, 0.5f, 1.0f, CCameraAction::MOVE_POSV, true);
+	pCamera->GetAction()->Set(pCamera, pCamera->GetPositionR(), D3DXVECTOR3(0.0f, rotY, D3DX_PI * 0.35f), 600.0f, 0.5f, 1.0f, CCameraAction::MOVE_POSV, true);
 	D3DXVECTOR3 pos = *m_pTarget;
 	pos.y += 200.0f;
 	pCamera->Pursue(pos, VECTOR3_ZERO, 0.0f);

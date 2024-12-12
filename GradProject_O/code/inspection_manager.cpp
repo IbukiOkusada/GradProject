@@ -104,13 +104,14 @@ HRESULT CInspectionManager::Init(void)
 //==========================================================
 void CInspectionManager::Uninit(void)
 {
+	CListManager::Uninit();
+
 	// é©êgÇÃîjä¸
 	if (m_pInstance != nullptr)
 	{
 		m_pInstance = nullptr;
+		delete this;
 	}
-
-	delete this;
 }
 
 //==========================================================

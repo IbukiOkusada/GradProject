@@ -11,10 +11,13 @@
 #include "manager.h"
 #include "sound.h"
 #include "camera.h"
+#include "camera_action.h"
 #include "network.h"
 #include "scrollText2D.h"
 #include "player.h"
 #include "objectX.h"
+#include "fade.h"
+#include "meshdome.h"
 
 //==========================================================
 // 定数定義
@@ -31,17 +34,29 @@ namespace TEXT
 	const float RESULT_SIZE = 100.0f;	// タイトルの文字サイズ
 }
 
+// カメラ
 namespace CAMERA
 {
-	const D3DXVECTOR3 POSV = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	const D3DXVECTOR3 ROT = D3DXVECTOR3(0.0f, D3DX_PI * 1.0f, D3DX_PI * 0.3f);
-	const float LENGTH = 1700.0f;
+	const D3DXVECTOR3 POSR = D3DXVECTOR3(-1500.0f, 0.0f, -1000.0f);
+	const D3DXVECTOR3 ROT = D3DXVECTOR3(0.0f, D3DX_PI * 0.8f, D3DX_PI * 0.1f);
+	const float LENGTH = 11000.0f;
+	const float TIME = 10.0f;
+
+	// アクション
+	namespace ACTION
+	{
+		const D3DXVECTOR3 POSV = D3DXVECTOR3(-1500.0f, 800.0f, 0.0f);
+		const D3DXVECTOR3 POSR = D3DXVECTOR3(-300.0f, 0.0f, 0.0f);
+		const D3DXVECTOR3 ROT = D3DXVECTOR3(0.0f, D3DX_PI * 1.0f, D3DX_PI * 0.3f);
+		const float LENGTH = 1500.0f;
+		const float TIME = 3.0f;
+	}
 }
 
 namespace
 {
 	const float PLAYER_TARGET_POSZ = -800.0f;	// プレイヤーランク表示時目標Z座標
-	const float PLAYER_SPACE = 275.0f;
+	const float PLAYER_SPACE = 400.0f;
 }
 
 // using定義
@@ -56,7 +71,8 @@ m_pState(nullptr),
 m_pInfo(nullptr),
 m_pTitleStr(nullptr),
 m_pEndStr(nullptr),
-m_nNowScrPlayer(0)
+m_nNowScrPlayer(0),
+m_nTopId(0)
 {
 
 }
@@ -96,6 +112,7 @@ HRESULT CMultiResult::Init(void)
 
 		// プレイヤーの座標設定
 		D3DXVECTOR3 pos = TEXT::SETPOS;
+		pos.y = 50.0f;
 		pos.z -= PLAYER_SPACE * 0.5f;
 		pos.z += PLAYER_SPACE * m_pMgr->GetNumPlayer() * 0.5f;
 		pos.z -= PLAYER_SPACE * m_pInfo[i].nId;
@@ -155,7 +172,7 @@ HRESULT CMultiResult::Init(void)
 
 	// 結果発表の文字生成
 	m_pTitleStr = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, TITLE_POS,
-		0.4f, TITLE_SIZE, TITLE_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		0.3f, TITLE_SIZE, TITLE_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	if (m_pTitleStr != nullptr)
 	{
 		// 文字設定
@@ -177,6 +194,7 @@ HRESULT CMultiResult::Init(void)
 		str.clear();
 
 		// ID
+		m_nTopId = m_pInfo[topid].nId;
 		std::ostringstream id;
 		id.clear();
 		id << m_pInfo[topid].nId + 1;
@@ -199,6 +217,9 @@ HRESULT CMultiResult::Init(void)
 
 	// カメラ初期設定
 	InitCameraSet();
+
+	// 空生成
+	CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 20000.0f, 1000.0f, 3, 20, 20);
 
 	return S_OK;
 }
@@ -233,6 +254,9 @@ void CMultiResult::Uninit(void)
 
 	// サウンド停止
 	CManager::GetInstance()->GetSound()->Stop();
+
+	// マネージャー関連削除
+
 }
 
 //===============================================
@@ -240,6 +264,7 @@ void CMultiResult::Uninit(void)
 //===============================================
 void CMultiResult::Update(void)
 {
+	// 状態更新
 	if (m_pState != nullptr)
 	{
 		m_pState->Update(this);
@@ -290,14 +315,22 @@ void CMultiResult::Sort()
 //===============================================
 void CMultiResult::InitCameraSet()
 {
+	using namespace CAMERA;
+
 	// カメラ取得
 	CCamera* pCamera = CManager::GetInstance()->GetCamera();
 	if (pCamera == nullptr) { return; }
 
 	// カメラの値設定
-	pCamera->SetLength(CAMERA::LENGTH);
-	pCamera->SetRotation(CAMERA::ROT);
-	pCamera->SetPositionR(CAMERA::POSV);
+	pCamera->SetLength(LENGTH);
+	pCamera->SetRotation(ROT);
+	pCamera->SetPositionR(POSR);
+
+	// カメラモーション設定
+	CCameraAction* pCamAc = pCamera->GetAction();
+	if (pCamAc == nullptr) { return; }
+	pCamAc->Set(pCamera, ACTION::POSV, ACTION::ROT,
+		ACTION::LENGTH, ACTION::TIME, ACTION::TIME, CCameraAction::MOVE::MOVE_POSR);
 }
 
 //===============================================

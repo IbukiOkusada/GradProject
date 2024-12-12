@@ -71,6 +71,7 @@ protected:
 	int m_nCntThread;
 	float m_fChaseSpeed;
 	float m_fSearchInterval;
+	bool m_bCross;
 
 private:	// 自分だけがアクセス可能
 
@@ -86,7 +87,6 @@ private:	// 自分だけがアクセス可能
 	float m_fSearchTimer;
 	float m_fLevelSearch;
 	TYPE m_type;
-	bool m_bCross;
 };
 
 //==========================================================
@@ -107,10 +107,12 @@ class CPoliceAIElite : public CPoliceAI
 	// メンバ関数
 	HRESULT Init(void) override;
 	void SelectRoad(void) override;
+	void ReachRoad(void) override;
 	void ChaseAStar(void) override;
 
 	// メンバ変数
 	CRoad* m_pRoadRelay;		// 目標地点
+	bool m_bRelay;				// 迂回したかどうか
 };
 
 //==========================================================
