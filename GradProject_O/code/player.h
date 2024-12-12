@@ -12,7 +12,7 @@
 #include "effekseerControl.h"
 #include "objectsound.h"
 #include "road.h"
-
+#include "shaderlight.h"
 using namespace std;
 
 // 前方宣言
@@ -222,7 +222,8 @@ protected:	// 自分だけがアクセス可能
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
 	CRadio* m_pRadio;
-
+	//シェーダーライト
+	CShaderLight::SLight* m_pShaderLight;
 	// オンライン関連
 	SRecvInfo m_RecvInfo;		// 受信情報
 };

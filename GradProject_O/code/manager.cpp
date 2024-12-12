@@ -335,7 +335,8 @@ void CManager::Uninit(void)
 	CListManager::Release();
 	CMasterSound::GetInstance()->Uninit();
 	CMasterSound::Release();
-
+	//シェーダーライトの破棄
+	CShaderLight::Release();
 	// エフェクシア破棄
 	CEffekseer::GetInstance()->Uninit();
 }

@@ -93,6 +93,8 @@ namespace
 	const float CAMERA_ENGINEMULTI = 0.15f;
 	const float NITRO_COUNTER = 6.0f;
 	const float NITRO_COOL = 120.0f;
+	const D3DXVECTOR3 LIGHT_OFFSET = D3DXVECTOR3(0.0f, 100.0f, 150.0f);
+	const D3DXVECTOR3 LIGHT_VEC = D3DXVECTOR3(0.0f, -0.5f, 1.0f);
 	const vector<string> START_TEXT[NUM_TXT]
 	{
 	{">> BOOT SEQUENCE INITIATED.......................................",
@@ -218,6 +220,7 @@ CPlayer::CPlayer(int nId)
 	m_pContainer = nullptr;
 	m_pRadio = nullptr;
 	m_pNavi = nullptr;
+	m_pShaderLight = nullptr;
 	m_type = TYPE::TYPE_RECV;
 
 	for (int i = 0; i < NUM_TXT; i++)
@@ -258,7 +261,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	SetCol();
 
 	SetMatrix();
-	
+	m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(0.8f,0.9f,1.0f), 2.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f),D3DXToRadian(35));
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -273,18 +276,19 @@ void CPlayer::Uninit(void)
 	CManager::GetInstance()->SetDeliveryStatus(m_nNumDeliveryStatus);
 	CManager::GetInstance()->SetLife(m_fLife);
 
-	SAFE_UNINIT(m_pContainer);
-	SAFE_UNINIT(m_pObj);
-	SAFE_UNINIT(m_pBaggage);
-	SAFE_DELETE(m_pTailLamp);
-	SAFE_DELETE(m_pBackdust);
-	SAFE_DELETE(m_pAfterburner);
-	SAFE_DELETE(m_pDamageEffect);
-	SAFE_UNINIT_DELETE(m_pSound);
-	SAFE_UNINIT_DELETE(m_pSoundBrake);
+	SAFE_UNINIT(m_pContainer)
+	SAFE_UNINIT(m_pObj)
+	SAFE_UNINIT(m_pBaggage)
+	SAFE_DELETE(m_pTailLamp)
+	SAFE_DELETE(m_pBackdust)
+	SAFE_DELETE(m_pAfterburner)
+	SAFE_DELETE(m_pDamageEffect)
+	SAFE_UNINIT_DELETE(m_pSound)
+	SAFE_UNINIT_DELETE(m_pSoundBrake)
 	SAFE_UNINIT_DELETE(m_pRadio);
-	SAFE_UNINIT_DELETE(m_pCollSound);
-
+	SAFE_UNINIT_DELETE(m_pCollSound)
+	CShaderLight::Delete(m_pShaderLight);
+	SAFE_DELETE(m_pShaderLight)
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// ”pŠü
@@ -297,6 +301,16 @@ void CPlayer::Uninit(void)
 void CPlayer::Update(void)
 {	
 	DEBUGKEY();
+	D3DXMATRIX mat;
+	D3DXMatrixIdentity(&mat);
+	D3DXMatrixRotationYawPitchRoll(&mat, GetRotation().y + D3DX_PI*0.5f, GetRotation().x, GetRotation().z);
+	D3DXVECTOR3 lightpos = LIGHT_OFFSET;
+	D3DXVECTOR3 lightvec = LIGHT_VEC;
+	D3DXVec3Normalize(&lightvec, &lightvec);
+	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
+	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
+	m_pShaderLight->position = GetPosition() + lightpos;
+	m_pShaderLight->direction = lightvec;
 
 	// 
 	if (m_type == TYPE::TYPE_ACTIVE)
