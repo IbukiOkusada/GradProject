@@ -318,8 +318,8 @@ void CCar::SearchRoad()
 	CRoadManager* pRoadManager = CRoadManager::GetInstance();
 	auto list = pRoadManager->GetList();
 
-	CRoad* pRoad = pRoadManager->GetList()->Get(0);
-	CRoad* pRoadClose = pRoadManager->GetList()->Get(0);
+	CRoad* pRoad = list->Get(0);
+	CRoad* pRoadClose = list->Get(0);
 
 	// “¹‚ª‘¶İ‚µ‚È‚¯‚ê‚Î”²‚¯‚é
 	if (pRoad == nullptr) { return; }
@@ -329,7 +329,7 @@ void CCar::SearchRoad()
 	float lengthClose = 0.0f;
 
 	// ÅŠñ‚è‚Ì“¹‚ğŒ©‚Â‚¯‚é
-	for (int i = 0; i < pRoadManager->GetList()->GetNum() - 1; i++)
+	for (int i = 0; i < list->GetNum() - 1; i++)
 	{
 		pRoad = list->Get(i);
 

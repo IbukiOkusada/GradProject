@@ -482,16 +482,15 @@ void CPoliceAI::SelectRoad(void)
 void CPoliceAI::ReachRoad(void)
 {
 	// 目的地が存在する時
-	if (m_pSearchTarget != nullptr)
+	if (m_pSearchTarget == nullptr) { return; }
+
+	// 次の目的地を設定
+	D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
+	D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
+	float length = D3DXVec3Length(&(posRoad - posPolice));
+	if (length < 1500.0f)
 	{
-		// 次の目的地を設定
-		D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
-		D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
-		float length = D3DXVec3Length(&(posRoad - posPolice));
-		if (length < 1500.0f)
-		{
-			m_pSearchTarget = m_pSearchTarget->pChild;
-		}
+		m_pSearchTarget = m_pSearchTarget->pChild;
 	}
 }
 
@@ -534,7 +533,9 @@ void CPoliceAINomal::SelectRoad(void)
 HRESULT CPoliceAIElite::Init(void)
 {
 	CPoliceAI::Init();
-
+	
+	m_pRoadRelay = nullptr;
+	m_bRelay = false;
 	m_fChaseSpeed = CHASE_SPEED_ELITE;
 	m_fSearchInterval = SEARCH_TIME_ELITE;
 
@@ -553,12 +554,87 @@ void CPoliceAIElite::SelectRoad(void)
 	CPlayer* pPlayer = m_pPolice->GetPlayer();
 	if (pPlayer != nullptr)
 	{
-		m_pRoadRelay = pPlayer->GetPredRoute()->GetPredRoad();
 		m_pRoadTarget = pPlayer->GetRoad();
+
+		if (m_bRelay || m_bCross) { return; }
+
+		CRoad* pRoadRelay = pPlayer->GetRoad();
+		int nConnectDic = 0;
+		float rotDif = 100.0f;
+
+		for (int i = 0; i < CRoad::DIC_MAX; i++)
+		{
+			CRoad* pRoadRelayConnect = pRoadRelay->GetConnectRoad((CRoad::DIRECTION)i);
+
+			if (pRoadRelayConnect == nullptr) { continue; }
+
+			D3DXVECTOR3 vecRoad = pRoadRelayConnect->GetPosition() - pRoadRelay->GetPosition();
+
+			float targetrot = atan2f(vecRoad.x, vecRoad.z);
+
+			// 角度補正
+			if (targetrot > D3DX_PI)
+			{
+				targetrot -= D3DX_PI * 2.0f;
+			}
+			else if (targetrot < -D3DX_PI)
+			{
+				targetrot += D3DX_PI * 2.0f;
+			}
+
+			targetrot -= m_pPolice->GetRotation().y;
+
+			// 角度補正
+			if (targetrot > D3DX_PI)
+			{
+				targetrot -= D3DX_PI * 2.0f;
+			}
+			else if (targetrot < -D3DX_PI)
+			{
+				targetrot += D3DX_PI * 2.0f;
+			}
+
+			if (targetrot < rotDif)
+			{
+				rotDif = targetrot;
+				nConnectDic = i;
+				pRoadRelay = pRoadRelayConnect;
+			}
+		}
+
+		while (pRoadRelay->GetType() == CRoad::TYPE_NONE || pRoadRelay->GetType() == CRoad::TYPE_STOP)
+		{
+			pRoadRelay = pRoadRelay->GetConnectRoad((CRoad::DIRECTION)nConnectDic);
+		}
+
+		m_pRoadRelay = pRoadRelay;
 	}
 	else
 	{
 		m_pRoadTarget = m_pPolice->GetRoadTarget();
+	}
+}
+
+//==========================================================
+// 目標地点到達時処理
+//==========================================================
+void CPoliceAIElite::ReachRoad(void)
+{
+	// 目的地が存在する時
+	if (m_pSearchTarget == nullptr) { return; }
+
+	// 次の目的地を設定
+	D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
+	D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
+	float length = D3DXVec3Length(&(posRoad - posPolice));
+	if (length < 1500.0f)
+	{
+		if (m_pSearchTarget->pConnectRoad == m_pRoadRelay)
+		{ 
+			m_bRelay = true;
+		}
+
+		m_pSearchTarget = m_pSearchTarget->pChild;
 	}
 }
 
@@ -572,8 +648,16 @@ void CPoliceAIElite::ChaseAStar(void)
 	// 現在地と目的地が別の時
 	if (m_pRoadStart != m_pRoadTarget || m_pRoadStart == nullptr || m_pRoadTarget == nullptr)
 	{
-		// 経路探索
-		m_searchRoad = AStar::AStarPoliceDetour(m_pRoadStart, m_pRoadRelay, m_pRoadTarget);
+		if (m_bRelay || m_bCross)
+		{
+			// 経路探索
+			m_searchRoad = AStar::AStarPolice(m_pRoadStart, m_pRoadTarget);
+		}
+		else
+		{
+			// 経路探索
+			m_searchRoad = AStar::AStarPoliceDetour(m_pRoadStart, m_pRoadRelay, m_pRoadTarget);
+		}
 	}
 	else
 	{
