@@ -15,5 +15,6 @@ MODEL_FILENAME = data/MODEL/map/sign_speed_limit.x	# [0]速度制限看板
 MODEL_FILENAME = data/MODEL/map/sign_stop.x	# [0]停止看板
 MODEL_FILENAME = data/MODEL/map/hotel.x	# [0]ホテル
 MODEL_FILENAME = data/MODEL/map/mix_bill.x	# [0]和風洋風ビル
+MODEL_FILENAME = data/MODEL/map/building_cyber000.x	# [0]サイバービル
 
 END_SCRIPT
