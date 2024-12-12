@@ -74,7 +74,7 @@ namespace
 	const float BRAKE = (0.7f);		// ブレーキ
 	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量
-	const float GRAVITY = (-12.0f);		//プレイヤー重力
+	const float GRAVITY = (-24.0f);		//プレイヤー重力
 	const float ROT_MULTI = (1.0f);	// 向き補正倍率
 	const float WIDTH = (20.0f);	// 幅
 	const float HEIGHT = (80.0f);	// 高さ
@@ -93,6 +93,8 @@ namespace
 	const float CAMERA_ENGINEMULTI = 0.15f;
 	const float NITRO_COUNTER = 6.0f;
 	const float NITRO_COOL = 120.0f;
+	const D3DXVECTOR3 LIGHT_OFFSET = D3DXVECTOR3(0.0f, 100.0f, 150.0f);
+	const D3DXVECTOR3 LIGHT_VEC = D3DXVECTOR3(0.0f, -0.5f, 1.0f);
 	const vector<string> START_TEXT[NUM_TXT]
 	{
 	{">> BOOT SEQUENCE INITIATED.......................................",
@@ -147,9 +149,9 @@ namespace
 
 	const D3DXCOLOR MULTICOL[NetWork::MAX_CONNECT] =
 	{
-		{1.0f, 1.0f, 0.1f, 1.0f},	// 黄色
-		{1.0f, 0.1f, 0.7f, 1.0f},	// 赤紫
-		{0.1f, 1.0f, 0.1f, 1.0f},	// 緑
+		{1.0f, 1.0f, 0.3f, 1.0f},	// 黄色
+		{1.0f, 0.3f, 0.8f, 1.0f},	// 赤紫
+		{0.3f, 1.0f, 0.3f, 1.0f},	// 緑
 		{0.3f, 0.6f, 1.0f, 1.0f},	// 水色
 	};
 }
@@ -219,6 +221,7 @@ CPlayer::CPlayer(int nId)
 	m_pContainer = nullptr;
 	m_pRadio = nullptr;
 	m_pNavi = nullptr;
+	m_pShaderLight = nullptr;
 	m_type = TYPE::TYPE_RECV;
 
 	for (int i = 0; i < NUM_TXT; i++)
@@ -259,7 +262,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	SetCol();
 
 	SetMatrix();
-	
+	m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(0.8f,0.9f,1.0f), 2.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f),D3DXToRadian(35));
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -274,18 +277,19 @@ void CPlayer::Uninit(void)
 	CManager::GetInstance()->SetDeliveryStatus(m_nNumDeliveryStatus);
 	CManager::GetInstance()->SetLife(m_fLife);
 
-	SAFE_UNINIT(m_pContainer);
-	SAFE_UNINIT(m_pObj);
-	SAFE_UNINIT(m_pBaggage);
-	SAFE_DELETE(m_pTailLamp);
-	SAFE_DELETE(m_pBackdust);
-	SAFE_DELETE(m_pAfterburner);
-	SAFE_DELETE(m_pDamageEffect);
-	SAFE_UNINIT_DELETE(m_pSound);
-	SAFE_UNINIT_DELETE(m_pSoundBrake);
+	SAFE_UNINIT(m_pContainer)
+	SAFE_UNINIT(m_pObj)
+	SAFE_UNINIT(m_pBaggage)
+	SAFE_DELETE(m_pTailLamp)
+	SAFE_DELETE(m_pBackdust)
+	SAFE_DELETE(m_pAfterburner)
+	SAFE_DELETE(m_pDamageEffect)
+	SAFE_UNINIT_DELETE(m_pSound)
+	SAFE_UNINIT_DELETE(m_pSoundBrake)
 	SAFE_UNINIT_DELETE(m_pRadio);
-	SAFE_UNINIT_DELETE(m_pCollSound);
-
+	SAFE_UNINIT_DELETE(m_pCollSound)
+	CShaderLight::Delete(m_pShaderLight);
+	SAFE_DELETE(m_pShaderLight)
 	CPlayerManager::GetInstance()->ListOut(this);
 
 	// 廃棄
@@ -296,8 +300,18 @@ void CPlayer::Uninit(void)
 // 更新処理
 //===============================================
 void CPlayer::Update(void)
-{	
+{
 	DEBUGKEY();
+	D3DXMATRIX mat;
+	D3DXMatrixIdentity(&mat);
+	D3DXMatrixRotationYawPitchRoll(&mat, GetRotation().y + D3DX_PI*0.5f, GetRotation().x, GetRotation().z);
+	D3DXVECTOR3 lightpos = LIGHT_OFFSET;
+	D3DXVECTOR3 lightvec = LIGHT_VEC;
+	D3DXVec3Normalize(&lightvec, &lightvec);
+	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
+	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
+	m_pShaderLight->position = GetPosition() + lightpos;
+	m_pShaderLight->direction = lightvec;
 
 	// 
 	if (m_type == TYPE::TYPE_ACTIVE)
@@ -334,7 +348,10 @@ void CPlayer::Update(void)
 	{
 		m_pRadio->Update();
 	}
-	if (m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE)
+
+
+
+	if ((m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE))
 	{
 		// プレイヤー操作
 		Controller();
@@ -350,7 +367,7 @@ void CPlayer::Update(void)
 	{
 		RecvInerSet();
 	}
-	
+
 	// マトリックス
 	SetMatrix();
 
@@ -367,7 +384,7 @@ void CPlayer::Update(void)
 		m_pObj->SetShadowHeight(GetPosition().y);
 		// エフェクト
 		{
-			
+
 			if (m_pTailLamp != nullptr)
 			{
 				m_pTailLamp->m_pos = pos;
@@ -380,8 +397,8 @@ void CPlayer::Update(void)
 				m_pBackdust->m_rot = m_pObj->GetRotation();
 				m_pBackdust->m_Scale = VECTOR3_ONE * m_fEngine * 300.0f;
 			}
-			
-			
+
+
 			if (m_pAfterburner != nullptr)
 			{
 				m_pAfterburner->m_pos = GetPosition();
@@ -409,7 +426,7 @@ void CPlayer::Update(void)
 	}
 
 	// カメラの距離設定
-	if (m_fLife<=0)
+	if (m_fLife <= 0)
 	{
 		// 死亡カメラ
 		m_Info.move *= 0.7f;
@@ -442,7 +459,7 @@ void CPlayer::Update(void)
 
 	// オンラインデータ送信
 	SendData();
-	
+
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー : 種類 [ %d ] : ", m_type);
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
@@ -508,10 +525,12 @@ void CPlayer::Controller(void)
 //===============================================
 void CPlayer::Move(void)
 {
-	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
-	CInputPad *pInputPad = CInputPad::GetInstance();
+	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
+	CInputPad* pInputPad = CInputPad::GetInstance();
 	float fThrottle = 0.0f;
 	m_fBrake = 0.0f;
+	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+
 	if (pInputKey->GetPress(DIK_W))
 	{
 		fThrottle = 0.8f;
@@ -521,6 +540,7 @@ void CPlayer::Move(void)
 		fThrottle = (float)pInputPad->GetRightTriggerPress(0) / 255;
 	}
 
+
 	if (pInputKey->GetPress(DIK_S))
 	{
 		m_fBrake = 1.0f;
@@ -528,9 +548,9 @@ void CPlayer::Move(void)
 	else
 	{
 		m_fBrake = (float)pInputPad->GetLeftTriggerPress(0) / 255;
-	
+
 	}
-	Nitro(); 
+	Nitro();
 	Engine(fThrottle);
 	// 入力装置確認
 	if (nullptr == pInputKey)
@@ -540,7 +560,7 @@ void CPlayer::Move(void)
 
 	// デルタタイム取得
 	float deltatime = CManager::GetInstance()->GetDeltaTime()->GetDeltaTime();
-	
+
 	m_Info.pos += m_Info.move * FRAME_RATE_SCALER * deltatime;
 	float fHandle = m_fHandle;
 	if (fHandle < 0.0f)
@@ -555,8 +575,8 @@ void CPlayer::Move(void)
 	float fIner = INER + (fEngine * m_fBrake * fHandle) * (DRIFT_INER - INER);
 	m_fbrakeVolume += (1.0f - m_fbrakeVolume) * (m_fEngine * m_fBrake) * BRAKE_INER;
 	m_fbrakePitch += (1.0f - m_fbrakePitch) * (m_fEngine * m_fBrake * fHandle) * BRAKE_INER;
-	m_fbrakeVolume -= m_fbrakeVolume* BRAKE_INER;
-	m_fbrakePitch -= m_fbrakePitch *BRAKE_INER;
+	m_fbrakeVolume -= m_fbrakeVolume * BRAKE_INER;
+	m_fbrakePitch -= m_fbrakePitch * BRAKE_INER;
 
 	if (m_pSoundBrake != nullptr)
 	{
@@ -569,6 +589,7 @@ void CPlayer::Move(void)
 	m_Info.move.y += GRAVITY * deltatime;
 
 }
+
 //===============================================
 //簡易エンジンシミュ
 //===============================================
@@ -614,18 +635,22 @@ void CPlayer::Rotate(void)
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	float diff = 0.0f;
+	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-	if (pInputKey->GetPress(DIK_D))
+	if (pCamera->GetAction()->IsFinish())
 	{
-		diff = 1.0f;
-	}
-	else if (pInputKey->GetPress(DIK_A))
-	{
-		diff = -1.0f;
-	}
-	else
-	{
-		diff = pInputPad->GetLStick(0, 0.1f).x;
+		if (pInputKey->GetPress(DIK_D))
+		{
+			diff = 1.0f;
+		}
+		else if (pInputKey->GetPress(DIK_A))
+		{
+			diff = -1.0f;
+		}
+		else
+		{
+			diff = pInputPad->GetLStick(0, 0.1f).x;
+		}
 	}
 
 	float dest = (diff - m_fHandle) * slowmulti;
@@ -690,6 +715,10 @@ bool CPlayer::Collision(void)
 
 	// 道との当たり判定
 	if (CollisionRoad())
+		bCollision = true;
+
+	// 地面との当たり判定
+	if (CollisionField())
 		bCollision = true;
 
 	// ギミックとの当たり判定
@@ -787,6 +816,56 @@ bool CPlayer::CollisionRoad(void)
 			m_Info.pos.y = height;
 			m_Info.move.y = 0.0f;
 			m_Info.pRoad = pRoad;
+		}
+	}
+
+	return false;
+}
+
+//===============================================
+// フィールドとの当たり判定処理
+//===============================================
+bool CPlayer::CollisionField(void)
+{
+	//m_Info.pRoad = nullptr;
+
+	// 道との判定
+	auto listRoad = CMeshField::GetList();
+	for (int i = 0; i < listRoad->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		// 道確認
+		CMeshField* pRoad = listRoad->Get(i);	// 先頭を取得
+		if (pRoad == nullptr) { continue; }
+
+		D3DXVECTOR3 pVtx[4] = {};
+		D3DXVECTOR3 pos = pRoad->GetPosition();
+
+		pVtx[0] = D3DXVECTOR3(-(pRoad->GetWidth() * pRoad->GetNumWidth()), 0.0f, (pRoad->GetHeight() * pRoad->GetNumHeight()));
+		pVtx[1] = D3DXVECTOR3((pRoad->GetWidth() * pRoad->GetNumWidth()), 0.0f, (pRoad->GetHeight() * pRoad->GetNumHeight()));
+		pVtx[2] = D3DXVECTOR3(-(pRoad->GetWidth() * pRoad->GetNumWidth()), 0.0f, -(pRoad->GetHeight() * pRoad->GetNumHeight()));
+		pVtx[3] = D3DXVECTOR3((pRoad->GetWidth() * pRoad->GetNumWidth()), 0.0f, -(pRoad->GetHeight() * pRoad->GetNumHeight()));
+
+		float height = m_Info.pos.y - 0.1f;
+		D3DXVECTOR3 vec1 = pVtx[1] - pVtx[0], vec2 = pVtx[2] - pVtx[0];
+		D3DXVECTOR3 nor0, nor1;
+
+		D3DXVec3Cross(&nor0, &vec1, &vec2);
+		D3DXVec3Normalize(&nor0, &nor0);	// ベクトルを正規化する
+
+		vec1 = pVtx[2] - pVtx[3];
+		vec2 = pVtx[1] - pVtx[3];
+		D3DXVec3Cross(&nor1, &vec1, &vec2);
+		D3DXVec3Normalize(&nor1, &nor1);	// ベクトルを正規化する
+
+		// 判定
+		collision::IsOnSquarePolygon(pos + pVtx[0], pos + pVtx[1], pos + pVtx[2], pos + pVtx[3],
+			nor0, nor1, m_Info.pos, m_Info.posOld, height);
+
+		if (height >= m_Info.pos.y)
+		{
+			m_Info.pos.y = height;
+			m_Info.move.y = 0.0f;
 		}
 	}
 

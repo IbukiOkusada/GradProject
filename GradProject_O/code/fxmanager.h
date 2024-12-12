@@ -14,7 +14,7 @@
 //	インクルードファイル
 //************************************************************
 #include"texture.h"
-
+#include "shaderlight.h"
 //************************************************************
 //	クラス定義
 //************************************************************
@@ -40,9 +40,11 @@ public:
 	void SetCameraVec(const D3DXVECTOR3& rVec);
 	void SetMatrixWorld(const D3DXMATRIX& rmtxWorld);
 	void SetView(const D3DXMATRIX& rmtxView);
+	void SetViewpos(const D3DXVECTOR3& rposView);
 	void SetProj(const D3DXMATRIX& rmtxPorj);
 	void SetScale(const D3DXMATRIX& rmtxScale);
 	void SetTechnique(const D3DXHANDLE pTechnique);
+	void SetLight();
 	void SetParamToEffect();
 	// 描画の開始を宣言する
 	HRESULT Begin();
@@ -84,12 +86,17 @@ private:
 	D3DXHANDLE m_hViewMat;						// ビュー変換行列ハンドル
 	D3DXHANDLE m_hProjMat;						// 射影変換行列ハンドル
 	D3DXHANDLE m_hMatScaleReverse;				// スケーリング逆行列
+	D3DXHANDLE m_hnumLights;				// ライトの数
+	D3DXHANDLE m_hLights;				// ライト構造体
+	D3DXHANDLE m_hviewPos;				// 視点
 
+	
 	D3DXMATRIX m_matWorld;						// ワールド変換行列
 	D3DXMATRIX m_matView;						// ビュー変換行列
 	D3DXMATRIX m_matProj;						// 射影変換行列
 	D3DXMATRIX m_matScaleReverse;				// スケーリング逆行列
 	D3DXVECTOR4 m_DirectLight;					// 平行光源の方向ベクトル
+	D3DXVECTOR4 m_viewPos;				// 視点
 	D3DXVECTOR4 m_LightDiffuse;					// 拡散光色
 	D3DXVECTOR4 m_MatDiffuse;					// マテリアル拡散光色
 	D3DXVECTOR4 m_MatAmbient;					// マテリアル環境色
@@ -97,6 +104,8 @@ private:
 	D3DXVECTOR4 m_Viewvec;					//視点ベクトル
 	D3DXVECTOR4 m_MatSpecula;					// マテリアル反射色
 	float m_MatPower;					// マテリアル強度
+	int m_numLights;
+	CShaderLight::SLight m_lightArray[MAX_LIGHT];
 	bool m_bBegin;
 };
 

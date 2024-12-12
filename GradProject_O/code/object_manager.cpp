@@ -179,6 +179,8 @@ void CObjectManager::DrawAllShader(void)
 	pFx->SetView(pCam->GetMtxView());
 	pFx->SetProj(pCam->GetMtxProjection());
 	pFx->SetCameraVec(pCam->GetPositionR() - pCam->GetPositionV());
+	pFx->SetViewpos(pCam->GetPositionV());
+	pFx->SetLight();
 	pFx->Begin();
 	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
 	{

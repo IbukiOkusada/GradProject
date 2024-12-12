@@ -198,7 +198,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CEffekseer::GetInstance()->Init();
 	
 	// モードの生成
-	SetMode(CScene::MODE_TITLE);
+	SetMode(CScene::MODE::MODE_TITLE);
 
 	return S_OK;
 }
@@ -335,7 +335,8 @@ void CManager::Uninit(void)
 	CListManager::Release();
 	CMasterSound::GetInstance()->Uninit();
 	CMasterSound::Release();
-
+	//シェーダーライトの破棄
+	CShaderLight::Release();
 	// エフェクシア破棄
 	CEffekseer::GetInstance()->Uninit();
 }

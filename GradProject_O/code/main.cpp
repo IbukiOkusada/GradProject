@@ -86,6 +86,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 		return -1;
 	}
 
+	// ランダムの種を再生成
+	srand((unsigned)time(0));
+
 	//分解能を設定
 	timeBeginPeriod(1);
 
@@ -93,9 +96,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, LPSTR lpCmdLine
 	dwExecLastTime = timeGetTime();	//現在時刻を取得(保存)
 	dwFrameCount = 0;	//初期化
 	dwFPSLastTime = timeGetTime();	//現在時刻を取得(保存)
-
-	// ランダムの種を再生成
-	srand((unsigned)time(0));
 
 	//ウインドウの表示
 	ShowWindow(hWnd, nCmdShow);

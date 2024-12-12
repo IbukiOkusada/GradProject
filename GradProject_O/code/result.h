@@ -86,7 +86,7 @@ private:
 	CNumber* m_pTimeNumber[3];		// 残りタイムのオブジェクト
 	CNumber* m_pLifeNumber[3];		// 残り体力のオブジェクト
 	CNumber* m_pEvalNumber[2];		// 総合評価のオブジェクト
-	CNumber* m_pRankingNumber[10];// ランキングのオブジェクト
+	CNumber* m_pRankingNumber[10];	// ランキングのオブジェクト
 
 	static int m_nDeli;
 	static float m_fTime;
