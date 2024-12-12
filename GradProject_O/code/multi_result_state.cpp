@@ -11,9 +11,12 @@
 #include "input_gamepad.h"
 #include "scrollText2D.h"
 #include "deltatime.h"
+#include "manager.h"
 #include "player.h"
 #include "police.h"
 #include "fade.h"
+#include "camera.h"
+#include "camera_action.h"
 
 //===============================================
 // 定数定義
@@ -32,12 +35,18 @@ namespace Result
 {
 	const int NUM_POLICE = 6;					// 警察の一列生成数
 	const float POLICE_SPACE = 200.0f;			// 警察の前後SPACE
+	const float LENGTH = 1000.0f;				// カメラの距離
+	const float ROTZ = D3DX_PI * 0.4f;
 }
 
 // 終了
 namespace End
 {
-	const float FADE_CNT = 7.0f;					// フェードまでのカウント
+	const float ADD_ROTZ = D3DX_PI * 0.1f;
+	const float ADD_ROTY = D3DX_PI * 0.015f;
+	const float ADD_ROTX = D3DX_PI * 0.3f;
+	const float ROT_INER = 0.1f;
+	const float FADE_CNT = 7.0f;				// フェードまでのカウント
 }
 
 //*************************************************************************************
@@ -161,7 +170,10 @@ void CMultiResultStateRank::RankPlayerMove(CMultiResult* pResult)
 //*************************************************************************************
 // 結果表示状態クラス コンストラクタ
 //===============================================
-CMultiResultStateResult::CMultiResultStateResult() : CMultiResultState(STATE::STATE_MULTIRANK)
+CMultiResultStateResult::CMultiResultStateResult() : CMultiResultState(STATE::STATE_MULTIRANK),
+m_ppPolice(nullptr),
+m_nPassingPolice(0),
+m_nNumCreatePolice(0)
 {
 	
 }
@@ -185,10 +197,14 @@ void CMultiResultStateResult::Controll(CMultiResult* pResult)
 	// 文字がない
 	if (pResult->GetEndStr() == nullptr) { return; }
 
+	// マネージャー無し
+	CMultiResultManager* pMgr = pResult->GetMgr();
+	if (pMgr == nullptr) { return; }
+
 	// 文字がスクロールされている
-	if (pResult->GetEndStr()->GetEnd()) 
+	if (pResult->GetEndStr()->GetEnd() && m_nPassingPolice >= (pMgr->GetNumPlayer() -1) * Result::NUM_POLICE) 
 	{ 
-		//Uninit(pResult);
+		Uninit(pResult);
 		return; 
 	}
 
@@ -230,7 +246,16 @@ void CMultiResultStateResult::Create(CMultiResult* pResult)
 		{			
 			// 情報設定
 			D3DXVECTOR3 pos = pPlayer->GetPosition();
-			pos.x = -Rank::PLAYER_TARGET_POSX * 2.5f - ((rand() % 6) * 50);
+			if (j == 0)
+			{
+				pos.x = -Rank::PLAYER_TARGET_POSX * 3.0f - ((rand() % 6) * 50);
+			}
+			else
+			{
+				pos.x = m_ppPolice[j - 1]->GetPosition().x + 600.0f + ((rand() % 6) * 50);
+			}
+
+			pos.y = 10.0f;
 
 			D3DXVECTOR3 rot = VECTOR3_ZERO;
 			rot.y = -D3DX_PI * 0.5f;
@@ -238,8 +263,8 @@ void CMultiResultStateResult::Create(CMultiResult* pResult)
 			D3DXVECTOR3 move = VECTOR3_ZERO;
 
 			// 初回のみ
-			if (j == 0) {
-				move.x = -(rand() % 15 + 15.0f);
+			{
+				move.x = -(rand() % 10 + 30.0f);
 			}
 
 			// 警察生成
@@ -247,6 +272,19 @@ void CMultiResultStateResult::Create(CMultiResult* pResult)
 			m_ppPolice[cnt + j]->SetType(CCar::TYPE::TYPE_NONE);
 		}
 	}
+
+	// 一位のプレイヤーの座標を取得する
+	D3DXVECTOR3 toppos = pInfo[pMgr->GetNumPlayer() - 1].pPlayer->GetPosition();
+
+	// カメラのアクション設定
+	CCamera* pCamera = CManager::GetInstance()->GetCamera();
+	CCameraAction* pCamAc = pCamera->GetAction();
+
+	// 向き
+	D3DXVECTOR3 rot = pCamera->GetRotation();
+	rot.z = Result::ROTZ;
+
+	pCamAc->Set(pCamera, toppos, rot, Result::LENGTH, 2.5f, 5.0f, CCameraAction::MOVE::MOVE_POSV);
 }
 
 //===============================================
@@ -254,6 +292,8 @@ void CMultiResultStateResult::Create(CMultiResult* pResult)
 //===============================================
 void CMultiResultStateResult::PoliceUpdate(CMultiResult* pResult)
 {
+	m_nPassingPolice = 0;
+
 	// マネージャー無し
 	CMultiResultManager* pMgr = pResult->GetMgr();
 	if (pMgr == nullptr) { return; }
@@ -284,13 +324,18 @@ void CMultiResultStateResult::PoliceUpdate(CMultiResult* pResult)
 			pos += pPolice->GetMove();
 			pPolice->SetPosition(pos);
 
+			// 次を生成する地点に達していない
+			if (pos.x >= -Rank::PLAYER_TARGET_POSX) { continue; }
+
+			if (pos.x <= Rank::PLAYER_TARGET_POSX * 2.0f)
+			{
+				m_nPassingPolice++;
+			}
+
 			// 次がない
 			if ((j + 1) % Result::NUM_POLICE == 0) { continue; }
 
 			CPolice* pNext = m_ppPolice[cnt + (j + 1)];
-
-			// 次を生成する地点に達していない
-			if (pos.x >= -Rank::PLAYER_TARGET_POSX) { continue; }
 
 			// 先頭車両の場合
 			if (j == 0)
@@ -303,14 +348,6 @@ void CMultiResultStateResult::PoliceUpdate(CMultiResult* pResult)
 
 				pPlayer->SetPosition(playpos);
 			}
-
-			// 次が移動している
-			if (pNext->GetMove().x != 0.0f) { continue; }
-
-			// 情報設定
-			D3DXVECTOR3 move = VECTOR3_ZERO;
-			move.x = -(rand() % 20 + 25.0f);
-			pNext->SetMove(move);
 		}
 	}
 }
@@ -326,7 +363,6 @@ void CMultiResultStateResult::Uninit(CMultiResult* pResult)
 		for (int i = 0; i < m_nNumCreatePolice; i++)
 		{
 			if (m_ppPolice[i] == nullptr) { continue; }
-
 			m_ppPolice[i] = nullptr;
 		}
 
@@ -370,13 +406,51 @@ void CMultiResultStateEnd::Controll(CMultiResult* pResult)
 	// 自動遷移時間加算
 	if (pdel != nullptr)
 	{
-		m_fFadeCnt = pdel->GetDeltaTime();
+		m_fFadeCnt += pdel->GetDeltaTime();
+	}
+
+	if (pResult->GetEndStr())
+	{
+		pResult->GetEndStr()->SetAlpha(fabsf(sinf(m_fFadeCnt)));
 	}
 
 	// 入力または時間経過でタイトルに遷移
 	if (m_fFadeCnt >= End::FADE_CNT || ppad->GetTrigger(button1, 0) || ppad->GetTrigger(button2, 0) ||
 		pkey->GetTrigger(DIK_RETURN) || pkey->GetTrigger(DIK_SPACE))
 	{
+		m_fFadeCnt = End::FADE_CNT;
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_TITLE);
 	}
+	else
+	{
+		// マネージャー無し
+		CMultiResultManager* pMgr = pResult->GetMgr();
+		if (pMgr == nullptr) { return; }
+
+		// プレイヤー取得
+		CMultiResult::SPlayerInfo* pInfo = pResult->GetInfo();
+		D3DXVECTOR3 rot = pInfo[pMgr->GetNumPlayer() - 1].pPlayer->GetRotation();
+
+		// 向き補正
+		D3DXVECTOR3 rotdiff;
+		rotdiff.x = End::ADD_ROTX - rot.x;
+		rotdiff.z = End::ADD_ROTZ - rot.z;
+		rotdiff.y = 0.0f;
+		Adjust(rotdiff);
+
+		rot += rotdiff * End::ROT_INER;
+
+		rot.y += End::ADD_ROTY;
+		Adjust(rot);
+		pInfo[pMgr->GetNumPlayer() - 1].pPlayer->SetRotation(rot);
+	}
+}
+
+
+//===============================================
+// 生成
+//===============================================
+void CMultiResultStateEnd::Create(CMultiResult* pResult)
+{
+	
 }
