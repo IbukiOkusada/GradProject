@@ -470,53 +470,7 @@ void CObjectX::SetRotation(const D3DXVECTOR3& rot)
 { 
 	m_rot = rot;
 
-	while (1)
-	{
-		if (m_rot.z < -D3DX_PI)
-		{// zç¿ïWäpìxå¿äE
-			m_rot.z += D3DX_PI * 2;
-		}
-		else if (m_rot.z > D3DX_PI)
-		{// zç¿ïWäpìxå¿äE
-			m_rot.z += -D3DX_PI * 2;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	while (1)
-	{
-		if (m_rot.x < -D3DX_PI)
-		{// xç¿ïWäpìxå¿äE
-			m_rot.x += D3DX_PI * 2;
-		}
-		else if (m_rot.x > D3DX_PI)
-		{// xç¿ïWäpìxå¿äE
-			m_rot.x += -D3DX_PI * 2;
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	while (1)
-	{
-		if (m_rot.y < -D3DX_PI)
-		{// xç¿ïWäpìxå¿äE
-			m_rot.y += D3DX_PI * 2;
-		}
-		else if (m_rot.y > D3DX_PI)
-		{// xç¿ïWäpìxå¿äE
-			m_rot.y += -D3DX_PI * 2;
-		}
-		else
-		{
-			break;
-		}
-	}
+	Adjust(m_rot);
 }
 
 //==========================================================

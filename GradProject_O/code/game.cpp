@@ -70,19 +70,22 @@ namespace {
     const char* ADDRESSFILE	= "data\\TXT\\address.txt";
     const D3DXVECTOR3 CAMERA_ROT[4] =
     {
-        D3DXVECTOR3(0.0f, -2.37f, 1.0f),
-        D3DXVECTOR3(0.0f, 2.37f, 1.0f),
-        D3DXVECTOR3(0.0f, 0.46f, 0.7f),
-        D3DXVECTOR3(0.0f, -0.6f, 1.0f),
+        D3DXVECTOR3(0.0f, D3DX_PI * 1.0f, D3DX_PI * 0.4f),
+        D3DXVECTOR3(0.0f, D3DX_PI* 1.0f, D3DX_PI * 0.45f),
+        D3DXVECTOR3(0.0f, -D3DX_PI* 1.0f, D3DX_PI * 0.2f),
+        D3DXVECTOR3(0.0f, -D3DX_PI * 0.6f, D3DX_PI * 0.15f),
     };
 
-    const float CAMERA_LENGHT[4] =
+    const float CAMERA_LENGTH[4] =
     {
-        7000.0f,
         10000.0f,
-        15000.0f,
-        1000.0f,
+        500.0f,
+        7000.0f,
+        3000.0f,
     };
+
+    const float MOVE = 10.0f;
+    const D3DXVECTOR3 SET_PLAYER_POS = D3DXVECTOR3(-10000.0f, 0.0f, -200.0f);
 }
 
 //===============================================
@@ -177,7 +180,11 @@ HRESULT CGame::Init(void)
     // 配達する総数
     m_nTotalDeliveryStatus = TOTAL_POINT;
 
-    CMeshField::Create(D3DXVECTOR3(-5000.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2000.0f, 2000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
+    // 右側
+    CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);
+
+    // 左側
+    CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
 
     // マップ読み込み
     CMapManager::GetInstance()->Load();
@@ -233,7 +240,7 @@ HRESULT CGame::Init(void)
 #if NDEBUG
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 1.0f, 1.0f, CCameraAction::MOVE_POSV, true);
+    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pCamera->GetPositionR(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGTH[m_nStartCameraCount], 1.0f, 1.0f, CCameraAction::MOVE_POSV, true);
 #endif  
     pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);
@@ -396,7 +403,13 @@ void CGame::Update(void)
     CPoliceAIManager::GetInstance()->Update();
     CInspectionManager::GetInstance()->Update();
 
+#if NDEBUG
     CScene::Update();
+#else
+
+    CScene::Update();
+
+#endif
 
     // 状態による音量設定
     switch (m_GameState)
@@ -465,22 +478,36 @@ CFileLoad *CGame::GetFileLoad(void)
 void CGame::StartIntro(void)
 {
 #if NDEBUG
-    if (m_nStartCameraCount >= 4)
-        return;
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 
+    if (m_nStartCameraCount >= 4)
+    {
+        if (!pCamera->GetAction()->IsFinish())
+        {
+            D3DXVECTOR3 pos = pPlayer->GetPosition();
+            pos.x += MOVE * 0.5f;
+            pPlayer->SetPosition(pos);
+        }
+        return;
+    }
+
     if (pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount < 3)
     {
         m_nStartCameraCount++;
-        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 1.0f, CCameraAction::MOVE_POSV, true);
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGTH[m_nStartCameraCount], 2.0f, 1.0f, CCameraAction::MOVE_POSV, true);
     }
     else if (m_nStartCameraCount >= 3)
     {
-        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGHT[m_nStartCameraCount], 2.0f, 1.0f, CCameraAction::MOVE_POSV, false);
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGTH[m_nStartCameraCount], 2.0f, 1.0f, CCameraAction::MOVE_POSV, false);
         m_nStartCameraCount++;
     }
+
+    D3DXVECTOR3 pos = pPlayer->GetPosition();
+    pos.x += MOVE;
+    pPlayer->SetPosition(pos);
+
 #endif
 }
 
@@ -540,7 +567,7 @@ void CGame::CreateSinglePlayer(void)
 {
     auto net = CNetWork::GetInstance();
 
-    CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-3034.65f, 1.0f, 1.0f), 
+    CPlayer* pPlayer = CPlayer::Create(SET_PLAYER_POS,
         VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());
     pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
 }
@@ -556,7 +583,9 @@ void CGame::CreateMultiPlayer(void)
     {
         if (!net->GetConnect(i)) { continue; }
 
-        CPlayer* pPlayer = CPlayer::Create(D3DXVECTOR3(-3034.65f, 1.0f, 1.0f + 20.0f * i),
+        D3DXVECTOR3 pos = SET_PLAYER_POS;
+        pos.z += 100.0f;
+        CPlayer* pPlayer = CPlayer::Create(pos,
             VECTOR3_ZERO, VECTOR3_ZERO, i);
 
         // プレイヤー自身
@@ -579,7 +608,7 @@ void CGame::CreatePolice()
 {
     for (int i = 0; i < 1; i++)
     {
-        CCar* pCar = CPolice::Create(D3DXVECTOR3(-6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
+        CCar* pCar = CPolice::Create(D3DXVECTOR3(6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
         pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
     }
@@ -590,9 +619,9 @@ void CGame::CreatePolice()
 //===================================================
 void CGame::CreateCar()
 {
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 6; i++)
     {
-        CCar* pCar = CCar::Create(D3DXVECTOR3(-3000.0f - 1000.0f * i, 0.0f, 1000.0f * i), 
+        CCar* pCar = CCar::Create(D3DXVECTOR3(3000.0f + 750.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
         pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
     }
