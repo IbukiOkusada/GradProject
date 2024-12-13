@@ -82,6 +82,7 @@ CPoliceAI::CPoliceAI()
 	m_pRoadStart = nullptr;
 	m_pRoadTarget = nullptr;
 	m_pSearchTarget = nullptr;
+	m_pPoliceBackUp = nullptr;
 	m_fSearchTimer = 0.0f;
 	m_fLevelSearch = 0.0f;
 	m_fChaseSpeed = 0.0f;
@@ -247,6 +248,22 @@ void CPoliceAI::Search(void)
 	{
 		m_fLevelSearch = LEVEL_MIN;
 	}
+
+	if (m_pPoliceBackUp == nullptr) { return; }
+
+	if (!m_pPoliceBackUp->GetChase())
+	{
+		// 追跡終了処理
+		EndChase();
+
+		// 追跡状態を送信
+		if (m_pPolice->IsActive())
+		{
+			m_pPolice->SendChaseEnd();
+		}
+
+		m_pPoliceBackUp = nullptr;
+	}
 }
 
 //==========================================================
@@ -408,7 +425,6 @@ void CPoliceAI::CallBackup(void)
 
 	for (int i = 0; i < listGimmick->GetNum(); i++)
 	{// 使用されていない状態まで
-
 		// 道確認
 		CGimmick* pGimmick = listGimmick->Get(i);	// 先頭を取得
 		if (pGimmick == nullptr) { continue; }
@@ -418,8 +434,6 @@ void CPoliceAI::CallBackup(void)
 		listStation.Regist(pGimmick);
 		nNumStation++;
 	}
-
-	
 
 	for (int i = 0; i < NUM_BACKUP; i++)
 	{
@@ -432,6 +446,7 @@ void CPoliceAI::CallBackup(void)
 		pP->SetChase(true);
 		pP->GetAi()->BeginChase(m_pPolice->GetPlayer());
 		pP->GetAi()->m_bCall = true;
+		pP->GetAi()->m_pPoliceBackUp = m_pPolice;
 	}
 }
 
@@ -626,6 +641,9 @@ void CPoliceAIElite::SelectRoad(void)
 		if (m_bRelay || m_bCross) { return; }
 
 		CRoad* pRoadRelay = pPlayer->GetRoad();
+
+		if (pRoadRelay == nullptr) { return; }
+
 		int nConnectDic = 0;
 		float rotDif = 100.0f;
 
@@ -669,7 +687,7 @@ void CPoliceAIElite::SelectRoad(void)
 			}
 		}
 
-		while (pRoadRelay->GetType() == CRoad::TYPE_NONE || pRoadRelay->GetType() == CRoad::TYPE_STOP)
+		while (pRoadRelay->GetType() == CRoad::TYPE_NONE)
 		{
 			pRoadRelay = pRoadRelay->GetConnectRoad((CRoad::DIRECTION)nConnectDic);
 		}
@@ -696,7 +714,7 @@ void CPoliceAIElite::ReachRoad(void)
 	float length = D3DXVec3Length(&(posRoad - posPolice));
 	if (length < 1500.0f)
 	{
-		if (m_pSearchTarget->pConnectRoad == m_pRoadRelay && !m_bRelay)
+		if (m_pSearchTarget->pConnectRoad == m_pRoadRelay && !m_bRelay && !m_bCross)
 		{ 
 			m_bRelay = true;
 			m_searchRoad.clear();

@@ -91,6 +91,7 @@ private:	// 自分だけがアクセス可能
 	float m_fSearchTimer;
 	float m_fLevelSearch;
 	TYPE m_type;
+	CPolice* m_pPoliceBackUp;
 };
 
 //==========================================================
