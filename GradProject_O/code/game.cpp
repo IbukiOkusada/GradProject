@@ -180,7 +180,11 @@ HRESULT CGame::Init(void)
     // 配達する総数
     m_nTotalDeliveryStatus = TOTAL_POINT;
 
-    CMeshField::Create(D3DXVECTOR3(-5000.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 2000.0f, 2000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
+    // 右側
+    CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);
+
+    // 左側
+    CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
 
     // マップ読み込み
     CMapManager::GetInstance()->Load();
