@@ -82,6 +82,7 @@ CPoliceAI::CPoliceAI()
 	m_pRoadStart = nullptr;
 	m_pRoadTarget = nullptr;
 	m_pSearchTarget = nullptr;
+	m_pPoliceBackUp = nullptr;
 	m_fSearchTimer = 0.0f;
 	m_fLevelSearch = 0.0f;
 	m_fChaseSpeed = 0.0f;
@@ -246,6 +247,22 @@ void CPoliceAI::Search(void)
 	if (m_fLevelSearch < LEVEL_MIN)
 	{
 		m_fLevelSearch = LEVEL_MIN;
+	}
+
+	if (m_pPoliceBackUp == nullptr) { return; }
+
+	if (!m_pPoliceBackUp->GetChase())
+	{
+		// ’ÇÕI—¹ˆ—
+		EndChase();
+
+		// ’ÇÕó‘Ô‚ð‘—M
+		if (m_pPolice->IsActive())
+		{
+			m_pPolice->SendChaseEnd();
+		}
+
+		m_pPoliceBackUp = nullptr;
 	}
 }
 
@@ -429,6 +446,7 @@ void CPoliceAI::CallBackup(void)
 		pP->SetChase(true);
 		pP->GetAi()->BeginChase(m_pPolice->GetPlayer());
 		pP->GetAi()->m_bCall = true;
+		pP->GetAi()->m_pPoliceBackUp = m_pPolice;
 	}
 }
 
