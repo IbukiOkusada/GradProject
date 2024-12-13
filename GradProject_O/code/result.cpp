@@ -26,6 +26,7 @@
 #include "objectX.h"
 #include "map_manager.h"
 #include "player_result.h"
+#include "meshfield.h"
 
 //==========================================================
 // ’è”’è‹`
@@ -255,6 +256,13 @@ HRESULT CResult::Init(void)
 		}
 
 	}
+
+	// ‰E‘¤
+	CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);
+
+	// ¶‘¤
+	CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
+
 
 	//CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT);
 

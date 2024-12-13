@@ -531,8 +531,13 @@ void CTitle::InitingP_E(void)
 
 		//必要なオブジェクトの生成
 		CMapManager::GetInstance()->Load();
-		CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), VECTOR3_ZERO, 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
 		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, DEST_ROT, VECTOR3_ZERO,nullptr,nullptr);
+
+		// 右側
+		CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);
+
+		// 左側
+		CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
 
 		//警察の生成
 		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
@@ -700,8 +705,14 @@ void CTitle::ChaseCamera(void)
 		fDestRotY = -0.66f,
 		fDestRotZ = 1.15f;
 
-	constexpr float CameraPosDif[2] = { 0.0f,210.0f };	//カメラの補正距離
-	float CameraDis = 2000.0f;							//カメラの距離
+	float rotY = m_pPlayer->GetRotation().y - D3DX_PI * 0.5f;
+
+	float CameraPosDif[3] = {};	//カメラの補正距離
+	CameraPosDif[0] = sinf(rotY) * 200.0f;
+	CameraPosDif[1] = 210.0f;
+	CameraPosDif[2] = cosf(rotY) * 200.0f;
+		 
+	float CameraDis = 2500.0f;							//カメラの距離
 
 	//カメラの向きの調整
 	if (CameraRot.y <= fDestRotY) { CameraRot.y = fDestRotY; }
@@ -710,11 +721,16 @@ void CTitle::ChaseCamera(void)
 	//カメラの向きの調整
 	if (CameraRot.z >= fDestRotZ) { CameraRot.z = fDestRotZ; }
 	else { CameraRot.z += fRotMoveZ; }
-
+	
 	//カメラの設定
-	m_pCam->SetPositionR(D3DXVECTOR3(m_pPlayer->GetPosition().x + CameraPosDif[0],
-		m_pPlayer->GetPosition().y + CameraPosDif[1],
-		m_pPlayer->GetPosition().z));
+	{
+		float posX = CameraPos.x + ((m_pPlayer->GetPosition().x + CameraPosDif[0]) - CameraPos.x) * 0.075f;
+		float posY = CameraPos.y + ((m_pPlayer->GetPosition().y + CameraPosDif[1]) - CameraPos.y) * 0.075f;
+		float posZ = CameraPos.z + ((m_pPlayer->GetPosition().z + CameraPosDif[2]) - CameraPos.z) * 0.075f;
+		m_pCam->SetPositionR(D3DXVECTOR3(posX,
+			posY,
+			posZ));
+	}
 
 	m_pCam->SetLength(CameraDis);
 	m_pCam->SetRotation(CameraRot);
