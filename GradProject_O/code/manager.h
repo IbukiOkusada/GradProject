@@ -115,6 +115,8 @@ public:	// 誰でもアクセス可能
 	int GetDeliveryStatus() { return m_nDeliveryStatus; }
 	void SetLife(float nLife) { m_fLife = nLife; }
 	float GetLife() { return m_fLife; }
+	void SetSuccess(bool bSuccess) { m_bSuccess = bSuccess; }
+	bool GetSuccess() { return m_bSuccess; }
 
 private:	// 自分だけがアクセス可能
 
@@ -141,6 +143,7 @@ private:	// 自分だけがアクセス可能
 
 	int m_nDeliveryStatus;
 	float m_fLife;
+	bool m_bSuccess;
 };
 
 

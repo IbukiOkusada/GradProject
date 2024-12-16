@@ -59,7 +59,7 @@
 #include "inspection_manager.h"
 #include "deltatime.h"
 #include "multi_result_manager.h"
-
+#include "meshdome.h"
 // ネットワーク
 #include "network.h"
 
@@ -185,7 +185,7 @@ HRESULT CGame::Init(void)
 
     // 左側
     CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
-
+   // CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 150000.0f, 1000.0f, 3, 20, 20)->SetDrawShader(false);
     // マップ読み込み
     CMapManager::GetInstance()->Load();
 
@@ -242,8 +242,8 @@ HRESULT CGame::Init(void)
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
     CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pCamera->GetPositionR(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGTH[m_nStartCameraCount], 1.0f, 1.0f, CCameraAction::MOVE_POSV, true);
 #endif  
-    pFog = DEBUG_NEW CFog;
-    pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);
+  /*  pFog = DEBUG_NEW CFog;
+    pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
     return S_OK;
 }
 
@@ -423,6 +423,7 @@ void CGame::Update(void)
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+            CManager::GetInstance()->SetSuccess(true);
         }
         break;
     case CGame::STATE_FAIL:
@@ -430,6 +431,7 @@ void CGame::Update(void)
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+            CManager::GetInstance()->SetSuccess(false);
         }
         break;
 

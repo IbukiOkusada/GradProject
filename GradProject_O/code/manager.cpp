@@ -62,6 +62,8 @@ CManager::CManager()
 	m_pNetWork = nullptr;
 
 	m_nDeliveryStatus = 0;
+	m_fLife = 0.0f;
+	m_bSuccess = false;
 }
 
 //===================================================
@@ -198,7 +200,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CEffekseer::GetInstance()->Init();
 	
 	// ÉÇÅ[ÉhÇÃê∂ê¨
-	SetMode(CScene::MODE::MODE_MULTI_RESULT);
+	SetMode(CScene::MODE::MODE_TITLE);
 
 	return S_OK;
 }
