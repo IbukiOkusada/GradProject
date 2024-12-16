@@ -14,6 +14,7 @@
 #include "car.h"
 #include "player.h"
 #include <list>
+#include "police_AI.h"
 
 // 前方宣言
 class CRoad;
@@ -102,6 +103,7 @@ public:	// 誰でもアクセス可能
 	void SetNextPlayer(CPlayer* pPlayer) { m_stateInfo.pNextPlayer = pPlayer; }
 	void SetChase(bool bChase) { m_Info.bChase = bChase; }
 	void SetChaseCount(int bChaseCount) { m_Info.nChaseCount = bChaseCount; }
+	void SetTypeAI(CPoliceAI::TYPE type);		// AIのタイプ変更
 
 protected:
 

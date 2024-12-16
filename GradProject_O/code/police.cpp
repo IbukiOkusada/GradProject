@@ -27,7 +27,7 @@ namespace
 {
 	const float LENGTH_POINT = (200.0f);			// 到達判定距離
 	const float LENGTH_POINT_CHASE = (500.0f);		// すれ違い判定距離
-	const float SECURE_SPEEDDEST = (-35.0f);		// 確保時の目標速度
+	const float SECURE_SPEEDDEST = (-20.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
 	const float ROT_MULTI_DEF = (0.06f);			// 通常時の向き補正倍率
 	const float ROT_MULTI_CHASE = (0.13f);			// 追跡時の向き補正倍率
@@ -192,7 +192,10 @@ void CPolice::MoveRoad()
 
 		// プレイヤー追跡処理
 		ChasePlayer();
-	
+
+		// 応援要請処理
+		m_pPoliceAI->CallBackup();
+
 		float dis = GetDistance(m_Info.pPlayer->GetPosition() , GetPosition());
 		float vol = 8000.0f - dis;
 		vol /= 8000.0f;
@@ -211,6 +214,19 @@ void CPolice::MoveRoad()
 
 			// 目的地の座標を代入
 			SetPosTarget(pRoadTarget->GetPosition());
+
+			// プレイヤーが存在しないなら最寄りの道に戻る
+			if (m_Info.pPlayer == nullptr) { return; }
+
+			// 一定距離まで近づいたら減速させる
+			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+
+			// プレイヤーの座標を目指す
+			SetPosTarget(m_Info.pPlayer->GetPosition());
+
+			// 速度を設定
+			SetSpeedDest(SECURE_SPEEDDEST);
+			SetSpeed(GetSpeed() * SECURE_SPEED);
 		}
 		else
 		{
@@ -348,6 +364,23 @@ void CPolice::Break()
 {
 	CPlayer* p = CPlayerManager::GetInstance()->GetPlayer();
 	p->Damage(p->GetLifeOrigin() * 0.1f);
+}
+
+//==========================================================
+// AIタイプ変更処理
+//==========================================================
+void CPolice::SetTypeAI(CPoliceAI::TYPE type)
+{
+	// AIを破棄
+	if (m_pPoliceAI != nullptr)
+	{
+		m_pPoliceAI->Uninit();
+		delete m_pPoliceAI;
+		m_pPoliceAI = nullptr;
+	}
+
+	// AIを生成
+	m_pPoliceAI = CPoliceAI::Create(this, type);
 }
 
 //==========================================================

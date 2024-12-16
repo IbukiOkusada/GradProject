@@ -18,6 +18,7 @@
 #include "objectX.h"
 #include "fade.h"
 #include "meshdome.h"
+#include "meshfield.h"
 
 //==========================================================
 // íËêîíËã`
@@ -211,6 +212,12 @@ HRESULT CMultiResult::Init(void)
 			m_pEndStr->PushBackString("ëºÇÃï˚Ç≈Ç∑ Ç‹ÇΩäÊí£ÇËÇ‹ÇµÇÂÇ§");
 		}
 	}
+
+	// âEë§
+	CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);
+
+	// ç∂ë§
+	CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
 
 	// èÛë‘ê›íË
 	ChangeState(DEBUG_NEW CMultiResultStateStart);

@@ -272,7 +272,7 @@ void CPlayerTitle::PoliceRotSet(void)
 {
 	CPoliceTitle* apPolice[INITIAL::POLICE_MAX] = { nullptr };	//警察のポインタ
 	D3DXVECTOR3 rRot = VECTOR3_ZERO;							//向き
-	float fMove = 125.0f;										//移動速度
+	float fMove = 50.0f;										//移動速度
 	constexpr float fRotation = 0.3f;							//回転速度
 
 	//番号によって変更させる

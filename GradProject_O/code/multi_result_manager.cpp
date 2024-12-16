@@ -25,6 +25,7 @@ CMultiResultManager::CMultiResultManager()
 		m_aInfo[i].nNumDelv = 0;
 	}
 
+	m_nNumPlayer = 4;
 	m_nMyId = -1;
 }
 

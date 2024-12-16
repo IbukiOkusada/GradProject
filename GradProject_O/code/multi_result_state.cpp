@@ -380,6 +380,7 @@ void CMultiResultStateResult::Uninit(CMultiResult* pResult)
 //===============================================
 CMultiResultStateEnd::CMultiResultStateEnd() : CMultiResultState(STATE::STATE_END)
 {
+	m_pExplosion = nullptr;
 	m_fFadeCnt = 0.0f;
 }
 
@@ -418,6 +419,10 @@ void CMultiResultStateEnd::Controll(CMultiResult* pResult)
 	if (m_fFadeCnt >= End::FADE_CNT || ppad->GetTrigger(button1, 0) || ppad->GetTrigger(button2, 0) ||
 		pkey->GetTrigger(DIK_RETURN) || pkey->GetTrigger(DIK_SPACE))
 	{
+		if (m_pExplosion != nullptr)
+		{
+			SAFE_DELETE(m_pExplosion);
+		}
 		m_fFadeCnt = End::FADE_CNT;
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_TITLE);
 	}
@@ -452,5 +457,13 @@ void CMultiResultStateEnd::Controll(CMultiResult* pResult)
 //===============================================
 void CMultiResultStateEnd::Create(CMultiResult* pResult)
 {
-	
+	// マネージャー無し
+	CMultiResultManager* pMgr = pResult->GetMgr();
+	if (pMgr == nullptr) { return; }
+
+	// プレイヤー取得
+	CMultiResult::SPlayerInfo* pInfo = pResult->GetInfo();
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	pos.x = (-Rank::PLAYER_TARGET_POSX) * 10;
+	m_pExplosion = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\explosion.efkefc", pos, VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, false, false);
 }
