@@ -1,0 +1,201 @@
+#==============================================================================
+#
+# 『モーションビューワ』スクリプトファイル [motion.txt]
+# Author : AKIRA TANAKA
+#
+#==============================================================================
+SCRIPT			# この行は絶対消さないこと！
+
+#------------------------------------------------------------------------------
+# モデル数
+#------------------------------------------------------------------------------
+NUM_MODEL = 18
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MODEL_FILENAME = data/MODEL/neet/00_neetwaist.x		    # [0]腰
+MODEL_FILENAME = data/MODEL/neet/01_neetbody.x		    # [1]体
+MODEL_FILENAME = data/MODEL/neet/02_neethed.x		    # [2]頭
+MODEL_FILENAME = data/MODEL/neet/03_neethiar.x		    # [3]髪
+MODEL_FILENAME = data/MODEL/neet/04_neetchest.x		    # [4]胸
+MODEL_FILENAME = data/MODEL/neet/05_neetstomach.x		# [5]腹
+MODEL_FILENAME = data/MODEL/neet/06_neetleftupperarm.x  # [6]左上腕
+MODEL_FILENAME = data/MODEL/neet/07_neetleftforearm.x   # [7]左前腕
+MODEL_FILENAME = data/MODEL/neet/08_neetlefthand.x	    # [8]左手
+MODEL_FILENAME = data/MODEL/neet/09_neetrightupperarm.x	# [9]右上腕
+MODEL_FILENAME = data/MODEL/neet/10_neetrightforearm.x	# [10]右前腕
+MODEL_FILENAME = data/MODEL/neet/11_neetrighthand.x		# [11]右手
+MODEL_FILENAME = data/MODEL/neet/12_neetleftthigh.x		# [12]左太もも
+MODEL_FILENAME = data/MODEL/neet/13_neetleftshin.x		# [13]左脛
+MODEL_FILENAME = data/MODEL/neet/14_neetrightleg.x		# [14]左足
+MODEL_FILENAME = data/MODEL/neet/15_neetrightthigh.x	# [15]右太もも
+MODEL_FILENAME = data/MODEL/neet/16_neetrightshin.x	    # [16]右脛
+MODEL_FILENAME = data/MODEL/neet/17_neetleftleg.x       # [17]右足
+
+
+#------------------------------------------------------------------------------
+# キャラクター情報
+#------------------------------------------------------------------------------
+CHARACTERSET
+	VELOCITY = 2.00		
+	JUMP = 0.00		
+	RADIUS = 60.00		
+	HEIGHT = 0.00		
+	LIFE = 5
+	
+	PARTSSET						# [0]腰
+		INDEX = 0
+		PARENT = -1					# (親)NULL
+		POS = 0.0 45.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [1]体
+		INDEX = 1
+		PARENT = 0					# (親)
+		POS = 0.0 00.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [2]頭
+		INDEX = 2
+		PARENT = 1					# (親)体
+		POS = 0.0 35.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [3]髪
+		INDEX = 3
+		PARENT = 2					# (親)体
+		POS = 0.0 12.0 -3.1
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [4]胸
+		INDEX = 4
+		PARENT = 1					# (親)体
+		POS = 0.0 27.0 -8.5
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [5]腹
+		INDEX = 5
+		PARENT = 1					# (親)体
+		POS = 0.0 12.8 4.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [6]左上腕
+		INDEX = 6
+		PARENT = 1					# (親)体
+		POS = -12.0 30.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [7]左前腕
+		INDEX = 7
+		PARENT = 6					# (親)左上腕
+		POS = -18.0 0.5 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [8]左手
+		INDEX = 8
+		PARENT = 7					# (親)左前腕
+		POS = -15.0 0.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [9]右上腕
+		INDEX = 9
+		PARENT = 1					# (親)体
+		POS = 12.0 30.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [10]右前腕
+		INDEX = 10
+		PARENT = 9					# (親)右上腕
+		POS = 18.0 0.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [11]右手
+		INDEX = 11
+		PARENT = 10					# (親)右前腕
+		POS = 15.0 0.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [12]左太もも
+		INDEX = 12
+		PARENT = 0					# (親)腰
+		POS = -7.5 -1.5 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [13]左脛
+		INDEX = 13
+		PARENT = 12					# (親)左太もも
+		POS = 0.0 -19.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [14]左足
+		INDEX = 14
+		PARENT = 13					# (親)左脛
+		POS = 0.0 -19.0 -1.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [15]右太もも
+		INDEX = 15
+		PARENT = 0					# (親)腰
+		POS = 7.5 -1.5 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [16]右脛
+		INDEX = 16
+		PARENT = 15					# (親)右太もも
+		POS = 0.0 -19.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [17]右足
+		INDEX = 17
+		PARENT = 16					# (親)左腿
+		POS = 0.0 -19.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+END_CHARACTERSET
+
+NUM_MOTION = 6
+
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_daibu.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_punch.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_guruguru.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_damage.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_getup.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_micro.txt
+END_SCRIPT		# この行は絶対消さないこと！

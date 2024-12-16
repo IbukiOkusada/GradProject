@@ -1,0 +1,388 @@
+#====================================================================================================
+#
+# 『階層モデル』スクリプトファイル [setup_player.txt]
+# Author : 相馬 靜雅
+#
+#====================================================================================================
+SCRIPT			# この行は絶対消さないこと！
+
+#==============================================================================
+#
+# セットアップ情報
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+# モデル数
+#------------------------------------------------------------------------------
+NUM_MODEL = 31
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+#変更タグ＝0
+MODEL_FILENAME = data/MODEL/player/waist.x		# [0]腰
+MODEL_FILENAME = data/MODEL/player/body.x		# [1]胴
+MODEL_FILENAME = data/MODEL/player/head.x		# [2]頭
+MODEL_FILENAME = data/MODEL/player/feet.x		# [3]バースト部
+MODEL_FILENAME = data/MODEL/player/Lshoulder.x		# [4]左肩
+MODEL_FILENAME = data/MODEL/player/Larm.x		# [5]左腕
+MODEL_FILENAME = data/MODEL/player/Lhand.x		# [6]左手
+MODEL_FILENAME = data/MODEL/player/Rshoulder.x		# [7]右肩
+MODEL_FILENAME = data/MODEL/player/Rarm.x		# [8]右腕
+MODEL_FILENAME = data/MODEL/player/Rhand.x		# [9]右手
+
+#強化[腕]01
+#変更タグ＝1
+MODEL_FILENAME = data/MODEL/player/pUP_arm01/Lshoulder.x		# [10]強化[腕]左肩
+MODEL_FILENAME = data/MODEL/player/pUP_arm01/Larm.x		# [11]強化[腕]左腕
+MODEL_FILENAME = data/MODEL/player/pUP_arm01/Lhand.x		# [12]強化[腕]左手
+MODEL_FILENAME = data/MODEL/player/pUP_arm01/Rshoulder.x		# [13]強化[腕]右肩
+MODEL_FILENAME = data/MODEL/player/pUP_arm01/Rarm.x		# [14]強化[腕]右腕
+MODEL_FILENAME = data/MODEL/player/pUP_arm01/Rhand.x		# [15]強化[腕]右手
+
+#強化[胴]01
+#変更タグ＝3
+MODEL_FILENAME = data/MODEL/player/pUP_body01/body.x		# [16]強化[胴]胴
+MODEL_FILENAME = data/MODEL/player/pUP_body01/head.x		# [17]強化[胴]頭
+MODEL_FILENAME = data/MODEL/player/pUP_body01/Lshoulder.x		# [18]強化[胴]左肩
+MODEL_FILENAME = data/MODEL/player/pUP_body01/Larm.x		# [19]左腕
+MODEL_FILENAME = data/MODEL/player/pUP_body01/Lhand.x		# [20]左手
+MODEL_FILENAME = data/MODEL/player/pUP_body01/Rshoulder.x		# [21]強化[胴]右肩
+MODEL_FILENAME = data/MODEL/player/pUP_body01/Rarm.x		# [22]右腕
+MODEL_FILENAME = data/MODEL/player/pUP_body01/Rhand.x		# [23]右手
+
+#強化[脚]01
+#変更タグ＝2
+MODEL_FILENAME = data/MODEL/player/pUP_leg01/thighs.x		# [24]強化[脚]腿
+MODEL_FILENAME = data/MODEL/player/pUP_leg01/Lleg.x		# [25]強化[脚]左脛
+MODEL_FILENAME = data/MODEL/player/pUP_leg01/Lankle.x		# [26]強化[脚]左足首
+MODEL_FILENAME = data/MODEL/player/pUP_leg01/Lfeet.x		# [27]強化[脚]左足
+MODEL_FILENAME = data/MODEL/player/pUP_leg01/Rleg.x		# [28]強化[脚]右脛
+MODEL_FILENAME = data/MODEL/player/pUP_leg01/Rankle.x		# [29]強化[脚]右足首
+MODEL_FILENAME = data/MODEL/player/pUP_leg01/Rfeet.x		# [30]強化[脚]右足
+
+#------------------------------------------------------------------------------
+# キャラクター情報
+#------------------------------------------------------------------------------
+CHARACTERSET
+	VELOCITY = 2.50		
+	JUMP = 0.00		
+	RADIUS = 60.00		
+	HEIGHT = 0.00		
+	LIFE = 5		
+
+	PARTSSET
+		INDEX = 0				# [0]腰
+		PARENT = -1
+		POS = 0.00 92.35 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 1				# [1]胴
+		PARENT = 0
+		POS = 0.00 5.35 -2.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 2				# [2]頭
+		PARENT = 1
+		POS = 0.00 54.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 3				# [3]バースト部
+		PARENT = 0
+		POS = 0.00 -1.50 1.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 4				# [4]左肩
+		PARENT = 1
+		POS = 22.20 42.95 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 5				# [5]左腕
+		PARENT = 4
+		POS = 23.45 0.40 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 6				# [6]左手
+		PARENT = 5
+		POS = 14.82 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 7				# [7]右肩
+		PARENT = 1
+		POS = -22.20 42.45 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 8				# [8]右腕
+		PARENT = 7
+		POS = -23.45 0.40 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 9				# [9]右手
+		PARENT = 8
+		POS = -13.77 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 10				# [10]強化[腕]左肩
+		PARENT = 1
+		POS = 22.20 43.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 1			# 切り替えの種類
+		ID_SWITCHMODEL = 4		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 11				# [11]強化[腕]左腕
+		PARENT = 4
+		POS = 43.95 2.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 1			# 切り替えの種類
+		ID_SWITCHMODEL = 5		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 12				# [12]強化[腕]左手
+		PARENT = 5
+		POS = 22.50 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 1			# 切り替えの種類
+		ID_SWITCHMODEL = 6		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 13				# [13]強化[腕]右肩
+		PARENT = 1
+		POS = -22.20 43.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 1			# 切り替えの種類
+		ID_SWITCHMODEL = 7		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 14				# [14]強化[腕]右腕
+		PARENT = 7
+		POS = -43.95 1.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 1			# 切り替えの種類
+		ID_SWITCHMODEL = 8		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 15				# [15]強化[腕]右手
+		PARENT = 8
+		POS = -22.50 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 1			# 切り替えの種類
+		ID_SWITCHMODEL = 9		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 16				# [16]強化[胴]胴
+		PARENT = 0
+		POS = 0.00 4.85 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 3			# 切り替えの種類
+		ID_SWITCHMODEL = 1		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 17				# [17]強化[胴]頭
+		PARENT = 1
+		POS = 0.00 57.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 3			# 切り替えの種類
+		ID_SWITCHMODEL = 2		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 18				# [18]強化[胴]左肩
+		PARENT = 1
+		POS = 22.20 42.95 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 3			# 切り替えの種類
+		ID_SWITCHMODEL = 4		# 切り替え先のID
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 19				# [19]強化[胴]左腕
+		PARENT = 4
+		POS = 31.95 6.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 3			# 切り替えの種類
+		ID_SWITCHMODEL = 5		# 切り替え先のID
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 20				# [20]強化[胴]左手
+		PARENT = 5
+		POS = 18.00 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 3			# 切り替えの種類
+		ID_SWITCHMODEL = 6		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 21				# [21]強化[胴]右肩
+		PARENT = 1
+		POS = -22.20 42.95 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 3			# 切り替えの種類
+		ID_SWITCHMODEL = 7		# 切り替え先のID
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 22
+		PARENT = 7
+		POS = -31.95 6.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 3			# 切り替えの種類
+		ID_SWITCHMODEL = 8		# 切り替え先のID
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 23
+		PARENT = 8
+		POS = -18.00 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 3			# 切り替えの種類
+		ID_SWITCHMODEL = 9		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 24				# [24]強化[脚]腿
+		PARENT = 0
+		POS = 0.00 -1.50 1.50
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 2			# 切り替えの種類
+		ID_SWITCHMODEL = 3		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET					# [25]強化[脚]左脛
+		INDEX = 25
+		PARENT = 3
+		POS = 20.00 -38.55 -9.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 2			# 切り替えの種類
+		ID_SWITCHMODEL = -1		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 26				# [26]強化[脚]左足首
+		PARENT = 25
+		POS = 4.00 -9.54 46.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 2			# 切り替えの種類
+		ID_SWITCHMODEL = -1		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 27				# [27]強化[脚]左足
+		PARENT = 26
+		POS = 4.00 -27.55 -46.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 2			# 切り替えの種類
+		ID_SWITCHMODEL = -1		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 28				# [28]強化[脚]右脛
+		PARENT = 3
+		POS = -20.00 -38.55 -9.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 2			# 切り替えの種類
+		ID_SWITCHMODEL = -1		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 29				# [29]強化[脚]右足首
+		PARENT = 28
+		POS = -4.00 -9.54 46.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 2			# 切り替えの種類
+		ID_SWITCHMODEL = -1		# 切り替え先のID
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 30				# [30]強化[脚]右足
+		PARENT = 29
+		POS = -4.00 -27.55 -46.00
+		ROT = 0.00 0.00 0.00
+		START = 0
+		SWITCHTYPE = 2			# 切り替えの種類
+		ID_SWITCHMODEL = -1		# 切り替え先のID
+	END_PARTSSET
+	
+END_CHARACTERSET
+
+#==============================================================================
+#
+# モーション情報
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+# モーション数
+#------------------------------------------------------------------------------
+NUM_MOTION = 7
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MOTION_FILENAME = data/TEXT/character/player/mainplayer/motion_def.txt		# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/mainplayer/motion_walk.txt		# [1]歩き
+MOTION_FILENAME = data/TEXT/character/player/mainplayer/motion_attack.txt		# [2]攻撃
+MOTION_FILENAME = data/TEXT/character/player/mainplayer/motion_jump.txt		# [3]ジャンプ
+MOTION_FILENAME = data/TEXT/character/player/mainplayer/motion_fall.txt		# [4]落下中
+MOTION_FILENAME = data/TEXT/character/player/mainplayer/motion_knockback.txt	# [5]ノックバック
+MOTION_FILENAME = data/TEXT/character/player/mainplayer/motion_dead.txt		# [6]死亡
+
+
+END_SCRIPT		# この行は絶対消さないこと！

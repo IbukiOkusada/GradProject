@@ -141,7 +141,7 @@ HRESULT CFXManager::Init(void)
 	}
 	
 	SetLightVec(LIGHT_VEC);
-	SetDiffuse(LIGHT_COLOR);
+	SetDiffuse(LIGHT_COLOR*0.75f);
 	// ê¨å˜Çï‘Ç∑
 	return S_OK;
 }
