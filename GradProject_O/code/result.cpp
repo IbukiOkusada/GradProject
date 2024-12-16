@@ -169,8 +169,11 @@ HRESULT CResult::Init(void)
 		m_nScore = 50.0f;
 	}
 
-	// 今回のスコアのオブジェクトを生成
-	ScoreObjCreat();
+	m_RankingScore[0] = 11.0f;
+	m_RankingScore[1] = 22.0f;
+	m_RankingScore[2] = 43.0f;
+	m_RankingScore[3] = 28.0f;
+	m_RankingScore[4] = 9.0f;
 
 	// 失敗or成功のオブジェクト生成
 	m_pObj = CObject2D::Create(D3DXVECTOR3(OBJ::CLEAR_POS.x, OBJ::CLEAR_POS.y, 0.0f),
@@ -187,18 +190,16 @@ HRESULT CResult::Init(void)
 		m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::FAIL_TEX_PATH));
 	}
 
-	m_RankingScore[0] = 11.0f;
-	m_RankingScore[1] = 22.0f;
-	m_RankingScore[2] = 43.0f;
-	m_RankingScore[3] = 28.0f;
-	m_RankingScore[4] = 9.0f;
 
+	// 今回のスコアのオブジェクトを生成
+	ScoreObjCreat();
 
 	// ランキングの読み込み等の処理
 	//RoadScore();
 	SortScore();
 	//SaveScore();
 
+	// ランキングのオブジェクトを生成
 	RankObjCreat();
 
 	// 右側
@@ -568,7 +569,6 @@ void CResult::RankObjCreat()
 
 	}
 }
-
 
 //===============================================
 // ナンバー表示のための計算

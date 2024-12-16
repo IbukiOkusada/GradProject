@@ -59,17 +59,17 @@ private:
 		TYPE_RANKING,
 		TYPE_NUM
 	};
-	void ScoreObjCreat();
-	void RankObjCreat();
+	void ScoreObjCreat();	// 今回のスコアのオブジェクトを生成
+	void RankObjCreat();	// ランキングのオブジェクトを生成
 
 	void Calculation(int* Obj, float Score, int Cnt, int ObjMax, TYPE_OBJ Type);
 	void AlphaJudge(float Alpha);		// アルファ値の判定
 	void RankAlphaJudge(float Alpha);	// アルファ値の判定
 	void Display();						// 表示処理
 	void DisplayRanking();				// ランキングの表示処理
-	void RoadScore();
-	void SaveScore();
-	void SortScore();
+	void RoadScore();					// ランキングのスコアをロード
+	void SaveScore();					// ランキングのスコアをセーブ
+	void SortScore();					// ランキングのスコアをソート
 
 
 	// メンバ変数
@@ -86,22 +86,22 @@ private:
 	CNumber* m_pDeliNumber;			// 届けた数のオブジェクト
 	CNumber* m_pTimeNumber[3];		// 残りタイムのオブジェクト
 	CNumber* m_pLifeNumber[3];		// 残り体力のオブジェクト
-	CNumber* m_pEvalNumber[2];		// 総合評価のオブジェクト
+	CNumber* m_pEvalNumber[2];		// 総合スコアのオブジェクト
 	CNumber* m_pRankingNumber[10];	// ランキングのオブジェクト
 
-	static int m_nDeli;
-	static float m_fTime;
-	static float m_fLife;
-	static float m_nScore;
-	float m_RankingScore[5];
+	static int m_nDeli;			// 配達した数
+	static float m_fTime;		// 残り時間
+	static float m_fLife;		// 残り体力
+	static float m_nScore;		// 総合スコア
+	float m_RankingScore[5];	// ランキングスコア
 
-	int m_TimeObj[3];
-	int m_LifeObj[3];
-	int m_EvalObj[2];
-	int m_RankingObj[10];
-	int m_Display;
-	int m_DisplayRank;
-	bool m_bSuccess;
+	int m_TimeObj[3];			// タイムのオブジェクトに必要な変数
+	int m_LifeObj[3];			// 体力のオブジェクトに必要な変数
+	int m_EvalObj[2];			// 総合スコアのオブジェクトに必要な変数
+	int m_RankingObj[10];		// ランキングスコアのオブジェクトに必要な変数
+	int m_Display;				// 表示させるオブジェクトの変数
+	int m_DisplayRank;			// ランキングの表示させるオブジェクトの変数
+	bool m_bSuccess;			// クリアしたかどうか
 };
 
 #endif
