@@ -118,6 +118,8 @@ HRESULT CFXManager::Init(void)
 			m_hMatScaleReverse = pEffect->GetParameterByName(nullptr, "g_mMatScaleReverse");
 			m_hnumLights = pEffect->GetParameterByName(nullptr, "numLights");
 			m_hLights = pEffect->GetParameterByName(nullptr, "lights");
+			m_hCubeMap = pEffect->GetParameterByName(nullptr, "CubeMapSampler");
+			D3DXCreateCubeTextureFromFile(pDevice, "data\\TEXTURE\\cube.dds", &m_pCubeTexture);
 		}
 		else
 		{ // “Ç‚É¸”s‚µ‚½ê‡
@@ -340,6 +342,7 @@ void CFXManager::SetScale(const D3DXMATRIX& rmtxScale)
 }
 void CFXManager::SetParamToEffect()
 {
+	
 	m_pEffect->SetMatrix(m_hWorldMat, &m_matWorld);
 	m_pEffect->SetMatrix(m_hViewMat, &m_matView);
 	m_pEffect->SetMatrix(m_hProjMat, &m_matProj);
@@ -354,6 +357,7 @@ void CFXManager::SetParamToEffect()
 	m_pEffect->SetVector(m_hViewvec, &m_Viewvec);
 	m_pEffect->SetVector(m_hviewPos, &m_viewPos);
 	m_pEffect->SetInt(m_hnumLights, m_numLights);
+	m_pEffect->SetTexture(m_hCubeMap, m_pCubeTexture);
 	m_pEffect->SetValue(m_hLights, m_lightArray, sizeof(m_lightArray));
 }	
 // •`‰æ‚ÌŠJn‚ğéŒ¾‚·‚é
