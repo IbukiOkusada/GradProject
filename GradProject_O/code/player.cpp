@@ -670,8 +670,11 @@ void CPlayer::Rotate(void)
 
 	float dest = (diff - m_fHandle) * slowmulti;
 	m_fHandle += dest * slowmulti;
+
+	// デルタタイム取得
+	float DeltaTime = CDeltaTime::GetInstance()->GetDeltaTime();
 	
-	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT);
+	m_fTurnSpeed += TURN * m_fHandle * (1.0f + m_fBrake * m_fEngine * DRIFT) * FRAME_RATE_SCALER * DeltaTime;
 	m_fTurnSpeed*= TURN_INER;
 	// 入力装置確認
 	if (nullptr == pInputKey) 

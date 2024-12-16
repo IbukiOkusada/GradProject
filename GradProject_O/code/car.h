@@ -93,8 +93,10 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }
 	D3DXVECTOR3& GetRotation(void) { return m_Info.rot; }
 	D3DXVECTOR3& GetOldPosition(void) { return m_Info.posOld; }
+	D3DXVECTOR3& GetOffsetLane(void) { return m_Info.offsetLane; }
 	float GetSpeed(void) { return m_Info.fSpeed; }
 	float GetSpeedDest(void) { return m_Info.fSpeedDest; }
+	float GetSpeedCurve(void) { return m_Info.fSpeedCurve; }
 	CRoad* GetRoadStart(void) { return m_Info.pRoadStart; }
 	CRoad* GetRoadTarget(void) { return m_Info.pRoadTarget; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }

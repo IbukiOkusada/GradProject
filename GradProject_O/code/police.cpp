@@ -25,7 +25,7 @@
 // 無名名前空間を定義
 namespace
 {
-	const float LENGTH_POINT = (200.0f);			// 到達判定距離
+	const float LENGTH_POINT = (900.0f);			// 到達判定距離
 	const float LENGTH_POINT_CHASE = (500.0f);		// すれ違い判定距離
 	const float SECURE_SPEEDDEST = (-20.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
@@ -282,7 +282,7 @@ void CPolice::MoveRoad()
 				ReachRoad();
 
 			// 目的地の座標を代入
-			SetPosTarget(pRoadTarget->GetPosition());
+			SetPosTarget(pRoadTarget->GetPosition() + GetOffsetLane());
 			SetRotMulti(ROT_MULTI_DEF);
 		}
 	}
