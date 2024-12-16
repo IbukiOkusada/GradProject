@@ -382,8 +382,8 @@ void CObjectX::DrawShadow()
 		for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
 		{
 			D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
-			mat.Ambient = { 0.0f, 0.0f, 0.0f, 0.7f };
-			mat.Diffuse = { 0.0f, 0.0f, 0.0f, 0.7f };
+			mat.Ambient = { 0.0f, 0.0f, 0.0f, 0.4f };
+			mat.Diffuse = { 0.0f, 0.0f, 0.0f, 0.4f };
 			mat.Emissive = { 0.0f, 0.0f, 0.0f, 0.7f };
 			mat.Specular = { 0.0f, 0.0f, 0.0f, 0.7f };
 			pDevice->SetMaterial(&mat);
@@ -401,7 +401,89 @@ void CObjectX::DrawShadow()
 
 	m_fShadowHeight = GetPosition().y;
 }
+void CObjectX::DrawShadowonShader()
+{
+	// 影使用しない
+	if (!m_bShadow) { return; }
 
+	// モデル使用されていない
+	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
+	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+	if (pFileData == nullptr) { return; }
+
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
+	CFXManager* pFx = CFXManager::GetInstance();
+	D3DMATERIAL9 matDef;					//現在のマテリアル保存用
+	D3DXMATERIAL* pMat;						//マテリアルデータへのポインタ
+	D3DXMATRIX mtxShadow;
+	D3DLIGHT9 light;
+	D3DXVECTOR4 posLight;
+	D3DXVECTOR3 pos, normal;
+	D3DXPLANE plane;
+
+	// ライトの位置を設定
+	pDevice->GetLight(0, &light);
+	posLight = D3DXVECTOR4(-light.Direction.x, -light.Direction.y, -light.Direction.z, 0.0f);
+
+	// 平面情報を設定
+	D3DXVECTOR3 DefPos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
+	pos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
+
+	if (pos.y > DefPos.y) {	// 現在の腕の位置よりも高い
+		pos = DefPos;
+	}
+
+	pos.y = m_fShadowHeight + 0.1f;
+	normal = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+	D3DXPlaneFromPointNormal(&plane, &pos, &normal);
+
+	// シャドウマトリックスの初期化
+	D3DXMatrixIdentity(&mtxShadow);
+
+	// シャドウマトリックスの作成
+	D3DXMatrixShadow(&mtxShadow, &posLight, &plane);
+	D3DXMatrixMultiply(&mtxShadow, &m_mtxWorld, &mtxShadow);
+
+	//ワールドマトリックスの設定
+	pDevice->SetTransform(D3DTS_WORLD, &mtxShadow);
+	pFx->SetMatrixWorld(mtxShadow);
+	//現在のマテリアルを取得
+	pDevice->GetMaterial(&matDef);
+
+	// モデル情報を取得
+	pFileData = pModelFile->SetAddress(m_nIdxModel);
+
+	if (pFileData != NULL)
+	{// 使用されている場合
+		//マテリアルデータへのポインタを取得
+		pMat = (D3DXMATERIAL*)pFileData->pBuffMat->GetBufferPointer();
+		for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
+		{
+			D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
+			mat.Ambient = { 0.0f, 0.0f, 0.0f, 0.7f };
+			mat.Diffuse = { 0.0f, 0.0f, 0.0f, 0.7f };
+			mat.Emissive = { 0.0f, 0.0f, 0.0f, 0.7f };
+			mat.Specular = { 0.0f, 0.0f, 0.0f, 0.7f };
+			pDevice->SetMaterial(&mat);
+			pFx->SetMaterial(mat);
+			pFx->SetParamToEffect();
+			pFx->Begin();
+			pFx->BeginPass();
+			//テクスチャの設定
+			pDevice->SetTexture(0, nullptr);
+		
+			//モデル(パーツ)の描画
+			pFileData->pMesh->DrawSubset(nCntMat);
+			pFx->EndPass();
+			pFx->End();
+		}
+	}
+
+	//保存していたマテリアルを戻す
+	pDevice->SetMaterial(&matDef);
+
+	m_fShadowHeight = GetPosition().y;
+}
 //==========================================================
 // 生成
 //==========================================================

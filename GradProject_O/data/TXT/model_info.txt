@@ -17,4 +17,11 @@ MODEL_FILENAME = data/MODEL/map/hotel.x	# [0]ホテル
 MODEL_FILENAME = data/MODEL/map/mix_bill.x	# [0]和風洋風ビル
 MODEL_FILENAME = data/MODEL/map/building_cyber000.x	# [0]サイバービル
 
+#スラムモデル
+MODEL_FILENAME = data/MODEL/map/slum_bill000.x	# [0]スラムビル
+MODEL_FILENAME = data/MODEL/map/slum_house000.x	# [0]スラムハウス
+MODEL_FILENAME = data/MODEL/map/slum_house001.x	# [0]スラムハウス
+MODEL_FILENAME = data/MODEL/map/slum_house002.x	# [0]スラムハウス
+MODEL_FILENAME = data/MODEL/map/slum_shop000.x	# [0]スラムショップ
+
 END_SCRIPT

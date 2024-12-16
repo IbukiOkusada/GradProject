@@ -24,6 +24,7 @@ CObjectMesh::CObjectMesh(int nPriority) : CObject(nPriority)
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_pVtx = NULL;
 	m_Type = TYPE_NONE;
+	SetDrawShader(true);
 }
 
 //==========================================================
@@ -138,7 +139,73 @@ void CObjectMesh::Draw(void)
 		);
 	}
 }
+//==========================================================
+// 描画処理
+//==========================================================
+void CObjectMesh::DrawOnShader(void)
+{
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
+	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
+	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス
+	CFXManager* pFx = CFXManager::GetInstance();
+	if (m_pVtxBuff != NULL)
+	{
+		// 色設定
+		//SetSlowCol();
+		D3DMATERIAL9 mat = {};
+		mat.Diffuse.r = 1.0f;
+		mat.Diffuse.g = 1.0f;
+		mat.Diffuse.b = 1.0f;
+		mat.Diffuse.a = 1.0f;
+		mat.Ambient.r = 0.25f;
+		mat.Ambient.g = 0.25f;
+		mat.Ambient.b = 0.25f;
+		mat.Ambient.a = 0.25f;
+		pFx->SetMaterial(mat);
+		//ワールドマトリックスの初期化
+		D3DXMatrixIdentity(&m_mtxWorld);
 
+		//向きを反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+		//位置を反映
+		D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
+
+		//ワールドマトリックスの設定
+		pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+		pFx->SetMatrixWorld(m_mtxWorld);
+		//頂点バッファをデータストリームに設定
+		pDevice->SetStreamSource(
+			0,
+			m_pVtxBuff,
+			0,
+			sizeof(VERTEX_3D));
+
+		//インデックスバッファをデータストリームに設定
+		pDevice->SetIndices(m_pIdexBuff);
+
+		//頂点フォーマットの設定
+		pDevice->SetFVF(FVF_VERTEX_3D);
+
+		//テクスチャの設定
+		pDevice->SetTexture(0, pTexture->SetAddress(m_nIdxTexture));
+		pFx->SetParamToEffect();
+		pFx->Begin();
+		pFx->BeginPass();
+		//ポリゴンの描画
+		pDevice->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,
+			0,
+			0,
+			m_nVertex,		//用意した頂点数
+			0,
+			m_nIndex - 2	//描画するプリミティブ数
+		);
+		pFx->EndPass();
+		pFx->End();
+	}
+}
 //==========================================================
 // 頂点情報生成
 //==========================================================

@@ -39,6 +39,7 @@ public:		// 誰でもアクセス可能
 	virtual void Uninit(void);
 	virtual void Update(void) = 0;
 	virtual void Draw(void);
+	virtual void DrawOnShader(void);
 	void NotMtxDraw(void);
 	virtual void SetVtxInfo(void) = 0;
 	void BindTexture(int nIdx);

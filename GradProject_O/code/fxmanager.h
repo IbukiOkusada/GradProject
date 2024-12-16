@@ -89,7 +89,7 @@ private:
 	D3DXHANDLE m_hnumLights;				// ライトの数
 	D3DXHANDLE m_hLights;				// ライト構造体
 	D3DXHANDLE m_hviewPos;				// 視点
-
+	D3DXHANDLE m_hCubeMap;//キューブマップ
 	
 	D3DXMATRIX m_matWorld;						// ワールド変換行列
 	D3DXMATRIX m_matView;						// ビュー変換行列
@@ -103,6 +103,7 @@ private:
 	D3DXVECTOR4 m_MatEmissive;					// マテリアル発光色
 	D3DXVECTOR4 m_Viewvec;					//視点ベクトル
 	D3DXVECTOR4 m_MatSpecula;					// マテリアル反射色
+	LPDIRECT3DCUBETEXTURE9 m_pCubeTexture;
 	float m_MatPower;					// マテリアル強度
 	int m_numLights;
 	CShaderLight::SLight m_lightArray[MAX_LIGHT];

@@ -25,12 +25,14 @@
 // 無名名前空間を定義
 namespace
 {
-	const float LENGTH_POINT = (200.0f);			// 到達判定距離
+	const float LENGTH_POINT = (900.0f);			// 到達判定距離
 	const float LENGTH_POINT_CHASE = (500.0f);		// すれ違い判定距離
 	const float SECURE_SPEEDDEST = (-20.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
-	const float ROT_MULTI_DEF = (0.06f);			// 通常時の向き補正倍率
-	const float ROT_MULTI_CHASE = (0.13f);			// 追跡時の向き補正倍率
+	const float ROT_MULTI_DEF = (0.02f);			// 通常時の向き補正倍率
+	const float ROT_MULTI_CHASE = (0.04f);			// 追跡時の向き補正倍率
+	const D3DXVECTOR3 LIGHT_OFFSET = D3DXVECTOR3(0.0f, 100.0f, 250.0f);
+	const D3DXVECTOR3 LIGHT_VEC = D3DXVECTOR3(0.0f, -0.25f, 1.0f);
 }
 
 //==========================================================================
@@ -67,6 +69,7 @@ CPolice::CPolice(int nId) : CCar(nId)
 	m_pSiren = nullptr;
 	m_stateInfo = SState();
 	m_pPoliceAI = nullptr;
+	m_pShaderLight = nullptr;
 	CPoliceManager::GetInstance()->ListIn(this);
 }
 
@@ -87,7 +90,7 @@ HRESULT CPolice::Init(void)
 	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
 	m_pSiren->Stop();
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\police.x");
-
+	m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));
 	// AIを生成
 	m_pPoliceAI = CPoliceAI::Create(this, CPoliceAI::TYPE_NORMAL);
 	return S_OK;
@@ -110,6 +113,8 @@ void CPolice::Uninit(void)
 	CPoliceManager::GetInstance()->ListOut(this);
 	SAFE_DELETE(m_pPatrolLamp);
 	SAFE_UNINIT_DELETE(m_pSiren);
+	CShaderLight::Delete(m_pShaderLight);
+	SAFE_DELETE(m_pShaderLight)
 	Release();
 }
 
@@ -127,7 +132,16 @@ void CPolice::Update(void)
 
 	// アップデート
 	CCar::Update();
-
+	D3DXMATRIX mat;
+	D3DXMatrixIdentity(&mat);
+	D3DXMatrixRotationYawPitchRoll(&mat, GetRotation().y, GetRotation().x, GetRotation().z);
+	D3DXVECTOR3 lightpos = LIGHT_OFFSET;
+	D3DXVECTOR3 lightvec = LIGHT_VEC;
+	D3DXVec3Normalize(&lightvec, &lightvec);
+	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
+	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
+	m_pShaderLight->position = GetPosition() + lightpos;
+	m_pShaderLight->direction = lightvec;
 	if (m_Info.bChase)
 	{
 		if (m_pPatrolLamp == nullptr)
@@ -190,6 +204,8 @@ void CPolice::MoveRoad()
 	{
 		m_pSiren->Start();
 
+		SetRoadStart(GetRoadTarget());
+
 		// プレイヤー追跡処理
 		ChasePlayer();
 
@@ -204,6 +220,9 @@ void CPolice::MoveRoad()
 			vol = 0.0f;
 		}
 		m_pSiren->SetVolume(vol);
+
+		// カーブ時の速度を設定
+		SetSpeedCurve(10.0f);
 
 		// 目的地が存在するかどうか
 		if (pRoadTarget != nullptr)
@@ -263,7 +282,7 @@ void CPolice::MoveRoad()
 				ReachRoad();
 
 			// 目的地の座標を代入
-			SetPosTarget(pRoadTarget->GetPosition());
+			SetPosTarget(pRoadTarget->GetPosition() + GetOffsetLane());
 			SetRotMulti(ROT_MULTI_DEF);
 		}
 	}

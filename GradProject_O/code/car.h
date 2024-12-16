@@ -46,6 +46,7 @@ private:	// 自分だけがアクセス可能
 		D3DXVECTOR3 move;		// 移動量
 		D3DXVECTOR3 posOld;		// 設定位置
 		D3DXVECTOR3 posTarget;	// 目標位置
+		D3DXVECTOR3 offsetLane;	// 車線分の大きさ
 		CRoad* pRoadStart;		// 移動開始地点
 		CRoad* pRoadTarget;		// 目標地点
 		TYPE type;				// 状態
@@ -53,6 +54,7 @@ private:	// 自分だけがアクセス可能
 		int nBackTime;
 		float fSpeed;
 		float fSpeedDest;
+		float fSpeedCurve;
 		float fRotMulti;
 		bool bBreak;
 		bool bBack;
@@ -91,8 +93,10 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3& GetPosition(void) { return m_Info.pos; }
 	D3DXVECTOR3& GetRotation(void) { return m_Info.rot; }
 	D3DXVECTOR3& GetOldPosition(void) { return m_Info.posOld; }
+	D3DXVECTOR3& GetOffsetLane(void) { return m_Info.offsetLane; }
 	float GetSpeed(void) { return m_Info.fSpeed; }
 	float GetSpeedDest(void) { return m_Info.fSpeedDest; }
+	float GetSpeedCurve(void) { return m_Info.fSpeedCurve; }
 	CRoad* GetRoadStart(void) { return m_Info.pRoadStart; }
 	CRoad* GetRoadTarget(void) { return m_Info.pRoadTarget; }
 	int GetModelIndex(void) { return m_pObj->GetIdx(); }
@@ -115,6 +119,7 @@ public:	// 誰でもアクセス可能
 	void SetSpeed(const float speed) { m_Info.fSpeed = speed; }
 	void SetSpeedDest(const float speedDest) { m_Info.fSpeedDest = speedDest; }
 	void SetRotMulti(const float rotMulti) { m_Info.fRotMulti = rotMulti; }
+	void SetSpeedCurve(const float fSpeedCurve) { m_Info.fSpeedCurve = fSpeedCurve; }
 	void SetRoadStart(CRoad* RoadStart) { m_Info.pRoadStart = RoadStart; }
 	void SetRoadTarget(CRoad* RoadTarget) { m_Info.pRoadTarget = RoadTarget; }
 	void SetBack(bool bBack) { m_Info.bBack = bBack; }
