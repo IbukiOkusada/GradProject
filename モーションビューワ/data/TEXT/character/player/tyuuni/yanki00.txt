@@ -1,0 +1,142 @@
+#====================================================================
+#
+# モーションスクリプトファイル[motion.txt]
+# Author：大原 怜将
+#
+#====================================================================
+SCRIPT
+
+#====================================================================
+# モデル数
+#====================================================================
+NUM_MODEL = 16
+
+#====================================================================
+# モデルファイル名
+#====================================================================
+MODEL_FILENAME = data/MODEL/yanki/00_waist.x
+MODEL_FILENAME = data/MODEL/yanki/01_body.x
+MODEL_FILENAME = data/MODEL/yanki/02_hed.x
+MODEL_FILENAME = data/MODEL/yanki/03_Ruparm.x
+MODEL_FILENAME = data/MODEL/yanki/04_Rdownarm.x
+MODEL_FILENAME = data/MODEL/yanki/05_Rhand.x
+MODEL_FILENAME = data/MODEL/yanki/06_Luparm.x
+MODEL_FILENAME = data/MODEL/yanki/07_Ldownarm.x
+MODEL_FILENAME = data/MODEL/yanki/08_Lhand.x
+MODEL_FILENAME = data/MODEL/yanki/09_Rthing.x
+MODEL_FILENAME = data/MODEL/yanki/10_Rshin.x
+MODEL_FILENAME = data/MODEL/yanki/11_Rleg.x
+MODEL_FILENAME = data/MODEL/yanki/12_Lthing.x
+MODEL_FILENAME = data/MODEL/yanki/13_Lshin.x
+MODEL_FILENAME = data/MODEL/yanki/14_Lleg.x
+MODEL_FILENAME = data/MODEL/yanki/15_dosu.x
+
+#====================================================================
+# キャラクター情報
+#====================================================================
+CHARACTERSET
+    NUM_PARTS = 16
+
+     PARTSSET
+        INDEX = 0
+        PARENT = -1
+        POS = 2.1 37.3 0.6
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 1
+        PARENT = 0
+        POS = -0.3 1.4 1.4
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 2
+        PARENT = 1
+        POS = -0.4 25.4 -1.6
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 3
+        PARENT = 1
+        POS = 7.6 20.1 -1.0
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 4
+        PARENT = 3
+        POS = 9.9 -0.1 0.1
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 5
+        PARENT = 4
+        POS = 9.0 0.4 -0.3
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 6
+        PARENT = 1
+        POS = -6.9 20.2 -1.4
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 7
+        PARENT = 6
+        POS = -10.2 0.0 -0.1
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 8
+        PARENT = 7
+        POS = -9.0 -0.2 0.4
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 9
+        PARENT = 0
+        POS = 3.9 -2.4 -0.0
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 10
+        PARENT = 9
+        POS = -0.3 -15.4 -0.1
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 11
+        PARENT = 10
+        POS = -0.3 -13.8 0.3
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 12
+        PARENT = 0
+        POS = -4.6 -4.0 -0.2
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 13
+        PARENT = 12
+        POS = 0.0 -13.7 -0.1
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+    PARTSSET
+        INDEX = 14
+        PARENT = 13
+        POS = -0.1 -13.8 0.1
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+     PARTSSET
+        INDEX = 15
+        PARENT = 8
+        POS = -4.5 0.5 0.2
+        ROT = 0.0 0.0 0.0
+    END_PARTSSET
+END_CHARACTERSET
+
+NUM_MOTION = 1
+
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_daibu.txt			# [0]デフォルト
+
+END_SCRIPT
