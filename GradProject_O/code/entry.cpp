@@ -148,7 +148,7 @@ HRESULT CEntry::Init(void)
     CMapManager::GetInstance()->Load();
 
     // メッシュフィールド生成
-    CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 30, 30);
+    CMeshField::Create(D3DXVECTOR3(0.0f, -10.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field001.jpg", 30, 30);
 
     if (m_pGoalManager == nullptr)
     {

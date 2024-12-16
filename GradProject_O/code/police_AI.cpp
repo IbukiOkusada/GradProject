@@ -44,15 +44,15 @@ namespace
 	const float	LEVEL_DAMAGE = (0.3f);				// 傷状態時の警戒度増加量
 	const float	LEVEL_SMOKE = (0.5f);				// 煙状態時の警戒度増加量
 
-	const int CHASE_TIME = (120);					// 追跡時間
+	const int CHASE_TIME = (300);					// 追跡時間
 	const int NUM_BACKUP = (2);						// 追跡時間
 
 	const float CHASE_SPEED[CPoliceAI::TYPE_MAX] =
 	{
-		(22.0f),		// デフォルトの追跡時の加速
-		(22.0f),		// 通常タイプの追跡時の加速
-		(24.0f),		// 回り込みタイプの追跡時の加速
-		(18.0f),		// 緩やかタイプの追跡時の加速
+		(24.0f),		// デフォルトの追跡時の加速
+		(24.0f),		// 通常タイプの追跡時の加速
+		(26.0f),		// 回り込みタイプの追跡時の加速
+		(22.0f),		// 緩やかタイプの追跡時の加速
 	};
 
 	const float SEARCH_TIME[CPoliceAI::TYPE_MAX] =
@@ -65,10 +65,10 @@ namespace
 
 	const int CALL_TIME[CPoliceAI::TYPE_MAX] =
 	{
-		(180),		// デフォルトの応援呼び出し時間
-		(180),		// 通常タイプの応援呼び出し時間
-		(150),		// 回り込みタイプの応援呼び出し時間
-		(210),		// 緩やかタイプの応援呼び出し時間
+		(300),		// デフォルトの応援呼び出し時間
+		(300),		// 通常タイプの応援呼び出し時間
+		(210),		// 回り込みタイプの応援呼び出し時間
+		(360),		// 緩やかタイプの応援呼び出し時間
 	};
 }
 
@@ -82,6 +82,7 @@ CPoliceAI::CPoliceAI()
 	m_pRoadStart = nullptr;
 	m_pRoadTarget = nullptr;
 	m_pSearchTarget = nullptr;
+	m_pPoliceBackUp = nullptr;
 	m_fSearchTimer = 0.0f;
 	m_fLevelSearch = 0.0f;
 	m_fChaseSpeed = 0.0f;
@@ -247,6 +248,25 @@ void CPoliceAI::Search(void)
 	{
 		m_fLevelSearch = LEVEL_MIN;
 	}
+
+	// 応援を呼んだ警察がいなければ抜ける
+	if (m_pPoliceBackUp == nullptr) { return; }
+
+	// 応援を呼んだ警察が追跡を終了していたら
+	if (!m_pPoliceBackUp->GetChase())
+	{
+		// 追跡終了処理
+		EndChase();
+
+		// 追跡状態を送信
+		if (m_pPolice->IsActive())
+		{
+			m_pPolice->SendChaseEnd();
+		}
+
+		// 応援を呼んだ警察をリセット
+		m_pPoliceBackUp = nullptr;
+	}
 }
 
 //==========================================================
@@ -392,23 +412,27 @@ void CPoliceAI::CheckLevel(CPlayer* pPlayer)
 //==========================================================
 void CPoliceAI::CallBackup(void)
 {
+	// 応援要請時間になっていなければ時間を加算し抜ける
 	if (m_nCntCall < CALL_TIME[m_type]) 
 	{ 
 		m_nCntCall++; 
 		return; 
 	}
 
+	// 応援要請をしているなら抜ける
 	if (m_bCall) { return; }
 
+	// 応援要請の判定をtrueにする
 	m_bCall = true;
 
+	// ギミックのリスト
 	auto listGimmick = CGimmick::GetList();
 	Clist<CGimmick*> listStation;
 	int nNumStation = 0;
 
+	// ギミックのリストから警察署を取り出す
 	for (int i = 0; i < listGimmick->GetNum(); i++)
 	{// 使用されていない状態まで
-
 		// 道確認
 		CGimmick* pGimmick = listGimmick->Get(i);	// 先頭を取得
 		if (pGimmick == nullptr) { continue; }
@@ -419,19 +443,31 @@ void CPoliceAI::CallBackup(void)
 		nNumStation++;
 	}
 
-	
-
+	// 応援の警察を指定回数生成
 	for (int i = 0; i < NUM_BACKUP; i++)
 	{
+		// ランダムな警察署を選択
 		CGimmick* pPoliceStation = listStation.Get(rand() % nNumStation); 
+
+		// 応援の警察を生成
 		CAddPolice* pP = CAddPolice::Create(pPoliceStation->GetPos(), pPoliceStation->GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
-		//pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
-		pP->SetTypeAI(CPoliceAI::TYPE_ELITE);
-		pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(pPoliceStation->GetPos()));
+
+		// 応援の警察のタイプを設定
+		pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
 		pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+
+		// 目的地設定
+		pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(pPoliceStation->GetPos()));
+
+		// 追跡状態に変更
 		pP->SetChase(true);
 		pP->GetAi()->BeginChase(m_pPolice->GetPlayer());
+
+		// 応援の警察は応援を呼ばないようにする
 		pP->GetAi()->m_bCall = true;
+
+		// 応援を呼んだ警察を保存する
+		pP->GetAi()->m_pPoliceBackUp = m_pPolice;
 	}
 }
 
@@ -626,6 +662,9 @@ void CPoliceAIElite::SelectRoad(void)
 		if (m_bRelay || m_bCross) { return; }
 
 		CRoad* pRoadRelay = pPlayer->GetRoad();
+
+		if (pRoadRelay == nullptr) { return; }
+
 		int nConnectDic = 0;
 		float rotDif = 100.0f;
 
@@ -635,7 +674,7 @@ void CPoliceAIElite::SelectRoad(void)
 
 			if (pRoadRelayConnect == nullptr) { continue; }
 
-			D3DXVECTOR3 vecRoad = pRoadRelayConnect->GetPosition() - pRoadRelay->GetPosition();
+			D3DXVECTOR3 vecRoad = pRoadRelay->GetPosition() - pRoadRelayConnect->GetPosition();
 
 			float targetrot = atan2f(vecRoad.x, vecRoad.z);
 
@@ -649,7 +688,7 @@ void CPoliceAIElite::SelectRoad(void)
 				targetrot += D3DX_PI * 2.0f;
 			}
 
-			targetrot -= m_pPolice->GetRotation().y;
+			targetrot -= m_pPolice->GetPlayer()->GetRotation().y;
 
 			// 角度補正
 			if (targetrot > D3DX_PI)
@@ -669,7 +708,7 @@ void CPoliceAIElite::SelectRoad(void)
 			}
 		}
 
-		while (pRoadRelay->GetType() == CRoad::TYPE_NONE || pRoadRelay->GetType() == CRoad::TYPE_STOP)
+		while (pRoadRelay->GetType() == CRoad::TYPE_NONE)
 		{
 			pRoadRelay = pRoadRelay->GetConnectRoad((CRoad::DIRECTION)nConnectDic);
 		}
@@ -696,7 +735,7 @@ void CPoliceAIElite::ReachRoad(void)
 	float length = D3DXVec3Length(&(posRoad - posPolice));
 	if (length < 1500.0f)
 	{
-		if (m_pSearchTarget->pConnectRoad == m_pRoadRelay && !m_bRelay)
+		if (m_pSearchTarget->pConnectRoad == m_pRoadRelay && !m_bRelay && !m_bCross)
 		{ 
 			m_bRelay = true;
 			m_searchRoad.clear();

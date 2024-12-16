@@ -118,7 +118,7 @@ void CCar::Update(void)
 		}
 	}
 
-	CDebugProc::GetInstance()->Print("車の座標 : [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	//CDebugProc::GetInstance()->Print("車の座標 : [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 
 	// 座標系設定
 	Set();
@@ -183,7 +183,7 @@ void CCar::Move()
 
 		// 速度を追加
 		m_Info.fSpeed += (m_Info.fSpeedDest - m_Info.fSpeed) * SPEED_INER;
-		CManager::GetInstance()->GetDebugProc()->Print("一般車の速度 [ %f ]\n", m_Info.fSpeed);
+		//CManager::GetInstance()->GetDebugProc()->Print("一般車の速度 [ %f ]\n", m_Info.fSpeed);
 
 		// 移動量設定
 		m_Info.move.x = m_Info.fSpeed * sinf(m_Info.rot.y);

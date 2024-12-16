@@ -11,6 +11,8 @@
 class CMultiResult;
 class CPolice;
 
+#include "effekseerControl.h"
+
 //===============================================
 // マルチリザルトの状態クラス定義(基底クラス)
 //===============================================
@@ -155,6 +157,7 @@ private:
 
 	// メンバ変数
 	float m_fFadeCnt;	// フェードまでのカウント
+	CEffekseer::CEffectData* m_pExplosion;	// 爆発エフェクト
 };
 
 #endif

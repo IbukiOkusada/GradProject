@@ -231,10 +231,14 @@ void CObject3D::DrawOnShader(void)
 
 	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	//計算用マトリックス
 	D3DMATERIAL9 mat = {};
-	mat.Diffuse.r = 2.0f;
-	mat.Diffuse.g = 2.0f;
-	mat.Diffuse.b = 2.0f;
-	mat.Diffuse.a = 2.0f;
+	mat.Diffuse.r = 1.0f;
+	mat.Diffuse.g = 1.0f;
+	mat.Diffuse.b = 1.0f;
+	mat.Diffuse.a = 1.0f;
+	mat.Ambient.r = 0.25f;
+	mat.Ambient.g = 0.25f;
+	mat.Ambient.b = 0.25f;
+	mat.Ambient.a = 0.25f;
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
 	D3DXMatrixIdentity(&mtxscale);
