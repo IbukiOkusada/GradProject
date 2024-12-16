@@ -46,6 +46,8 @@ public:	// 誰でもアクセス可能
 	D3DXMATRIX *GetMtxParent(void) { return m_pParentMtx; }
 	int GetId(void) { return m_nIdxModel; }
 	void SetShadowHeight(const float fHeight) { m_fShadowHeight = fHeight; }
+	D3DXCOLOR& GetColMuliti() { return m_ColMulti; }
+	D3DXCOLOR& GetColAdd() { return m_AddCol; }
 
 	// メンバ関数(設定)
 	void SetPosition(const D3DXVECTOR3 pos);
@@ -60,6 +62,8 @@ public:	// 誰でもアクセス可能
 	void SetMaterial(const D3DMATERIAL9& Material) { m_ChangeMat = Material; }
 	void ChangeCol(bool bValue = false) { m_bChangeCol = bValue; }
 	float GetShadowHeight() { return m_fShadowHeight; }
+	void SetColAdd(const D3DXCOLOR& col) { m_AddCol = col; }
+	void SetColMulti(const D3DXCOLOR& col) { m_ColMulti = col; }
 
 private:	// 自分だけがアクセス可能
 
@@ -77,6 +81,8 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR3 m_CurPos;		// 現在の位置
 	D3DXVECTOR3 m_CurRot;		// 現在の向き
 	D3DXVECTOR3 m_mtxpos;		// マトリックス座標
+	D3DXCOLOR m_ColMulti;
+	D3DXCOLOR m_AddCol;
 	D3DXMATRIX m_mtxWorld;		// ワールドマトリックス
 	D3DXMATRIX m_mtxscale;
 	D3DXMATRIX *m_pParentMtx;	// 親のワールドマトリックス

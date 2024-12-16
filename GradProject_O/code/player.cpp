@@ -201,7 +201,7 @@ CPlayer::CPlayer(int nId)
 	m_fLifeOrigin = m_fLife;
 	m_fCamera = CAMERA_NORMAL;
 	m_fNitroCool = 0.0f;
-
+	m_pCharacter = nullptr;
 	m_pObj = nullptr;
 	m_pDamageEffect = nullptr;
 	m_pSound = nullptr;
@@ -254,10 +254,18 @@ HRESULT CPlayer::Init(void)
 //===============================================
 HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 {
-	
+	// バイク生成
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
 	m_pObj->SetType(CObject::TYPE_PLAYER);
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
+
+	// プレイヤー生成
+	m_pCharacter = CCharacter::Create("data\\TXT\\character\\player\\motion_player.txt");
+	m_pCharacter->SetParent(m_pObj->GetMtx());
+	m_pCharacter->GetMotion()->InitSet(0);
+	m_pCharacter->SetScale(D3DXVECTOR3(3.0f, 3.0f, 3.0f));
+	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -60.0f, 75.0f));
+	m_pCharacter->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	SetCol();
 
@@ -274,10 +282,11 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 // 終了処理
 //===============================================
 void CPlayer::Uninit(void)
-{	
+{
 	CManager::GetInstance()->SetDeliveryStatus(m_nNumDeliveryStatus);
 	CManager::GetInstance()->SetLife(m_fLife);
 
+	SAFE_UNINIT(m_pCharacter)
 	SAFE_UNINIT(m_pContainer)
 	SAFE_UNINIT(m_pObj)
 	SAFE_UNINIT(m_pBaggage)
@@ -287,7 +296,7 @@ void CPlayer::Uninit(void)
 	SAFE_DELETE(m_pDamageEffect)
 	SAFE_UNINIT_DELETE(m_pSound)
 	SAFE_UNINIT_DELETE(m_pSoundBrake)
-	SAFE_UNINIT_DELETE(m_pRadio);
+	SAFE_UNINIT_DELETE(m_pRadio)
 	SAFE_UNINIT_DELETE(m_pCollSound)
 	CShaderLight::Delete(m_pShaderLight);
 	SAFE_DELETE(m_pShaderLight)
@@ -456,6 +465,11 @@ void CPlayer::Update(void)
 		pos.y += 100.0f;
 		m_pBaggage->SetPosition(pos);
 		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
+	}
+
+	if (m_pCharacter != nullptr)
+	{
+		m_pCharacter->Update();
 	}
 
 	// オンラインデータ送信
@@ -1513,6 +1527,16 @@ void CPlayer::SetCol()
 	int id = m_nId;
 	if (id < 0) id = 0;
 	m_pObj->SetColMulti(MULTICOL[id]);
+
+	if (m_pCharacter == nullptr) {
+		return;
+	}
+
+	for (int i = 0; i < m_pCharacter->GetNumParts(); i++)
+	{
+		CModel* pModel = m_pCharacter->GetParts(i);
+		pModel->SetColMulti(MULTICOL[id]);
+	}
 }
 
 //===============================================

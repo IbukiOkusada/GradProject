@@ -43,6 +43,7 @@ public:	// 誰でもアクセス可能
 	void SetShadow(bool bShadow = false);
 	void SetCharaMtx(void);
 	void SetChangeMatCol(const D3DXCOLOR& col);
+	void SetColMulti(const D3DXCOLOR& col);
 	void SetChangeMat(const bool bChange = false);
 	void SetMtx();
 

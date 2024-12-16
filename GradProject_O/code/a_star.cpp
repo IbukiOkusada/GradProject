@@ -132,7 +132,15 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 			CRoad::SInfoSearch* neighborInfo = Current->pConnectRoad->GetInfoSearchDic((CRoad::DIRECTION)i);
 
 			// クローズリストに入っていない事を確認
-			if (std::find(CloseList.begin(), CloseList.end(), neighborInfo) != CloseList.end()) { continue; }
+			auto it = std::find_if
+			(
+				CloseList.begin(), CloseList.end(), [neighborInfo](const CRoad::SInfoSearch* obj)
+			{
+					return obj->pConnectRoad == neighborInfo->pConnectRoad;
+				}
+			);
+			if (it != CloseList.end()) { continue; }
+			//if (std::find(CloseList.begin(), CloseList.end(), neighborInfo) != CloseList.end()) { continue; }
 
 			// コスト計算
 			neighborInfo->fGCost = Current->pConnectRoad->GetConnectLength((CRoad::DIRECTION)i);
@@ -213,7 +221,19 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Goal, CR
 			CRoad::SInfoSearch* neighborInfo = Current->pConnectRoad->GetInfoSearchDic((CRoad::DIRECTION)i);
 
 			// クローズリストに入っていない事を確認
-			if (std::find(CloseList.begin(), CloseList.end(), neighborInfo) != CloseList.end()) { continue; }
+			auto it = std::find_if
+			(
+				CloseList.begin(), CloseList.end(), [neighborInfo](const CRoad::SInfoSearch* obj)
+				{
+					return obj->pConnectRoad == neighborInfo->pConnectRoad;
+				}
+			);
+			if (it != CloseList.end())
+			{ 
+				continue;
+			}
+
+			//if (std::find(CloseList.begin(), CloseList.end(), neighborInfo) != CloseList.end()) { continue; }
 
 			// コスト計算
 			neighborInfo->fGCost = Current->pConnectRoad->GetConnectLength((CRoad::DIRECTION)i);

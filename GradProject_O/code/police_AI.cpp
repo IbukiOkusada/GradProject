@@ -290,6 +290,9 @@ void CPoliceAI::BeginChase(CPlayer* pPlayer)
 	// 追跡時間を設定
 	m_pPolice->SetChaseCount(CHASE_TIME);
 
+	// 追跡経路をリセット
+	m_searchRoad.clear();
+
 	// 状態設定
 	m_pPolice->SetState(CPolice::STATE::STATE_CHASE);
 }
@@ -454,6 +457,7 @@ void CPoliceAI::CallBackup(void)
 
 		// 応援の警察のタイプを設定
 		pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
+		pP->SetTypeAI(CPoliceAI::TYPE_ELITE);
 		pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 
 		// 目的地設定

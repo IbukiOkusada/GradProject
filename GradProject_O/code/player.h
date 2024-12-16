@@ -203,7 +203,8 @@ protected:	// 自分だけがアクセス可能
 
 	int m_nId;				// ID
 	TYPE m_type;			// 種類
-	CObjectX* m_pObj;		// 描画オブジェクト
+	CObjectX* m_pObj;		// バイク
+	CCharacter* m_pCharacter;	// キャラクター
 	CBaggage* m_pBaggage;	// 荷物
 	CNavi* m_pNavi;			// ナビ
 	CContainer* m_pContainer;
