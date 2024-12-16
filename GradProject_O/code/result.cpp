@@ -34,6 +34,7 @@
 namespace OBJ
 {
 	const char* CLEAR_TEX_PATH = "data\\TEXTURE\\result\\result_clear.png";
+	const char* FAIL_TEX_PATH = "data\\TEXTURE\\result\\result_fail.png";
 	const float CLEAR_WIDTH = 250.0f;		// 横幅
 	const float CLEAR_HEIGHT = 70.0f;		// 高さ
 	const D3DXVECTOR3 CLEAR_POS = D3DXVECTOR3(300.0f, 100.0f, 0.0f);
@@ -153,23 +154,38 @@ HRESULT CResult::Init(void)
 	CMapManager::GetInstance()->Load();
 
 	m_pPlayer = CPlayerResult::Create(PLAYER::POS, D3DXVECTOR3(0.0f, 0.0f, 0.0f), VECTOR3_ZERO, nullptr, nullptr);
+	m_bSuccess = CManager::GetInstance()->GetSuccess();
 
 	// 今回のスコアを取得
 	m_nDeli = CManager::GetInstance()->GetDeliveryStatus();
 	m_fTime = CTimer::GetTime();
 	m_fLife = CManager::GetInstance()->GetLife();
 
+	// 総合スコアの計算
 	m_nScore = ((float)m_nDeli + m_fTime / 100.0f + m_fLife / 100.0f) * 10.0f;
 
-	ScoreObjInit();
+	if (m_nScore >= 50.0f)
+	{
+		m_nScore = 50.0f;
+	}
+
+	// 今回のスコアのオブジェクトを生成
+	ScoreObjCreat();
 
 	// 失敗or成功のオブジェクト生成
 	m_pObj = CObject2D::Create(D3DXVECTOR3(OBJ::CLEAR_POS.x, OBJ::CLEAR_POS.y, 0.0f),
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 		7);
 
-	m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::CLEAR_TEX_PATH));
 	m_pObj->SetSize(OBJ::CLEAR_WIDTH, OBJ::CLEAR_HEIGHT);
+	if (m_bSuccess == true)
+	{// 成功
+		m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::CLEAR_TEX_PATH));
+	}
+	else if (m_bSuccess == false)
+	{// 失敗
+		m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::FAIL_TEX_PATH));
+	}
 
 	m_RankingScore[0] = 11.0f;
 	m_RankingScore[1] = 22.0f;
@@ -177,79 +193,13 @@ HRESULT CResult::Init(void)
 	m_RankingScore[3] = 28.0f;
 	m_RankingScore[4] = 9.0f;
 
-	if (m_nScore >= 50.0f)
-	{
-		m_nScore = 50.0f;
-	}
 
 	// ランキングの読み込み等の処理
 	//RoadScore();
 	SortScore();
 	//SaveScore();
 
-
-	float nStarTex = 0.0f;
-
-	for (int CntFst = 0; CntFst < RANKING_OBJ_NUM; CntFst++)
-	{
-		// 星のオブジェクト生成
-		for (int CntSec = 0; CntSec < STAR_OBJ_NUM; CntSec++)
-		{
-			nStarTex = (m_RankingScore[CntFst] / 10) - CntSec;
-
-			// 星
-			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM] = CObject2D::Create(D3DXVECTOR3(
-				OBJ::STAR_POS.x + OBJ::STAR_INTERVAL_X * CntSec,
-				OBJ::STAR_POS.y - OBJ::STAR_INTERVAL_Y * CntFst,
-				0.0f),
-				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				7);
-
-			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::STAR_TEX_PATH));
-			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetObject2D()->SetCol(INIT_COL);
-
-			if (nStarTex >= 1.0f)
-			{
-				nStarTex = 1.0f;
-			}
-			else if (nStarTex <= 0.0f)
-			{
-				nStarTex = 0.0f;
-			}
-			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->SetVtxRatio(0.0f, 0.0f, 40.0f, 40.0f, nStarTex, 1.0f);
-			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->SetTex(0.0f, 0.0f, nStarTex, 1.0f);
-
-			// 枠
-			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM] = CObject2D::Create(D3DXVECTOR3(
-				m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetPosition().x,
-				m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetPosition().y,
-				0.0f),
-				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
-				7);
-
-			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::STAR_FREAM_TEX_PATH));
-			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->GetObject2D()->SetCol(INIT_COL);
-			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->SetVtxRatio(0.0f, 0.0f, 40.0f, 40.0f, 1.0f, 1.0f);
-
-		}
-
-		// ランキングのオブジェクト生成
-		for (int CntSec = 0; CntSec < NUMBER::RANKING_OBJ; CntSec++)
-		{
-			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ] = CNumber::Create(D3DXVECTOR3(
-				m_pStarObj[(CntFst + 1) * STAR_OBJ_NUM - 1]->GetPosition().x + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * CntSec,
-				m_pStarObj[(CntFst + 1) * STAR_OBJ_NUM - 1]->GetPosition().y,
-				0.0f),
-				NUMBER::WIDTH,
-				NUMBER::HEIGHT,
-				NUMBER::TEX_PATH);
-
-			Calculation(&m_RankingObj[CntSec + CntFst * NUMBER::RANKING_OBJ], m_RankingScore[CntFst], CntSec, NUMBER::RANKING_OBJ, CResult::TYPE_RANKING);
-			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->SetIdx(m_RankingObj[CntSec + CntFst * 2]);
-			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->GetObject2D()->SetCol(INIT_COL);
-		}
-
-	}
+	RankObjCreat();
 
 	// 右側
 	CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);
@@ -358,7 +308,6 @@ void CResult::Uninit(void)
 	// マップ情報廃棄
 	CMapManager::Release();
 	CRanking::SetScore(m_nScore);
-	m_nScore = 0;
 	CManager::GetInstance()->GetCamera()->SetActive(true);
 	CManager::GetInstance()->GetSound()->Stop();
 }
@@ -397,7 +346,7 @@ void CResult::Draw(void)
 //===============================================
 // スコアオブジェクトの初期化処理
 //===============================================
-void CResult::ScoreObjInit()
+void CResult::ScoreObjCreat()
 {
 	for (int nCnt = 0; nCnt < SCORE_OBJ_NUM; nCnt++)
 	{
@@ -552,6 +501,76 @@ void CResult::ScoreObjInit()
 }
 
 //===============================================
+// スコアオブジェクトの初期化処理
+//===============================================
+void CResult::RankObjCreat()
+{
+	float nStarTex = 0.0f;
+
+	for (int CntFst = 0; CntFst < RANKING_OBJ_NUM; CntFst++)
+	{
+		// 星のオブジェクト生成
+		for (int CntSec = 0; CntSec < STAR_OBJ_NUM; CntSec++)
+		{
+			nStarTex = (m_RankingScore[CntFst] / 10) - CntSec;
+
+			// 星
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM] = CObject2D::Create(D3DXVECTOR3(
+				OBJ::STAR_POS.x + OBJ::STAR_INTERVAL_X * CntSec,
+				OBJ::STAR_POS.y - OBJ::STAR_INTERVAL_Y * CntFst,
+				0.0f),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				7);
+
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::STAR_TEX_PATH));
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetObject2D()->SetCol(INIT_COL);
+
+			if (nStarTex >= 1.0f)
+			{
+				nStarTex = 1.0f;
+			}
+			else if (nStarTex <= 0.0f)
+			{
+				nStarTex = 0.0f;
+			}
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->SetVtxRatio(0.0f, 0.0f, 35.0f, 35.0f, nStarTex, 1.0f);
+			m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->SetTex(0.0f, 0.0f, nStarTex, 1.0f);
+
+			// 枠
+			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM] = CObject2D::Create(D3DXVECTOR3(
+				m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetPosition().x,
+				m_pStarObj[CntSec + CntFst * STAR_OBJ_NUM]->GetPosition().y,
+				0.0f),
+				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+				7);
+
+			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::STAR_FREAM_TEX_PATH));
+			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->GetObject2D()->SetCol(INIT_COL);
+			m_pStarFreamObj[CntSec + CntFst * STAR_OBJ_NUM]->SetVtxRatio(0.0f, 0.0f, 35.0f, 35.0f, 1.0f, 1.0f);
+
+		}
+
+		// ランキングのオブジェクト生成
+		for (int CntSec = 0; CntSec < NUMBER::RANKING_OBJ; CntSec++)
+		{
+			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ] = CNumber::Create(D3DXVECTOR3(
+				m_pStarObj[(CntFst + 1) * STAR_OBJ_NUM - 1]->GetPosition().x + NUMBER::INTERVAL_OBJ + NUMBER::INTERVAL * CntSec,
+				m_pStarObj[(CntFst + 1) * STAR_OBJ_NUM - 1]->GetPosition().y,
+				0.0f),
+				NUMBER::WIDTH,
+				NUMBER::HEIGHT,
+				NUMBER::TEX_PATH);
+
+			Calculation(&m_RankingObj[CntSec + CntFst * NUMBER::RANKING_OBJ], m_RankingScore[CntFst], CntSec, NUMBER::RANKING_OBJ, CResult::TYPE_RANKING);
+			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->SetIdx(m_RankingObj[CntSec + CntFst * 2]);
+			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->GetObject2D()->SetCol(INIT_COL);
+		}
+
+	}
+}
+
+
+//===============================================
 // ナンバー表示のための計算
 //===============================================
 void CResult::Calculation(int* Obj, float Score, int Cnt, int ObjMax, TYPE_OBJ Type)
@@ -684,7 +703,7 @@ void CResult::RankAlphaJudge(float Alpha)
 //===============================================
 void CResult::Display()
 {
-	D3DXCOLOR col;
+	D3DXCOLOR col = INIT_COL;
 
 	switch (m_Display)
 	{
@@ -750,7 +769,7 @@ void CResult::Display()
 //===============================================
 void CResult::DisplayRanking()
 {
-	D3DXCOLOR col;
+	D3DXCOLOR col = INIT_COL;
 
 	col = m_pRankingNumber[m_DisplayRank * 2]->GetObject2D()->GetCol();
 	col.a += ALPHA_ADD;

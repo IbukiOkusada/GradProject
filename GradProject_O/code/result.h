@@ -59,7 +59,8 @@ private:
 		TYPE_RANKING,
 		TYPE_NUM
 	};
-	void ScoreObjInit();
+	void ScoreObjCreat();
+	void RankObjCreat();
 
 	void Calculation(int* Obj, float Score, int Cnt, int ObjMax, TYPE_OBJ Type);
 	void AlphaJudge(float Alpha);		// アルファ値の判定
@@ -100,7 +101,7 @@ private:
 	int m_RankingObj[10];
 	int m_Display;
 	int m_DisplayRank;
-
+	bool m_bSuccess;
 };
 
 #endif

@@ -423,6 +423,7 @@ void CGame::Update(void)
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+            CManager::GetInstance()->SetSuccess(true);
         }
         break;
     case CGame::STATE_FAIL:
@@ -430,6 +431,7 @@ void CGame::Update(void)
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);
+            CManager::GetInstance()->SetSuccess(false);
         }
         break;
 
