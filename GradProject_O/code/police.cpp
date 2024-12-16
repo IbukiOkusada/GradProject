@@ -69,6 +69,7 @@ CPolice::CPolice(int nId) : CCar(nId)
 	m_pSiren = nullptr;
 	m_stateInfo = SState();
 	m_pPoliceAI = nullptr;
+	m_pShaderLight = nullptr;
 	CPoliceManager::GetInstance()->ListIn(this);
 }
 
