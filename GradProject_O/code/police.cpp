@@ -29,8 +29,8 @@ namespace
 	const float LENGTH_POINT_CHASE = (500.0f);		// すれ違い判定距離
 	const float SECURE_SPEEDDEST = (-20.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
-	const float ROT_MULTI_DEF = (0.06f);			// 通常時の向き補正倍率
-	const float ROT_MULTI_CHASE = (0.13f);			// 追跡時の向き補正倍率
+	const float ROT_MULTI_DEF = (0.02f);			// 通常時の向き補正倍率
+	const float ROT_MULTI_CHASE = (0.04f);			// 追跡時の向き補正倍率
 }
 
 //==========================================================================
@@ -190,6 +190,8 @@ void CPolice::MoveRoad()
 	{
 		m_pSiren->Start();
 
+		SetRoadStart(GetRoadTarget());
+
 		// プレイヤー追跡処理
 		ChasePlayer();
 
@@ -204,6 +206,9 @@ void CPolice::MoveRoad()
 			vol = 0.0f;
 		}
 		m_pSiren->SetVolume(vol);
+
+		// カーブ時の速度を設定
+		SetSpeedCurve(10.0f);
 
 		// 目的地が存在するかどうか
 		if (pRoadTarget != nullptr)
