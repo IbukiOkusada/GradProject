@@ -194,7 +194,7 @@ float4 PS(VS_OUTPUT In) : COLOR0
 
    Out += CalculateLighting(In.Normal.xyz,In.PosWVP.xyz,viewDir.xyz);
    float3 fdef = 1.0f;
-   Out.xyz = (fdef - m_specula.xyz) * Out.xyz + PS_EnvironmentMap(reflection).xyz * m_specula.xyz;
+   Out.xyz = (fdef - m_specula.xyz) * Out.xyz + PS_EnvironmentMap(reflect(m_LightDir.xyz, In.Normal.xyz)).xyz * m_specula.xyz;
     //===============================
     //			ÉtÉHÉO
     //===============================
