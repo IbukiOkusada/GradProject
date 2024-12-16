@@ -33,26 +33,26 @@
 //==========================================================
 namespace OBJ
 {
-	const char* CLEAR_TEX_PATH = "data\\TEXTURE\\result_clear.png";
+	const char* CLEAR_TEX_PATH = "data\\TEXTURE\\result\\result_clear.png";
 	const float CLEAR_WIDTH = 250.0f;		// 横幅
 	const float CLEAR_HEIGHT = 70.0f;		// 高さ
 	const D3DXVECTOR3 CLEAR_POS = D3DXVECTOR3(300.0f, 100.0f, 0.0f);
 
-	const char* DELI_TEX_PATH = "data\\TEXTURE\\result_deli.png";
-	const char* DELI_TEX_PATH_MAX = "data\\TEXTURE\\result_deli_max.png";	// 最大評価の時のテクスチャ
+	const char* DELI_TEX_PATH = "data\\TEXTURE\\result\\result_deli.png";
+	const char* DELI_TEX_PATH_MAX = "data\\TEXTURE\\result\\result_deli_max.png";	// 最大評価の時のテクスチャ
 	const float DELI_WIDTH = 120.0f;		// 横幅
 
-	const char* TIME_TEX_PATH = "data\\TEXTURE\\result_time.png";
-	const char* TIME_TEX_PATH_MAX = "data\\TEXTURE\\result_time_max.png";	// 最大評価の時のテクスチャ
+	const char* TIME_TEX_PATH = "data\\TEXTURE\\result\\result_time.png";
+	const char* TIME_TEX_PATH_MAX = "data\\TEXTURE\\result\\result_time_max.png";	// 最大評価の時のテクスチャ
 	const float TIME_WIDTH = 150.0f;		// 横幅
 	const float TIME_POS_ADJUST = 30.0f;	// 位置の調整
 
-	const char* LIFE_TEX_PATH = "data\\TEXTURE\\result_life.png";
-	const char* LIFE_TEX_PATH_MAX = "data\\TEXTURE\\result_life_max.png";	// 最大評価の時のテクスチャ
+	const char* LIFE_TEX_PATH = "data\\TEXTURE\\result\\result_life.png";
+	const char* LIFE_TEX_PATH_MAX = "data\\TEXTURE\\result\\result_life_max.png";	// 最大評価の時のテクスチャ
 	const float LIFE_WIDTH = 120.0f;		// 横幅
 
-	const char* EVAL_TEX_PATH = "data\\TEXTURE\\result_eval.png";
-	const char* EVAL_TEX_PATH_MAX = "data\\TEXTURE\\result_eval_max.png";	// 最大評価の時のテクスチャ
+	const char* EVAL_TEX_PATH = "data\\TEXTURE\\result\\result_eval.png";
+	const char* EVAL_TEX_PATH_MAX = "data\\TEXTURE\\result\\result_eval_max.png";	// 最大評価の時のテクスチャ
 	const float EVAL_WIDTH = 80.0f;			// 横幅
 	const float EVAL_HEIGHT = 40.0f;		// 高さ
 	const D3DXVECTOR3 EVAL_POS = D3DXVECTOR3(300.0f, 600.0f, 0.0f);
@@ -61,8 +61,8 @@ namespace OBJ
 	const float INTERVAL_Y = 100.0f;	// 縦の間隔
 	const D3DXVECTOR3 POS = D3DXVECTOR3(250.0f, 240.0f, 0.0f);	// 初期位置
 
-	const char* STAR_TEX_PATH = "data\\TEXTURE\\star_dot.png";
-	const char* STAR_FREAM_TEX_PATH = "data\\TEXTURE\\star_fream_dot.png";
+	const char* STAR_TEX_PATH = "data\\TEXTURE\\result\\star_dot.png";
+	const char* STAR_FREAM_TEX_PATH = "data\\TEXTURE\\result\\star_fream_dot.png";
 	const float STAR_INTERVAL_X = 80.0f;							// 星の間隔
 	const float STAR_INTERVAL_Y = 110.0f;							// 星の間隔
 	const D3DXVECTOR3 STAR_POS = D3DXVECTOR3(740.0f, 660.0f, 0.0f);	// 初期位置
@@ -78,6 +78,7 @@ namespace NUMBER
 	const int LIFE_OBJ = 3;				// 体力のオブジェクトの数
 	const int EVAL_OBJ = 2;				// 総合評価のオブジェクトの数
 	const int RANKING_OBJ = 2;			// ランキングのオブジェクトの数
+	const char* TEX_PATH = "data\\TEXTURE\\result\\Number.png";
 }
 
 namespace PLAYER
@@ -170,11 +171,11 @@ HRESULT CResult::Init(void)
 	m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::CLEAR_TEX_PATH));
 	m_pObj->SetSize(OBJ::CLEAR_WIDTH, OBJ::CLEAR_HEIGHT);
 
-	m_RankingScore[0] = 15.0f;
-	m_RankingScore[1] = 23.0f;
-	m_RankingScore[2] = 45.0f;
+	m_RankingScore[0] = 11.0f;
+	m_RankingScore[1] = 22.0f;
+	m_RankingScore[2] = 43.0f;
 	m_RankingScore[3] = 28.0f;
-	m_RankingScore[4] = 4.0f;
+	m_RankingScore[4] = 9.0f;
 
 	if (m_nScore >= 50.0f)
 	{
@@ -211,14 +212,6 @@ HRESULT CResult::Init(void)
 			{
 				nStarTex = 1.0f;
 			}
-			else if (nStarTex >= 0.7f && nStarTex < 1.0f)
-			{
-				nStarTex = 0.65f;
-			}
-			else if (nStarTex <= 0.3f && nStarTex > 0.0f)
-			{
-				nStarTex = 0.35f;
-			}
 			else if (nStarTex <= 0.0f)
 			{
 				nStarTex = 0.0f;
@@ -248,7 +241,8 @@ HRESULT CResult::Init(void)
 				m_pStarObj[(CntFst + 1) * STAR_OBJ_NUM - 1]->GetPosition().y,
 				0.0f),
 				NUMBER::WIDTH,
-				NUMBER::HEIGHT);
+				NUMBER::HEIGHT,
+				NUMBER::TEX_PATH);
 
 			Calculation(&m_RankingObj[CntSec + CntFst * NUMBER::RANKING_OBJ], m_RankingScore[CntFst], CntSec, NUMBER::RANKING_OBJ, CResult::TYPE_RANKING);
 			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->SetIdx(m_RankingObj[CntSec + CntFst * 2]);
@@ -432,7 +426,8 @@ void CResult::ScoreObjInit()
 				m_pScoreObj[nCnt]->GetPosition().y,
 				0.0f),
 				NUMBER::WIDTH,
-				NUMBER::HEIGHT);
+				NUMBER::HEIGHT,
+				NUMBER::TEX_PATH);
 
 			m_pDeliNumber->SetIdx(m_nDeli);
 			m_pDeliNumber->GetObject2D()->SetCol(INIT_COL);
@@ -466,7 +461,8 @@ void CResult::ScoreObjInit()
 					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
-					NUMBER::HEIGHT);
+					NUMBER::HEIGHT,
+					NUMBER::TEX_PATH);
 
 				Calculation(&m_TimeObj[Cnt], m_fTime, Cnt, NUMBER::TIME_OBJ, CResult::TYPE_TIME);
 				m_pTimeNumber[Cnt]->SetIdx(m_TimeObj[Cnt]);
@@ -502,7 +498,9 @@ void CResult::ScoreObjInit()
 					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
-					NUMBER::HEIGHT);
+					NUMBER::HEIGHT,
+					NUMBER::TEX_PATH);
+
 				Calculation(&m_LifeObj[Cnt], m_fLife, Cnt, NUMBER::LIFE_OBJ, CResult::TYPE_LIFE);
 				m_pLifeNumber[Cnt]->SetIdx(m_LifeObj[Cnt]);
 				m_pLifeNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
@@ -536,7 +534,8 @@ void CResult::ScoreObjInit()
 					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
-					NUMBER::HEIGHT);
+					NUMBER::HEIGHT,
+					NUMBER::TEX_PATH);
 
 				Calculation(&m_EvalObj[Cnt], m_nScore, Cnt, NUMBER::EVAL_OBJ, CResult::TYPE_EVAL);
 				m_pEvalNumber[Cnt]->SetIdx(m_EvalObj[Cnt]);

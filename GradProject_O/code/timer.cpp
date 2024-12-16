@@ -34,8 +34,13 @@ namespace DECPOINT
 
 namespace BLINKING
 {
-	const float STERT = 190.0f;	// 点滅になる時間
+	const float START = 30.0f;	// 点滅になる時間
 	const float SPEED = 1.8f;	// 点滅の速さ
+}
+
+namespace
+{
+	const float START_TIME = 200.0f;	// 点滅になる時間
 }
 
 //===============================================
@@ -97,7 +102,7 @@ HRESULT CTimer::Init(void)
 	m_pDecPoint->BindTexture(CManager::GetInstance()->GetTexture()->Regist(DECPOINT::TEX_PATH));
 	m_pDecPoint->SetDraw();
 
-	m_LimitTime = 200.0f;
+	m_LimitTime = START_TIME;
 	m_Ratio = 0.0f;
 
 	return S_OK;
@@ -137,7 +142,7 @@ void CTimer::Update(void)
 
 	CalTime();
 
-	if (m_LimitTime < BLINKING::STERT)
+	if (m_LimitTime < BLINKING::START)
 	{
 		BlinkingTime();
 	}

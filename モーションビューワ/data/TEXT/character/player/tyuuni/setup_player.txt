@@ -1,0 +1,225 @@
+#====================================================================================================
+#
+# 『階層モデル』スクリプトファイル [setup_player.txt]
+# Author : 相馬 靜雅
+#
+#====================================================================================================
+SCRIPT			# この行は絶対消さないこと！
+
+#==============================================================================
+#
+# セットアップ情報
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+# モデル数
+#------------------------------------------------------------------------------
+NUM_MODEL = 17
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MODEL_FILENAME = data/MODEL/tyuuni/00_waist.x		# [0]腰
+MODEL_FILENAME = data/MODEL/tyuuni/01_body.x		# [1]体
+MODEL_FILENAME = data/MODEL/tyuuni/02_head.x		# [2]頭
+MODEL_FILENAME = data/MODEL/tyuuni/03_hair.x		# [3]髪
+MODEL_FILENAME = data/MODEL/tyuuni/07_R_UParm.x		# [4]右上腕
+MODEL_FILENAME = data/MODEL/tyuuni/08_R_DWarm.x		# [5]右前腕
+MODEL_FILENAME = data/MODEL/tyuuni/09_R_hand.x		# [6]右手
+MODEL_FILENAME = data/MODEL/tyuuni/04_L_UParm.x		# [7]左上腕
+MODEL_FILENAME = data/MODEL/tyuuni/05_L_DWarm.x		# [8]左前腕
+MODEL_FILENAME = data/MODEL/tyuuni/06_L_hand.x		# [9]左手
+MODEL_FILENAME = data/MODEL/tyuuni/13_R_UPleg.x		# [10]右太もも
+MODEL_FILENAME = data/MODEL/tyuuni/14_R_DWleg.x		# [11]右脛
+MODEL_FILENAME = data/MODEL/tyuuni/15_R_foot.x		# [12]右足
+MODEL_FILENAME = data/MODEL/tyuuni/10_L_UPleg.x		# [13]左太もも
+MODEL_FILENAME = data/MODEL/tyuuni/11_L_DWleg.x		# [14]左脛
+MODEL_FILENAME = data/MODEL/tyuuni/12_L_foot.x		# [15]左足
+MODEL_FILENAME = data/MODEL/tyuuni/MonnMonnsowd_Low.x			# [16]大剣
+
+#------------------------------------------------------------------------------
+# キャラクター情報
+#------------------------------------------------------------------------------
+CHARACTERSET
+	VELOCITY = 2.00		
+	JUMP = 0.00		
+	RADIUS = 60.00		
+	HEIGHT = 0.00		
+	LIFE = 5		
+
+	PARTSSET						# [0]腰
+		INDEX = 0
+		PARENT = -1					# (親)NULL
+		POS = 0.0 88.5 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [1]体
+		INDEX = 1
+		PARENT = 0					# (親)
+		POS = 0.0 7.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [2]頭
+		INDEX = 2
+		PARENT = 1					# (親)体
+		POS = 0.0 53.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [3]髪
+		INDEX = 3
+		PARENT = 2					# (親)体
+		POS = 0.0 14.5 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [4]左上腕
+		INDEX = 4
+		PARENT = 1					# (親)体
+		POS = -17.0 40.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [5]左前腕
+		INDEX = 5
+		PARENT = 4					# (親)左上腕
+		POS = -27.5 0.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [6]左手
+		INDEX = 6
+		PARENT = 5					# (親)左前腕
+		POS = -26.75 0.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+
+	PARTSSET						# [7]右上腕
+		INDEX = 7
+		PARENT = 1					# (親)体
+		POS = 17.0 40.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [8]右前腕
+		INDEX = 8
+		PARENT = 7					# (親)右上腕
+		POS = 27.5 0.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [9]右手
+		INDEX = 9
+		PARENT = 8					# (親)右前腕
+		POS = 26.75 0.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [10]左太もも
+		INDEX = 10
+		PARENT = 0					# (親)腰
+		POS = -10.0 -4.5 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [11]左ふくらはぎ
+		INDEX = 11
+		PARENT = 10					# (親)左太もも
+		POS = 0.0 -39.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [12]左足
+		INDEX = 12
+		PARENT = 11					# (親)左ふくらはぎ
+		POS = 0.0 -22.75 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [13]右太もも
+		INDEX = 13
+		PARENT = 0					# (親)腰
+		POS = 10.0 -4.5 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [14]右ふくらはぎ
+		INDEX = 14
+		PARENT = 13					# (親)右太もも
+		POS = 0.0 -39.0 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [15]右足
+		INDEX = 15
+		PARENT = 14					# (親)左ふくらはぎ
+		POS = 0.0 -22.75 0.0
+		ROT = 0.0 0.0 0.0
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET						# [16]武器
+		INDEX = 16
+		PARENT = 9					# (親)右手
+		POS = 13.0 0.0 0.0
+		ROT = 1.57 -3.14 0.0
+		START = 1
+	END_PARTSSET
+	
+END_CHARACTERSET
+
+
+#==============================================================================
+#
+# コライダー情報
+#
+#==============================================================================
+COLLIDER_FILENAME = data/TEXT/character/player/tyuuni/sphere_collider.json
+
+#==============================================================================
+#
+# モーション情報
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+# モーション数
+#------------------------------------------------------------------------------
+NUM_MOTION = 14
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_def.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_walk.txt			# [1]歩き
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_dash.txt			# [2]ダッシュ
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_avoid.txt		# [3]回避
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_attack.txt		# [4]攻撃
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_attack2.txt		# [5]攻撃2
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_attack3.txt		# [5]攻撃3
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_jump.txt			# [6]ジャンプ
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_fall.txt			# [7]落下中
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_knockback.txt	# [8]ノックバック
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_dead.txt			# [9]死亡
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_counter_wait.txt		# [10]反撃待機
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_counter_turn.txt		# [11]反撃受け流し
+MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_counter_attack.txt	# [12]反撃
+
+
+END_SCRIPT		# この行は絶対消さないこと！
