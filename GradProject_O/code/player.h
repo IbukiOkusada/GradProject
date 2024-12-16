@@ -133,6 +133,7 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3& GetOldRotation(void) { return m_Info.rotOld; }
 	CRoad* GetRoad(void) { return m_Info.pRoad; }
 	CObjectX* GetObj() { return m_pObj; }
+	CCharacter* GetCharacteter() { return m_pCharacter; }
 	CPredRoute* GetPredRoute() { return m_pPredRoute; }
 	int GetModelIndex(void);
 	STATE GetState(void) { return m_Info.state; }

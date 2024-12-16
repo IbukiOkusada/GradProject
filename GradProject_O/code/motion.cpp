@@ -333,6 +333,10 @@ void CMotion::LoadMotionData(FILE *pFile)
 							fscanf(pFile, "%f", &m_aInfo[m_nNumMotion].pKeyInfo[nCntKey].aKey[nCntParts].fRotX);	//xç¿ïWì«Ç›çûÇ›
 							fscanf(pFile, "%f", &m_aInfo[m_nNumMotion].pKeyInfo[nCntKey].aKey[nCntParts].fRotY);	//yç¿ïWì«Ç›çûÇ›
 							fscanf(pFile, "%f", &m_aInfo[m_nNumMotion].pKeyInfo[nCntKey].aKey[nCntParts].fRotZ);	//zç¿ïWì«Ç›çûÇ›
+
+							Adjust(m_aInfo[m_nNumMotion].pKeyInfo[nCntKey].aKey[nCntParts].fRotX);
+							Adjust(m_aInfo[m_nNumMotion].pKeyInfo[nCntKey].aKey[nCntParts].fRotY);
+							Adjust(m_aInfo[m_nNumMotion].pKeyInfo[nCntKey].aKey[nCntParts].fRotZ);
 						}
 					}
 					nCntParts++;

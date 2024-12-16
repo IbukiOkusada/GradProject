@@ -169,11 +169,14 @@ END_CHARACTERSET
 #------------------------------------------------------------------------------
 # モーション数
 #------------------------------------------------------------------------------
-NUM_MOTION = 1
+NUM_MOTION = 4
 
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
 MOTION_FILENAME = data/TEXT/character/player/neutral.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/left.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/right.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/win.txt			# [0]デフォルト
 
 END_SCRIPT		# この行は絶対消さないこと！

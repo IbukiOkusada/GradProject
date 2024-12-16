@@ -469,6 +469,7 @@ void CPlayer::Update(void)
 
 	if (m_pCharacter != nullptr)
 	{
+		m_pObj->Quaternion();
 		m_pCharacter->Update();
 	}
 
@@ -665,6 +666,23 @@ void CPlayer::Rotate(void)
 		else
 		{
 			diff = pInputPad->GetLStick(0, 0.1f).x;
+		}
+	}
+
+	// Œü‚«Ý’è
+	if (m_pCharacter != nullptr)
+	{
+		if (diff == 0.0f)
+		{
+			m_pCharacter->GetMotion()->BlendSet(0);
+		}
+		else if (diff > 0.0f)
+		{
+			m_pCharacter->GetMotion()->BlendSet(2);
+		}
+		else
+		{
+			m_pCharacter->GetMotion()->BlendSet(1);
 		}
 	}
 

@@ -17,6 +17,8 @@
 #include "fade.h"
 #include "camera.h"
 #include "camera_action.h"
+#include "character.h"
+#include "motion.h"
 
 //===============================================
 // ’è”’è‹`
@@ -33,7 +35,7 @@ namespace Rank
 // ƒŠƒUƒ‹ƒg•\Ž¦
 namespace Result
 {
-	const int NUM_POLICE = 6;					// ŒxŽ@‚Ìˆê—ñ¶¬”
+	const int NUM_POLICE = 2;					// ŒxŽ@‚Ìˆê—ñ¶¬”
 	const float POLICE_SPACE = 200.0f;			// ŒxŽ@‚Ì‘OŒãSPACE
 	const float LENGTH = 1000.0f;				// ƒJƒƒ‰‚Ì‹——£
 	const float ROTZ = D3DX_PI * 0.4f;
@@ -466,4 +468,7 @@ void CMultiResultStateEnd::Create(CMultiResult* pResult)
 	D3DXVECTOR3 pos = VECTOR3_ZERO;
 	pos.x = (-Rank::PLAYER_TARGET_POSX) * 10;
 	m_pExplosion = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\explosion.efkefc", pos, VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, false, false);
+
+	// ƒvƒŒƒCƒ„[Žæ“¾
+	pInfo[pMgr->GetNumPlayer() - 1].pPlayer->GetCharacteter()->GetMotion()->BlendSet(3);
 }

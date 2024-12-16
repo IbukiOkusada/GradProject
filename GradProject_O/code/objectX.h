@@ -75,13 +75,14 @@ public:	// 誰でもアクセス可能
 	float GetShadowHeight() { return m_fShadowHeight; }
 	static Clist<CObjectX*>* GetList() { return &m_List; }
 
-protected:
+	void CalWorldMtx();
 	void Quaternion();
+
+protected:
 	void DrawOnry();
 	void DrawOnryShader();
 	void DrawShadow();
 	void DrawShadowonShader();
-	void CalWorldMtx();
 
 private:	// 自分だけがアクセス可能
 
