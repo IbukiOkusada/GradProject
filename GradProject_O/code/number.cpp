@@ -35,7 +35,7 @@ CNumber::~CNumber()
 //===============================================
 // 初期化処理
 //===============================================
-HRESULT CNumber::Init(D3DXVECTOR3 pos, float fWidth, float fHeight)
+HRESULT CNumber::Init(D3DXVECTOR3 pos, float fWidth, float fHeight, const char* TexName)
 {
 	if (m_pObject2D == NULL)
 	{// 使用されていない場合
@@ -54,7 +54,7 @@ HRESULT CNumber::Init(D3DXVECTOR3 pos, float fWidth, float fHeight)
 			CTexture *pTexture = CManager::GetInstance()->GetTexture();
 
 			// テクスチャをバインド
-			m_pObject2D->BindTexture(pTexture->Regist("data\\TEXTURE\\UI\\shadow_number.png"));
+			m_pObject2D->BindTexture(pTexture->Regist(TexName));
 
 			// テクスチャ設定
 			SetIdx(m_nIdx);
@@ -149,7 +149,7 @@ CNumber *CNumber::Create(void)
 //===============================================
 // 生成
 //===============================================
-CNumber *CNumber::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
+CNumber *CNumber::Create(D3DXVECTOR3 pos, float fWidth, float fHeight, const char* TexName)
 {
 	CNumber *pNum = NULL;
 
@@ -161,7 +161,7 @@ CNumber *CNumber::Create(D3DXVECTOR3 pos, float fWidth, float fHeight)
 		{// 使用されている場合
 
 			// 初期化処理
-			pNum->Init(pos, fWidth, fHeight);
+			pNum->Init(pos, fWidth, fHeight, TexName);
 		}
 	}
 

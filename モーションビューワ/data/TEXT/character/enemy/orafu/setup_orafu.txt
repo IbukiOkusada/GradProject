@@ -1,0 +1,102 @@
+#==============================================================================
+#
+# 『階層モデル』スクリプトファイル [setup_enemy_orafu.txt]
+# Author : 相馬靜雅
+#
+#==============================================================================
+SCRIPT			# この行は絶対消さないこと！
+
+#------------------------------------------------------------------------------
+# モデル数
+#------------------------------------------------------------------------------
+NUM_MODEL = 5
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MODEL_FILENAME = data/MODEL/enemy/orafu/00_waist.x	# [0]腰
+MODEL_FILENAME = data/MODEL/enemy/orafu/01_body.x	# [1]体
+MODEL_FILENAME = data/MODEL/enemy/orafu/02_head.x	# [2]頭
+MODEL_FILENAME = data/MODEL/enemy/orafu/03_RArm.x	# [3]右腕
+MODEL_FILENAME = data/MODEL/enemy/orafu/04_LArm.x	# [4]左腕
+
+#------------------------------------------------------------------------------
+# キャラクター情報
+#------------------------------------------------------------------------------
+CHARACTERSET
+	VELOCITY = 1.2		
+	JUMP = 0.00		
+	RADIUS = 100.00		
+	HEIGHT = 0.00		
+	LIFE = 5		
+
+	PARTSSET
+		INDEX = 0
+		PARENT = -1
+		POS = 0.00 16.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 1
+		PARENT = 0
+		POS = 0.00 14.00 -1.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 2
+		PARENT = 1
+		POS = 0.00 17.50 1.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 3
+		PARENT = 1
+		POS = -11.50 9.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 4
+		PARENT = 1
+		POS = 11.50 9.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+END_CHARACTERSET
+
+#==============================================================================
+#
+# コライダー情報
+#
+#==============================================================================
+COLLIDER_FILENAME = data/TEXT/character/enemy/orafu/sphere_collider.json
+
+#==============================================================================
+#
+# モーション情報
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+# モーション数
+#------------------------------------------------------------------------------
+NUM_MOTION = 6
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MOTION_FILENAME = data/TEXT/character/enemy/orafu/motion_def.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/enemy/orafu/motion_walk.txt			# [1]歩き
+MOTION_FILENAME = data/TEXT/character/enemy/orafu/motion_attack.txt		# [2]攻撃
+MOTION_FILENAME = data/TEXT/character/enemy/orafu/motion_dmg.txt		# [3]ダメージ
+MOTION_FILENAME = data/TEXT/character/enemy/orafu/motion_knockback.txt	# [3]ノックバック
+MOTION_FILENAME = data/TEXT/character/enemy/orafu/motion_fadeout.txt	# [4]フェードアウト
+
+
+END_SCRIPT		# この行は絶対消さないこと！

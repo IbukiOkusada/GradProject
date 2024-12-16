@@ -1,0 +1,112 @@
+#==============================================================================
+#
+# 『階層モデル』スクリプトファイル [setup_enemy_orafu.txt]
+# Author : 相馬靜雅
+#
+#==============================================================================
+SCRIPT			# この行は絶対消さないこと！
+
+#------------------------------------------------------------------------------
+# モデル数
+#------------------------------------------------------------------------------
+NUM_MODEL = 6
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MODEL_FILENAME = data/MODEL/enemy/jerseycookie/00_body.x	# [0]体
+MODEL_FILENAME = data/MODEL/enemy/jerseycookie/01_head.x	# [1]頭
+MODEL_FILENAME = data/MODEL/enemy/jerseycookie/02_RArm.x	# [2]右腕
+MODEL_FILENAME = data/MODEL/enemy/jerseycookie/03_LArm.x	# [3]左腕
+MODEL_FILENAME = data/MODEL/enemy/jerseycookie/04_RLeg.x	# [4]右脚
+MODEL_FILENAME = data/MODEL/enemy/jerseycookie/05_LLeg.x	# [5]左脚
+
+#------------------------------------------------------------------------------
+# キャラクター情報
+#------------------------------------------------------------------------------
+CHARACTERSET
+	VELOCITY = 0.8		
+	JUMP = 0.00		
+	RADIUS = 100.00		
+	HEIGHT = 0.00		
+	LIFE = 5		
+
+	PARTSSET
+		INDEX = 0
+		PARENT = -1
+		POS = 0.00 31.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 1
+		PARENT = 0
+		POS = 0.00 46.50 1.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 2
+		PARENT = 0
+		POS = -13.00 29.00 1.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 3
+		PARENT = 0
+		POS = 13.00 29.00 1.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 4
+		PARENT = 0
+		POS = -9.50 -10.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 5
+		PARENT = 0
+		POS = 9.50 -10.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+END_CHARACTERSET
+
+
+#==============================================================================
+#
+# コライダー情報
+#
+#==============================================================================
+COLLIDER_FILENAME = data/TEXT/character/enemy/cookie/sphere_collider.json
+
+#==============================================================================
+#
+# モーション情報
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+# モーション数
+#------------------------------------------------------------------------------
+NUM_MOTION = 6
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MOTION_FILENAME = data/TEXT/character/enemy/cookie/motion_def.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/enemy/cookie/motion_walk.txt		# [1]歩き
+MOTION_FILENAME = data/TEXT/character/enemy/cookie/motion_attack.txt		# [2]攻撃
+MOTION_FILENAME = data/TEXT/character/enemy/cookie/motion_dmg.txt		# [3]ダメージ
+MOTION_FILENAME = data/TEXT/character/enemy/cookie/motion_knockback.txt	# [4]ノックバック
+MOTION_FILENAME = data/TEXT/character/enemy/cookie/motion_fadeout.txt	# [5]フェードアウト
+
+
+END_SCRIPT		# この行は絶対消さないこと！
