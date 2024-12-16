@@ -34,7 +34,7 @@ struct Light
 };
 
 // 複数ライト用の配列
-#define MAX_LIGHTS 8
+#define MAX_LIGHTS 20
 cbuffer MyBuffer : register(b0) {
     Light lights[MAX_LIGHTS];
    int numLights = 0; // 使用するライトの数

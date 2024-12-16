@@ -80,6 +80,7 @@ protected:
 	void DrawOnry();
 	void DrawOnryShader();
 	void DrawShadow();
+	void DrawShadowonShader();
 	void CalWorldMtx();
 
 private:	// 自分だけがアクセス可能
