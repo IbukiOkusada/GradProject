@@ -16,6 +16,14 @@ float4 s_FogColor = float4(0.5f, 0.6f, 0.7f, 0.6f);		// フォグ色
 float  s_FogNear = 500.0f;								// フォグの開始位置
 float  s_FogFar = 30000.0f;								// フォグの終了位置
 
+textureCUBE CubeMapSampler;
+samplerCUBE cubeTexSampler =
+sampler_state {
+    Texture = <CubeMapSampler>;
+    MinFilter = LINEAR;
+    MagFilter = LINEAR;
+    MipFilter = LINEAR;
+};
 sampler tex0 : register(s0);      //オブジェクトのテクスチャ
 bool bUseTex = false;
 
@@ -114,7 +122,14 @@ float4 CalculateLighting(float3 normal, float3 position, float3 viewDir)
 
     return float4(finalColor, 1.0);
 }
-
+//============================================================
+//	環境マッピング
+//============================================================
+float4 PS_EnvironmentMap(float3 ReflectionVector : TEXCOORD3) : COLOR
+{
+    // キューブマップから反射ベクトルに基づいて色をサンプリング
+    return texCUBE(cubeTexSampler, ReflectionVector);
+}
 //============================================================
 //	頂点座標の射影変換
 //============================================================
@@ -178,8 +193,8 @@ float4 PS(VS_OUTPUT In) : COLOR0
    Out += m_specula * m_LightCol * specPower;
 
    Out += CalculateLighting(In.Normal.xyz,In.PosWVP.xyz,viewDir.xyz);
-
-  
+   float3 fdef = 1.0f;
+   Out.xyz = (fdef - m_specula.xyz) * Out.xyz + PS_EnvironmentMap(reflection).xyz * m_specula.xyz;
     //===============================
     //			フォグ
     //===============================
