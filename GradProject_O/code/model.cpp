@@ -34,6 +34,8 @@ CModel::CModel() : CObject(1)
 	m_bDraw = true;
 	m_bShadow = true;
 	m_pCharacterMtx = nullptr;
+	m_ColMulti = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+	m_AddCol = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
 
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
@@ -152,19 +154,18 @@ void CModel::Draw(void)
 		{
 			int nIdxTex = pFileData->pIdexTexture[nCntMat];	// テクスチャ番号
 
-			if (m_bChangeCol == false)
-			{
-				// マテリアルの設定
-				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
-			}
-			else
-			{
-				changemat = pMat[nCntMat].MatD3D;
-				changemat = m_ChangeMat;
+			D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
+			mat.Diffuse.r = mat.Diffuse.r * m_ColMulti.r + m_AddCol.r;
+			mat.Diffuse.g = mat.Diffuse.g * m_ColMulti.g + m_AddCol.g;
+			mat.Diffuse.b = mat.Diffuse.b * m_ColMulti.b + m_AddCol.b;
+			mat.Diffuse.a = mat.Diffuse.a * m_ColMulti.a + m_AddCol.a;
+			mat.Ambient.r = mat.Ambient.r * m_ColMulti.r + m_AddCol.r;
+			mat.Ambient.g = mat.Ambient.g * m_ColMulti.g + m_AddCol.g;
+			mat.Ambient.b = mat.Ambient.b * m_ColMulti.b + m_AddCol.b;
+			mat.Ambient.a = mat.Ambient.a * m_ColMulti.a + m_AddCol.a;
 
-				// マテリアルの設定
-				pDevice->SetMaterial(&changemat);
-			}
+			//マテリアルの設定
+			pDevice->SetMaterial(&mat);
 
 			// テクスチャの設定
 			pDevice->SetTexture(0, pTexture->SetAddress(nIdxTex));

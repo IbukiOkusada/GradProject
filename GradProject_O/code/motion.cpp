@@ -309,14 +309,14 @@ void CMotion::LoadMotionData(FILE *pFile)
 					fscanf(pFile, "%d", &m_aInfo[m_nNumMotion].pKeyInfo[nCntKey].nFrame);	//ì«Ç›çûÇ›
 					bFrame = true;
 				}
-				else if (strcmp(&aStr[0], "KEY") == 0 && bFrame == true)
+				else if ((strcmp(&aStr[0], "KEY") == 0 || strcmp(&aStr[0], "PARTS") == 0) && bFrame == true)
 				{//êeî‘çÜ
 					while (1)
 					{
 						//ì«Ç›çûÇ›
 						fscanf(pFile, "%s", &aStr[0]);
 
-						if (strcmp(&aStr[0], "END_KEY") == 0)
+						if (strcmp(&aStr[0], "END_KEY") == 0 || strcmp(&aStr[0], "END_PARTS") == 0)
 						{//ÉtÉåÅ[ÉÄêî
 							break;
 						}

@@ -10,6 +10,6 @@ SCRIPT			# この行は絶対消さないこと！
 # モーションファイル名
 #------------------------------------------------------------------------------
 #MOTION_FILENAME = data/TEXT/character/enemy/orafu/setup_orafu.txt
-MOTION_FILENAME = data/TEXT/character/player/motion_neet2.txt
+MOTION_FILENAME = data/TEXT/character/player/motion_player.txt
 
 END_SCRIPT		# この行は絶対消さないこと！

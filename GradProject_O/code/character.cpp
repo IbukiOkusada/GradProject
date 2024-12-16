@@ -557,6 +557,17 @@ void CCharacter::SetScale(const D3DXVECTOR3& scale)
 	}
 }
 
+void CCharacter::SetColMulti(const D3DXCOLOR& col)
+{
+	if (m_ppParts != NULL)
+	{// 使用していた場合
+		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
+		{
+			m_ppParts[nCnt]->SetColMulti(col);
+		}
+	}
+}
+
 //==========================================================
 // マトリックス設定
 //==========================================================

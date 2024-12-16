@@ -16,21 +16,21 @@ NUM_MODEL = 15
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-MODEL_FILENAME = data/MODEL/ppp/00_waist.x		# [0]腰
-MODEL_FILENAME = data/MODEL/ppp/01_body.x		# [1]体
-MODEL_FILENAME = data/MODEL/ppp/02_hed.x		# [2]頭
-MODEL_FILENAME = data/MODEL/ppp/06_upperarmL.x 	# [3]左上腕
-MODEL_FILENAME = data/MODEL/ppp/07_forearmL.x	# [4]左前腕
-MODEL_FILENAME = data/MODEL/ppp/08_handL.x		# [5]左手
-MODEL_FILENAME = data/MODEL/ppp/03_upperarmR.x	# [6]右上腕
-MODEL_FILENAME = data/MODEL/ppp/04_forearmR.x	# [7]右前腕
-MODEL_FILENAME = data/MODEL/ppp/05_handR.x		# [8]右手
-MODEL_FILENAME = data/MODEL/ppp/09_thighR.x		# [9]左太もも
-MODEL_FILENAME = data/MODEL/ppp/10_shinR.x		# [10]左脛
-MODEL_FILENAME = data/MODEL/ppp/11_footR.x		# [11]左足
-MODEL_FILENAME = data/MODEL/ppp/12_thighL.x		# [12]右太もも
-MODEL_FILENAME = data/MODEL/ppp/13_shinL.x		# [13]右脛
-MODEL_FILENAME = data/MODEL/ppp/14_footL.x		# [14]右足
+MODEL_FILENAME = data/MODEL/player/00_waist.x		# [0]腰
+MODEL_FILENAME = data/MODEL/player/01_body.x		# [1]体
+MODEL_FILENAME = data/MODEL/player/02_hed.x		# [2]頭
+MODEL_FILENAME = data/MODEL/player/06_upperarmL.x 	# [3]左上腕
+MODEL_FILENAME = data/MODEL/player/07_forearmL.x	# [4]左前腕
+MODEL_FILENAME = data/MODEL/player/08_handL.x		# [5]左手
+MODEL_FILENAME = data/MODEL/player/03_upperarmR.x	# [6]右上腕
+MODEL_FILENAME = data/MODEL/player/04_forearmR.x	# [7]右前腕
+MODEL_FILENAME = data/MODEL/player/05_handR.x		# [8]右手
+MODEL_FILENAME = data/MODEL/player/09_thighR.x		# [9]左太もも
+MODEL_FILENAME = data/MODEL/player/10_shinR.x		# [10]左脛
+MODEL_FILENAME = data/MODEL/player/11_footR.x		# [11]左足
+MODEL_FILENAME = data/MODEL/player/12_thighL.x		# [12]右太もも
+MODEL_FILENAME = data/MODEL/player/13_shinL.x		# [13]右脛
+MODEL_FILENAME = data/MODEL/player/14_footL.x		# [14]右足
 
 
 #------------------------------------------------------------------------------
@@ -169,11 +169,11 @@ END_CHARACTERSET
 #------------------------------------------------------------------------------
 # モーション数
 #------------------------------------------------------------------------------
-NUM_MOTION = 0
+NUM_MOTION = 1
 
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
-#MOTION_FILENAME = data/TEXT/character/player/tyuuni/motion_def.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/neutral.txt			# [0]デフォルト
 
 END_SCRIPT		# この行は絶対消さないこと！
