@@ -57,6 +57,9 @@ namespace
 	constexpr float MIN_ALPHA = 0.3f;															//透明度の最小値
 	constexpr float ALPHA_ZERO = 0.0f;															//透明の時のα値
 	constexpr float TITLELOGO_DEST = SCREEN_WIDTH * 0.5f;										//タイトルロゴの目標位置
+
+	const D3DXCOLOR ZERO_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO);							//透明色の値
+	const D3DXCOLOR ONE_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA);							//非透明の値
 	
 }
 //<===============================================
@@ -80,7 +83,6 @@ CTitle::CTitle()
 	//bool系
 	m_bPush = false;
 	m_bNext = false;
-	m_bDisplay = false;
 	m_bSkipped = false;
 	m_bCol = false;
 	m_bIniting = false;
@@ -90,7 +92,6 @@ CTitle::CTitle()
 	//ポインタ系
 	m_pPlayer = nullptr;
 	m_pCam = nullptr;
-	m_pGoal = nullptr;
 
 	//配列の初期化
 	for (int nCnt = 0; nCnt < OBJ2D_MAX; nCnt++)
@@ -186,11 +187,7 @@ void CTitle::Update(void)
 		if (!m_bNext)
 		{
 			//キーボード入力かパッド入力があれば
-			if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
-				CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
-				CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0)) {
-				m_bPush = true;
-			}
+			if (TriggerEnter()) {m_bPush = true;}
 
 			//押された場合
 			if (m_bPush)
@@ -343,12 +340,7 @@ void CTitle::MoveP_E(void)
 
 	PreMove();
 	//キーボード入力かパッド入力があれば
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
-	{
-		m_bPush = true;
-	}
+	if (TriggerEnter()){m_bPush = true;}
 
 	//反応があったら
 	if (m_bPush)
@@ -361,6 +353,7 @@ void CTitle::MoveP_E(void)
 		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 		m_eState = STATE::STATE_CHASING;
 	}
+	else { return; }
 }
 //<===============================================
 //黒カバーの動き
@@ -489,6 +482,9 @@ void CTitle::StatePre(void)
 //<===============================================
 void CTitle::InitingP_E(void)
 {
+	//初期化済みであれば抜ける
+	if (m_bIniting) {return;}
+
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -1988.0f };							//プレイヤーの位置
 	constexpr float fLogoLength = 150.0f;													//ロゴの長さ(サイズ)
 	constexpr float fP_ELength = (350.0f, 350.0f);											//プレスエンターの長さ(サイズ)
@@ -503,55 +499,49 @@ void CTitle::InitingP_E(void)
 	constexpr float fSizeTitleLogo[SIZING_MAX] = { 650.0f,400.0f };							//サイズ(タイトルロゴ)
 	constexpr float fSizePressEnter[SIZING_MAX] = { 550.0f,80.0f };						//サイズ(プレスエンター)
 
-	//初期化済みではなければ
-	if (!m_bIniting)
+	//2つのbool情報を初期化
+	m_bIniting = true;
+	m_bPush = false;
+	m_bNext = false;
+
+	//必要ないので終了処理を挟む(いるかは不明だけど念のためです)
+	SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_TeamLogo]);
+	//<******************************************
+	// 2Dオブジェクトの生成処理
+	//<****************************************** 
+	//ブラックカバー
+	m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO, nMaxPri,
+		fSizeBlack[SIZING_WIDTH], fSizeBlack[SIZING_HEIGHT], true, nullptr, VIS_COL);
+
+	//ブラックカバー
+	m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = InitObj2D(TITLELOGO_POS, VECTOR3_ZERO, nNatPriority,
+		fSizeTitleLogo[SIZING_WIDTH], fSizeTitleLogo[SIZING_HEIGHT], false, TEX_TITLELOGO);
+
+	//ブラックカバー
+	m_pObject2D[OBJ2D::OBJ2D_PressEnter] = InitObj2D(PRESSENTER_POS, VECTOR3_ZERO, nNatPriority,
+		fSizePressEnter[SIZING_WIDTH], fSizePressEnter[SIZING_HEIGHT], false, TEX_PRESSENTER);
+	m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetVtx();
+
+	//必要なオブジェクトの生成
+	CMapManager::GetInstance()->Load();
+	m_pPlayer = CPlayerTitle::Create(PLAYER_POS, DEST_ROT, VECTOR3_ZERO,nullptr,nullptr);
+
+	// 右側
+	CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);
+
+	// 左側
+	CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
+
+	//警察の生成
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 	{
-		//2つのbool情報を初期化
-		m_bIniting = true;
-		m_bPush = false;
-		m_bNext = false;
-
-		//必要ないので終了処理を挟む(いるかは不明だけど念のためです)
-		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_TeamLogo]);
-		//<******************************************
-		// 2Dオブジェクトの生成処理
-		//<****************************************** 
-		//ブラックカバー
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO, nMaxPri,
-			fSizeBlack[SIZING_WIDTH], fSizeBlack[SIZING_HEIGHT], true, nullptr, VIS_COL);
-
-		//ブラックカバー
-		m_pObject2D[OBJ2D::OBJ2D_TITLELOGO] = InitObj2D(TITLELOGO_POS, VECTOR3_ZERO, nNatPriority,
-			fSizeTitleLogo[SIZING_WIDTH], fSizeTitleLogo[SIZING_HEIGHT], false, TEX_TITLELOGO);
-
-		//ブラックカバー
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter] = InitObj2D(PRESSENTER_POS, VECTOR3_ZERO, nNatPriority,
-			fSizePressEnter[SIZING_WIDTH], fSizePressEnter[SIZING_HEIGHT], false, TEX_PRESSENTER);
-		m_pObject2D[OBJ2D::OBJ2D_PressEnter]->SetVtx();
-
-		//必要なオブジェクトの生成
-		CMapManager::GetInstance()->Load();
-		m_pPlayer = CPlayerTitle::Create(PLAYER_POS, DEST_ROT, VECTOR3_ZERO,nullptr,nullptr);
-
-		// 右側
-		CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);
-
-		// 左側
-		CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
-
-		//警察の生成
-		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
-		{
-			m_apPolice[nCnt] = CPoliceTitle::Create(
-				D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
-				DEST_ROT, VECTOR3_ZERO);
-		}
-
-		//タイトルBGM再生
-		CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
-
-
+		m_apPolice[nCnt] = CPoliceTitle::Create(
+			D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
+			DEST_ROT, VECTOR3_ZERO);
 	}
+
+	//タイトルBGM再生
+	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
 }
 //<===============================================
 //色変更処理
@@ -621,7 +611,6 @@ void CTitle::LightOff(void)
 	constexpr char* TEX_LIGHTON = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴ(ライトオン)
 	constexpr char* TEX_LIGHTOFF = "data\\TEXTURE\\Title\\Title_logo_lightoff.png";	//タイトルロゴ(ライトオフVer);
 
-
 	//最大値まで行っていたら
 	if (m_nLogoCou >= nCountMax)
 	{
@@ -652,9 +641,6 @@ void CTitle::LightOff(void)
 //<===============================================
 void CTitle::ChaseMovement(void)
 {
-	Selecting();
-	Chasing();
-
 	//選択判定があれば
 	if (m_bSelected) 
 	{ 
@@ -677,6 +663,12 @@ void CTitle::ChaseMovement(void)
 		m_eState = STATE::STATE_ICETHROW; 
 		m_bIniting = false;
 		m_nCounter = 0; 
+	}
+	//無かったら
+	else
+	{
+		Selecting();
+		Chasing();
 	}
 }
 //<===============================================
@@ -765,6 +757,9 @@ void CTitle::SkipMovement(void)
 //<===============================================
 void CTitle::InitingSelect(void)
 {
+	//初期化済みであれば抜ける
+	if (m_bIniting) { return; }
+
 	//テクスチャネーム
 	constexpr char* TEX_MODESELECT = "data\\TEXTURE\\Title\\select.png";					//"MODE SELECT"の文字
 	constexpr char* TEX_CHECK = "data\\TEXTURE\\Title\\start.png";							//確認文字
@@ -800,66 +795,63 @@ void CTitle::InitingSelect(void)
 	const D3DXVECTOR3 YES_POS = D3DXVECTOR3(485.0f, CHECK_POS.y + 150.0f, 0.0f);		//はいといいえの位置
 	constexpr float fDis_YESNO = 250.0f;												//距離2
 
-	//初期化されていなかったら
-	if (!m_bIniting)
+	//bool型の情報定義
+	m_bIniting = true;
+	m_bPush = false;
+
+	//サウンドを止める
+	m_pPlayer->SetS(false);
+	m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, -3.14f, 0.0f));
+
+	//フレーム
+	m_pObject2D[OBJ2D::OBJ2D_FRAME] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO, nNatPriority,
+		0.0f, 0.0f, true, nullptr, InitFrameCol);
+
+	//確認文字
+	m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = InitObj2D(NUMCHAR_POS, VECTOR3_ZERO, nNatPriority,
+		fSizeModeSelect[SIZING_WIDTH], fSizeModeSelect[SIZING_HEIGHT], false, TEX_MODESELECT);
+
+	//シングルかマルチかの選択肢
+	for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
 	{
-		//bool型の情報定義
-		m_bIniting = true;
-		m_bPush = false;
 
-		//サウンドを止める
-		m_pPlayer->SetS(false);
-		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, -3.14f, 0.0f));
-
-		//フレーム
-		m_pObject2D[OBJ2D::OBJ2D_FRAME] = InitObj2D(TEAMLOGO_POS, VECTOR3_ZERO, nNatPriority,
-			0.0f, 0.0f, true, nullptr, InitFrameCol);
-
-		//確認文字
-		m_pObject2D[OBJ2D::OBJ2D_NUMCHAR] = InitObj2D(NUMCHAR_POS, VECTOR3_ZERO, nNatPriority,
-			fSizeModeSelect[SIZING_WIDTH], fSizeModeSelect[SIZING_HEIGHT], false, TEX_MODESELECT);
-
-		//シングルかマルチかの選択肢
-		for (int nCnt = 0; nCnt < SELECT_MAX; nCnt++)
-		{
-
-			//シングルとマルチ
-			m_apSelect[nCnt] = InitObj2D(D3DXVECTOR3(
-				SELECT_POS.x + fDis_SELECT * nCnt,
-				SELECT_POS.y,
-				SELECT_POS.z), 
-				VECTOR3_ZERO, 
-				nNatPriority,
-				fSizeSINGLEMULTI[SIZING_WIDTH],
-				fSizeSINGLEMULTI[SIZING_HEIGHT], 
-				false, SELECT_NAME[nCnt]);
-		}
-
-		//確認メッセージ
-		m_pObject2D[OBJ2D::OBJ2D_CHECK] = InitObj2D(CHECK_POS, VECTOR3_ZERO, nNatPriority,
-			fSizeCHECK[SIZING_WIDTH], fSizeCHECK[SIZING_HEIGHT], false, TEX_CHECK);
-
-		//はいといいえの選択肢
-		for (int nCnt = 0; nCnt < SELECT_YN_MAX; nCnt++)
-		{
-			m_apYesNoObj[nCnt] = InitObj2D(D3DXVECTOR3(
-				YES_POS.x + fDis_YESNO * nCnt,
-				YES_POS.y,
-				YES_POS.z),
-				VECTOR3_ZERO,
-				nNatPriority,
-				fSizeYESNO[SIZING_WIDTH],
-				fSizeYESNO[SIZING_HEIGHT],
-				false, SELECT_YN_NAME[nCnt]);
-		}
-
-		//ブラックカバーを外す(透明にする)
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(INV_COL);
-
-		//サイレン音と到着情報を設定
-		m_pPlayer->SetReached(false);
-		CPoliceTitle::SetSiren(true);
+		//シングルとマルチ
+		m_apSelect[nCnt] = InitObj2D(D3DXVECTOR3(
+			SELECT_POS.x + fDis_SELECT * nCnt,
+			SELECT_POS.y,
+			SELECT_POS.z), 
+			VECTOR3_ZERO, 
+			nNatPriority,
+			fSizeSINGLEMULTI[SIZING_WIDTH],
+			fSizeSINGLEMULTI[SIZING_HEIGHT], 
+			false, SELECT_NAME[nCnt]);
 	}
+
+	//確認メッセージ
+	m_pObject2D[OBJ2D::OBJ2D_CHECK] = InitObj2D(CHECK_POS, VECTOR3_ZERO, nNatPriority,
+		fSizeCHECK[SIZING_WIDTH], fSizeCHECK[SIZING_HEIGHT], false, TEX_CHECK);
+
+	//はいといいえの選択肢
+	for (int nCnt = 0; nCnt < SELECT_YN_MAX; nCnt++)
+	{
+		m_apYesNoObj[nCnt] = InitObj2D(D3DXVECTOR3(
+			YES_POS.x + fDis_YESNO * nCnt,
+			YES_POS.y,
+			YES_POS.z),
+			VECTOR3_ZERO,
+			nNatPriority,
+			fSizeYESNO[SIZING_WIDTH],
+			fSizeYESNO[SIZING_HEIGHT],
+			false, SELECT_YN_NAME[nCnt]);
+	}
+
+	//ブラックカバーを外す(透明にする)
+	m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(INV_COL);
+
+	//サイレン音と到着情報を設定
+	m_pPlayer->SetReached(false);
+	CPoliceTitle::SetSiren(true);
+	
 }
 //<===============================================
 //フレームのサイズ調整
@@ -942,6 +934,8 @@ void CTitle::Selecting(void)
 //<===============================================
 void CTitle::SelectSingleMulti(void)
 {
+	constexpr int nChangeColTime = 10;										//色を変更する際のタイマー
+
 	//描画をオフにする
 	if (m_pObject2D[OBJ2D::OBJ2D_CHECK]->GetDraw()) { m_pObject2D[OBJ2D::OBJ2D_CHECK]->SetDraw(false); }
 
@@ -955,14 +949,8 @@ void CTitle::SelectSingleMulti(void)
 		else { break; }
 	}
 
-	//キーボード入力かパッド入力があれば
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
-	{
-		m_bPush = true;
-		m_nSelectYN = SELECT_YN::SELECT_YN_YES;
-	}
+	//押下情報と選択情報をYESに設定
+	if (TriggerEnter()) {m_bPush = true; m_nSelectYN = SELECT_YN::SELECT_YN_YES;}
 
 	//右ボタン
 	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RIGHTARROW) || 
@@ -978,15 +966,15 @@ void CTitle::SelectSingleMulti(void)
 	if (m_nSelect == SELECT::SELECT_SINGLE)
 	{
 		//"YES"を選択状態、"NO"を非選択状態
-		ColChange(m_apSelect[SELECT::SELECT_SINGLE],10);
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
+		ColChange(m_apSelect[SELECT::SELECT_SINGLE], nChangeColTime);
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(ONE_COL);
 	}
 	//"NO"を選択している時
 	else if (m_nSelect == SELECT::SELECT_MULTI)
 	{
 		//"YES"を非選択状態、"NO"を選択状態
-		ColChange(m_apSelect[SELECT::SELECT_MULTI], 10);
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
+		ColChange(m_apSelect[SELECT::SELECT_MULTI], nChangeColTime);
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(ONE_COL);
 	}
 }
 //<===============================================
@@ -1016,10 +1004,8 @@ void CTitle::SelectYesNO(void)
 		|| CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_LEFT, 0))
 	{ m_nSelectYN = (m_nSelectYN + (SELECT_YN_MAX - 1)) % SELECT_YN_MAX; }
 
-	//キーボード入力かパッド入力があれば
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
+	//入力があれば
+	if (TriggerEnter())
 	{
 		
 		//"YES"を選択したとき、ゲーム画面に移行する
@@ -1036,12 +1022,14 @@ void CTitle::SelectYesNO(void)
 //<===============================================
 void CTitle::SelectCol(void)
 {	
+	constexpr int nChangeColTime = 7;										//色を変更する際のタイマー
+
 	//"YES"を選択している時
 	if (m_nSelect == SELECT::SELECT_SINGLE) 
 	{
 		//選択されていないマルチを透明にする
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO));
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(ONE_COL);
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(ZERO_COL);
 	
 	}
 
@@ -1049,23 +1037,23 @@ void CTitle::SelectCol(void)
 	else if (m_nSelect == SELECT::SELECT_MULTI)
 	{
 		//選択されていないシングルを透明にする
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO));
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA));
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(ZERO_COL);
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(ONE_COL);
 	}
 
 	//"YES"を選択している時
 	if (m_nSelectYN == SELECT_YN::SELECT_YN_YES)
 	{
 		//"YES"を選択状態、"NO"を非選択状態
-		ColChange(m_apYesNoObj[SELECT_YN::SELECT_YN_YES], 7);
-		m_apYesNoObj[SELECT_YN::SELECT_YN_NO]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		ColChange(m_apYesNoObj[SELECT_YN::SELECT_YN_YES], nChangeColTime);
+		m_apYesNoObj[SELECT_YN::SELECT_YN_NO]->SetCol(ONE_COL);
 	}
 	//"NO"を選択している時
 	else if (m_nSelectYN == SELECT_YN::SELECT_YN_NO)
 	{
 		//"YES"を非選択状態、"NO"を選択状態
-		ColChange(m_apYesNoObj[SELECT_YN::SELECT_YN_NO], 7);
-		m_apYesNoObj[SELECT_YN::SELECT_YN_YES]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		ColChange(m_apYesNoObj[SELECT_YN::SELECT_YN_NO], nChangeColTime);
+		m_apYesNoObj[SELECT_YN::SELECT_YN_YES]->SetCol(ONE_COL);
 	}
 
 }
@@ -1100,36 +1088,35 @@ void CTitle::DebugCam(void)
 //<===============================================
 void CTitle::InitingIce(void)
 {
+	//初期化されていたら処理を抜ける
+	if (m_bIniting) { return; }
+
 	const D3DXVECTOR3 PLAYER_POS = { 2630.0f, 50.0f, -200.0f };			//プレイヤーの位置
 	constexpr float fDis = 150.0f;										//警察の距離
 	constexpr float fLength = 1350.0f;									//カメラの長さ
 
-	//初期化チェック
-	if (!m_bIniting)
+	//初期化したことにする
+	m_bIniting = true;
+	m_bPush = false;
+
+	//位置情報初期化
+	m_pPlayer->SetPosition(PLAYER_POS);
+	m_pPlayer->SetRotation(DEST_ROT);
+
+	//警察の生成
+	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
 	{
-		//初期化したことにする
-		m_bIniting = true;
-		m_bPush = false;
-
 		//位置情報初期化
-		m_pPlayer->SetPosition(PLAYER_POS);
-		m_pPlayer->SetRotation(DEST_ROT);
-
-		//警察の生成
-		for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
-		{
-			//位置情報初期化
-			m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + fDis * nCnt, PolicePos.y, PolicePos.z));
-			m_apPolice[nCnt]->SetRotation(DEST_ROT);
-		}
-
-		//カメラの設定
-		m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
-		m_pCam->SetLength(fLength);
-
-		//ブラックカバーを外す(透明にする)
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(INV_COL);
+		m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + fDis * nCnt, PolicePos.y, PolicePos.z));
+		m_apPolice[nCnt]->SetRotation(DEST_ROT);
 	}
+
+	//カメラの設定
+	m_pCam->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 1.57f));
+	m_pCam->SetLength(fLength);
+
+	//ブラックカバーを外す(透明にする)
+	m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(INV_COL);
 }
 //<===============================================
 //アイスステート時の動き
@@ -1170,20 +1157,24 @@ void CTitle::IceMovement(void)
 		m_pPlayer->GetTitleGoal()->GetPos().y+ CamHeightDis,
 		m_pPlayer->GetTitleGoal()->GetPos().z));
 
-	//超えていたらゲーム画面に遷移する
-	if (m_nCounter >= FADE_TIME) 
-	{ 
-		//シングルプレイが選択されていたら、そのままゲーム画面に遷移
-		if (GetSelectSingleMulti() == SELECT::SELECT_SINGLE)
-		{CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
+	//フェードステートが何もなしだったら
+	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
+	{
+		//超えていたらゲーム画面に遷移する
+		if (m_nCounter >= FADE_TIME)
+		{
+			//シングルプレイが選択されていたら、そのままゲーム画面に遷移
+			if (GetSelectSingleMulti() == SELECT::SELECT_SINGLE)
+			{CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
 
-		//マルチプレイが選択されていたら、エントリー画面に遷移
-		else if (GetSelectSingleMulti() == SELECT::SELECT_MULTI)
-		{CManager::GetInstance()->GetFade()->Set(CScene::MODE_ENTRY);}
+			//マルチプレイが選択されていたら、エントリー画面に遷移
+			else if (GetSelectSingleMulti() == SELECT::SELECT_MULTI)
+			{CManager::GetInstance()->GetFade()->Set(CScene::MODE_ENTRY);}
+		}
+
+		//超えていなかったらカウント増加
+		else { m_nCounter++; }
 	}
-
-	//超えていなかったらカウント増加
-	else { m_nCounter++; }
 
 	//半分ぐらいの値になっていたら
 	if (m_nCounter >= FADE_TIME_HARF)
@@ -1197,23 +1188,31 @@ void CTitle::IceMovement(void)
 	}
 
 	//スキップ用の入力処理
-	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
-		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0)) 
+	if (TriggerEnter())
 	{
 		//シングルプレイが選択されていたら、そのままゲーム画面に遷移
 		if (GetSelectSingleMulti() == SELECT::SELECT_SINGLE)
-		{
-			CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
-		}
+		{CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);}
 
 		//マルチプレイが選択されていたら、エントリー画面に遷移
 		else if (GetSelectSingleMulti() == SELECT::SELECT_MULTI)
-		{
-			CManager::GetInstance()->GetFade()->Set(CScene::MODE_ENTRY);
-		}
-	
+		{CManager::GetInstance()->GetFade()->Set(CScene::MODE_ENTRY);}
 	}
+}
+//<===============================================
+//エンターを押したかどうか
+//<===============================================
+bool CTitle::TriggerEnter(void) 
+{
+	//エンター押したら
+	if (CInputKeyboard::GetInstance()->GetTrigger(DIK_RETURN) ||
+		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_START, 0) ||
+		CInputPad::GetInstance()->GetTrigger(CInputPad::BUTTON_A, 0))
+	{
+		return true;
+	}
+
+	return false;
 }
 //<===============================================
 //オブジェクト2Dの初期化
@@ -1226,7 +1225,6 @@ CObject2D* CTitle::InitObj2D(const D3DXVECTOR3 rPos,
 	const bool bDraw,
 	const char* pTexName,
 	const D3DXCOLOR rCol)
-
 {
 	//生成用のオブジェクト
 	CObject2D* pObj2D = nullptr;

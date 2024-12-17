@@ -99,8 +99,10 @@ HRESULT CPlayerTitle::Init(void)
 //<===============================================
 HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 {
-	constexpr char* MODEL_NAME = "data\\MODEL\\bike.x";		//モデル名
-	constexpr char* SoundName = "data\\SE\\idol.wav";		//サウンド名
+	constexpr char* MODEL_NAME = "data\\MODEL\\bike.x";				//モデル名
+	constexpr char* SoundName = "data\\SE\\idol.wav";				//サウンド名
+	const D3DXCOLOR YellowCol = D3DXCOLOR(1.0f, 1.0f, 0.3f, 1.0f);	//黄色
+	CModel* pParts = nullptr;										//モデルのパーツ取得用変数
 
 	//コンテナだけいらないのでこのような形にしました
 	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), MODEL_NAME);
@@ -109,6 +111,22 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 	SetMatrix();
 	SetCol();
 	m_pNavi = CNavi::Create();
+
+	//バイカー生成
+	m_pCharacter = CCharacter::Create("data\\TXT\\character\\player\\motion_player.txt");
+	m_pCharacter->SetParent(m_pObj->GetMtx());
+	m_pCharacter->GetMotion()->InitSet(0);
+	m_pCharacter->SetScale(D3DXVECTOR3(3.0f, 3.0f, 3.0f));
+	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -60.0f, 75.0f));
+	m_pCharacter->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+
+	//バイカーの色設定
+	for (int i = 0; i < m_pCharacter->GetNumParts(); i++)
+	{
+		//モデルのパーツを取得
+		pParts = m_pCharacter->GetParts(i);
+		pParts->SetColMulti(YellowCol);
+	}
 
 	//サウンド生成
 	m_pSound = CMasterSound::CObjectSound::Create(SoundName, -1);
@@ -166,6 +184,9 @@ void CPlayerTitle::Update(void)
 			m_pObj->SetPosition(GetPosition());
 			m_pObj->SetRotation(GetRotation());
 			m_pObj->SetShadowHeight(GetPosition().y);
+
+			//バイカーの更新
+			m_pCharacter->Update();
 		}
 		//次の動きに移行していなかったら、アイスをプレイヤーの上に乗っける
 		if (!m_bNextMove) { m_pTitleBaggage->SetPosition(GetPosition()); }

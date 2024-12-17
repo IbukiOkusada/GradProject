@@ -345,7 +345,7 @@ void CMultiResultStateResult::PoliceUpdate(CMultiResult* pResult)
 				// À•W‚ð•â³‚µ‚ÄˆÚ“®‚³‚¹‚é
 				D3DXVECTOR3 playpos = pPlayer->GetPosition();
 				D3DXVECTOR3 posdest = playpos;
-				posdest.x = Rank::PLAYER_TARGET_POSX * 2;
+				posdest.x = Rank::PLAYER_TARGET_POSX * 3;
 				playpos += ((posdest - playpos) * Rank::PLAYER_INER);
 
 				pPlayer->SetPosition(playpos);

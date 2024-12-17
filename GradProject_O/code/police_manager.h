@@ -53,6 +53,7 @@ public:	// 誰でもアクセス可能
 	void SetInspection();
 	void ResetInterVal() { m_InspInfo.fInterval = 0.0f; }
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
+	std::vector<CPolice*>* GetNearList() { return &m_NearPoliceList; }
 
 private:	// 自分だけがアクセス可能
 
@@ -63,6 +64,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	Clist<CPolice*>* m_pList;
 	Cmaplist<CPolice*> m_maplist;
+	std::vector<CPolice*> m_NearPoliceList;	// 近い警察リスト
 	int m_nNum;
 	static CPoliceManager* m_pInstance;	// インスタンス
 	SInspInfo m_InspInfo;

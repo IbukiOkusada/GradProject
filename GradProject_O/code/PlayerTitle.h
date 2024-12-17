@@ -19,6 +19,7 @@ namespace Function
 }
 class CTitleBaggage;
 class CTitleGoal;
+class CCharacter;
 //<========================================
 //プレイヤークラスを継承して定義
 //<========================================
@@ -95,9 +96,6 @@ private:
 	bool m_bReached;					//着いたかどうか
 	CTitleBaggage* m_pTitleBaggage;		//タイトル用の荷物
 	CTitleGoal *m_pTitleGoal;			//タイトル用のゴール
-
-	
-
 };
 
 #endif

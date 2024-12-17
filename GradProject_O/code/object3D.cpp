@@ -14,6 +14,7 @@
 #include "player.h"
 #include "sound.h"
 #include "fxmanager.h"
+#include "edit_manager.h"
 //==========================================================
 //マクロ定義
 //==========================================================
@@ -225,6 +226,11 @@ void CObject3D::Draw(void)
 //==========================================================
 void CObject3D::DrawOnShader(void)
 {
+	if (CEditManager::GetInstance() != nullptr)
+	{
+		Draw();
+		return;
+	}
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 	CFXManager* pFx = CFXManager::GetInstance();
