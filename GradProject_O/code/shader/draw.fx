@@ -74,7 +74,7 @@ float3 TransformNormal(float3 normal, float3x3 inverseTransposeWorld)
 float4 CalculateLighting(float3 normal, float3 position, float3 viewDir)
 {
     float3 finalColor = float3(0, 0, 0);
-
+    float sp = 0.0f;
     for (int i = 0; i < numLights; i++)
     {
         // ライトからの方向を計算
@@ -90,7 +90,7 @@ float4 CalculateLighting(float3 normal, float3 position, float3 viewDir)
 
         // 鏡面反射光の計算
         float specular = pow(saturate(dot(normal, halfVector)), 16) * lights[i].intensity;
-
+        sp += specular;
         if (lights[i].spotAngle > 0)
         {
 
@@ -120,7 +120,7 @@ float4 CalculateLighting(float3 normal, float3 position, float3 viewDir)
         
     }
 
-    return float4(finalColor, 1.0);
+    return float4(finalColor, m_diffus.a + sp);
 }
 //============================================================
 //	環境マッピング
