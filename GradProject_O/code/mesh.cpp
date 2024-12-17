@@ -10,6 +10,7 @@
 #include "texture.h"
 #include "slow.h"
 #include "debugproc.h"
+#include "edit_manager.h"
 
 //==========================================================
 // コンストラクタ
@@ -144,6 +145,12 @@ void CObjectMesh::Draw(void)
 //==========================================================
 void CObjectMesh::DrawOnShader(void)
 {
+	if (CEditManager::GetInstance() != nullptr)
+	{
+		Draw();
+		return;
+	}
+
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 	D3DXMATRIX mtxRot, mtxTrans;	//計算用マトリックス

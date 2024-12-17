@@ -185,7 +185,11 @@ HRESULT CGame::Init(void)
 
     // 左側
     CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
-   // CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 150000.0f, 1000.0f, 3, 20, 20)->SetDrawShader(false);
+    // CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 150000.0f, 1000.0f, 3, 20, 20)->SetDrawShader(false);
+    
+    // 空生成
+    m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 20000.0f, 1000.0f, 3, 20, 20);
+
     // マップ読み込み
     CMapManager::GetInstance()->Load();
   /*  CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f);
@@ -269,6 +273,7 @@ void CGame::Uninit(void)
         }
     }   
 
+    SAFE_UNINIT(m_pMeshDome);
   
     SAFE_UNINIT(m_pDeliveryStatus);
 
@@ -331,7 +336,7 @@ void CGame::Update(void)
     StartIntro();
 
     // エディター関連
-#if _DEBUG
+#if NDEBUG
 
     CEditManager* pMgr = CEditManager::GetInstance();
     // エディター生成
@@ -398,6 +403,12 @@ void CGame::Update(void)
     if (mgr->GetPlayer()->GetLife()<= 0.0f && net->GetState() == CNetWork::STATE::STATE_SINGLE)
     {
         End_Fail();
+    }
+
+    // 空の位置更新
+    if (m_pMeshDome != nullptr)
+    {
+        m_pMeshDome->SetPosition(pPlayer->GetPosition());
     }
 
     // 各マネージャー更新

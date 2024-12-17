@@ -21,6 +21,7 @@
 // 名前空間
 namespace
 {
+	const int MAX_NEAR = 3;			// 近い警察の確認数
 	const float INTERVAL = 5.0f;	// インターバル
 	const int MAX_POLICE = (15);	// 警察の最大値
 }
@@ -38,6 +39,7 @@ CPoliceManager::CPoliceManager()
 	m_InspInfo = SInspInfo();
 	m_nNum = 0;
 	m_maplist.Clear();
+	m_NearPoliceList.clear();
 }
 
 //==========================================================
@@ -68,6 +70,9 @@ void CPoliceManager::Uninit(void)
 	// リスト廃棄
 	ListRelease();
 
+	m_maplist.Clear();
+	m_NearPoliceList.clear();
+
 	// インスタンスの廃棄
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		delete m_pInstance;
@@ -82,7 +87,44 @@ void CPoliceManager::Update(void)
 {
 	m_InspInfo.fInterval += CDeltaTime::GetInstance()->GetDeltaTime();
 
-	CDebugProc::GetInstance()->Print("インターバル : [ %f ]\n", m_InspInfo.fInterval);
+	// 近い警察を取得する
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+	if (pPlayer == nullptr) { return; }
+	std::vector<int> nearid = {};
+	m_NearPoliceList.clear();
+	while (nearid.size() <= MAX_NEAR)
+	{
+		float minlength = 1000000.0f;
+		int id = 0;
+		for (int i = 0; i < GetList()->GetNum(); i++)
+		{
+			// もう手前側にいる
+			auto it = find(nearid.begin(), nearid.end(), i);
+			if (it != nearid.end()) { continue; }
+
+			CPolice* pPolice = GetList()->Get(i);
+			D3DXVECTOR3 vec = pPlayer->GetPosition() - pPolice->GetPosition();
+			float length = D3DXVec3Length(&vec);
+
+			// より近い
+			if (length < minlength)
+			{
+				id = i;
+				minlength = length;
+			}
+
+			CDebugProc::GetInstance()->Print("距離 : %f\n", length);
+		}
+
+		// もう手前側にいる
+		auto it = find(nearid.begin(), nearid.end(), id);
+		if (it != nearid.end()) { break; }
+		nearid.push_back(id);
+		m_NearPoliceList.push_back(GetList()->Get(id));
+	}
+
+	// 消すよん
+	nearid.clear();
 }
 
 //==========================================================
