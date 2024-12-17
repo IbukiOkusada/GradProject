@@ -13,6 +13,8 @@
 #include "meshfield.h"
 #include "objectX.h"
 #include "fxmanager.h"
+#include "edit_manager.h"
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -274,6 +276,12 @@ void CModel::Draw(void)
 //==========================================================
 void CModel::DrawOnShader(void)
 {
+	if (CEditManager::GetInstance() != nullptr)
+	{
+		Draw();
+		return;
+	}
+
 	if (m_bDraw == false)
 	{
 		return;
