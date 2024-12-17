@@ -11,6 +11,7 @@
 #include "texture.h"
 #include "Xfile.h"
 #include "fxmanager.h"
+#include "edit_manager.h"
 // Ã“Iƒƒ“ƒo•Ï”éŒ¾
 Clist<CObjectX*> CObjectX::m_List = {};
 
@@ -126,7 +127,14 @@ void CObjectX::DrawOnShader(void)
 	}
 
 	// •`‰æ
-	DrawOnryShader();
+	if (CEditManager::GetInstance() == nullptr)
+	{
+		DrawOnryShader();
+	}
+	else
+	{
+		DrawOnry();
+	}
 
 	// ‰e‚Ì•`‰æ
 	DrawShadow();

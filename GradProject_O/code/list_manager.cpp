@@ -52,15 +52,23 @@ void CListManager::Release()
 {
 	if (m_pList == nullptr) { return; }
 
-	std::vector<CListManager*> list;
-
-	for (int i = 0; i < m_pList->GetNum(); i++)
+	while (m_pList->GetNum() != 0)
 	{
-		list.push_back(m_pList->Get(i));
-	}
+		std::vector<CListManager*> list;
 
-	for (auto& it : list)
-	{
-		it->Uninit();
+		for (int i = 0; i < m_pList->GetNum(); i++)
+		{
+			list.push_back(m_pList->Get(i));
+		}
+
+		for (auto& it : list)
+		{
+			it->Uninit();
+		}
+
+		if (m_pList == nullptr)
+		{
+			break;
+		}
 	}
 }

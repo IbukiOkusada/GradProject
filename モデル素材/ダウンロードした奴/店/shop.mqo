@@ -2,13 +2,13 @@ Metasequoia Document
 Format Text Ver 1.0
 
 Scene {
-	pos -1069.6277 -596.5232 40265.3242
+	pos -721.4001 -2096.5806 39062.5000
 	lookat 0.0000 0.0000 0.0000
-	head 1.7164
-	pich 0.1436
+	head 1.8064
+	pich 0.3308
 	bank 0.0000
 	ortho 0
-	zoom2 0.1863
+	zoom2 0.1920
 	amb 0.250 0.250 0.250
 	dirlights 1 {
 		light {
@@ -18,11 +18,11 @@ Scene {
 	}
 }
 Material 5 {
-	"Material" col(0.776 0.729 0.651 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"Material.001" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"Material.002" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"Material.003" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"Material.004" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"Material" col(0.741 0.749 0.776 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.250) power(5.00)
+	"Material.001" col(0.404 0.910 1.000 1.000) dif(0.800) amb(0.600) emi(0.550) spc(0.000) power(5.00)
+	"Material.002" col(1.000 0.404 0.839 1.000) dif(0.800) amb(0.600) emi(0.780) spc(0.000) power(1.00)
+	"Material.003" col(0.278 1.000 0.502 1.000) dif(0.800) amb(0.600) emi(0.670) spc(0.000) power(5.00)
+	"Material.004" col(0.000 0.000 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 }
 Object "obj1" {
 	visible 15
