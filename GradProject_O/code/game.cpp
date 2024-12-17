@@ -188,9 +188,9 @@ HRESULT CGame::Init(void)
    // CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 150000.0f, 1000.0f, 3, 20, 20)->SetDrawShader(false);
     // マップ読み込み
     CMapManager::GetInstance()->Load();
-    CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f);
+  /*  CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f);
     CShaderLight::Create(D3DXVECTOR3(20900.0f, 5000.0f, -1700.0f), D3DXVECTOR3(1.0f, 0.0f, 1.0f), 1.0f, 10000.0f);
-    CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f);
+    CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f);*/
     auto net = CNetWork::GetInstance();
 
     // プレイヤー生成
