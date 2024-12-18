@@ -31,7 +31,7 @@ namespace
 	const float SPEED_INER = (0.05f);			// 速度の慣性
 	const float ROT_MULTI = (0.015f);			// 向き補正倍率
 	const float ROT_MULTI_BACK = (0.015f);		// バック時の向き補正倍率
-	const float ROT_CURVE = (0.15f);			// カーブ判定角度
+	const float ROT_CURVE = (0.3f);				// カーブ判定角度
 	const float LENGTH_POINT = (900.0f);		// 到達判定距離
 	const float LENGTH_LANE = (-400.0f);		// 車線の幅
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
@@ -138,11 +138,11 @@ CCar *CCar::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVEC
 
 	if (pCar != nullptr)
 	{
-		// 初期化処理
-		pCar->Init();
-
 		// 座標設定
 		pCar->SetPosition(pos);
+
+		// 初期化処理
+		pCar->Init();
 
 		// 向き設定
 		pCar->SetRotation(rot);
@@ -159,7 +159,18 @@ CCar *CCar::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVEC
 //==========================================================
 void CCar::TailLamp()
 {
-	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	if (m_pTailLamp == nullptr)
+	{
+		m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", m_Info.pos, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	}
+}
+
+//==========================================================
+// テールランプ削除
+//==========================================================
+void CCar::DeleteTailLamp()
+{
+	SAFE_DELETE(m_pTailLamp);
 }
 
 //==========================================================

@@ -25,9 +25,6 @@
 // 無名名前空間を定義
 namespace
 {
-	const float SECURE_SPEEDDEST = (-35.0f);		// 確保時の目標速度
-	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
-
 	const float CHASE_SECURE = (400.0f);			// 追跡確保距離
 	const float CHASE_CROSS = (500.0f);				// すれ違い判定距離
 	const float CHASE_NEAR = (2000.0f);				// 近距離判定
@@ -310,6 +307,9 @@ void CPoliceAI::EndChase(void)
 
 	// 追跡状態を解除
 	m_pPolice->SetChase(false);
+
+	m_pPolice->SetLaneCount(0);
+	m_pPolice->SetLaneTime(0);
 
 	// 接近状態を解除
 	m_bCross = false;

@@ -20,12 +20,12 @@ CMultiResultManager::CMultiResultManager()
 	for (int i = 0; i < NetWork::MAX_CONNECT; i++)
 	{
 		m_aInfo[i] = SInfo();
-		m_aInfo[i].bActive = true;
+		m_aInfo[i].bActive = false;
 		m_aInfo[i].nId = i;
 		m_aInfo[i].nNumDelv = 0;
 	}
 
-	m_nNumPlayer = 4;
+	m_nNumPlayer = 0;
 	m_nMyId = -1;
 }
 

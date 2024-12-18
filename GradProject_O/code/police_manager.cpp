@@ -40,6 +40,7 @@ CPoliceManager::CPoliceManager()
 	m_nNum = 0;
 	m_maplist.Clear();
 	m_NearPoliceList.clear();
+	m_Siren.clear();
 }
 
 //==========================================================
@@ -56,6 +57,15 @@ CPoliceManager::~CPoliceManager()
 HRESULT CPoliceManager::Init(void)
 {
 	m_InspInfo.fTime = INTERVAL;
+
+	m_Siren.clear();
+	for (int i = 0; i < MAX_NEAR; i++)
+	{
+		m_Siren.push_back(CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1));
+		m_Siren[i]->SetVolume(0.0f);
+		m_Siren[i]->Stop();
+	}
+
 	return S_OK;
 }
 
@@ -73,6 +83,19 @@ void CPoliceManager::Uninit(void)
 	m_maplist.Clear();
 	m_NearPoliceList.clear();
 
+	
+	{
+		for (int i = 0; i < m_Siren.size(); i++)
+		{
+			m_Siren[i]->SetVolume(0.0f);
+			m_Siren[i]->Stop();
+			SAFE_UNINIT_DELETE(m_Siren[i])
+		}
+
+		m_Siren.clear();
+	}
+	
+
 	// インスタンスの廃棄
 	if (m_pInstance != nullptr) {	// インスタンスを確保されている
 		delete m_pInstance;
@@ -87,15 +110,22 @@ void CPoliceManager::Update(void)
 {
 	m_InspInfo.fInterval += CDeltaTime::GetInstance()->GetDeltaTime();
 
+	CDebugProc::GetInstance()->Print("警察の総数 : [ %d ]\n", m_pList->GetNum());
+
 	// 近い警察を取得する
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }
 	std::vector<int> nearid = {};
+
+	// 前回を覚える
+	std::vector<CPolice*> old = m_NearPoliceList;
 	m_NearPoliceList.clear();
-	while (nearid.size() <= MAX_NEAR)
+
+	// 近い警察取得
+	while (nearid.size() < MAX_NEAR)
 	{
 		float minlength = 1000000.0f;
-		int id = 0;
+		int id = -1;
 		for (int i = 0; i < GetList()->GetNum(); i++)
 		{
 			// もう手前側にいる
@@ -107,20 +137,76 @@ void CPoliceManager::Update(void)
 			float length = D3DXVec3Length(&vec);
 
 			// より近い
-			if (length < minlength)
+			if (length < minlength && (pPolice->GetChase() || pPolice->GetSound() != nullptr))
 			{
 				id = i;
 				minlength = length;
 			}
 
-			CDebugProc::GetInstance()->Print("距離 : %f\n", length);
 		}
 
-		// もう手前側にいる
+		// まだいない
 		auto it = find(nearid.begin(), nearid.end(), id);
-		if (it != nearid.end()) { break; }
-		nearid.push_back(id);
-		m_NearPoliceList.push_back(GetList()->Get(id));
+		if (it == nearid.end()&& id != -1)
+		{
+			nearid.push_back(id);
+			it = find(nearid.begin(), nearid.end(), id);
+			m_NearPoliceList.push_back(GetList()->Get(id));
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	// 今回使われない場合消す
+	std::vector<int> activesoundid = {};
+	for (int i = 0; i < old.size(); i++)
+	{
+		auto it = find(m_NearPoliceList.begin(), m_NearPoliceList.end(), old[i]);
+
+		// 使用されている場合は使用しているIDを取得する
+		if (it != m_NearPoliceList.end())
+		{
+			if (old[i]->GetSound() != nullptr)
+			{
+				activesoundid.push_back(std::distance(m_Siren.begin(), find(m_Siren.begin(), m_Siren.end(), old[i]->GetSound())));
+			}
+		}
+		else
+		{
+			old[i]->SetSound(nullptr);
+		}
+	}
+
+	// 音を設定
+	{
+		int soundcnt = 0;
+		for (int i = 0; i < m_NearPoliceList.size(); i++)
+		{
+			CPolice* pPolice = m_NearPoliceList[i];
+			// 曲をすでに使用している
+			if (pPolice->GetSound() != nullptr) { continue; }
+
+			for (int j = 0; j < m_Siren.size(); j++)
+			{
+				// 使われている
+				if (activesoundid.end() != find(activesoundid.begin(), activesoundid.end(), j)) { continue; }
+
+				// あてはめる
+				if (pPolice->GetChase())
+				{
+					pPolice->SetSound(GetSound(j));
+				}
+				else
+				{
+					pPolice->SetSound(m_Siren[j]);
+				}
+				
+				activesoundid.push_back(j);
+			}
+
+		}
 	}
 
 	// 消すよん

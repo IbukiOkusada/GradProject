@@ -36,6 +36,7 @@ public:	// 誰でもアクセス可能な定義
 		void Stop();
 		void Pause();
 		void Start();
+		bool IsStart() { return m_bStart; }
 	
 		HRESULT Load(std::string sPath);
 		
@@ -61,6 +62,7 @@ public:	// 誰でもアクセス可能な定義
 		BYTE* m_pDataAudio;					// オーディオデータ
 		DWORD m_dSizeAudio;					// オーディオデータサイズ
 		XAUDIO2_BUFFER m_buffer;
+		bool m_bStart;
 		// メンバ関数
 		HRESULT CheckChunk(HANDLE hFile, DWORD format, DWORD* pChunkSize, DWORD* pChunkDataPosition);
 		HRESULT ReadChunkData(HANDLE hFile, void* pBuffer, DWORD dwBuffersize, DWORD dwBufferoffset);
