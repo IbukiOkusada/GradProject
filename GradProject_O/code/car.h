@@ -140,6 +140,7 @@ protected:	// 派生クラスからもアクセス可能
 	virtual void ReachRoad();
 	virtual void Hit();
 	void TailLamp();
+	void DeleteTailLamp();
 	virtual void Break();
 	void Set();
 	virtual void SendPosition();
