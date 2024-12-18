@@ -31,7 +31,7 @@ namespace
 	const float SPEED_INER = (0.05f);			// 速度の慣性
 	const float ROT_MULTI = (0.015f);			// 向き補正倍率
 	const float ROT_MULTI_BACK = (0.015f);		// バック時の向き補正倍率
-	const float ROT_CURVE = (0.15f);			// カーブ判定角度
+	const float ROT_CURVE = (0.3f);				// カーブ判定角度
 	const float LENGTH_POINT = (900.0f);		// 到達判定距離
 	const float LENGTH_LANE = (-400.0f);		// 車線の幅
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
