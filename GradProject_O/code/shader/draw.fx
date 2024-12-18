@@ -198,7 +198,7 @@ float4 PS(VS_OUTPUT In) : COLOR0
        In.Tex.xy = frac(In.Tex.xy);
        Out *= tex2D(tex0, In.Tex);
    }
-   Out = (fdef - m_specula) * Out + PS_EnvironmentMap(reflect(m_LightDir, In.Normal)) * m_specula;
+   Out.xyz = (fdef - m_specula.xyz) * Out.xyz + PS_EnvironmentMap(reflect(m_LightDir.xyz, In.Normal.xyz)).xyz * m_specula.xyz;
     //===============================
     //			ÉtÉHÉO
     //===============================
