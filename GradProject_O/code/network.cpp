@@ -379,17 +379,7 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 	D3DXCOLOR col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	CFade* pFade = CManager::GetInstance()->GetFade();
 
-	if (*pRecvByte <= 0 || pFade == nullptr)
-	{
-		// データ削除
-		DeleteData(pRecvData, pRecvByte);
-
-		m_nSledCnt--;
-		m_mutex.unlock();
-		return;
-	}
-
-	if (pFade->GetState() != CFade::STATE::STATE_NONE)
+	if (*pRecvByte <= 0)
 	{
 		// データ削除
 		DeleteData(pRecvData, pRecvByte);
