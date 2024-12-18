@@ -52,7 +52,10 @@ private:	// 自分だけがアクセス可能
 	struct SInfo
 	{
 		CPlayer* pPlayer;
+		D3DXVECTOR3 offsetLane;
 		int nChaseCount;
+		int nLaneCount;
+		int nLaneTime;
 		bool bChase;
 
 		// コンストラクタ
@@ -154,6 +157,7 @@ private:	// 自分だけがアクセス可能
 	void ReachRoad() override;
 	void ChasePlayer();
 	void SearchPlayer();
+	void LanePlayer();
 	void Collision();
 	void Hit() override;
 	void Break() override;
