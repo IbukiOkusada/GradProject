@@ -328,7 +328,7 @@ void CGame::Update(void)
 	}
 
     // タイマーの更新
-    if (m_pGameTimer != nullptr)
+    if (m_pGameTimer != nullptr && CEditManager::GetInstance() == nullptr)
     {
         CPlayer* player = CPlayerManager::GetInstance()->GetPlayer();
         if (player->GetType() == CPlayer::TYPE::TYPE_ACTIVE)
@@ -632,7 +632,7 @@ void CGame::CreateMultiPlayer(void)
 //===================================================
 void CGame::CreatePolice()
 {
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 0; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
