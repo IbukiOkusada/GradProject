@@ -24,6 +24,7 @@ sampler_state {
     MagFilter = LINEAR;
     MipFilter = LINEAR;
 };
+
 sampler tex0 : register(s0);      //オブジェクトのテクスチャ
 bool bUseTex = false;
 
@@ -120,7 +121,7 @@ float4 CalculateLighting(float3 normal, float3 position, float3 viewDir)
         
     }
 
-    return float4(finalColor, m_diffus.a + sp);
+    return float4(finalColor, m_diffus.a);
 }
 //============================================================
 //	環境マッピング
@@ -181,20 +182,22 @@ float4 PS(VS_OUTPUT In) : COLOR0
    Out = m_diffus * p * m_LightCol;
    Out += m_ambient * m_LightCol;
    Out.w = m_diffus.w;
-   if ((tex2D(tex0, In.Tex).r+ tex2D(tex0, In.Tex).g+ tex2D(tex0, In.Tex).b)!= 0.0f)
-   {
-       In.Tex.xy = frac(In.Tex.xy);
-       Out *= tex2D(tex0, In.Tex);
-   }
+
    Out.rgb += m_Emissive.rgb;
    float3 reflection = reflect(-m_LightDir.xyz, In.Normal.xyz);
    float specFactor = saturate(dot(reflection, viewDir));
    float specPower = pow(specFactor, m_power);
    Out += m_specula * m_LightCol * specPower;
-
+ 
    Out += CalculateLighting(In.Normal.xyz,In.PosWVP.xyz,viewDir.xyz);
    float3 fdef = 1.0f;
    Out.xyz = (fdef - m_specula.xyz) * Out.xyz + PS_EnvironmentMap(reflect(m_LightDir.xyz, In.Normal.xyz)).xyz * m_specula.xyz;
+   Out.w = m_diffus.w;
+   if ((tex2D(tex0, In.Tex).r + tex2D(tex0, In.Tex).g + tex2D(tex0, In.Tex).b) != 0.0f)
+   {
+       In.Tex.xy = frac(In.Tex.xy);
+       Out *= tex2D(tex0, In.Tex);
+   }
     //===============================
     //			フォグ
     //===============================
