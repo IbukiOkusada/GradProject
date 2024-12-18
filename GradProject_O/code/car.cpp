@@ -138,11 +138,11 @@ CCar *CCar::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVEC
 
 	if (pCar != nullptr)
 	{
-		// 初期化処理
-		pCar->Init();
-
 		// 座標設定
 		pCar->SetPosition(pos);
+
+		// 初期化処理
+		pCar->Init();
 
 		// 向き設定
 		pCar->SetRotation(rot);
@@ -159,7 +159,18 @@ CCar *CCar::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVEC
 //==========================================================
 void CCar::TailLamp()
 {
-	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	if (m_pTailLamp == nullptr)
+	{
+		m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", m_Info.pos, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	}
+}
+
+//==========================================================
+// テールランプ削除
+//==========================================================
+void CCar::DeleteTailLamp()
+{
+	SAFE_DELETE(m_pTailLamp);
 }
 
 //==========================================================
