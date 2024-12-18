@@ -933,8 +933,13 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		pCar = CAddPolice::Create(pos, rot, VECTOR3_ZERO, carid);
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+		CAddPolice* pPolice = CAddPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+		pPolice->SetType(CCar::TYPE::TYPE_RECV);
+
+		// ‰‰‡‚ÌŒx@‚Í‰‰‡‚ğŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
+		pPolice->GetAi()->SetCall(true);
+
+		pCar = pPolice;
 	}
 
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
@@ -1027,8 +1032,13 @@ void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 	// Ô‚ª‘¶İ‚µ‚Ä‚¢‚È‚¢
 	if (pCar == nullptr)
 	{
-		pCar = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+		CAddPolice* pPolice = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pPolice->SetType(CCar::TYPE::TYPE_RECV);
+
+		// ‰‰‡‚ÌŒx@‚Í‰‰‡‚ğŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
+		pPolice->GetAi()->SetCall(true);
+
+		pCar = pPolice;
 	}
 
 	// ’ÇÕó‘Ô‚É‚·‚é

@@ -164,7 +164,6 @@ void CPolice::Update(void)
 
 	if (m_Info.bChase)
 	{
-
 		if (m_pPatrolLamp == nullptr)
 		{
 			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", 

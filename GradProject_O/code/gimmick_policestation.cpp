@@ -130,9 +130,22 @@ void CGimmickPoliceStation::Update(void)
 	// ”ÍˆÍ“à‚Ì‚İŒx@¶¬
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	CAddPolice* pP = CAddPolice::Create(D3DXVECTOR3(0.0f, 1.0f, 0.0f), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+
+	// ‰‰‡‚ÌŒx@‚Ìƒ^ƒCƒv‚ğİ’è
+	pP->SetTypeAI(CPoliceAI::TYPE_NONE);
 	pP->SetType(CCar::TYPE::TYPE_ACTIVE);
-	pP->SetRoadTarget(m_pRoad);
+
+	// –Ú“I’nİ’è
+	pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(GetPos()));
+
+	// ’ÇÕó‘Ô‚É•ÏX
+	pP->SetChase(true);
+	pP->GetAi()->BeginChase(pPlayer);
+
+	// ‰‰‡‚ÌŒx@‚Í‰‰‡‚ğŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
+	pP->GetAi()->SetCall(true);
+
 }
 
 //==========================================================
