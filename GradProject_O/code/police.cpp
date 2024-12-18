@@ -186,7 +186,7 @@ void CPolice::Update(void)
 		TailLamp();
 		if (m_pShaderLight == nullptr)
 		{
-			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
+			//m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
 		}
 	}
 	else
