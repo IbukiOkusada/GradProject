@@ -461,14 +461,24 @@ void CPolice::LanePlayer()
 	if (m_Info.nLaneCount > m_Info.nLaneTime)
 	{
 		// ˆÚ“®‚Ì•Žæ“¾
-		float length = ((rand() % 12001) - 6000) * 0.1f;
+		float length1 = ((rand() % 3001) + 3000);
+		float length2 = ((rand() % 3001) - 6000);
 
-		m_Info.offsetLane.x = sinf(m_Info.pPlayer->GetRotation().y) * length;
+		float length = ((rand() % 2 == 0) ? length1 : length2) * 0.1f;
+
+		if (m_pPoliceAI->GetSearchRoad() == nullptr || m_pPoliceAI->GetSearchRoad()->pChild == nullptr) { return; }
+
+		D3DXVECTOR3 posRoad = m_pPoliceAI->GetSearchRoad()->pConnectRoad->GetPosition();
+		D3DXVECTOR3 posRoadChild = m_pPoliceAI->GetSearchRoad()->pChild->pConnectRoad->GetPosition();
+		D3DXVECTOR3 vecRoad = posRoadChild - posRoad;
+		float rotVec = atan2f(vecRoad.z, vecRoad.x);								// Šp“xŒvŽZ
+
+		m_Info.offsetLane.x = sinf(rotVec) * length;
 		m_Info.offsetLane.y = 0.0f;
-		m_Info.offsetLane.z = cosf(m_Info.pPlayer->GetRotation().y) * length;
+		m_Info.offsetLane.z = cosf(rotVec) * length;
 
 		m_Info.nLaneCount = 0;
-		m_Info.nLaneTime = rand() % 270 + 30;
+		m_Info.nLaneTime = rand() % 150 + 30;
 	}
 
 	SetOffsetLane(m_Info.offsetLane);
