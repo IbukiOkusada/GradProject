@@ -576,7 +576,6 @@ void CResult::ScoreObjCreat()
 				D3DXVECTOR3(0.0f, 0.0f, 0.0f),
 				7);
 
-			m_nScore = 40.0f;
 			if (m_nScore >= 50.0f)
 			{
 				m_pScoreObj[nCnt]->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::EVAL_TEX_PATH_MAX));

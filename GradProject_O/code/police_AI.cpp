@@ -308,6 +308,9 @@ void CPoliceAI::EndChase(void)
 	// ’ÇÕó‘Ô‚ğ‰ğœ
 	m_pPolice->SetChase(false);
 
+	m_pPolice->SetLaneCount(0);
+	m_pPolice->SetLaneTime(0);
+
 	// Ú‹ßó‘Ô‚ğ‰ğœ
 	m_bCross = false;
 
