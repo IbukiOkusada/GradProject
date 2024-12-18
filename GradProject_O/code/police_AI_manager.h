@@ -42,6 +42,7 @@ private:	// 自分だけがアクセス可能
 	void Search(void);
 
 	// メンバ変数
+	mutex m_mutex = {};
 	Cmaplist<CPoliceAI*> m_maplist;
 	static CPoliceAIManager* m_pInstance;	// インスタンス
 };

@@ -335,9 +335,6 @@ void CEntry::Update(void)
     // 操作方法UI
     ControlsUI();
 
-    // 準備UI
-    //ReadyUp();
-
     // プレイヤー参加処理
     AddPlayer();
 
@@ -478,9 +475,6 @@ void CEntry::AddPlayer(void)
                     // チュートリアル時のアクティブに設定
                     pPlayer->SetType(CPlayer::TYPE::TYPE_TUTOLERIAL_ACTIVE);
                 }
-
-                // エフェクト終了
-                //pPlayer->EffectUninit();
 
                 // 画面下にプレイヤーのモデルを表示
                 pos = m_ppCamera[i]->GetPositionR();

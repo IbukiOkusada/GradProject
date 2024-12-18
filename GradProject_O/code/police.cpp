@@ -90,11 +90,8 @@ CPolice::~CPolice()
 //==========================================================
 HRESULT CPolice::Init(void)
 {
-	TailLamp();
-	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
-	m_pSiren->Stop();
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\police.x");
-	m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));
+	m_pObj = CObjectX::Create(GetPosition(), VECTOR3_ZERO, "data\\MODEL\\police.x");
+
 	// AIを生成
 	m_pPoliceAI = CPoliceAI::Create(this, CPoliceAI::TYPE_NORMAL);
 	return S_OK;
@@ -116,8 +113,11 @@ void CPolice::Uninit(void)
 	CCar::Uninit();
 	CPoliceManager::GetInstance()->ListOut(this);
 	SAFE_DELETE(m_pPatrolLamp);
-	SAFE_UNINIT_DELETE(m_pSiren);
-	CShaderLight::Delete(m_pShaderLight);
+	m_pSiren = nullptr;
+	if (m_pShaderLight != nullptr)
+	{
+		CShaderLight::Delete(m_pShaderLight);
+	}
 	SAFE_DELETE(m_pShaderLight)
 	Release();
 }
@@ -134,6 +134,13 @@ void CPolice::Update(void)
 		return;
 	}
 
+	if (m_pSiren != nullptr)
+	{
+		CDebugProc::GetInstance()->Print("サイレンある\n");
+	}
+
+	CDebugProc::GetInstance()->Print("警察の座標 : [ %f, %f, %f ] : 移動量 : [ %f, %f, %f ]\n", GetPosition().x, GetPosition().y, GetPosition().z, GetMove().x, GetMove().y, GetMove().z);
+
 	// アップデート
 	CCar::Update();
 
@@ -145,20 +152,53 @@ void CPolice::Update(void)
 	D3DXVec3Normalize(&lightvec, &lightvec);
 	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
 	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
-	m_pShaderLight->position = GetPosition() + lightpos;
-	m_pShaderLight->direction = lightvec;
+	if (m_pShaderLight != nullptr)
+	{
+		m_pShaderLight->position = GetPosition() + lightpos;
+		m_pShaderLight->direction = lightvec;
+	}
+
+	CPoliceManager* pMgr = CPoliceManager::GetInstance();
+	auto list = CPoliceManager::GetInstance()->GetNearList();
+	auto it = find(list->begin(), list->end(), this);
+
 	if (m_Info.bChase)
 	{
+
 		if (m_pPatrolLamp == nullptr)
 		{
-			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", 
+				VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 		}
-		m_pPatrolLamp->m_pos = GetPosition();
-		m_pPatrolLamp->m_rot = GetRotation();
+
+		if (m_pPatrolLamp != nullptr)
+		{
+			m_pPatrolLamp->m_pos = GetPosition();
+			m_pPatrolLamp->m_rot = GetRotation();
+		}
 	}
 	else
 	{
 		SAFE_DELETE(m_pPatrolLamp);
+	}
+
+	if (list->end() != it)
+	{
+		TailLamp();
+		if (m_pShaderLight == nullptr)
+		{
+			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
+		}
+	}
+	else
+	{
+		DeleteTailLamp();
+
+		if (m_pShaderLight != nullptr)
+		{
+			CShaderLight::Delete(m_pShaderLight);
+		}
+		SAFE_DELETE(m_pShaderLight)
 	}
 
 	UpdateState();
@@ -175,11 +215,11 @@ CPolice *CPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D
 
 	if (pCar != nullptr)
 	{
-		// 初期化処理
-		pCar->Init();
-
 		// 座標設定
 		pCar->SetPosition(pos);
+
+		// 初期化処理
+		pCar->Init();
 
 		// 向き設定
 		pCar->SetRotation(rot);
@@ -207,8 +247,6 @@ void CPolice::MoveRoad()
 	// 追跡状態の判定
 	if (m_Info.bChase)
 	{
-		m_pSiren->Start();
-
 		SetRoadStart(GetRoadTarget());
 
 		// プレイヤー追跡処理
@@ -224,7 +262,11 @@ void CPolice::MoveRoad()
 		{
 			vol = 0.0f;
 		}
-		m_pSiren->SetVolume(vol);
+
+		if (m_pSiren != nullptr)
+		{
+			m_pSiren->SetVolume(vol);
+		}
 
 		// カーブ時の速度を設定
 		SetSpeedCurve(10.0f);
@@ -270,11 +312,6 @@ void CPolice::MoveRoad()
 	}
 	else
 	{
-		if (m_pSiren != nullptr)
-		{
-			m_pSiren->Stop();
-		}
-
 		// 目的地が存在する時
 		if (pRoadTarget != nullptr || IsActive())
 		{
