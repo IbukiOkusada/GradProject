@@ -90,7 +90,7 @@ CPolice::~CPolice()
 //==========================================================
 HRESULT CPolice::Init(void)
 {
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\police.x");
+	m_pObj = CObjectX::Create(GetPosition(), VECTOR3_ZERO, "data\\MODEL\\police.x");
 
 	// AIを生成
 	m_pPoliceAI = CPoliceAI::Create(this, CPoliceAI::TYPE_NORMAL);
@@ -138,6 +138,8 @@ void CPolice::Update(void)
 	{
 		CDebugProc::GetInstance()->Print("サイレンある\n");
 	}
+
+	CDebugProc::GetInstance()->Print("警察の座標 : [ %f, %f, %f ] : 移動量 : [ %f, %f, %f ]\n", GetPosition().x, GetPosition().y, GetPosition().z, GetMove().x, GetMove().y, GetMove().z);
 
 	// アップデート
 	CCar::Update();
@@ -213,11 +215,11 @@ CPolice *CPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D
 
 	if (pCar != nullptr)
 	{
-		// 初期化処理
-		pCar->Init();
-
 		// 座標設定
 		pCar->SetPosition(pos);
+
+		// 初期化処理
+		pCar->Init();
 
 		// 向き設定
 		pCar->SetRotation(rot);

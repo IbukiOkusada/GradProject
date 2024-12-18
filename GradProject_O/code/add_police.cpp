@@ -60,11 +60,12 @@ CAddPolice* CAddPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, c
 
 	if (pCar != nullptr)
 	{
+		// À•WÝ’è
+		pCar->SetPosition(pos);
+
 		// ‰Šú‰»ˆ—
 		pCar->Init();
 
-		// À•WÝ’è
-		pCar->SetPosition(pos);
 		pCar->m_SpawnPos = pos;
 
 		// Œü‚«Ý’è

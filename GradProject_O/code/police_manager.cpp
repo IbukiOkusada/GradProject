@@ -110,6 +110,8 @@ void CPoliceManager::Update(void)
 {
 	m_InspInfo.fInterval += CDeltaTime::GetInstance()->GetDeltaTime();
 
+	CDebugProc::GetInstance()->Print("ŒxŽ@‚Ì‘” : [ %d ]\n", m_pList->GetNum());
+
 	// ‹ß‚¢ŒxŽ@‚ðŽæ“¾‚·‚é
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }
@@ -123,7 +125,7 @@ void CPoliceManager::Update(void)
 	while (nearid.size() < MAX_NEAR)
 	{
 		float minlength = 1000000.0f;
-		int id = 0;
+		int id = -1;
 		for (int i = 0; i < GetList()->GetNum(); i++)
 		{
 			// ‚à‚¤Žè‘O‘¤‚É‚¢‚é
@@ -145,7 +147,7 @@ void CPoliceManager::Update(void)
 
 		// ‚Ü‚¾‚¢‚È‚¢
 		auto it = find(nearid.begin(), nearid.end(), id);
-		if (it == nearid.end())
+		if (it == nearid.end()&& id != -1)
 		{
 			nearid.push_back(id);
 			it = find(nearid.begin(), nearid.end(), id);

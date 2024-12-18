@@ -126,14 +126,13 @@ void CGimmickPoliceStation::Update(void)
 	float dest = rot - GetRot().y;
 	Adjust(dest);
 	dest = fabsf(dest);
-	CDebugProc::GetInstance()->Print("Œü‚« [ %f ], ·•ª [ %f ]\n", rot, dest);
 
 	// ”ÍˆÍ“à‚Ì‚İŒx@¶¬
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
-	pP->SetRoadTarget(m_pRoad);
+	CAddPolice* pP = CAddPolice::Create(D3DXVECTOR3(0.0f, 1.0f, 0.0f), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
 	pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+	pP->SetRoadTarget(m_pRoad);
 }
 
 //==========================================================

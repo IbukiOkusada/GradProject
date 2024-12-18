@@ -193,9 +193,9 @@ HRESULT CGame::Init(void)
     // マップ読み込み
     CMapManager::GetInstance()->Load();
 
-    m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f));
-    m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(20900.0f, 5000.0f, -1700.0f), D3DXVECTOR3(1.0f, 0.0f, 1.0f), 1.0f, 10000.0f));
-    m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f));
+    //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f));
+    //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(20900.0f, 5000.0f, -1700.0f), D3DXVECTOR3(1.0f, 0.0f, 1.0f), 1.0f, 10000.0f));
+    //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f));
     auto net = CNetWork::GetInstance();
 
     // プレイヤー生成
@@ -285,13 +285,14 @@ void CGame::Uninit(void)
     // 終了
     SAFE_UNINIT(m_pMeshDome);
     SAFE_UNINIT(m_pDeliveryStatus);
-
+    SAFE_UNINIT(m_pGameTimer);
 
     // 解放
     SAFE_RELEASE(m_pGoalManager);
 
     // 廃棄
     SAFE_UNINIT_DELETE(pFog);
+    
     // ネットワーク切断
     auto net = CNetWork::GetInstance();
     net->DisConnect();
@@ -328,7 +329,7 @@ void CGame::Update(void)
 	}
 
     // タイマーの更新
-    if (m_pGameTimer != nullptr)
+    if (m_pGameTimer != nullptr && CEditManager::GetInstance() == nullptr)
     {
         CPlayer* player = CPlayerManager::GetInstance()->GetPlayer();
         if (player->GetType() == CPlayer::TYPE::TYPE_ACTIVE)
@@ -632,7 +633,7 @@ void CGame::CreateMultiPlayer(void)
 //===================================================
 void CGame::CreatePolice()
 {
-    for (int i = 0; i < 1; i++)
+    for (int i = 0; i < 0; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
