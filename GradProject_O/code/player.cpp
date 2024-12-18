@@ -270,7 +270,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	SetCol();
 
 	SetMatrix();
-	m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(0.8f,0.9f,1.0f), 2.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f),D3DXToRadian(35));
+	//m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(0.8f,0.9f,1.0f), 2.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f),D3DXToRadian(35));
 	
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
@@ -298,7 +298,10 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT_DELETE(m_pSoundBrake)
 	SAFE_UNINIT_DELETE(m_pRadio)
 	SAFE_UNINIT_DELETE(m_pCollSound)
-	CShaderLight::Delete(m_pShaderLight);
+	if (m_pShaderLight != nullptr)
+	{
+		CShaderLight::Delete(m_pShaderLight);
+	}
 	SAFE_DELETE(m_pShaderLight)
 	CPlayerManager::GetInstance()->ListOut(this);
 
@@ -320,8 +323,12 @@ void CPlayer::Update(void)
 	D3DXVec3Normalize(&lightvec, &lightvec);
 	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
 	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
-	m_pShaderLight->position = GetPosition() + lightpos;
-	m_pShaderLight->direction = lightvec;
+
+	if (m_pShaderLight != nullptr)
+	{
+		m_pShaderLight->position = GetPosition() + lightpos;
+		m_pShaderLight->direction = lightvec;
+	}
 
 	// 
 	if (m_type == TYPE::TYPE_ACTIVE)
