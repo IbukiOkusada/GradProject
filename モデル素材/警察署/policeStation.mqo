@@ -2,13 +2,13 @@ Metasequoia Document
 Format Text Ver 1.0
 
 Scene {
-	pos 0.0000 0.0000 64424.5195
+	pos 249.1199 -1775.9834 25165.8281
 	lookat 0.0000 0.0000 0.0000
-	head -0.1436
-	pich 0.6936
+	head -3.1736
+	pich 0.2736
 	bank 0.0000
 	ortho 0
-	zoom2 0.1164
+	zoom2 0.2980
 	amb 0.250 0.250 0.250
 	dirlights 1 {
 		light {
@@ -23,10 +23,10 @@ Material 9 {
 	"blinn4SG" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Desktop\ë≤ã∆êßçÏ\data\TEXTURE\window.png")
 	"blinn5SG" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Desktop\ë≤ã∆êßçÏ\data\TEXTURE\window.png")
 	"blinn6SG" col(1.000 1.000 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"blinn7SG" col(0.660 0.050 0.050 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"blinn7SG" col(0.659 0.051 0.051 1.000) dif(0.800) amb(0.600) emi(1.000) spc(0.000) power(5.00)
 	"blinn10SG" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Desktop\ë≤ã∆êßçÏ\data\TEXTURE\metal000.png")
-	"pasted__typeBlinnSG" col(0.830 0.000 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"typeBlinnSG" col(0.830 0.000 0.000 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"pasted__typeBlinnSG" col(0.831 0.000 0.000 1.000) dif(0.800) amb(0.600) emi(1.000) spc(0.000) power(5.00)
+	"typeBlinnSG" col(0.831 0.000 0.000 1.000) dif(0.800) amb(0.600) emi(1.000) spc(0.000) power(5.00)
 }
 Object "obj1" {
 	visible 15
