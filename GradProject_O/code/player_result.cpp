@@ -9,20 +9,21 @@
 #include "camera_manager.h"
 #include "debugproc.h"
 #include "objectX.h"
+#include "fade.h"
 
 //==========================================================
 // ’è”’è‹`
 //==========================================================
 namespace POS
 {
-	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(0.0f, 100.0f, 0.0f);
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(-4000.0f, 100.0f, 0.0f);
 	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(15250.0f, 100.0f, 14000.0f);
 }
 
 namespace ENDPOS
 {
 	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(10000.0f, 100.0f, 0.0f);
-	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(15250.0f, 100.0f, -7000.0f);
+	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(15250.0f, 100.0f, 0.0f);
 }
 
 namespace ROTATION
@@ -50,6 +51,7 @@ namespace CAMERAANGLE
 CPlayerResult::CPlayerResult()
 {
 	m_bStartPtn = true;
+	m_CameraAngle = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
 //==========================================================
@@ -207,30 +209,16 @@ void CPlayerResult::MovePtnSelect()
 {
 	if (m_bStartPtn == true)
 	{
-		D3DXVECTOR3 CameraAngle = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
 		int nRand = rand() % 2;
 
 		switch (nRand)
 		{
 		case 0:
-			SetPosition(POS::PATTERN_1);
-			SetMove(MOVE::PATTERN_1);
-			SetRotation(ROTATION::PATTERN_1);
-			CameraAngle = CAMERAANGLE::PATTERN_1;
-			m_EndPos = ENDPOS::PATTERN_1;
-
-			m_bStartPtn = false;
+			MovePtnSet(POS::PATTERN_1, MOVE::PATTERN_1, ROTATION::PATTERN_1, CAMERAANGLE::PATTERN_1, ENDPOS::PATTERN_1);
 			break;
 
 		case 1:
-			SetPosition(POS::PATTERN_2);
-			SetMove(MOVE::PATTERN_2);
-			SetRotation(ROTATION::PATTERN_2);
-			CameraAngle = CAMERAANGLE::PATTERN_2;
-			m_EndPos = ENDPOS::PATTERN_2;
-
-			m_bStartPtn = false;
+			MovePtnSet(POS::PATTERN_2, MOVE::PATTERN_2, ROTATION::PATTERN_2, CAMERAANGLE::PATTERN_2, ENDPOS::PATTERN_2);
 			break;
 
 		default:
@@ -239,7 +227,7 @@ void CPlayerResult::MovePtnSelect()
 		D3DXVECTOR3 PosCameraR = CManager::GetInstance()->GetCamera()->GetPositionR();
 		D3DXVECTOR3 RotCamera = CManager::GetInstance()->GetCamera()->GetRotation();
 
-		PosCameraR = m_Info.pos + CameraAngle;
+		PosCameraR = m_Info.pos + m_CameraAngle;
 		RotCamera = m_Info.rot + ROTATION::ANGLE;
 
 		CManager::GetInstance()->GetCamera()->SetPositionR(PosCameraR);
@@ -257,19 +245,33 @@ void CPlayerResult::MoveEnd()
 	if (GetPosition().x >= m_EndPos.x && GetOldPosition().x < m_EndPos.x ||
 		GetPosition().x <= m_EndPos.x && GetOldPosition().x > m_EndPos.x)
 	{
-		m_bStartPtn = true;
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	else if (GetPosition().y >= m_EndPos.y && GetOldPosition().y < m_EndPos.y ||
 		GetPosition().y <= m_EndPos.y && GetOldPosition().y > m_EndPos.y)
 	{
-		m_bStartPtn = true;
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	else if (GetPosition().z >= m_EndPos.z && GetOldPosition().z < m_EndPos.z ||
 		GetPosition().z <= m_EndPos.z && GetOldPosition().z > m_EndPos.z)
 	{
-		m_bStartPtn = true;
+		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
+}
+
+//==========================================================
+// –Ú“I’n‚É’…‚¢‚½‚©”»’è
+//==========================================================
+void CPlayerResult::MovePtnSet(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXVECTOR3 rot, const D3DXVECTOR3 angle, const D3DXVECTOR3 Endpos)
+{
+	SetPosition(pos);
+	SetMove(move);
+	SetRotation(rot);
+	m_CameraAngle = angle;
+	m_EndPos = Endpos;
+
+	m_bStartPtn = false;
 }
