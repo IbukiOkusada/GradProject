@@ -55,8 +55,10 @@ public:	// 誰でもアクセス可能
 	CRoad::SInfoSearch* GetSearchRoad() { return m_pSearchTarget; }
 	CPolice* GetPolice() { return m_pPolice; }
 	float GetChaseSpeed() { return m_fChaseSpeed; }
+	bool GetCall() { return m_bCall; }
 
 	// メンバ関数(設定)
+	void SetCall(bool bCall) { m_bCall = bCall; }
 
 protected:
 	

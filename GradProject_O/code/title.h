@@ -46,16 +46,26 @@ public:
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
-	void Draw(void);
+	void Draw(void) { CScene::Draw(); }
 
 	//<************************************
 	//Get系関数
 	//<************************************
 	//シングルとマルチどっちが選択されているかの取得関数
-	constexpr int GetSelectSingleMulti(void) { return m_nSelect; }
+	inline int GetSelectSingleMulti(void) { return m_nSelect; }
+
+	//プレイヤー取得
+	inline static CPlayerTitle* GetPlayer(void)
+	{
+		//中身なければnullptrを返す
+		if (!m_pPlayer) { return nullptr; }
+
+		//中身あればその警察情報を返す
+		else { return m_pPlayer; }
+	}
 
 	//警察取得関数
-	constexpr static CPoliceTitle* GetPoliTitle(int nNum)
+	inline static CPoliceTitle* GetPoliTitle(int nNum)
 	{
 		//中身なければnullptrを返す
 		if (!m_apPolice[nNum]){return nullptr;}
@@ -167,7 +177,7 @@ private:
 	//<************************************
 	//ポインタ型
 	//<************************************
-	CPlayerTitle* m_pPlayer;									//プレイヤーのポインタ
+	static CPlayerTitle* m_pPlayer;									//プレイヤーのポインタ
 	static CPoliceTitle* m_apPolice[INITIAL::POLICE_MAX];		//警察のポインタ
 
 	CObject2D* m_pObject2D[OBJ2D::OBJ2D_MAX];					//オブジェクト2Dのポインタ
