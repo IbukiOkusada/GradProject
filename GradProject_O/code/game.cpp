@@ -115,7 +115,7 @@ CGame::CGame()
     m_pFileLoad = nullptr;
     m_pMeshDome = nullptr;
     m_pGoalManager = nullptr;
-
+    m_Light.clear();
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
     m_nSledCnt = 0;
@@ -139,7 +139,7 @@ CGame::CGame(int nNumPlayer)
     m_pFileLoad = nullptr;
     m_pMeshDome = nullptr;
     m_pGoalManager = nullptr;
-  
+    m_Light.clear();
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
     m_nSledCnt = 0;
@@ -192,9 +192,10 @@ HRESULT CGame::Init(void)
 
     // マップ読み込み
     CMapManager::GetInstance()->Load();
-    CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f);
-    CShaderLight::Create(D3DXVECTOR3(20900.0f, 5000.0f, -1700.0f), D3DXVECTOR3(1.0f, 0.0f, 1.0f), 1.0f, 10000.0f);
-    CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f);
+
+    m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f));
+    m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(20900.0f, 5000.0f, -1700.0f), D3DXVECTOR3(1.0f, 0.0f, 1.0f), 1.0f, 10000.0f));
+    m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f));
     auto net = CNetWork::GetInstance();
 
     // プレイヤー生成
@@ -271,15 +272,25 @@ void CGame::Uninit(void)
         {
             break;
         }
-    }   
+       
+    }
 
+    // ライト
+    for (auto& it : m_Light)
+    {
+        CShaderLight::Delete(it);
+        SAFE_DELETE(it);
+    }
+
+    // 終了
     SAFE_UNINIT(m_pMeshDome);
-  
     SAFE_UNINIT(m_pDeliveryStatus);
 
-    SAFE_UNINIT(m_pGameTimer);
+
+    // 解放
     SAFE_RELEASE(m_pGoalManager);
 
+    // 廃棄
     SAFE_UNINIT_DELETE(pFog);
     // ネットワーク切断
     auto net = CNetWork::GetInstance();
@@ -295,12 +306,12 @@ void CGame::Uninit(void)
     CMapManager::Release();
 
     // 各種マネージャー廃棄
-    //CCarManager::Release();
-    //CGoalManager::Release();
-    //CPoliceManager::Release();
-    //CPoliceAIManager::Release();
-    //CInspectionManager::Release();
-    //CPlayerManager::Release();
+    CCarManager::Release();
+    CGoalManager::Release();
+    CPoliceManager::Release();
+    CPoliceAIManager::Release();
+    CInspectionManager::Release();
+    CPlayerManager::Release();
 }
 
 //===============================================

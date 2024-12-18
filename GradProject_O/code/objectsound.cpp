@@ -16,7 +16,7 @@ CMasterSound::CObjectSound::CObjectSound()
 	m_nCntLoop = 0;				// ループカウント
 	m_fVolume = 1.0f;
 	m_fPitch = 1.0f;
-
+	m_bStart = false;
 	m_pDataAudio = nullptr;		// オーディオデータ
 	m_dSizeAudio = 0;			// オーディオデータサイズ
 	GetInstance()->m_pList->Regist(this);
@@ -180,6 +180,7 @@ void CMasterSound::CObjectSound::Play()
 //=============================================================================
 void CMasterSound::CObjectSound::Stop()
 {
+	m_bStart = false;
 
 	// 一時停止
 	m_pSourceVoice->Stop(0);
@@ -197,6 +198,7 @@ void CMasterSound::CObjectSound::Pause()
 {
 	//一時停止
 	m_pSourceVoice->Start(0);
+	m_bStart = false;
 }
 //=============================================================================
 // 再生
@@ -205,6 +207,7 @@ void CMasterSound::CObjectSound::Start()
 {
 	// 再生
 	m_pSourceVoice->Start(0);
+	m_bStart = true;
 }
 //=============================================================================
 // ボリューム設定

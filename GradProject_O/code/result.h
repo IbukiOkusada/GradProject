@@ -79,15 +79,19 @@ private:
 	CObject2D *m_pObjClear;			// clearしたかどうか
 	CPlayerResult* m_pPlayer;		// リザルトプレイヤーのポインタ
 
-	CObject2D* m_pObj;				// 失敗or成功のオブジェクト
-	CObject2D* m_pScoreObj[4];		// 各スコアの文字のオブジェクト
-	CObject2D* m_pStarObj[25];		// 星のオブジェクト
-	CObject2D* m_pStarFreamObj[25];	// 星の枠のオブジェクト
-	CNumber* m_pDeliNumber;			// 届けた数のオブジェクト
-	CNumber* m_pTimeNumber[3];		// 残りタイムのオブジェクト
-	CNumber* m_pLifeNumber[3];		// 残り体力のオブジェクト
-	CNumber* m_pEvalNumber[2];		// 総合スコアのオブジェクト
-	CNumber* m_pRankingNumber[10];	// ランキングのオブジェクト
+	CObject2D* m_pObj;					// 失敗or成功のオブジェクト
+	CObject2D* m_pScoreObj[4];			// 各スコアの文字のオブジェクト
+	CObject2D* m_pEvalStarObj[5];		// 総合スコアの星のオブジェクト
+	CObject2D* m_pEvalStarFreamObj[5];	// 総合スコアの星の枠のオブジェクト
+	CObject2D* m_pStarObj[25];			// 星のオブジェクト
+	CObject2D* m_pStarFreamObj[25];		// 星の枠のオブジェクト
+	CObject2D* m_pDecPointEval;			// 総合スコアの小数点のオブジェクト
+	CObject2D* m_pDecPointRank[5];		// ランキングの小数点のオブジェクト
+	CNumber* m_pDeliNumber;				// 届けた数のオブジェクト
+	CNumber* m_pTimeNumber[3];			// 残りタイムのオブジェクト
+	CNumber* m_pLifeNumber[3];			// 残り体力のオブジェクト
+	CNumber* m_pEvalNumber[2];			// 総合スコアのオブジェクト
+	CNumber* m_pRankingNumber[10];		// ランキングのオブジェクト
 
 	static int m_nDeli;			// 配達した数
 	static float m_fTime;		// 残り時間
@@ -101,6 +105,8 @@ private:
 	int m_RankingObj[10];		// ランキングスコアのオブジェクトに必要な変数
 	int m_Display;				// 表示させるオブジェクトの変数
 	int m_DisplayRank;			// ランキングの表示させるオブジェクトの変数
+	int m_Timehid;
+	int m_Lifehid;
 	bool m_bSuccess;			// クリアしたかどうか
 };
 

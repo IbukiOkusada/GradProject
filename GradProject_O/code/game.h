@@ -10,6 +10,8 @@
 #include "manager.h"
 #include <mutex>
 #include "objectsound.h"
+#include "shaderlight.h"
+
 // 前方宣言
 class CScore;
 class CTime;
@@ -25,6 +27,7 @@ class CMultiCamera;
 class CGoalManager;
 class CFog;
 class CScrollText2D;
+
 // マクロ定義
 #define NUM_FILTER	(2)
 
@@ -91,7 +94,7 @@ private:
 	CMultiCamera **m_ppCamera;	// カメラのポインタ
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
 	CGoalManager *m_pGoalManager;  // ゴールマネージャーのポインタ
-
+	std::vector<CShaderLight::SLight*> m_Light;
 	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ
 	CTimer* m_pGameTimer;		// タイマーのポインタ
 	char m_aAddress[30];		// 接続先サーバーのアドレス

@@ -29,8 +29,12 @@ namespace
 	const float LENGTH_POINT_CHASE = (500.0f);		// すれ違い判定距離
 	const float SECURE_SPEEDDEST = (-20.0f);		// 確保時の目標速度
 	const float SECURE_SPEED = (0.8f);				// 確保時の加速倍率
+	const float SPEED_CURVE_RIGHT = (9.0f);			// 左折時の速度
+	const float SPEED_CURVE_LEFT = (3.0f);			// 右折時の速度
+	const float SPEED_CURVE_UTURN = (7.0f);			// Uターン時の速度
 	const float ROT_MULTI_DEF = (0.02f);			// 通常時の向き補正倍率
 	const float ROT_MULTI_CHASE = (0.04f);			// 追跡時の向き補正倍率
+	const float LENGTH_LANE = (-400.0f);			// 車線の幅
 	const D3DXVECTOR3 LIGHT_OFFSET = D3DXVECTOR3(0.0f, 100.0f, 250.0f);
 	const D3DXVECTOR3 LIGHT_VEC = D3DXVECTOR3(0.0f, -0.25f, 1.0f);
 }
@@ -86,11 +90,8 @@ CPolice::~CPolice()
 //==========================================================
 HRESULT CPolice::Init(void)
 {
-	TailLamp();
-	m_pSiren = CMasterSound::CObjectSound::Create("data\\SE\\siren.wav", -1);
-	m_pSiren->Stop();
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\police.x");
-	m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));
+
 	// AIを生成
 	m_pPoliceAI = CPoliceAI::Create(this, CPoliceAI::TYPE_NORMAL);
 	return S_OK;
@@ -112,8 +113,11 @@ void CPolice::Uninit(void)
 	CCar::Uninit();
 	CPoliceManager::GetInstance()->ListOut(this);
 	SAFE_DELETE(m_pPatrolLamp);
-	SAFE_UNINIT_DELETE(m_pSiren);
-	CShaderLight::Delete(m_pShaderLight);
+	m_pSiren = nullptr;
+	if (m_pShaderLight != nullptr)
+	{
+		CShaderLight::Delete(m_pShaderLight);
+	}
 	SAFE_DELETE(m_pShaderLight)
 	Release();
 }
@@ -130,8 +134,14 @@ void CPolice::Update(void)
 		return;
 	}
 
+	if (m_pSiren != nullptr)
+	{
+		CDebugProc::GetInstance()->Print("サイレンある\n");
+	}
+
 	// アップデート
 	CCar::Update();
+
 	D3DXMATRIX mat;
 	D3DXMatrixIdentity(&mat);
 	D3DXMatrixRotationYawPitchRoll(&mat, GetRotation().y, GetRotation().x, GetRotation().z);
@@ -140,20 +150,53 @@ void CPolice::Update(void)
 	D3DXVec3Normalize(&lightvec, &lightvec);
 	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
 	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
-	m_pShaderLight->position = GetPosition() + lightpos;
-	m_pShaderLight->direction = lightvec;
+	if (m_pShaderLight != nullptr)
+	{
+		m_pShaderLight->position = GetPosition() + lightpos;
+		m_pShaderLight->direction = lightvec;
+	}
+
+	CPoliceManager* pMgr = CPoliceManager::GetInstance();
+	auto list = CPoliceManager::GetInstance()->GetNearList();
+	auto it = find(list->begin(), list->end(), this);
+
 	if (m_Info.bChase)
 	{
+
 		if (m_pPatrolLamp == nullptr)
 		{
-			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", 
+				VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 		}
-		m_pPatrolLamp->m_pos = GetPosition();
-		m_pPatrolLamp->m_rot = GetRotation();
+
+		if (m_pPatrolLamp != nullptr)
+		{
+			m_pPatrolLamp->m_pos = GetPosition();
+			m_pPatrolLamp->m_rot = GetRotation();
+		}
 	}
 	else
 	{
 		SAFE_DELETE(m_pPatrolLamp);
+	}
+
+	if (list->end() != it)
+	{
+		TailLamp();
+		if (m_pShaderLight == nullptr)
+		{
+			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
+		}
+	}
+	else
+	{
+		DeleteTailLamp();
+
+		if (m_pShaderLight != nullptr)
+		{
+			CShaderLight::Delete(m_pShaderLight);
+		}
+		SAFE_DELETE(m_pShaderLight)
 	}
 
 	UpdateState();
@@ -202,8 +245,6 @@ void CPolice::MoveRoad()
 	// 追跡状態の判定
 	if (m_Info.bChase)
 	{
-		m_pSiren->Start();
-
 		SetRoadStart(GetRoadTarget());
 
 		// プレイヤー追跡処理
@@ -219,7 +260,11 @@ void CPolice::MoveRoad()
 		{
 			vol = 0.0f;
 		}
-		m_pSiren->SetVolume(vol);
+
+		if (m_pSiren != nullptr)
+		{
+			m_pSiren->SetVolume(vol);
+		}
 
 		// カーブ時の速度を設定
 		SetSpeedCurve(10.0f);
@@ -253,7 +298,7 @@ void CPolice::MoveRoad()
 			if (m_Info.pPlayer == nullptr) { return; }
 
 			// プレイヤーの座標を目指す
-			SetPosTarget(m_Info.pPlayer->GetPosition());
+			SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
 
 			// 一定距離まで近づいたら減速させる
 			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
@@ -265,11 +310,6 @@ void CPolice::MoveRoad()
 	}
 	else
 	{
-		if (m_pSiren != nullptr)
-		{
-			m_pSiren->Stop();
-		}
-
 		// 目的地が存在する時
 		if (pRoadTarget != nullptr || IsActive())
 		{
@@ -293,21 +333,80 @@ void CPolice::MoveRoad()
 //==========================================================
 void CPolice::ReachRoad()
 {
+	if (m_Info.bChase) { return; }
+
 	// 移動地点用変数
 	CRoad* pRoadStart = GetRoadStart();
 	CRoad* pRoadTarget = GetRoadTarget();
+	D3DXVECTOR3 offsetLane = GetOffsetLane(); 
+	float fSpeedCurve;
 
 	CRoad* pRoadNext = nullptr;
+	Clist<int> listStation;
 
-	while (1)
-	{// 地点が入るまで
-		int roadPoint = rand() % CRoad::DIC_MAX;
+	// 道の数を取り出す
+	for (int i = 0; i < CRoad::DIC_MAX; i++)
+	{
+		if (pRoadTarget->GetConnectRoad((CRoad::DIRECTION)i) == nullptr) { continue; }
 
-		pRoadNext = pRoadTarget->GetConnectRoad((CRoad::DIRECTION)roadPoint);
+		if (pRoadTarget->GetType() != CRoad::TYPE_STOP)
+		{
+			if (pRoadTarget->GetConnectRoad((CRoad::DIRECTION)i) == pRoadStart) { continue; }
+		}
 
-		if (pRoadNext == pRoadStart && pRoadTarget->GetType() != CRoad::TYPE_STOP) { continue; }
+		listStation.Regist(i);
+	}
 
-		if (pRoadNext != nullptr) { break; }
+	// 進む方向をランダムで決定
+	int roadPoint = listStation.Get(rand() % listStation.GetNum());
+	pRoadNext = pRoadTarget->GetConnectRoad((CRoad::DIRECTION)roadPoint);
+
+	// 進行方向によって車線の幅分目的地をずらす
+	if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_UP)
+	{// 上
+		offsetLane = D3DXVECTOR3(-LENGTH_LANE, 0.0f, 0.0f);
+	}
+	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_DOWN)
+	{// 下
+		offsetLane = D3DXVECTOR3(LENGTH_LANE, 0.0f, 0.0f);
+	}
+	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_LEFT)
+	{// 左
+		offsetLane = D3DXVECTOR3(0.0f, 0.0f, -LENGTH_LANE);
+	}
+	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_RIGHT)
+	{// 右
+		offsetLane = D3DXVECTOR3(0.0f, 0.0f, LENGTH_LANE);
+	}
+
+	// 目的地と出発地点が存在する時
+	if (pRoadStart != nullptr && pRoadTarget != nullptr)
+	{
+		D3DXVECTOR3 vecTarget, vecNext, vecTemp;
+		vecTarget = pRoadTarget->GetPosition() - pRoadStart->GetPosition();
+		vecNext = pRoadNext->GetPosition() - pRoadStart->GetPosition();
+
+		// 曲がる方向に対して速度を設定
+		if (pRoadTarget->GetType() == CRoad::TYPE_STOP)
+		{// Uターン
+			fSpeedCurve = SPEED_CURVE_UTURN;
+		}
+		else if (D3DXVec3Cross(&vecTemp, &vecTarget, &vecNext)->y > 0.0f)
+		{// 左折
+			fSpeedCurve = SPEED_CURVE_LEFT;
+		}
+		else if (D3DXVec3Cross(&vecTemp, &vecTarget, &vecNext)->y < 0.0f)
+		{// 右折
+			fSpeedCurve = SPEED_CURVE_RIGHT;
+		}
+		else
+		{// 直進
+			fSpeedCurve = SPEED_CURVE_LEFT;
+		}
+	}
+	else
+	{
+		fSpeedCurve = SPEED_CURVE_LEFT;
 	}
 
 	// 目標地点と出発地点をずらす
@@ -339,6 +438,8 @@ void CPolice::ChasePlayer()
 
 	m_pPoliceAI->Chase();
 
+	LanePlayer();
+
 	// 追跡経路が存在するならば目標地点に設定する
 	if (m_pPoliceAI->GetSearchRoad() != nullptr)
 	{
@@ -348,6 +449,35 @@ void CPolice::ChasePlayer()
 	{
 		SetRoadTarget(nullptr);
 	}
+}
+
+//==========================================================
+// 蛇行運転処理
+//==========================================================
+void CPolice::LanePlayer()
+{
+	m_Info.nLaneCount++;
+	D3DXVECTOR3 offsetLaneCar = GetOffsetLane();
+
+	if (m_Info.nLaneCount > m_Info.nLaneTime)
+	{
+		// 移動の幅取得
+		
+
+		float length = ((rand() % 12001) - 6000) * 0.1f;
+
+		m_Info.offsetLane.x = sinf(m_Info.pPlayer->GetRotation().y) * length;
+		m_Info.offsetLane.y = 0.0f;
+		m_Info.offsetLane.z = cosf(m_Info.pPlayer->GetRotation().y) * length;
+
+		m_Info.nLaneCount = 0;
+		m_Info.nLaneTime = rand() % 270 + 30;
+	}
+
+	offsetLaneCar = m_Info.offsetLane;
+
+	CDebugProc::GetInstance()->Print("警察の蛇行のオフセット : [ %f, %f, %f ]\n", m_Info.offsetLane.x, m_Info.offsetLane.y, m_Info.offsetLane.z);
+	CDebugProc::GetInstance()->Print("警察の蛇行のカウント : [ %d, %d ]\n", m_Info.nLaneCount, m_Info.nLaneTime);
 }
 
 //==========================================================

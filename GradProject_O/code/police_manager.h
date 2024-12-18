@@ -10,6 +10,7 @@
 #include "list_manager.h"
 #include "list.h"
 #include "map_list.h"
+#include "objectsound.h"
 
 // 前方宣言
 class CPolice;
@@ -54,6 +55,10 @@ public:	// 誰でもアクセス可能
 	void ResetInterVal() { m_InspInfo.fInterval = 0.0f; }
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
 	std::vector<CPolice*>* GetNearList() { return &m_NearPoliceList; }
+	CMasterSound::CObjectSound* GetSound(int Idx) { 
+		if (!m_Siren[Idx]->IsStart()) { m_Siren[Idx]->Start(); }
+		return m_Siren[Idx];
+	}
 
 private:	// 自分だけがアクセス可能
 
@@ -65,6 +70,7 @@ private:	// 自分だけがアクセス可能
 	Clist<CPolice*>* m_pList;
 	Cmaplist<CPolice*> m_maplist;
 	std::vector<CPolice*> m_NearPoliceList;	// 近い警察リスト
+	std::vector < CMasterSound::CObjectSound*> m_Siren;
 	int m_nNum;
 	static CPoliceManager* m_pInstance;	// インスタンス
 	SInspInfo m_InspInfo;

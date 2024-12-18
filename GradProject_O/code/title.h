@@ -38,6 +38,34 @@ class CTitle : public CScene
 {
 public:
 
+	// メンバ関数
+	CTitle();	//コンストラクタ
+	~CTitle();	//デストラクタ
+
+	//メンバ関数
+	HRESULT Init(void);
+	void Uninit(void);
+	void Update(void);
+	void Draw(void);
+
+	//<************************************
+	//Get系関数
+	//<************************************
+	//シングルとマルチどっちが選択されているかの取得関数
+	constexpr int GetSelectSingleMulti(void) { return m_nSelect; }
+
+	//警察取得関数
+	constexpr static CPoliceTitle* GetPoliTitle(int nNum)
+	{
+		//中身なければnullptrを返す
+		if (!m_apPolice[nNum]){return nullptr;}
+
+		//中身あればその警察情報を返す
+		else{return m_apPolice[nNum];}
+	}
+
+private:
+
 	// オブジェクト2Dの列挙型
 	const enum OBJ2D
 	{
@@ -77,34 +105,6 @@ public:
 		SELECT_YN_NO,
 		SELECT_YN_MAX
 	};
-
-	// メンバ関数
-	CTitle();	//コンストラクタ
-	~CTitle();	//デストラクタ
-
-	//メンバ関数
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
-
-	//<************************************
-	//Get系関数
-	//<************************************
-	//シングルとマルチどっちが選択されているかの取得関数
-	inline int GetSelectSingleMulti(void) { return m_nSelect; }
-
-	//警察取得関数
-	inline static CPoliceTitle* GetPoliTitle(int nNum)
-	{
-		//中身なければnullptrを返す
-		if (!m_apPolice[nNum]){return nullptr;}
-
-		//中身あればその警察情報を返す
-		else{return m_apPolice[nNum];}
-	}
-
-private:
 
 	//サイズに関係する列挙型
 	const enum SIZING
@@ -151,6 +151,8 @@ private:
 	//デバッグ用
 	void DebugCam(void);
 
+	bool TriggerEnter(void);
+
 	//オブジェクト2Dの初期化
 	CObject2D* InitObj2D(const D3DXVECTOR3 rPos,		
 		const D3DXVECTOR3 rRot,								
@@ -165,13 +167,12 @@ private:
 	//<************************************
 	//ポインタ型
 	//<************************************
-	CPlayerTitle* m_pPlayer;					//プレイヤーのポインタ
+	CPlayerTitle* m_pPlayer;									//プレイヤーのポインタ
 	static CPoliceTitle* m_apPolice[INITIAL::POLICE_MAX];		//警察のポインタ
-	CGole* m_pGoal;								//ゴールのポインタ
 
-	CObject2D* m_pObject2D[OBJ2D::OBJ2D_MAX];			//オブジェクト2Dのポインタ
-	CObject2D* m_apSelect[SELECT::SELECT_MAX];	//シングルとマルチの選択肢のポインタ
-	CObject2D* m_apYesNoObj[SELECT_YN::SELECT_YN_MAX];		//YESとNOの選択肢のポインタ
+	CObject2D* m_pObject2D[OBJ2D::OBJ2D_MAX];					//オブジェクト2Dのポインタ
+	CObject2D* m_apSelect[SELECT::SELECT_MAX];					//シングルとマルチの選択肢のポインタ
+	CObject2D* m_apYesNoObj[SELECT_YN::SELECT_YN_MAX];			//YESとNOの選択肢のポインタ
 	CCamera* m_pCam;
 
 	//<************************************
@@ -190,7 +191,6 @@ private:
 	//bool型
 	//<************************************
 	bool m_bPush;								//チュートリアル遷移に必要なボタンが押されているか
-	bool m_bDisplay;							//画面に映すかどうか
 	bool m_bIniting;							//オブジェクトの初期化が終わったかどうかのチェック
 	bool m_bCol;								//色変更しているかどうか		
 	bool m_bNext;								//次に行けるかの是非
