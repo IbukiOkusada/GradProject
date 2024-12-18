@@ -27,7 +27,7 @@ namespace
 	const float OUT_ENGINE = 0.6f;
 	const float INTERVAL = 5.0f;
 	const float SEARCH_DISTANCE = 3000.0f;
-	const float SEARCH_RANGE = D3DX_PI * 0.3f;
+	const float SEARCH_RANGE = D3DX_PI * 0.1f;
 }
 
 Clist<CGimmickPoliceStation*> CGimmickPoliceStation::m_List = {};
@@ -115,36 +115,38 @@ void CGimmickPoliceStation::Update(void)
 	if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// ÉZÅ[Ét
 
 	// ãóó£îªíË
-	D3DXVECTOR3 pos = pPlayer->GetPosition() - GetPos();
+	D3DXVECTOR3 pos = GetPos() - pPlayer->GetPosition();
 	float distance = D3DXVec3Length(&pos);
 	CDebugProc::GetInstance()->Print("ãóó£ [ %f ]", distance);
-	if (distance > SEARCH_DISTANCE) { return; }
-
 	// å¸Ç´îªíË
 	float rot = atan2f(pos.x, pos.z);
 	Adjust(rot);
 	float dest = rot - GetRot().y;
 	Adjust(dest);
 	dest = fabsf(dest);
+	CDebugProc::GetInstance()->Print("ç∑ï™ [ %f ]", dest);
+
+
+	if (distance > SEARCH_DISTANCE) { return; }
 
 	// îÕàÕì‡ÇÃÇ›åxé@ê∂ê¨
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
-	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+	//CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
 
-	// âûâáÇÃåxé@ÇÃÉ^ÉCÉvÇê›íË
-	pP->SetTypeAI(CPoliceAI::TYPE_NONE);
-	pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+	//// âûâáÇÃåxé@ÇÃÉ^ÉCÉvÇê›íË
+	//pP->SetTypeAI(CPoliceAI::TYPE_NONE);
+	//pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 
-	// ñ⁄ìIínê›íË
-	pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(GetPos()));
+	//// ñ⁄ìIínê›íË
+	//pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(GetPos()));
 
-	// í«ê’èÛë‘Ç…ïœçX
-	pP->SetChase(true);
-	pP->GetAi()->BeginChase(pPlayer);
+	//// í«ê’èÛë‘Ç…ïœçX
+	//pP->SetChase(true);
+	//pP->GetAi()->BeginChase(pPlayer);
 
-	// âûâáÇÃåxé@ÇÕâûâáÇåƒÇŒÇ»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
-	pP->GetAi()->SetCall(true);
+	//// âûâáÇÃåxé@ÇÕâûâáÇåƒÇŒÇ»Ç¢ÇÊÇ§Ç…Ç∑ÇÈ
+	//pP->GetAi()->SetCall(true);
 
 }
 
