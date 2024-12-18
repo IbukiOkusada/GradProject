@@ -429,7 +429,7 @@ void CPolice::LanePlayer()
 		// ˆÚ“®‚Ì•Žæ“¾
 		
 
-		float length = ((rand() % 12001) - 6000) * 0.1f;
+		float length = ((rand() % 20001) - 10000) * 0.1f;
 
 		m_Info.offsetLane.x = sinf(m_Info.pPlayer->GetRotation().y) * length;
 		m_Info.offsetLane.y = 0.0f;
