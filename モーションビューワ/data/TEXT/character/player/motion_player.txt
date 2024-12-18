@@ -11,14 +11,14 @@ SCRIPT			# この行は絶対消さないこと！
 #------------------------------------------------------------------------------
 # モデル数
 #------------------------------------------------------------------------------
-NUM_MODEL = 15
+NUM_MODEL = 16
 
 #------------------------------------------------------------------------------
 # モデルファイル名
 #------------------------------------------------------------------------------
 MODEL_FILENAME = data/MODEL/player/00_waist.x		# [0]腰
 MODEL_FILENAME = data/MODEL/player/01_body.x		# [1]体
-MODEL_FILENAME = data/MODEL/player/02_hed.x		# [2]頭
+MODEL_FILENAME = data/MODEL/player/02_hed.x		    # [2]頭
 MODEL_FILENAME = data/MODEL/player/06_upperarmL.x 	# [3]左上腕
 MODEL_FILENAME = data/MODEL/player/07_forearmL.x	# [4]左前腕
 MODEL_FILENAME = data/MODEL/player/08_handL.x		# [5]左手
@@ -31,13 +31,14 @@ MODEL_FILENAME = data/MODEL/player/11_footR.x		# [11]左足
 MODEL_FILENAME = data/MODEL/player/12_thighL.x		# [12]右太もも
 MODEL_FILENAME = data/MODEL/player/13_shinL.x		# [13]右脛
 MODEL_FILENAME = data/MODEL/player/14_footL.x		# [14]右足
+MODEL_FILENAME = data/MODEL/player/100_cap.x		# [15]帽子
 
 
 #------------------------------------------------------------------------------
 # キャラクター情報
 #------------------------------------------------------------------------------
 CHARACTERSET
-	NUM_PARTS = 15					# パーツ数
+	NUM_PARTS = 16					# パーツ数
 	
 	PARTSSET
 		INDEX = 0
@@ -82,7 +83,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 5
 		PARENT = 4
-		POS = -14.00 0.50 0.00
+		POS = -11.00 0.50 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -106,7 +107,7 @@ CHARACTERSET
 	PARTSSET
 		INDEX = 8
 		PARENT = 7
-		POS = 15.50 0.50 0.00
+		POS = 10.50 0.50 0.00
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
@@ -155,6 +156,14 @@ CHARACTERSET
 		INDEX = 14
 		PARENT = 13
 		POS = 0.00 -16.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+	
+	PARTSSET
+		INDEX = 15
+		PARENT = 2
+		POS = 0.00 9.00 3.50
 		ROT = 0.00 0.00 0.00
 		START = 1
 	END_PARTSSET
