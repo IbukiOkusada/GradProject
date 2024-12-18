@@ -98,6 +98,7 @@ public:	// 誰でもアクセス可能
 	bool GetChase() { return m_Info.bChase; }
 	int GetChaseCount() { return m_Info.nChaseCount; }
 	CPoliceAI* GetAi() { return m_pPoliceAI; }
+	CMasterSound::CObjectSound* GetSound() { return m_pSiren; }
 
 	// メンバ関数(設定)
 	void SetState(const STATE state);
@@ -107,6 +108,7 @@ public:	// 誰でもアクセス可能
 	void SetChase(bool bChase) { m_Info.bChase = bChase; }
 	void SetChaseCount(int bChaseCount) { m_Info.nChaseCount = bChaseCount; }
 	void SetTypeAI(CPoliceAI::TYPE type);		// AIのタイプ変更
+	void SetSound(CMasterSound::CObjectSound* pSound) { m_pSiren = pSound; }
 
 protected:
 
