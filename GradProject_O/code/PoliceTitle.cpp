@@ -86,7 +86,7 @@ CPoliceTitle* CPoliceTitle::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot,
 	CPoliceTitle* pPoliceTitle = DEBUG_NEW CPoliceTitle;
 
 	//Šm•Û‚Å‚«‚Ä‚¢‚½‚ç
-	if (pPoliceTitle != nullptr)
+	if (pPoliceTitle)
 	{
 		//‰Šú‰»ˆ—
 		pPoliceTitle->Init(pos);

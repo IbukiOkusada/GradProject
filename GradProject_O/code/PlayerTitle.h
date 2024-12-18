@@ -83,12 +83,15 @@ public:
 private:
 
 	//警察関連処理
-	void PoliceRotSet(void);
-	void PolicePosSet(void);
+	void PoliceInfoSet(void); 
+
+	void PlayerRotSet(void);
 
 	int m_nNumDest;						//目的地の番号
 	float m_fBDustValue;				//煙の大きさの値
 	float m_fDestrot;					//プレイヤー自身の向きの目的地
+	D3DXVECTOR3 m_PoliDestRot;			//警察の目的向き	
+	D3DXVECTOR3 m_TestMove;
 	float m_fMoveRot;					//回転速度
 	bool m_bNextMove;					//次の動きに移行するときになったら
 	bool m_bFirst;						//最初の位置

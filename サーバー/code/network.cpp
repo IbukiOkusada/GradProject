@@ -270,8 +270,15 @@ void CNetWork::Send(CServer** ppServer)
 
 				pClient->SetSend(true);	// 書き換え不可能な状態にする
 
-				memcpy(&m_aSendData[m_nSendByte], pClient->GetSendData(), pClient->GetSendByte());
-				m_nSendByte += pClient->GetSendByte();
+				if (m_nSendByte + pClient->GetSendByte() < NetWork::MAX_COMMAND_DATA)
+				{
+					memcpy(&m_aSendData[m_nSendByte], pClient->GetSendData(), pClient->GetSendByte());
+					m_nSendByte += pClient->GetSendByte();
+				}
+				else
+				{
+					pClient->SetData(pClient->GetSendData(), pClient->GetSendByte());
+				}
 
 				if (pClient->GetDeath() == false)
 				{
@@ -289,6 +296,7 @@ void CNetWork::Send(CServer** ppServer)
 						m_apClient[i] = nullptr;
 						m_nConnectCnt--;
 						printf("クライアント切断\n");
+						printf("志望して消えたよ\n");
 					}
 				}
 			}
@@ -312,6 +320,7 @@ void CNetWork::Send(CServer** ppServer)
 						pClient = nullptr;
 						m_apClient[i] = nullptr;
 						printf("クライアント切断\n");
+						printf("送信できずに消えたよ\n");
 					}
 				}
 
@@ -505,6 +514,8 @@ void CNetWork::CommandDelete(const int nId, const char* pRecvData, CClient* pCli
 
 	// 使用しない状態に
 	pClient->SetDeath(true);
+
+	printf("deletecommandで消えたよ\n");
 }
 
 //==========================================================

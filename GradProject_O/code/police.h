@@ -107,6 +107,8 @@ public:	// 誰でもアクセス可能
 	void SetNextPlayer(CPlayer* pPlayer) { m_stateInfo.pNextPlayer = pPlayer; }
 	void SetChase(bool bChase) { m_Info.bChase = bChase; }
 	void SetChaseCount(int bChaseCount) { m_Info.nChaseCount = bChaseCount; }
+	void SetLaneCount(int nLaneCount) { m_Info.nLaneCount = nLaneCount; }
+	void SetLaneTime(int nLaneTime) { m_Info.nLaneTime = nLaneTime; }
 	void SetTypeAI(CPoliceAI::TYPE type);		// AIのタイプ変更
 	void SetSound(CMasterSound::CObjectSound* pSound) { m_pSiren = pSound; }
 

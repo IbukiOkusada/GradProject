@@ -116,6 +116,7 @@ public:	// 誰でもアクセス可能
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetRotation(const D3DXVECTOR3& rot);
 	void SetPosTarget(const D3DXVECTOR3& pos) { m_Info.posTarget = pos; }
+	void SetOffsetLane(const D3DXVECTOR3& offsetLane) { m_Info.offsetLane = offsetLane; }
 	void SetSpeed(const float speed) { m_Info.fSpeed = speed; }
 	void SetSpeedDest(const float speedDest) { m_Info.fSpeedDest = speedDest; }
 	void SetRotMulti(const float rotMulti) { m_Info.fRotMulti = rotMulti; }

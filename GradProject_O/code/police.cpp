@@ -164,7 +164,6 @@ void CPolice::Update(void)
 
 	if (m_Info.bChase)
 	{
-
 		if (m_pPatrolLamp == nullptr)
 		{
 			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", 
@@ -187,7 +186,7 @@ void CPolice::Update(void)
 		TailLamp();
 		if (m_pShaderLight == nullptr)
 		{
-			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
+			//m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
 		}
 	}
 	else
@@ -279,7 +278,7 @@ void CPolice::MoveRoad()
 			SetRotMulti(ROT_MULTI_CHASE);
 
 			// 目的地の座標を代入
-			SetPosTarget(pRoadTarget->GetPosition());
+			SetPosTarget(pRoadTarget->GetPosition() + GetOffsetLane());
 
 			// プレイヤーが存在しないなら最寄りの道に戻る
 			if (m_Info.pPlayer == nullptr) { return; }
@@ -300,7 +299,7 @@ void CPolice::MoveRoad()
 			if (m_Info.pPlayer == nullptr) { return; }
 
 			// プレイヤーの座標を目指す
-			SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
+			SetPosTarget(m_Info.pPlayer->GetPosition());
 
 			// 一定距離まで近づいたら減速させる
 			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
@@ -366,19 +365,19 @@ void CPolice::ReachRoad()
 	// 進行方向によって車線の幅分目的地をずらす
 	if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_UP)
 	{// 上
-		offsetLane = D3DXVECTOR3(-LENGTH_LANE, 0.0f, 0.0f);
+		SetOffsetLane(D3DXVECTOR3(-LENGTH_LANE, 0.0f, 0.0f));
 	}
 	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_DOWN)
 	{// 下
-		offsetLane = D3DXVECTOR3(LENGTH_LANE, 0.0f, 0.0f);
+		SetOffsetLane(D3DXVECTOR3(LENGTH_LANE, 0.0f, 0.0f));
 	}
 	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_LEFT)
 	{// 左
-		offsetLane = D3DXVECTOR3(0.0f, 0.0f, -LENGTH_LANE);
+		SetOffsetLane(D3DXVECTOR3(0.0f, 0.0f, -LENGTH_LANE));
 	}
 	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_RIGHT)
 	{// 右
-		offsetLane = D3DXVECTOR3(0.0f, 0.0f, LENGTH_LANE);
+		SetOffsetLane(D3DXVECTOR3(0.0f, 0.0f, LENGTH_LANE));
 	}
 
 	// 目的地と出発地点が存在する時
@@ -459,24 +458,31 @@ void CPolice::ChasePlayer()
 void CPolice::LanePlayer()
 {
 	m_Info.nLaneCount++;
-	D3DXVECTOR3 offsetLaneCar = GetOffsetLane();
 
 	if (m_Info.nLaneCount > m_Info.nLaneTime)
 	{
 		// 移動の幅取得
-		
+		float length1 = ((rand() % 3001) + 3000);
+		float length2 = ((rand() % 3001) - 6000);
 
-		float length = ((rand() % 12001) - 6000) * 0.1f;
+		float length = ((rand() % 2 == 0) ? length1 : length2) * 0.1f;
 
-		m_Info.offsetLane.x = sinf(m_Info.pPlayer->GetRotation().y) * length;
+		if (m_pPoliceAI->GetSearchRoad() == nullptr || m_pPoliceAI->GetSearchRoad()->pChild == nullptr) { return; }
+
+		D3DXVECTOR3 posRoad = m_pPoliceAI->GetSearchRoad()->pConnectRoad->GetPosition();
+		D3DXVECTOR3 posRoadChild = m_pPoliceAI->GetSearchRoad()->pChild->pConnectRoad->GetPosition();
+		D3DXVECTOR3 vecRoad = posRoadChild - posRoad;
+		float rotVec = atan2f(vecRoad.z, vecRoad.x);								// 角度計算
+
+		m_Info.offsetLane.x = sinf(rotVec) * length;
 		m_Info.offsetLane.y = 0.0f;
-		m_Info.offsetLane.z = cosf(m_Info.pPlayer->GetRotation().y) * length;
+		m_Info.offsetLane.z = cosf(rotVec) * length;
 
 		m_Info.nLaneCount = 0;
-		m_Info.nLaneTime = rand() % 270 + 30;
+		m_Info.nLaneTime = rand() % 150 + 30;
 	}
 
-	offsetLaneCar = m_Info.offsetLane;
+	SetOffsetLane(m_Info.offsetLane);
 
 	CDebugProc::GetInstance()->Print("警察の蛇行のオフセット : [ %f, %f, %f ]\n", m_Info.offsetLane.x, m_Info.offsetLane.y, m_Info.offsetLane.z);
 	CDebugProc::GetInstance()->Print("警察の蛇行のカウント : [ %d, %d ]\n", m_Info.nLaneCount, m_Info.nLaneTime);

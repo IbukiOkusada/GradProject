@@ -30,6 +30,7 @@
 
 //静的メンバ変数
 CPoliceTitle* CTitle::m_apPolice[INITIAL::POLICE_MAX] = {nullptr};
+CPlayerTitle* CTitle::m_pPlayer = nullptr;
 
 //<===============================================
 //無名名前空間
@@ -90,7 +91,6 @@ CTitle::CTitle()
 	m_bSelected = false;
 
 	//ポインタ系
-	m_pPlayer = nullptr;
 	m_pCam = nullptr;
 
 	//配列の初期化
@@ -110,15 +110,7 @@ CTitle::CTitle()
 	{
 		m_apYesNoObj[nCnt] = nullptr;
 	}
-
-	//配列の初期化
-	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
-	{
-		m_apPolice[nCnt] = nullptr;
-	}
-
 }
-
 //<===============================================
 //デストラクタ
 //<===============================================
@@ -135,7 +127,7 @@ HRESULT CTitle::Init(void)
 	constexpr char* TEX_TEAMLOGO = "data\\TEXTURE\\team_logo.png";				//チームロゴ
 	const D3DXVECTOR3 CAMERA_POS = { 3350.0f, 95.0f, 260.0f };					//カメラの初期位置
 	constexpr int MOVE_LOGO = 135;												//次のステートに遷移するまでの時間
-	constexpr int AUTOMOVE_RANKING = 10000;										//ランキング自動遷移時間
+	constexpr int AUTOMOVE_RANKING = 3000;										//ランキング自動遷移時間
 	constexpr float fSize[SIZING::SIZING_MAX] = { 250.0f, 125.0f };				//サイズ(チームロゴ)
 
 	//int型変数の設定
@@ -249,14 +241,6 @@ void CTitle::Update(void)
 	}
 
 	CScene::Update();
-}
-
-//<===============================================
-//描画処理
-//<===============================================
-void CTitle::Draw(void)
-{
-	CScene::Draw();
 }
 //<===============================================
 //チームロゴステートでの動き

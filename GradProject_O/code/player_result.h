@@ -30,7 +30,12 @@ public:
 
 private:
 	
-	void MovePattern();
+	void Move();
+	void MovePtnSelect();
+	void MoveEnd();
+
+	D3DXVECTOR3 m_EndPos;
+	bool m_bStartPtn;
 
 };
 

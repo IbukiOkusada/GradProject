@@ -1503,11 +1503,12 @@ void CPlayer::SendData()
 	// 受信型以外の場合
 	if (m_type == TYPE::TYPE_RECV) { return; }
 	CNetWork* pNet = CNetWork::GetInstance();
+	CFade* pFade = CManager::GetInstance()->GetFade();
 
 	// データの送信
 	if (pNet == nullptr) { return; }
 
-	if (pNet->GetTime()->IsOK())
+	if (pNet->GetTime()->IsOK() && pFade->GetState() == CFade::STATE_NONE)
 	{
 		pNet->SendPlPos(m_Info.pos, m_Info.rot);
 
