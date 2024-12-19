@@ -60,6 +60,19 @@ public:
 		STATE_MAX
 	};
 
+	// モーション列挙型
+	enum MOTION
+	{
+		MOTION_NEUTRAL = 0,	// 待機モーション
+		MOTION_LEFT,		// 左曲がり
+		MOTION_RIGHT,		// 左曲がり
+		MOTION_WIN,			// 勝利モーション
+		MOTION_CLEAR,		// クリアモーション
+		MOTION_FAILED,		// 失敗モーション
+		MOTION_THROW,		// 投げモーション
+		MOTION_MAX
+	};
+
 private:	// 自分だけがアクセス可能な定義
 
 	// 情報構造体

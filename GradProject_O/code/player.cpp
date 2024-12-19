@@ -262,7 +262,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	// ƒvƒŒƒCƒ„[¶¬
 	m_pCharacter = CCharacter::Create("data\\TXT\\character\\player\\motion_player.txt");
 	m_pCharacter->SetParent(m_pObj->GetMtx());
-	m_pCharacter->GetMotion()->InitSet(0);
+	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_NEUTRAL);
 	m_pCharacter->SetScale(D3DXVECTOR3(3.0f, 3.0f, 3.0f));
 	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -60.0f, 75.0f));
 	m_pCharacter->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
@@ -681,15 +681,15 @@ void CPlayer::Rotate(void)
 	{
 		if (diff == 0.0f)
 		{
-			m_pCharacter->GetMotion()->BlendSet(0);
+			m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_NEUTRAL);
 		}
 		else if (diff > 0.0f)
 		{
-			m_pCharacter->GetMotion()->BlendSet(2);
+			m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_RIGHT);
 		}
 		else
 		{
-			m_pCharacter->GetMotion()->BlendSet(1);
+			m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_LEFT);
 		}
 	}
 

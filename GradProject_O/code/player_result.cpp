@@ -9,6 +9,7 @@
 #include "camera_manager.h"
 #include "debugproc.h"
 #include "objectX.h"
+#include "character.h"
 
 //==========================================================
 // 定数定義
@@ -75,17 +76,7 @@ HRESULT CPlayerResult::Init(void)
 //==========================================================
 HRESULT CPlayerResult::Init(const char* pBodyName, const char* pLegName)
 {
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
-	m_pObj->SetType(CObject::TYPE_PLAYER);
-	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
-	SetMatrix();
-	SetCol();
-
-	//エフェクト生成
-	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-
-	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
-	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	CPlayer::Init(pBodyName, pLegName);
 
 	//カメラ初期化
 	{
@@ -124,6 +115,12 @@ void CPlayerResult::Update(void)
 	MovePtnSelect();
 	Move();
 	MoveEnd();
+
+	// キャラクター更新
+	if (m_pCharacter != nullptr)
+	{
+		m_pCharacter->Update();
+	}
 
 	//====================================
 	//エフェクトを出す
