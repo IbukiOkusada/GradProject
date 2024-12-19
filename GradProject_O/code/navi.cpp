@@ -167,13 +167,20 @@ void CNavi::CreateEffect(void)
 {
 	if (!m_Path.empty())
 	{
-		for (int i = 0; i < m_Path.size()-1; i++)
+		for (int i = 0; i < m_Path.size(); i++)
 		{
 			SEffect* pEffect = DEBUG_NEW SEffect;
 
 		
-				pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\straight.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
-			
+			if (i == m_Path.size() - 1)
+			{
+				pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\guide_player.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
+			}
+			else
+			{
+				pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\guide_simple.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
+				CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\check.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f);
+			}
 		
 			if (i < m_Path.size() - 1)
 			{
@@ -208,17 +215,29 @@ void CNavi::UpdateNavigation(void)
 	{
 		for (int i = nID - 1; i >= 0; i--)
 		{
+		
 			m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[i]));
+			SEffect* pEffect = m_Effects.Get(i);
+			SAFE_DELETE(pEffect->pLine);
+			pEffect->pTarget = nullptr;
+			m_Effects.Delete(m_Effects.Get(i));
+			SAFE_DELETE(pEffect);
 		}
 		m_Path.shrink_to_fit();
 		m_nTime = 0;
 	}
 	else
 	{
-		if (fDis < 1000.0f && m_Path.size()>1)
+		if (fDis < 500.0f && m_Path.size()>1)
 		{
+			CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\check.efkefc", m_Path[0]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f);
 			m_Path.erase(std::find(m_Path.begin(), m_Path.end(), m_Path[0]));
 			m_nTime = 0;
+			SEffect* pEffect = m_Effects.Get(0);
+			SAFE_DELETE(pEffect->pLine);
+			pEffect->pTarget = nullptr;
+			m_Effects.Delete(m_Effects.Get(0));
+			SAFE_DELETE(pEffect);
 		}
 	}
 	if (!m_Effects.Empty())
@@ -227,7 +246,7 @@ void CNavi::UpdateNavigation(void)
 		D3DXVECTOR3 vec = pPlayer->GetPosition() - m_Path[0]->pos;
 		pEffect->pLine->m_pos = pPlayer->GetPosition();
 		D3DXVec3Normalize(&vec, &vec);
-		pEffect->pLine->m_rot = VectorToAngles(vec);
+		pEffect->pLine->m_rot =  VectorToAngles(vec);
 	}
 
 }
