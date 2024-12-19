@@ -87,6 +87,7 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 
 	//荷物生成
 	m_pTitleBaggage = CTitleBaggage::Create(this->GetPosition());
+	m_pTitleBaggage->GetObj()->SetScale(D3DXVECTOR3(2.0f, 2.0f, 2.0f));
 
 	//エフェクト生成
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -141,7 +142,10 @@ void CPlayerTitle::Update(void)
 			m_pCharacter->Update();
 		}
 		//次の動きに移行していなかったら、アイスをプレイヤーの上に乗っける
-		if (!m_bNextMove) { m_pTitleBaggage->SetPosition(GetPosition()); }
+		if (!m_bNextMove) 
+		{
+			m_pTitleBaggage->GetObj()->SetParent(m_pCharacter->GetParts(5)->GetMtx());
+		}
 
 		//移行していたら初期位置に戻す
 		else { m_pTitleBaggage->SetPosition(VECTOR3_ZERO); m_fBDustValue = BDustMaxValue; }
