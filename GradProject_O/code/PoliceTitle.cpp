@@ -60,7 +60,7 @@ HRESULT CPoliceTitle::Init(void)
 	//位置ありのオブジェクト生成
 	m_pObj = CObjectX::Create(rPos, VECTOR3_ZERO, MODEL_NAME);
 
-
+	//位置設定
 	SetPosition(rPos);
 
 	return S_OK;

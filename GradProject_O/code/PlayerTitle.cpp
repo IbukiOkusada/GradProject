@@ -73,10 +73,10 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 	m_pCharacter->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//バイカーの色設定
-	for (int i = 0; i < m_pCharacter->GetNumParts(); i++)
+	for (int nCntParts = 0; nCntParts < m_pCharacter->GetNumParts(); nCntParts++)
 	{
 		//モデルのパーツを取得
-		pParts = m_pCharacter->GetParts(i);
+		pParts = m_pCharacter->GetParts(nCntParts);
 		pParts->SetColMulti(YellowCol);
 	}
 
@@ -112,21 +112,11 @@ void CPlayerTitle::Uninit(void)
 //<================================================
 void CPlayerTitle::Update(void)
 {
-	constexpr float BDustMaxValue = 300.0f;									//後ろから出る煙の最大値
-
 	//デバッグ以外だったら
 	if (m_eState == STATE_NONE)
 	{
-		// 前回の座標を取得
-		m_Info.posOld = GetPosition();
-
-		StateSet();
-
 		// マトリックス
 		SetMatrix();
-
-		// 当たり判定
-		Collision();
 
 		//オブジェクト自体の中身があれば
 		if (m_pObj)
@@ -148,7 +138,12 @@ void CPlayerTitle::Update(void)
 		}
 
 		//移行していたら初期位置に戻す
-		else { m_pTitleBaggage->SetPosition(VECTOR3_ZERO); m_fBDustValue = BDustMaxValue; }
+		else 
+		{ 
+			constexpr float BDustMaxValue = 300.0f;		//後ろから出る煙の最大値
+			m_pTitleBaggage->SetPosition(VECTOR3_ZERO); 
+			m_fBDustValue = BDustMaxValue;
+		}
 
 		//<********************************
 		//エフェクトを出す
