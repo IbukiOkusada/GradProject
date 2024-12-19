@@ -23,13 +23,13 @@ public:	// 誰でもアクセス可能
 	~CNumber();	// デストラクタ
 
 	// メンバ関数
-	HRESULT Init(D3DXVECTOR3 pos, float fWidth, float fHeight, const char* TexName);
+	HRESULT Init(D3DXVECTOR3 pos, float fWidth, float fHeight);
 	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
 	static CNumber *Create(void);
-	static CNumber *Create(D3DXVECTOR3 pos, float fWidth, float fHeight, const char* TexName = "data\\TEXTURE\\UI\\shadow_number.png");
+	static CNumber *Create(D3DXVECTOR3 pos, float fWidth, float fHeight);
 	CObject2D *GetObject2D(void) { return m_pObject2D; }
 	void PolygonDelete(void);
 	void SetPosition(const D3DXVECTOR3& pos);

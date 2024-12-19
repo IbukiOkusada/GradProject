@@ -210,7 +210,7 @@ HRESULT CGame::Init(void)
     {
         if (!net->GetConnect(i)) { continue; }
 
-        if (i <= myid) { myid = i; }
+        if (i < myid) { myid = i; }
     }
 
     // Ž©•ª‚ªæ“ª‚Ìê‡

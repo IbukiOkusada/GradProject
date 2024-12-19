@@ -262,9 +262,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	// プレイヤー生成
 	m_pCharacter = CCharacter::Create("data\\TXT\\character\\player\\motion_player.txt");
 	m_pCharacter->SetParent(m_pObj->GetMtx());
-	m_pCharacter->GetMotion()->InitSet(0);
+	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_NEUTRAL);
 	m_pCharacter->SetScale(D3DXVECTOR3(3.0f, 3.0f, 3.0f));
-	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -60.0f, 75.0f));
+	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -80.0f, 75.0f));
 	m_pCharacter->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	SetCol();
@@ -324,6 +324,7 @@ void CPlayer::Update(void)
 	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
 	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
 
+	// シェーダーライト
 	if (m_pShaderLight != nullptr)
 	{
 		m_pShaderLight->position = GetPosition() + lightpos;
@@ -366,9 +367,7 @@ void CPlayer::Update(void)
 		m_pRadio->Update();
 	}
 
-
-
-	if ((m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE))
+	if ((m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE) && m_Info.state != STATE::STATE_DEATH)
 	{
 		// プレイヤー操作
 		Controller();
@@ -681,15 +680,15 @@ void CPlayer::Rotate(void)
 	{
 		if (diff == 0.0f)
 		{
-			m_pCharacter->GetMotion()->BlendSet(0);
+			m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_NEUTRAL);
 		}
 		else if (diff > 0.0f)
 		{
-			m_pCharacter->GetMotion()->BlendSet(2);
+			m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_RIGHT);
 		}
 		else
 		{
-			m_pCharacter->GetMotion()->BlendSet(1);
+			m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_LEFT);
 		}
 	}
 
