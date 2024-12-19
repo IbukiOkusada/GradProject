@@ -462,16 +462,13 @@ void CPlayer::Update(void)
 
 	if (CBaggage::GetThrowList()->GetNum() == 0 && m_pBaggage == nullptr)
 	{
-		m_pBaggage = CBaggage::Create(GetPosition());
+		m_pBaggage = CBaggage::Create(VECTOR3_ZERO);
+		m_pBaggage->GetObj()->SetScale(D3DXVECTOR3(2.0f, 2.0f, 2.0f));
 	}
 
 	if (m_pBaggage != nullptr)
 	{
-		D3DXVECTOR3 pos = GetPosition();
-
-		pos.y += 100.0f;
-		m_pBaggage->SetPosition(pos);
-		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
+		m_pBaggage->GetObj()->SetParent(m_pCharacter->GetParts(5)->GetMtx());
 	}
 
 	if (m_pCharacter != nullptr)
@@ -1271,8 +1268,8 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	float rotY = atan2f(m_Info.pos.z - pTarget->z, m_Info.pos.x - pTarget->x);
 	pCamera->GetAction()->Set(pCamera, D3DXVECTOR3(0.0f, rotY, D3DX_PI * 0.35f), 600.0f, 0.5f, 1.0f, CCameraAction::MOVE_POSV, true);*/
 
-	D3DXVECTOR3 pos = GetPosition();
-
+	pBag->GetObj()->SetParent(nullptr);
+	D3DXVECTOR3 pos = D3DXVECTOR3(pBag->GetObj()->GetMtx()->_41, pBag->GetObj()->GetMtx()->_42, pBag->GetObj()->GetMtx()->_43);
 	pos.y += 100.0f;
 
 	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.65f, 0.95f, 1.0f);
@@ -1280,6 +1277,7 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	// ‰×•¨‚ð“Š‚°‚é
 	if (pBag != nullptr)
 	{
+		pBag->GetObj()->SetScale(D3DXVECTOR3(6.0f, 6.0f, 6.0f));
 		pBag->Set(pos, pTarget, 0.75f);
 	}
 
@@ -1577,7 +1575,12 @@ void CPlayer::SetCol()
 	for (int i = 0; i < m_pCharacter->GetNumParts(); i++)
 	{
 		CModel* pModel = m_pCharacter->GetParts(i);
-		pModel->SetColMulti(MULTICOL[id]);
+
+		// ”§F‚Å‚Í‚È‚¢
+		if (i != 2 && i != 5 && i != 8)
+		{
+			pModel->SetColMulti(MULTICOL[id]);
+		}
 	}
 }
 
