@@ -53,6 +53,7 @@ namespace CAMERAANGLE
 CPlayerResult::CPlayerResult()
 {
 	m_bStartPtn = true;
+	m_bEndPtn = false;
 	m_CameraAngle = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
@@ -245,18 +246,21 @@ void CPlayerResult::MoveEnd()
 	if (GetPosition().x >= m_EndPos.x && GetOldPosition().x < m_EndPos.x ||
 		GetPosition().x <= m_EndPos.x && GetOldPosition().x > m_EndPos.x)
 	{
+		m_bEndPtn = true;
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	else if (GetPosition().y >= m_EndPos.y && GetOldPosition().y < m_EndPos.y ||
 		GetPosition().y <= m_EndPos.y && GetOldPosition().y > m_EndPos.y)
 	{
+		m_bEndPtn = true;
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	else if (GetPosition().z >= m_EndPos.z && GetOldPosition().z < m_EndPos.z ||
 		GetPosition().z <= m_EndPos.z && GetOldPosition().z > m_EndPos.z)
 	{
+		m_bEndPtn = true;
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
@@ -268,7 +272,7 @@ void CPlayerResult::MoveEnd()
 void CPlayerResult::MovePtnSet(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXVECTOR3 rot, const D3DXVECTOR3 angle, const D3DXVECTOR3 Endpos)
 {
 	SetPosition(pos);
-	SetMove(move);
+	SetMove(move); 
 	SetRotation(rot);
 	m_CameraAngle = angle;
 	m_EndPos = Endpos;
