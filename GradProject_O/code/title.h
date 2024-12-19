@@ -15,14 +15,10 @@
 //<**********************************************
 //前方宣言
 //<**********************************************
-class CFileLoad;
+class CCamera;
 class CObject2D;
 class CPlayerTitle;
-class CCamera;
 class CPoliceTitle;
-class CGole;
-class CNumber;
-
 //<**********************************************
 //名前宣言(ココでしか使わない変数)
 //<**********************************************
@@ -65,7 +61,6 @@ namespace
 		D3DXVECTOR3(0.0f,-1.57f,0.0f)				//６個目
 	};
 }
-
 //===============================================
 // タイトルクラスの定義(派生クラス)
 //===============================================
@@ -98,17 +93,6 @@ public:
 		//中身あればその警察情報を返す
 		else { return m_pPlayer; }
 	}
-
-	//警察取得関数
-	inline static CPoliceTitle* GetPoliTitle(int nNum)
-	{
-		//中身なければnullptrを返す
-		if (!m_apPolice[nNum]){return nullptr;}
-
-		//中身あればその警察情報を返す
-		else{return m_apPolice[nNum];}
-	}
-
 private:
 
 	// オブジェクト2Dの列挙型
@@ -213,7 +197,7 @@ private:
 	//ポインタ型
 	//<************************************
 	static CPlayerTitle* m_pPlayer;									//プレイヤーのポインタ
-	static CPoliceTitle* m_apPolice[POLICE_MAX];		//警察のポインタ
+	CPoliceTitle* m_apPolice[POLICE_MAX];							//警察のポインタ
 
 	CObject2D* m_pObject2D[OBJ2D::OBJ2D_MAX];					//オブジェクト2Dのポインタ
 	CObject2D* m_apSelect[SELECT::SELECT_MAX];					//シングルとマルチの選択肢のポインタ

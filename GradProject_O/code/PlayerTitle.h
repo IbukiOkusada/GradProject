@@ -17,7 +17,7 @@ namespace Function
 	bool BoolToDest(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, const float Distance, bool bZuse = true);
 	bool BoolDis(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, const float Distance);
 }
-//
+//前方宣言
 class CTitleBaggage;
 class CTitleGoal;
 class CCharacter;
@@ -31,7 +31,6 @@ public:
 	//ステート
 	const enum STATE
 	{
-
 		STATE_NONE=0,	//通常の動き
 		STATE_DEBUG,	//位置調整などのデバッグ時
 		STATE_MAX
@@ -42,7 +41,7 @@ public:
 	~CPlayerTitle();
 
 	// メンバ関数
-	HRESULT Init(void);
+	HRESULT Init(void) { CPlayer::Init(); return S_OK; }
 	HRESULT Init(const char* pBodyName, const char* pLegName);	// オーバーロード
 	void Uninit(void);
 	void Update(void);
@@ -71,22 +70,15 @@ public:
 
 private:
 
-	//警察関連処理
+	//プレイヤーの向き設定
 	void PlayerRotSet(void);
 
 	int m_nNumDest;						//目的地の番号
-	int m_nTimer;						//テスト用タイマー
 	float m_fBDustValue;				//煙の大きさの値
-	float m_fMove;						//
-	D3DXVECTOR3 m_rDestRot;				//目的向き
-	D3DXVECTOR3 m_PoliDestRot;			//警察の目的向き	
-	D3DXVECTOR3 m_TestMove;
-	float m_fMoveRot;					//回転速度
 	bool m_bNextMove;					//次の動きに移行するときになったら
 	bool m_bFirst;						//最初の位置
-	STATE m_eState;						//デバッグ用のステート
 	bool m_bReached;					//着いたかどうか
-	bool m_bTest;						//テスト用bool型
+	STATE m_eState;						//デバッグ用のステート
 	CTitleBaggage* m_pTitleBaggage;		//タイトル用の荷物
 	CTitleGoal *m_pTitleGoal;			//タイトル用のゴール
 };

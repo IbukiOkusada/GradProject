@@ -30,7 +30,7 @@ public:
 
 private:
 
-	enum RATATE
+	enum ROTATE
 	{
 		TYPE_RIGHT = 0,
 		TYPE_LEFT,
@@ -39,13 +39,18 @@ private:
 	void Move();
 	void MovePtnSelect();
 	void MoveEnd();
-	void MovePtnSet(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXVECTOR3 rot, const D3DXVECTOR3 angle, const D3DXVECTOR3 Endpos);
+	void MoveRot();
+	void MovePtnSet(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXVECTOR3 rot,
+		const D3DXVECTOR3 angle, const D3DXVECTOR3 Endpos, const D3DXVECTOR3 Endrot, const ROTATE type);
 
 	D3DXVECTOR3 m_EndPos;
+	D3DXVECTOR3 m_EndRot;
 	D3DXVECTOR3 m_CameraAngle;
 	bool m_bStartPtn;
 	bool m_bEndPtn;
+	int m_FadeStartCnt;
 
+	ROTATE m_type;
 };
 
 #endif

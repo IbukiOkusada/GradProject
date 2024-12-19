@@ -18,14 +18,14 @@
 namespace POS
 {
 	
-	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(-4000.0f, 100.0f, 0.0f);
-	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(15250.0f, 100.0f, 14000.0f);
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(-8000.0f, 100.0f, 0.0f);
+	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(15250.0f, 100.0f, 11000.0f);
 }
 
 namespace ENDPOS
 {
-	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(10000.0f, 100.0f, 0.0f);
-	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(15250.0f, 100.0f, 0.0f);
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(2950.0f, 100.0f, 0.0f);
+	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(15250.0f, 100.0f, 300.0f);
 }
 
 namespace ROTATION
@@ -33,19 +33,31 @@ namespace ROTATION
 	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f);
 	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-	D3DXVECTOR3 ANGLE = D3DXVECTOR3(0.0f, 0.8f + D3DX_PI / 2, 1.2f);
+	D3DXVECTOR3 ANGLE_1 = D3DXVECTOR3(0.0f, 0.8f + D3DX_PI / 2, 1.2f);
+	D3DXVECTOR3 ANGLE_2 = D3DXVECTOR3(0.0f, -0.8f + D3DX_PI / 2, 1.2f);
+	float MOVE = 0.06f;
+}
+
+namespace ENDROTATION
+{
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(0.0f, -D3DX_PI, 0.0f);
+	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(0.0f, -D3DX_PI / 2, 0.0f);
 }
 
 namespace MOVE
 {
-	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(18.0f, 0.0f, 0.0f);
-	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(0.0f, 0.0f, -18.0f);
+	float CONST_VAULE = 18.0f;
+
+	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(CONST_VAULE, 0.0f, 0.0f);
+	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(0.0f, 0.0f, -CONST_VAULE);
 }
 
 namespace CAMERAANGLE
 {
 	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(800.0f, 340.0f, 800.0f);
 	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(-800.0f, 340.0f, 800.0f);
+	D3DXVECTOR3 PATTERN_3 = D3DXVECTOR3(800.0f, 340.0f, -800.0f);
+	D3DXVECTOR3 PATTERN_4 = D3DXVECTOR3(-800.0f, 340.0f, -800.0f);
 }
 //==========================================================
 // コンストラクタ
@@ -54,6 +66,7 @@ CPlayerResult::CPlayerResult()
 {
 	m_bStartPtn = true;
 	m_bEndPtn = false;
+	m_FadeStartCnt = 0;
 	m_CameraAngle = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
@@ -118,7 +131,20 @@ void CPlayerResult::Update(void)
 {
 	MovePtnSelect();
 	Move();
-	MoveEnd();
+	if (m_bEndPtn == false)
+	{
+		MoveEnd();
+	}
+	else if (m_bEndPtn == true)
+	{
+		MoveRot();
+		m_FadeStartCnt++;
+
+		if (m_FadeStartCnt >= 60 && CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
+		{
+			CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
+		}
+	}
 
 	// キャラクター更新
 	if (m_pCharacter != nullptr)
@@ -198,7 +224,10 @@ void CPlayerResult::Move()
 	m_pObj->SetPosition(GetPosition());
 	m_pObj->SetRotation(GetRotation());
 
-	CManager::GetInstance()->GetCamera()->SetPositionR(PosCamera);
+	if (m_bEndPtn == false)
+	{
+		CManager::GetInstance()->GetCamera()->SetPositionR(PosCamera);
+	}
 }
 
 //==========================================================
@@ -208,18 +237,26 @@ void CPlayerResult::MovePtnSelect()
 {
 	if (m_bStartPtn == true)
 	{
-		int nRand = rand() % 2;
+		D3DXVECTOR3 CameraAngle;
 
+		int nRand = rand() % 2;
+		nRand = 1;
 		switch (nRand)
 		{
 		case 0:
 			
-			MovePtnSet(POS::PATTERN_1, MOVE::PATTERN_1, ROTATION::PATTERN_1, CAMERAANGLE::PATTERN_1, ENDPOS::PATTERN_1);
+			MovePtnSet(POS::PATTERN_1, MOVE::PATTERN_1, ROTATION::PATTERN_1,
+				CAMERAANGLE::PATTERN_3, ENDPOS::PATTERN_1, ENDROTATION::PATTERN_1, TYPE_LEFT);
+
+			CameraAngle = ROTATION::ANGLE_2;
 			break;
 
 		case 1:
 			
-			MovePtnSet(POS::PATTERN_2, MOVE::PATTERN_2, ROTATION::PATTERN_2, CAMERAANGLE::PATTERN_2, ENDPOS::PATTERN_2);
+			MovePtnSet(POS::PATTERN_2, MOVE::PATTERN_2, ROTATION::PATTERN_2,
+				CAMERAANGLE::PATTERN_2, ENDPOS::PATTERN_2, ENDROTATION::PATTERN_2, TYPE_LEFT);
+			
+			CameraAngle = ROTATION::ANGLE_1;
 			break;
 
 		default:
@@ -229,7 +266,7 @@ void CPlayerResult::MovePtnSelect()
 		D3DXVECTOR3 RotCamera = CManager::GetInstance()->GetCamera()->GetRotation();
 
 		PosCameraR = m_Info.pos + m_CameraAngle;
-		RotCamera = m_Info.rot + ROTATION::ANGLE;
+		RotCamera = m_Info.rot + CameraAngle;
 
 		CManager::GetInstance()->GetCamera()->SetPositionR(PosCameraR);
 		CManager::GetInstance()->GetCamera()->SetRotation(RotCamera);
@@ -247,21 +284,18 @@ void CPlayerResult::MoveEnd()
 		GetPosition().x <= m_EndPos.x && GetOldPosition().x > m_EndPos.x)
 	{
 		m_bEndPtn = true;
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	else if (GetPosition().y >= m_EndPos.y && GetOldPosition().y < m_EndPos.y ||
 		GetPosition().y <= m_EndPos.y && GetOldPosition().y > m_EndPos.y)
 	{
 		m_bEndPtn = true;
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	else if (GetPosition().z >= m_EndPos.z && GetOldPosition().z < m_EndPos.z ||
 		GetPosition().z <= m_EndPos.z && GetOldPosition().z > m_EndPos.z)
 	{
 		m_bEndPtn = true;
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 }
@@ -269,13 +303,65 @@ void CPlayerResult::MoveEnd()
 //==========================================================
 // 目的地に着いたか判定
 //==========================================================
-void CPlayerResult::MovePtnSet(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXVECTOR3 rot, const D3DXVECTOR3 angle, const D3DXVECTOR3 Endpos)
+void CPlayerResult::MoveRot()
+{
+	D3DXVECTOR3 rot = GetRotation();
+	D3DXVECTOR3 Oldrot = GetRotation();
+	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	switch (m_type)
+	{
+	case CPlayerResult::TYPE_RIGHT:
+
+		rot.y += ROTATION::MOVE;
+
+		if (rot.y >= m_EndRot.y && Oldrot.y <= m_EndRot.y)
+		{
+			rot = m_EndRot;
+		}
+		move.x = -sinf(rot.y) * MOVE::CONST_VAULE;
+		move.z = -cosf(rot.y) * MOVE::CONST_VAULE;
+
+		SetMove(move);
+		SetRotation(rot);
+		m_pObj->SetRotation(GetRotation());
+
+		break;
+
+	case CPlayerResult::TYPE_LEFT:
+		rot.y -= ROTATION::MOVE;
+
+		if (rot.y <= m_EndRot.y && Oldrot.y >= m_EndRot.y)
+		{
+			rot = m_EndRot;
+		}
+		move.x = -sinf(rot.y) * MOVE::CONST_VAULE;
+		move.z = -cosf(rot.y) * MOVE::CONST_VAULE;
+
+		SetMove(move);
+		SetRotation(rot);
+		m_pObj->SetRotation(GetRotation());
+
+		break;
+
+	default:
+		break;
+	}
+}
+
+//==========================================================
+// 動きのパターンを設定
+//==========================================================
+void CPlayerResult::MovePtnSet(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXVECTOR3 rot,
+	const D3DXVECTOR3 angle, const D3DXVECTOR3 Endpos, const D3DXVECTOR3 Endrot, const ROTATE type)
 {
 	SetPosition(pos);
 	SetMove(move); 
 	SetRotation(rot);
 	m_CameraAngle = angle;
 	m_EndPos = Endpos;
+	m_EndRot = Endrot;
+	m_type = type;
 
 	m_bStartPtn = false;
 }
