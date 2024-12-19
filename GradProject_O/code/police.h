@@ -156,7 +156,6 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	void MoveRoad() override;
-	void ReachRoad() override;
 	void ChasePlayer();
 	void SearchPlayer();
 	void LanePlayer();

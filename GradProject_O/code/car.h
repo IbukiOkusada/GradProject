@@ -139,6 +139,10 @@ protected:	// 派生クラスからもアクセス可能
 	virtual void MoveRoad();
 	virtual void SearchRoad();
 	virtual void ReachRoad();
+	bool CollisionObjX(void);
+	bool CollisionRoad(void);
+	bool CollisionGimick(void);
+	bool CollisionField(void);
 	virtual void Hit();
 	void TailLamp();
 	void DeleteTailLamp();
