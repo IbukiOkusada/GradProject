@@ -29,6 +29,12 @@ public:
 	void Moving();
 
 private:
+
+	enum RATATE
+	{
+		TYPE_RIGHT = 0,
+		TYPE_LEFT,
+	};
 	
 	void Move();
 	void MovePtnSelect();
@@ -38,6 +44,7 @@ private:
 	D3DXVECTOR3 m_EndPos;
 	D3DXVECTOR3 m_CameraAngle;
 	bool m_bStartPtn;
+	bool m_bEndPtn;
 
 };
 

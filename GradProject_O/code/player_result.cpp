@@ -10,12 +10,14 @@
 #include "debugproc.h"
 #include "objectX.h"
 #include "fade.h"
+#include "character.h"
 
 //==========================================================
 // 定数定義
 //==========================================================
 namespace POS
 {
+	
 	D3DXVECTOR3 PATTERN_1 = D3DXVECTOR3(-4000.0f, 100.0f, 0.0f);
 	D3DXVECTOR3 PATTERN_2 = D3DXVECTOR3(15250.0f, 100.0f, 14000.0f);
 }
@@ -51,6 +53,7 @@ namespace CAMERAANGLE
 CPlayerResult::CPlayerResult()
 {
 	m_bStartPtn = true;
+	m_bEndPtn = false;
 	m_CameraAngle = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 }
 
@@ -77,17 +80,7 @@ HRESULT CPlayerResult::Init(void)
 //==========================================================
 HRESULT CPlayerResult::Init(const char* pBodyName, const char* pLegName)
 {
-	m_pObj = CObjectX::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), "data\\MODEL\\bike.x");
-	m_pObj->SetType(CObject::TYPE_PLAYER);
-	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
-	SetMatrix();
-	SetCol();
-
-	//エフェクト生成
-	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-
-	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
-	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	CPlayer::Init(pBodyName, pLegName);
 
 	//カメラ初期化
 	{
@@ -126,6 +119,12 @@ void CPlayerResult::Update(void)
 	MovePtnSelect();
 	Move();
 	MoveEnd();
+
+	// キャラクター更新
+	if (m_pCharacter != nullptr)
+	{
+		m_pCharacter->Update();
+	}
 
 	//====================================
 	//エフェクトを出す
@@ -214,10 +213,12 @@ void CPlayerResult::MovePtnSelect()
 		switch (nRand)
 		{
 		case 0:
+			
 			MovePtnSet(POS::PATTERN_1, MOVE::PATTERN_1, ROTATION::PATTERN_1, CAMERAANGLE::PATTERN_1, ENDPOS::PATTERN_1);
 			break;
 
 		case 1:
+			
 			MovePtnSet(POS::PATTERN_2, MOVE::PATTERN_2, ROTATION::PATTERN_2, CAMERAANGLE::PATTERN_2, ENDPOS::PATTERN_2);
 			break;
 
@@ -245,18 +246,21 @@ void CPlayerResult::MoveEnd()
 	if (GetPosition().x >= m_EndPos.x && GetOldPosition().x < m_EndPos.x ||
 		GetPosition().x <= m_EndPos.x && GetOldPosition().x > m_EndPos.x)
 	{
+		m_bEndPtn = true;
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	else if (GetPosition().y >= m_EndPos.y && GetOldPosition().y < m_EndPos.y ||
 		GetPosition().y <= m_EndPos.y && GetOldPosition().y > m_EndPos.y)
 	{
+		m_bEndPtn = true;
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
 	else if (GetPosition().z >= m_EndPos.z && GetOldPosition().z < m_EndPos.z ||
 		GetPosition().z <= m_EndPos.z && GetOldPosition().z > m_EndPos.z)
 	{
+		m_bEndPtn = true;
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 	}
 
@@ -268,7 +272,7 @@ void CPlayerResult::MoveEnd()
 void CPlayerResult::MovePtnSet(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXVECTOR3 rot, const D3DXVECTOR3 angle, const D3DXVECTOR3 Endpos)
 {
 	SetPosition(pos);
-	SetMove(move);
+	SetMove(move); 
 	SetRotation(rot);
 	m_CameraAngle = angle;
 	m_EndPos = Endpos;
