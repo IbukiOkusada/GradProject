@@ -268,7 +268,10 @@ void CPolice::MoveRoad()
 		}
 
 		// カーブ時の速度を設定
-		SetSpeedCurve(10.0f);
+		SetSpeedCurve(5.0f);
+
+		float length = D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition()));
+		CDebugProc::GetInstance()->Print("警察との距離 : [ %f ]\n", length);
 
 		// 目的地が存在するかどうか
 		if (pRoadTarget != nullptr)
@@ -330,95 +333,6 @@ void CPolice::MoveRoad()
 }
 
 //==========================================================
-// 道到達時処理
-//==========================================================
-void CPolice::ReachRoad()
-{
-	if (m_Info.bChase) { return; }
-
-	// 移動地点用変数
-	CRoad* pRoadStart = GetRoadStart();
-	CRoad* pRoadTarget = GetRoadTarget();
-	D3DXVECTOR3 offsetLane = GetOffsetLane(); 
-	float fSpeedCurve;
-
-	CRoad* pRoadNext = nullptr;
-	Clist<int> listStation;
-
-	// 道の数を取り出す
-	for (int i = 0; i < CRoad::DIC_MAX; i++)
-	{
-		if (pRoadTarget->GetConnectRoad((CRoad::DIRECTION)i) == nullptr) { continue; }
-
-		if (pRoadTarget->GetType() != CRoad::TYPE_STOP)
-		{
-			if (pRoadTarget->GetConnectRoad((CRoad::DIRECTION)i) == pRoadStart) { continue; }
-		}
-
-		listStation.Regist(i);
-	}
-
-	// 進む方向をランダムで決定
-	int roadPoint = listStation.Get(rand() % listStation.GetNum());
-	pRoadNext = pRoadTarget->GetConnectRoad((CRoad::DIRECTION)roadPoint);
-
-	// 進行方向によって車線の幅分目的地をずらす
-	if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_UP)
-	{// 上
-		SetOffsetLane(D3DXVECTOR3(-LENGTH_LANE, 0.0f, 0.0f));
-	}
-	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_DOWN)
-	{// 下
-		SetOffsetLane(D3DXVECTOR3(LENGTH_LANE, 0.0f, 0.0f));
-	}
-	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_LEFT)
-	{// 左
-		SetOffsetLane(D3DXVECTOR3(0.0f, 0.0f, -LENGTH_LANE));
-	}
-	else if ((CRoad::DIRECTION)roadPoint == CRoad::DIC_RIGHT)
-	{// 右
-		SetOffsetLane(D3DXVECTOR3(0.0f, 0.0f, LENGTH_LANE));
-	}
-
-	// 目的地と出発地点が存在する時
-	if (pRoadStart != nullptr && pRoadTarget != nullptr)
-	{
-		D3DXVECTOR3 vecTarget, vecNext, vecTemp;
-		vecTarget = pRoadTarget->GetPosition() - pRoadStart->GetPosition();
-		vecNext = pRoadNext->GetPosition() - pRoadStart->GetPosition();
-
-		// 曲がる方向に対して速度を設定
-		if (pRoadTarget->GetType() == CRoad::TYPE_STOP)
-		{// Uターン
-			fSpeedCurve = SPEED_CURVE_UTURN;
-		}
-		else if (D3DXVec3Cross(&vecTemp, &vecTarget, &vecNext)->y > 0.0f)
-		{// 左折
-			fSpeedCurve = SPEED_CURVE_LEFT;
-		}
-		else if (D3DXVec3Cross(&vecTemp, &vecTarget, &vecNext)->y < 0.0f)
-		{// 右折
-			fSpeedCurve = SPEED_CURVE_RIGHT;
-		}
-		else
-		{// 直進
-			fSpeedCurve = SPEED_CURVE_LEFT;
-		}
-	}
-	else
-	{
-		fSpeedCurve = SPEED_CURVE_LEFT;
-	}
-
-	// 目標地点と出発地点をずらす
-	pRoadStart = pRoadTarget;
-	pRoadTarget = pRoadNext;
-
-	SetRoadStart(pRoadStart);
-	SetRoadTarget(pRoadTarget);
-}
-
-//==========================================================
 // プレイヤー発見処理
 //==========================================================
 void CPolice::SearchPlayer()
@@ -462,8 +376,8 @@ void CPolice::LanePlayer()
 	if (m_Info.nLaneCount > m_Info.nLaneTime)
 	{
 		// 移動の幅取得
-		float length1 = ((rand() % 3001) + 3000);
-		float length2 = ((rand() % 3001) - 6000);
+		float length1 = ((rand() % 6001) + 2000);
+		float length2 = (-(rand() % 6001) - 2000);
 
 		float length = ((rand() % 2 == 0) ? length1 : length2) * 0.1f;
 
@@ -479,7 +393,7 @@ void CPolice::LanePlayer()
 		m_Info.offsetLane.z = cosf(rotVec) * length;
 
 		m_Info.nLaneCount = 0;
-		m_Info.nLaneTime = rand() % 150 + 30;
+		m_Info.nLaneTime = rand() % 181 + 120;
 	}
 
 	SetOffsetLane(m_Info.offsetLane);
