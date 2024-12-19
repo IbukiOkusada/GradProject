@@ -159,7 +159,8 @@ private:	// 自分だけがアクセス可能
 	void ChasePlayer();
 	void SearchPlayer();
 	void LanePlayer();
-	void Collision();
+	bool Collision() override;
+	bool CollisionObjX() override;
 	void Hit() override;
 	void Break() override;
 	void RecvTypeSet() override;

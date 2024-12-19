@@ -71,6 +71,7 @@ CCar::~CCar()
 HRESULT CCar::Init(void)
 {
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car002.x");
+
 	TailLamp();
 	m_Info.fRotMulti = ROT_MULTI;
 	return S_OK;

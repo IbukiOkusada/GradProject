@@ -139,11 +139,14 @@ protected:	// 派生クラスからもアクセス可能
 	virtual void MoveRoad();
 	virtual void SearchRoad();
 	virtual void ReachRoad();
-	bool CollisionObjX(void);
-	bool CollisionRoad(void);
-	bool CollisionGimick(void);
-	bool CollisionField(void);
+
+	virtual bool Collision(); 
+	virtual bool CollisionObjX(void);
+	virtual bool CollisionRoad(void);
+	virtual bool CollisionGimick(void);
+	virtual bool CollisionField(void);
 	virtual void Hit();
+
 	void TailLamp();
 	void DeleteTailLamp();
 	virtual void Break();
@@ -165,7 +168,6 @@ private:	// 自分だけがアクセス可能
 	// メンバ関数
 	virtual void Move();
 	void Rot();
-	bool Collision();
 
 	// 受信用メンバ関数
 	void RecvInerSet();
