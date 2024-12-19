@@ -2,10 +2,10 @@ Metasequoia Document
 Format Text Ver 1.0
 
 Scene {
-	pos 0.0000 0.0000 100000.0000
+	pos -1439.5884 -4113.1099 100000.0000
 	lookat 0.0000 0.0000 0.0000
-	head -28.5938
-	pich 0.3292
+	head -30.3638
+	pich 0.3592
 	bank 0.0000
 	ortho 0
 	zoom2 0.0750
@@ -18,14 +18,14 @@ Scene {
 	}
 }
 Material 8 {
-	"mat2" col(0.600 0.600 0.600 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Texture\後期\bill のコピー.jpg")
-	"mat1" col(0.600 0.600 0.600 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Texture\後期\bill.jpg")
-	"mat3" col(0.600 0.600 0.600 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Texture\後期\bill.jpg")
-	"mat4" col(0.600 0.600 0.600 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00) tex("C:\Users\student\Texture\後期\bill のコピー.jpg")
-	"mat5" col(0.353 0.353 0.353 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat6" col(0.165 0.165 0.165 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat7" col(0.604 0.604 0.604 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat8" col(0.051 0.051 0.051 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"mat2" col(0.490 0.490 0.490 1.000) dif(0.800) amb(0.600) emi(0.180) spc(0.260) power(5.00) tex("C:\Users\student\Texture\後期\bill のコピー.jpg")
+	"mat1" col(0.482 0.482 0.482 1.000) dif(0.800) amb(0.600) emi(0.280) spc(0.260) power(5.00) tex("C:\Users\student\Texture\後期\bill.jpg")
+	"mat3" col(0.424 0.424 0.424 1.000) dif(0.800) amb(0.600) emi(0.240) spc(0.250) power(5.00) tex("C:\Users\student\Texture\後期\bill.jpg")
+	"mat4" col(0.502 0.502 0.502 1.000) dif(0.800) amb(0.600) emi(0.360) spc(0.290) power(5.00) tex("C:\Users\student\Texture\後期\bill のコピー.jpg")
+	"mat5" col(0.275 0.275 0.275 1.000) dif(0.800) amb(0.600) emi(0.420) spc(0.270) power(5.00)
+	"mat6" col(0.122 0.122 0.122 1.000) dif(0.800) amb(0.600) emi(0.330) spc(0.210) power(5.00)
+	"mat7" col(0.467 0.467 0.467 1.000) dif(0.800) amb(0.600) emi(0.260) spc(0.240) power(5.00)
+	"mat8" col(0.051 0.051 0.051 1.000) dif(0.800) amb(0.600) emi(0.340) spc(0.270) power(5.00)
 }
 Object "obj1" {
 	visible 15

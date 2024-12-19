@@ -4,16 +4,12 @@
 //Author : Kazuki Watanabe
 //<=================================================
 #include "PlayerTitle.h"
-#include "camera.h"
-#include "camera_manager.h"
 #include "debugproc.h"
 #include "objectX.h"
-#include "navi.h"
 #include "TitleBaggage.h"
 #include "character.h"
 #include "model.h"
 #include "motion.h"
-#include "PoliceTitle.h"
 #include "title.h"
 
 //<************************************************
@@ -21,15 +17,11 @@
 //<************************************************
 namespace
 {
-	//目的地の位置
-	const D3DXVECTOR3 DEST_POS[DEST::DEST_MAX] =
-	{ D3DXVECTOR3(2630.0f, 0.0f, 1054.0f),
+	//目的地の位置(ここでしか使いません)
+	const D3DXVECTOR3 DEST_POS[] =
+	{ 
+		D3DXVECTOR3(2630.0f, 0.0f, 1054.0f),
 		D3DXVECTOR3(2630.0f, 0.0f, -200.0f),
-		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
-		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
-		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f),
-		D3DXVECTOR3(-4734.0f, 0.0f, -800.0f)
-	
 	};
 }
 
@@ -39,27 +31,14 @@ namespace
 CPlayerTitle::CPlayerTitle()
 {
 	//初期化
-	//<*************************************
-	//int型
 	m_nNumDest = 0;
-	m_nTimer = 0;
-	//<*************************************
-	//float型
-	m_fMoveRot = 0.0f;
 	m_fBDustValue = 50.0f;
-	//<*************************************
-	//その他
-	m_bTest = false;
-	m_fMove = 0.0f;
-	m_PoliDestRot = VECTOR3_ZERO;
-	m_rDestRot = VECTOR3_ZERO;
 	m_eState = STATE_NONE;
 	m_bReached = false;
 	m_bNextMove = false;
 	m_bFirst = true;
 	m_pTitleBaggage = nullptr;
 	m_pTitleGoal = nullptr;
-	//<*************************************
 }
 //<================================================
 //デストラクタ
@@ -67,15 +46,6 @@ CPlayerTitle::CPlayerTitle()
 CPlayerTitle::~CPlayerTitle()
 {
 
-}
-//<================================================
-//初期化処理
-//<================================================
-HRESULT CPlayerTitle::Init(void)
-{
-	CPlayer::Init();
-
-	return S_OK;
 }
 //<===============================================
 //初期化処理(オーバーロード)
@@ -93,7 +63,6 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 	m_pObj->SetRotateType(CObjectX::TYPE_QUATERNION);
 	SetMatrix();
 	SetCol();
-	m_pNavi = CNavi::Create();
 
 	//バイカー生成
 	m_pCharacter = CCharacter::Create("data\\TXT\\character\\player\\motion_player.txt");
@@ -104,10 +73,10 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 	m_pCharacter->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	//バイカーの色設定
-	for (int i = 0; i < m_pCharacter->GetNumParts(); i++)
+	for (int nCntParts = 0; nCntParts < m_pCharacter->GetNumParts(); nCntParts++)
 	{
 		//モデルのパーツを取得
-		pParts = m_pCharacter->GetParts(i);
+		pParts = m_pCharacter->GetParts(nCntParts);
 		pParts->SetColMulti(YellowCol);
 	}
 
@@ -118,6 +87,7 @@ HRESULT CPlayerTitle::Init(const char* pBodyName, const char* pLegName)
 
 	//荷物生成
 	m_pTitleBaggage = CTitleBaggage::Create(this->GetPosition());
+	m_pTitleBaggage->GetObj()->SetScale(D3DXVECTOR3(2.0f, 2.0f, 2.0f));
 
 	//エフェクト生成
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -142,21 +112,11 @@ void CPlayerTitle::Uninit(void)
 //<================================================
 void CPlayerTitle::Update(void)
 {
-	constexpr float BDustMaxValue = 300.0f;									//後ろから出る煙の最大値
-
 	//デバッグ以外だったら
 	if (m_eState == STATE_NONE)
 	{
-		// 前回の座標を取得
-		m_Info.posOld = GetPosition();
-
-		StateSet();
-
 		// マトリックス
 		SetMatrix();
-
-		// 当たり判定
-		Collision();
 
 		//オブジェクト自体の中身があれば
 		if (m_pObj)
@@ -172,10 +132,18 @@ void CPlayerTitle::Update(void)
 			m_pCharacter->Update();
 		}
 		//次の動きに移行していなかったら、アイスをプレイヤーの上に乗っける
-		if (!m_bNextMove) { m_pTitleBaggage->SetPosition(GetPosition()); }
+		if (!m_bNextMove) 
+		{
+			m_pTitleBaggage->GetObj()->SetParent(m_pCharacter->GetParts(5)->GetMtx());
+		}
 
 		//移行していたら初期位置に戻す
-		else { m_pTitleBaggage->SetPosition(VECTOR3_ZERO); m_fBDustValue = BDustMaxValue; }
+		else 
+		{ 
+			constexpr float BDustMaxValue = 300.0f;		//後ろから出る煙の最大値
+			m_pTitleBaggage->SetPosition(VECTOR3_ZERO); 
+			m_fBDustValue = BDustMaxValue;
+		}
 
 		//<********************************
 		//エフェクトを出す
@@ -209,6 +177,8 @@ void CPlayerTitle::Moving(const int nNum)
 {
 	constexpr float DEST_DIFF = 5.0f;										//距離の差
 	constexpr float fSpeed = 0.075f;										//速さ
+	D3DXVECTOR3 rPos = GetPosition();										//位置
+	D3DXVECTOR3 rMove = GetMove();
 
 	//正規状態をなくす
 	if (m_bReached) { m_bReached = false; }
@@ -217,29 +187,29 @@ void CPlayerTitle::Moving(const int nNum)
 	if (m_eState == STATE_NONE)
 	{
 		//目的地まで移動
-		m_Info.pos.x += (DEST_POS[nNum].x - m_Info.pos.x - m_Info.move.x) * fSpeed;//X軸
-		m_Info.pos.z += (DEST_POS[nNum].z - m_Info.pos.z - m_Info.move.z) * fSpeed;//Z軸
+		rPos.x += (DEST_POS[nNum].x - rPos.x) * fSpeed;//X軸
+		rPos.z += (DEST_POS[nNum].z - rPos.z) * fSpeed;//Z軸
 
 		//目的地に到着したら判定をtrueにする
-		if (Function::BoolDis(m_Info.pos, DEST_POS[nNum], DEST_DIFF)) { m_bReached = true; }
+		if (Function::BoolDis(rPos, DEST_POS[nNum], DEST_DIFF)) { m_bReached = true; }
 	}
+
+	//位置設定
+	SetPosition(rPos);
 }
 //<================================================
 //荷物の動き処理
 //<================================================
 void CPlayerTitle::BaggageMove(void)
 {
-	constexpr float fDis = -200.0f;
-	D3DXVECTOR3 GoalPos = VECTOR3_ZERO;
-
 	//次の動きに移行していなかったら
 	if (!m_bNextMove)
 	{
-		//設定
-		m_bNextMove = true;
+		constexpr float fDis = -200.0f;		//距離
+		m_bNextMove = true;					//次の行動に移動していますということを証明
 
 		//位置を設定
-		GoalPos = D3DXVECTOR3(this->GetPosition().x + fDis, this->GetPosition().y, this->GetPosition().z);
+		D3DXVECTOR3 GoalPos = D3DXVECTOR3(this->GetPosition().x + fDis, this->GetPosition().y, this->GetPosition().z);
 
 		//ゴールをプレイヤーの横に設定する
 		m_pTitleGoal = CTitleGoal::Create(GoalPos, D3DXVECTOR3(0.0f, -1.56f, 0.0f));
@@ -262,10 +232,7 @@ void CPlayerTitle::MovingSelect(void)
 	{
 		//目的地変更
 		m_nNumDest = (m_nNumDest + 1) % DEST_MAX;
-		m_bTest = true;
 	}
-	//判定初期化用
-	if (m_nNumDest >= DEST_SIXTH){m_bFirst = false;}
 	
 	PlayerRotSet();
 
@@ -278,68 +245,38 @@ void CPlayerTitle::MovingSelect(void)
 void CPlayerTitle::PlayerRotSet(void)
 {
 	//位置情報など
-	float fMove = 50.0f;											//移動速度
-	constexpr float fRotation = 0.3f;								//回転速度
+	constexpr float fMove = 50.0f;									//移動速度
+	D3DXVECTOR3 rDestRot = VECTOR3_ZERO;							//目的向き
+	D3DXVECTOR3 rRot = GetRotation();								//向き
+	D3DXVECTOR3 rPos = GetPosition();								//位置
+
+	//目的向き設定
+	rDestRot = DEST_ROT_SELECT[m_nNumDest];
 
 	//番号によって変更させる
 	switch (m_nNumDest)
 	{
-		//最初の目的地
-	case DEST::DEST_FIRST:
-
-		//最初の向きにする
-		m_rDestRot = DEST_ROT_SELECT[DEST::DEST_FIRST];
-
-		//移動
-		m_Info.pos.z += fMove;
-
-		break;
-
-		//二番目か四番目
-	case DEST::DEST_SECOND:
-	case DEST::DEST_FOUTH:
-
-		//二番目の向きにする
-		m_rDestRot = DEST_ROT_SELECT[DEST::DEST_SECOND];
-
-		//移動
-		m_Info.pos.x -= fMove;
-
-		break;
-
-		//三番目か五番目
-	case DEST::DEST_THIRD:
-	case DEST::DEST_FIFTH:
-
-		//三番目の向きにする
-		m_rDestRot = DEST_ROT_SELECT[DEST::DEST_THIRD];
-
-		//移動
-		m_Info.pos.z -= fMove;
-
-		break;
-
-		//最後の番号
-	case DEST::DEST_SIXTH:
-
-		//最終地点の向きにする
-		m_rDestRot = DEST_ROT_SELECT[DEST::DEST_SIXTH];
-
-		//移動
-		m_Info.pos.x += fMove;
-
-		break;
+	case DEST::DEST_FIRST:							rPos.z += fMove; break;			//最初の番号
+	case DEST::DEST_SECOND:case DEST::DEST_FOUTH:	rPos.x -= fMove; break;			//二番目か四番目
+	case DEST::DEST_THIRD: case DEST::DEST_FIFTH:	rPos.z -= fMove; break;			//三番目か五番目
+	case DEST::DEST_SIXTH:							rPos.x += fMove; break;			//最後の番号
 	}
 
-	float Test = m_rDestRot.y - m_Info.rot.y;
-	float Test2 = 0.3f;
+	//位置を設定
+	SetPosition(rPos);
 
-	Adjust(Test);
+	//<**********************************************
+	//回転関連
+	float fDiff = rDestRot.y - rRot.y;	//差分
+	float fIner = 0.3f;							//慣性
 
-	m_Info.rot.y += Test * Test2;
+	Adjust(fDiff);
+
+	rRot.y += fDiff * fIner;
 
 	//向き調整と設定
-	SetRotation(m_Info.rot);
+	SetRotation(rRot);
+	//<**********************************************
 }
 //<================================================
 //生成処理

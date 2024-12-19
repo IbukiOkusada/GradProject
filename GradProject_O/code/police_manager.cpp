@@ -137,7 +137,7 @@ void CPoliceManager::Update(void)
 			float length = D3DXVec3Length(&vec);
 
 			// ‚æ‚è‹ß‚¢
-			if (length < minlength && (pPolice->GetChase() || pPolice->GetSound() != nullptr))
+			if (length < minlength)
 			{
 				id = i;
 				minlength = length;

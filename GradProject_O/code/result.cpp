@@ -182,12 +182,6 @@ HRESULT CResult::Init(void)
 		m_nScore = 50.0f;
 	}
 
-	m_RankingScore[0] = 16.0f;
-	m_RankingScore[1] = 27.0f;
-	m_RankingScore[2] = 38.0f;
-	m_RankingScore[3] = 49.0f;
-	m_RankingScore[4] = 50.0f;
-
 	// 失敗or成功のオブジェクト生成
 	m_pObj = CObject2D::Create(D3DXVECTOR3(OBJ::CLEAR_POS.x, OBJ::CLEAR_POS.y, 0.0f),
 		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
@@ -218,9 +212,9 @@ HRESULT CResult::Init(void)
 	ScoreObjCreat();
 
 	// ランキングの読み込み等の処理
-	//RoadScore();
+	RoadScore();
 	SortScore();
-	//SaveScore();
+	SaveScore();
 
 	// ランキングのオブジェクトを生成
 	RankObjCreat();
@@ -396,7 +390,7 @@ void CResult::Update(void)
 
 	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
 	{
-		//Display();
+		Display();
 	}
 
 	// エディター関連
