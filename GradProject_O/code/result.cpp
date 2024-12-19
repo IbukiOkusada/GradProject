@@ -384,7 +384,7 @@ void CResult::Update(void)
 
 	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
 	{
-		Display();
+		//Display();
 	}
 
 	// エディター関連
@@ -447,11 +447,11 @@ void CResult::ScoreObjCreat()
 				m_pScoreObj[nCnt]->GetPosition().y,
 				0.0f),
 				NUMBER::WIDTH,
-				NUMBER::HEIGHT,
-				NUMBER::TEX_PATH);
+				NUMBER::HEIGHT);
 
 			m_pDeliNumber->SetIdx(m_nDeli);
 			m_pDeliNumber->GetObject2D()->SetCol(INIT_COL);
+			m_pDeliNumber->GetObject2D()->BindTexture(CManager::GetInstance()->GetTexture()->Regist(NUMBER::TEX_PATH));
 
 			break;
 
@@ -503,11 +503,11 @@ void CResult::ScoreObjCreat()
 					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
-					NUMBER::HEIGHT,
-					NUMBER::TEX_PATH);
+					NUMBER::HEIGHT);
 
 				m_pTimeNumber[Cnt]->SetIdx(m_TimeObj[Cnt + m_Timehid]);
 				m_pTimeNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
+				m_pTimeNumber[Cnt]->GetObject2D()->BindTexture(CManager::GetInstance()->GetTexture()->Regist(NUMBER::TEX_PATH));
 			}
 
 			break;
@@ -560,11 +560,11 @@ void CResult::ScoreObjCreat()
 					m_pScoreObj[nCnt]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
-					NUMBER::HEIGHT,
-					NUMBER::TEX_PATH);
+					NUMBER::HEIGHT);
 
 				m_pLifeNumber[Cnt]->SetIdx(m_LifeObj[Cnt + m_Lifehid]);
 				m_pLifeNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
+				m_pLifeNumber[Cnt]->GetObject2D()->BindTexture(CManager::GetInstance()->GetTexture()->Regist(NUMBER::TEX_PATH));
 			}
 
 			break;
@@ -637,12 +637,12 @@ void CResult::ScoreObjCreat()
 					m_pEvalStarObj[EVAL_STAR_OBJ_NUM - 1]->GetPosition().y,
 					0.0f),
 					NUMBER::WIDTH,
-					NUMBER::HEIGHT,
-					NUMBER::TEX_PATH);
+					NUMBER::HEIGHT);
 
 				Calculation(&m_EvalObj[Cnt], m_nScore, Cnt, NUMBER::EVAL_OBJ, CResult::TYPE_EVAL);
 				m_pEvalNumber[Cnt]->SetIdx(m_EvalObj[Cnt]);
 				m_pEvalNumber[Cnt]->GetObject2D()->SetCol(INIT_COL);
+				m_pEvalNumber[Cnt]->GetObject2D()->BindTexture(CManager::GetInstance()->GetTexture()->Regist(NUMBER::TEX_PATH));
 			}
 
 			m_pDecPointEval = CObject2D::Create(7);
@@ -722,12 +722,12 @@ void CResult::RankObjCreat()
 				m_pStarObj[(CntFst + 1) * STAR_OBJ_NUM - 1]->GetPosition().y,
 				0.0f),
 				NUMBER::WIDTH,
-				NUMBER::HEIGHT,
-				NUMBER::TEX_PATH);
+				NUMBER::HEIGHT);
 
 			Calculation(&m_RankingObj[CntSec + CntFst * NUMBER::RANKING_OBJ], m_RankingScore[CntFst], CntSec, NUMBER::RANKING_OBJ, CResult::TYPE_RANKING);
 			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->SetIdx(m_RankingObj[CntSec + CntFst * 2]);
 			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->GetObject2D()->SetCol(INIT_COL);
+			m_pRankingNumber[CntSec + CntFst * NUMBER::RANKING_OBJ]->GetObject2D()->BindTexture(CManager::GetInstance()->GetTexture()->Regist(NUMBER::TEX_PATH));
 		}
 
 		m_pDecPointRank[CntFst] = CObject2D::Create(7);
