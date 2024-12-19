@@ -651,7 +651,7 @@ void CTitle::ChaseMovement(void)
 	//–³‚©‚Á‚½‚ç
 	else
 	{
-		//Selecting();
+		Selecting();
 		Chasing();
 	}
 }
