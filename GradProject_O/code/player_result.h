@@ -33,8 +33,10 @@ private:
 	void Move();
 	void MovePtnSelect();
 	void MoveEnd();
+	void MovePtnSet(const D3DXVECTOR3 pos, const D3DXVECTOR3 move, const D3DXVECTOR3 rot, const D3DXVECTOR3 angle, const D3DXVECTOR3 Endpos);
 
 	D3DXVECTOR3 m_EndPos;
+	D3DXVECTOR3 m_CameraAngle;
 	bool m_bStartPtn;
 
 };
