@@ -146,7 +146,10 @@ void CCameraAction::Update(CCamera* pCamera)
 		if (m_time.fStopNow >= m_time.fStop) {
 
 			if (m_bNext) m_bPause = true;
-			else m_bFinish = true;
+			else { 
+				m_bFinish = true; 
+				m_bPause = true;
+			}
 
 		}
 	}
