@@ -19,10 +19,10 @@ public:
 	~CPoliceTitle();
 
 	// メンバ関数
-	HRESULT Init(const D3DXVECTOR3 pos);
+	HRESULT Init(void);
 	void Uninit(void);
 	void Update(void) {}
-	static CPoliceTitle* Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const D3DXVECTOR3 move);
+	static CPoliceTitle* Create(const D3DXVECTOR3 rot, const D3DXVECTOR3 move);
 
 	//パトランプ生成
 	void SettingPatLamp(void)
@@ -46,7 +46,7 @@ public:
 		//ているらんぷ
 		m_pTailLamp->m_pos = this->GetPosition();
 		m_pTailLamp->m_rot = this->GetRotation();
-		//
+		
 		//<*******************************************
 	}
 
@@ -61,12 +61,19 @@ public:
 	//追跡処理
 	void Chasing(const float fMoveZ);
 
+	void TitleMove(void);
+	void Move(void);
+
 private:
+
+	static int m_nNumAll;
 
 	CEffekseer::CEffectData* m_pPatrolLamp;		//パトランプ
 	CEffekseer::CEffectData* m_pTailLamp;		//ているらんぷ
 
 	static CMasterSound::CObjectSound* m_pSound;		//パトロール(追跡時の音)
+
+	int m_nNumDest;						//目的地の番号
 
 };
 

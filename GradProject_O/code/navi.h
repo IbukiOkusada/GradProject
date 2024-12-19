@@ -13,6 +13,8 @@
 #include "effekseerControl.h"
 #include "list.h"
 #include "goal.h"
+#include "scrollText2D.h"
+#include "objectsound.h"
 //#include "task.h"	// これでファイルインクルードできます
 
 //==========================================================
@@ -49,11 +51,16 @@ private:	// 自分だけがアクセス可能
 	void UpdateNavigation();
 	void Reach();
 	void CreateEffect();
+	void clear();
 	// メンバ変数
 	CGoal* m_pGole;
 	int m_IdxPath;
+	int m_nTime;
 	std::vector<CRoad::SSearch*> m_Path;
 	Clist<SEffect*> m_Effects;
+	CScrollText2D* m_pFont;
+	CMasterSound::CObjectSound* m_pSound;
+	int m_nFontTimeCount;
 };
 
 #endif

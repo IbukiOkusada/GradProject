@@ -27,7 +27,7 @@ namespace
 	const float OUT_ENGINE = 0.6f;
 	const float INTERVAL = 5.0f;
 	const float SEARCH_DISTANCE = 3000.0f;
-	const float SEARCH_RANGE = D3DX_PI * 0.3f;
+	const float SEARCH_RANGE = D3DX_PI * 0.1f;
 }
 
 Clist<CGimmickPoliceStation*> CGimmickPoliceStation::m_List = {};
@@ -115,9 +115,10 @@ void CGimmickPoliceStation::Update(void)
 	if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// セーフ
 
 	// 距離判定
-	D3DXVECTOR3 pos = pPlayer->GetPosition() - GetPos();
+	D3DXVECTOR3 pos = GetPos() - pPlayer->GetPosition();
 	float distance = D3DXVec3Length(&pos);
 	CDebugProc::GetInstance()->Print("距離 [ %f ]", distance);
+
 	if (distance > SEARCH_DISTANCE) { return; }
 
 	// 向き判定
@@ -126,10 +127,12 @@ void CGimmickPoliceStation::Update(void)
 	float dest = rot - GetRot().y;
 	Adjust(dest);
 	dest = fabsf(dest);
+	CDebugProc::GetInstance()->Print("差分 [ %f ]", dest);
 
 	// 範囲内のみ警察生成
 	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
 	m_Info.fSpawnTime = 0.0f;
+
 	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
 
 	// 応援の警察のタイプを設定

@@ -262,9 +262,9 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	// プレイヤー生成
 	m_pCharacter = CCharacter::Create("data\\TXT\\character\\player\\motion_player.txt");
 	m_pCharacter->SetParent(m_pObj->GetMtx());
-	m_pCharacter->GetMotion()->InitSet(0);
+	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_NEUTRAL);
 	m_pCharacter->SetScale(D3DXVECTOR3(3.0f, 3.0f, 3.0f));
-	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -60.0f, 75.0f));
+	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -80.0f, 75.0f));
 	m_pCharacter->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	SetCol();
@@ -324,6 +324,7 @@ void CPlayer::Update(void)
 	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
 	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
 
+	// シェーダーライト
 	if (m_pShaderLight != nullptr)
 	{
 		m_pShaderLight->position = GetPosition() + lightpos;
@@ -366,9 +367,8 @@ void CPlayer::Update(void)
 		m_pRadio->Update();
 	}
 
-
-
-	if ((m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE))
+	if ((m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE) 
+		&& m_Info.state != STATE::STATE_DEATH)
 	{
 		// プレイヤー操作
 		Controller();
@@ -462,16 +462,13 @@ void CPlayer::Update(void)
 
 	if (CBaggage::GetThrowList()->GetNum() == 0 && m_pBaggage == nullptr)
 	{
-		m_pBaggage = CBaggage::Create(GetPosition());
+		m_pBaggage = CBaggage::Create(VECTOR3_ZERO);
+		m_pBaggage->GetObj()->SetScale(D3DXVECTOR3(2.0f, 2.0f, 2.0f));
 	}
 
 	if (m_pBaggage != nullptr)
 	{
-		D3DXVECTOR3 pos = GetPosition();
-
-		pos.y += 100.0f;
-		m_pBaggage->SetPosition(pos);
-		m_pBaggage->GetObj()->SetShadowHeight(GetPosition().y);
+		m_pBaggage->GetObj()->SetParent(m_pCharacter->GetParts(5)->GetMtx());
 	}
 
 	if (m_pCharacter != nullptr)
@@ -556,15 +553,17 @@ void CPlayer::Move(void)
 	m_fBrake = 0.0f;
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-	if (pInputKey->GetPress(DIK_W))
+	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
-		fThrottle = 0.8f;
+		if (pInputKey->GetPress(DIK_W))
+		{
+			fThrottle = 0.8f;
+		}
+		else
+		{
+			fThrottle = (float)pInputPad->GetRightTriggerPress(0) / 255;
+		}
 	}
-	else
-	{
-		fThrottle = (float)pInputPad->GetRightTriggerPress(0) / 255;
-	}
-
 
 	if (pInputKey->GetPress(DIK_S))
 	{
@@ -575,6 +574,7 @@ void CPlayer::Move(void)
 		m_fBrake = (float)pInputPad->GetLeftTriggerPress(0) / 255;
 
 	}
+
 	Nitro();
 	Engine(fThrottle);
 	// 入力装置確認
@@ -586,7 +586,7 @@ void CPlayer::Move(void)
 	// デルタタイム取得
 	float deltatime = CManager::GetInstance()->GetDeltaTime()->GetDeltaTime();
 
-	m_Info.pos += m_Info.move * FRAME_RATE_SCALER * deltatime;
+	m_Info.pos += m_Info.move * FRAME_RATE_SCALER * deltatime * CDeltaTime::GetInstance()->GetSlow();
 	float fHandle = m_fHandle;
 	if (fHandle < 0.0f)
 	{
@@ -660,7 +660,9 @@ void CPlayer::Rotate(void)
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	float diff = 0.0f;
+	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	
+	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
 		if (pInputKey->GetPress(DIK_D))
 		{
@@ -674,22 +676,22 @@ void CPlayer::Rotate(void)
 		{
 			diff = pInputPad->GetLStick(0, 0.1f).x;
 		}
-	}
 
-	// 向き設定
-	if (m_pCharacter != nullptr)
-	{
-		if (diff == 0.0f)
+		// 向き設定
+		if (m_pCharacter != nullptr)
 		{
-			m_pCharacter->GetMotion()->BlendSet(0);
-		}
-		else if (diff > 0.0f)
-		{
-			m_pCharacter->GetMotion()->BlendSet(2);
-		}
-		else
-		{
-			m_pCharacter->GetMotion()->BlendSet(1);
+			if (diff == 0.0f)
+			{
+				m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_NEUTRAL);
+			}
+			else if (diff > 0.0f)
+			{
+				m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_RIGHT);
+			}
+			else
+			{
+				m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_LEFT);
+			}
 		}
 	}
 
@@ -835,6 +837,8 @@ bool CPlayer::CollisionRoad(void)
 		CRoad* pRoad = listRoad->Get(i);	// 先頭を取得
 		if (pRoad == nullptr) { continue; }
 
+		if (!pRoad->GetDraw()) { continue; }
+
 		D3DXVECTOR3* pVtx = pRoad->GetVtxPos();
 		D3DXVECTOR3 pos = pRoad->GetPosition();
 		
@@ -930,7 +934,7 @@ bool CPlayer::CollisionGimick(void)
 
 		if (pGimmick->GetType() != CGimmick::TYPE_BRIDGE) { continue; }
 
-		CBridge* pBridge = dynamic_cast <CBridge*> (pGimmick);
+		CBridge* pBridge = pGimmick->GetBridge();
 
 		for (int bridge = 0; bridge < BRIDGE_NUM; bridge++)
 		{
@@ -1031,18 +1035,24 @@ void CPlayer::Nitro()
 {
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad* pInputPad = CInputPad::GetInstance();
-	if (m_fNitroCool==0.0f&& (pInputKey->GetTrigger(DIK_SPACE)|| pInputPad->GetTrigger(CInputPad::BUTTON_B,0)))
-	{
-		m_Info.state = STATE::STATE_NITRO;
-		m_Info.fStateCounter = NITRO_COUNTER;
-		m_fNitroCool = NITRO_COOL;
+	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-		Damage(LIFE * 0.1f);
-		if (m_fLife > 0.0f)
+	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
+	{
+		if (m_fNitroCool == 0.0f && (pInputKey->GetTrigger(DIK_SPACE) || pInputPad->GetTrigger(CInputPad::BUTTON_B, 0)))
 		{
-			CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.3f, 1.035f, 2.0f);
+			m_Info.state = STATE::STATE_NITRO;
+			m_Info.fStateCounter = NITRO_COUNTER;
+			m_fNitroCool = NITRO_COOL;
+
+			Damage(LIFE * 0.1f);
+			if (m_fLife > 0.0f)
+			{
+				CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.3f, 1.035f, 2.0f);
+			}
 		}
 	}
+
 	if (m_Info.state == STATE::STATE_NITRO)
 	{
 		m_fEngine = 1.5f;
@@ -1158,7 +1168,7 @@ void CPlayer::StateSet(void)
 	{
 		m_Info.fStateCounter -= fSlawMul;
 
-		if (m_Info.fStateCounter <= 0.0f)
+		if (m_Info.fStateCounter <= 0.0f && CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_ONLINE)
 		{
 			m_Info.fStateCounter = SPAWN_INTERVAL;
 			m_Info.state = STATE_APPEAR;
@@ -1258,8 +1268,8 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	float rotY = atan2f(m_Info.pos.z - pTarget->z, m_Info.pos.x - pTarget->x);
 	pCamera->GetAction()->Set(pCamera, D3DXVECTOR3(0.0f, rotY, D3DX_PI * 0.35f), 600.0f, 0.5f, 1.0f, CCameraAction::MOVE_POSV, true);*/
 
-	D3DXVECTOR3 pos = GetPosition();
-
+	pBag->GetObj()->SetParent(nullptr);
+	D3DXVECTOR3 pos = D3DXVECTOR3(pBag->GetObj()->GetMtx()->_41, pBag->GetObj()->GetMtx()->_42, pBag->GetObj()->GetMtx()->_43);
 	pos.y += 100.0f;
 
 	CManager::GetInstance()->GetRenderer()->SetEnableDrawMultiScreen(0.65f, 0.95f, 1.0f);
@@ -1267,6 +1277,7 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	// 荷物を投げる
 	if (pBag != nullptr)
 	{
+		pBag->GetObj()->SetScale(D3DXVECTOR3(6.0f, 6.0f, 6.0f));
 		pBag->Set(pos, pTarget, 0.75f);
 	}
 
@@ -1564,7 +1575,12 @@ void CPlayer::SetCol()
 	for (int i = 0; i < m_pCharacter->GetNumParts(); i++)
 	{
 		CModel* pModel = m_pCharacter->GetParts(i);
-		pModel->SetColMulti(MULTICOL[id]);
+
+		// 肌色ではない
+		if (i != 2 && i != 5 && i != 8)
+		{
+			pModel->SetColMulti(MULTICOL[id]);
+		}
 	}
 }
 

@@ -67,6 +67,12 @@ HRESULT CRoad::Init(void)
 	{
 		m_aVtxPos[i] = VECTOR3_ZERO;
 	}
+
+	if (m_Info.pos.x == 13250.0f)
+	{
+		m_pObj->SetDraw(false);
+	}
+
 	return S_OK;
 }
 
@@ -426,4 +432,14 @@ CRoad::DIRECTION CRoad::GetDic(float fRot)
 	}
 
 	return DIRECTION::DIC_MAX;
+}
+
+//==========================================================
+// •`‰æ‚·‚é‚©‚Ç‚¤‚©‚ðŽæ“¾
+//==========================================================
+bool CRoad::GetDraw()
+{
+	if (m_pObj == nullptr) { return false; }
+
+	return m_pObj->GetDraw();
 }

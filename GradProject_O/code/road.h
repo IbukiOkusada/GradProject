@@ -96,6 +96,7 @@ public:	// 誰でもアクセス可能
 	static CRoad* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR2& size);
 	void BindTexture();
 	bool GetJunctionRoad(float fRot, CRoad** pGoalOut, CRoad** pGoalPrevOut);
+	bool GetDraw();
 
 	// メンバ関数(取得)
 	CObject3D* GetObj(void) { return m_pObj; }	// 描画オブジェ

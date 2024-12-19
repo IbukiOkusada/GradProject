@@ -357,6 +357,7 @@ void CManager::Update(void)
 	{
 		m_pFade->Update();
 	}
+
 	// デバッグ表示の更新処理
 	if (m_pDebugProc != nullptr)
 	{// 使用している場合

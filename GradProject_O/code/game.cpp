@@ -210,7 +210,7 @@ HRESULT CGame::Init(void)
     {
         if (!net->GetConnect(i)) { continue; }
 
-        if (i <= myid) { myid = i; }
+        if (i < myid) { myid = i; }
     }
 
     // Ž©•ª‚ªæ“ª‚Ìê‡
@@ -445,6 +445,7 @@ void CGame::Update(void)
         break;
     case CGame::STATE_SUCCESS:
         pPlayer->GetRadio()->SetVol(pPlayer->GetRadio()->GetVol() * 0.9f);
+        pPlayer->Damage(pPlayer->GetLife() - pPlayer->GetLifeOrigin());
         if (!m_pEndSound->GetPlay())
         {
             CManager::GetInstance()->GetFade()->Set(CScene::MODE_RESULT);

@@ -17,6 +17,7 @@ namespace Function
 	bool BoolToDest(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, const float Distance, bool bZuse = true);
 	bool BoolDis(const D3DXVECTOR3 Pos, const D3DXVECTOR3 DestPos, const float Distance);
 }
+//
 class CTitleBaggage;
 class CTitleGoal;
 class CCharacter;
@@ -34,19 +35,6 @@ public:
 		STATE_NONE=0,	//通常の動き
 		STATE_DEBUG,	//位置調整などのデバッグ時
 		STATE_MAX
-	};
-
-	//目的地ナンバー
-	const enum DEST
-	{
-		DEST_FIRST = 0,	//一番目
-		DEST_SECOND,	//二番目
-		DEST_THIRD,		//三番目
-		DEST_FOUTH,		//四番目
-		DEST_FIFTH,		//五番目
-		DEST_SIXTH,		//六番目
-		DEST_MAX,
-
 	};
 
 
@@ -68,6 +56,7 @@ public:
 	//到着情報に関するSet・Get関数
 	inline void SetReached(bool bReach) { m_bReached = bReach; }
 	inline bool GetReached(void) {return m_bReached;}
+	inline int GetNumDest(void) {}
 
 	//ゴール情報を取得
 	inline CTitleGoal* GetTitleGoal(void) { return m_pTitleGoal; }
@@ -83,13 +72,13 @@ public:
 private:
 
 	//警察関連処理
-	void PoliceInfoSet(void); 
-
 	void PlayerRotSet(void);
 
 	int m_nNumDest;						//目的地の番号
+	int m_nTimer;						//テスト用タイマー
 	float m_fBDustValue;				//煙の大きさの値
-	float m_fDestrot;					//プレイヤー自身の向きの目的地
+	float m_fMove;						//
+	D3DXVECTOR3 m_rDestRot;				//目的向き
 	D3DXVECTOR3 m_PoliDestRot;			//警察の目的向き	
 	D3DXVECTOR3 m_TestMove;
 	float m_fMoveRot;					//回転速度
@@ -97,6 +86,7 @@ private:
 	bool m_bFirst;						//最初の位置
 	STATE m_eState;						//デバッグ用のステート
 	bool m_bReached;					//着いたかどうか
+	bool m_bTest;						//テスト用bool型
 	CTitleBaggage* m_pTitleBaggage;		//タイトル用の荷物
 	CTitleGoal *m_pTitleGoal;			//タイトル用のゴール
 };
