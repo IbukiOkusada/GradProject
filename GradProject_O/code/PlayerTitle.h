@@ -84,12 +84,13 @@ private:
 
 	//警察関連処理
 	void PoliceInfoSet(void); 
-
 	void PlayerRotSet(void);
 
 	int m_nNumDest;						//目的地の番号
+	int m_nTimer;						//テスト用タイマー
 	float m_fBDustValue;				//煙の大きさの値
-	float m_fDestrot;					//プレイヤー自身の向きの目的地
+	float m_fMove;						//
+	D3DXVECTOR3 m_rDestRot;				//目的向き
 	D3DXVECTOR3 m_PoliDestRot;			//警察の目的向き	
 	D3DXVECTOR3 m_TestMove;
 	float m_fMoveRot;					//回転速度
@@ -97,6 +98,7 @@ private:
 	bool m_bFirst;						//最初の位置
 	STATE m_eState;						//デバッグ用のステート
 	bool m_bReached;					//着いたかどうか
+	bool m_bTest;						//テスト用bool型
 	CTitleBaggage* m_pTitleBaggage;		//タイトル用の荷物
 	CTitleGoal *m_pTitleGoal;			//タイトル用のゴール
 };
