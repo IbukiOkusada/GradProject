@@ -324,6 +324,7 @@ void CPlayer::Update(void)
 	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
 	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
 
+	// シェーダーライト
 	if (m_pShaderLight != nullptr)
 	{
 		m_pShaderLight->position = GetPosition() + lightpos;
@@ -365,8 +366,6 @@ void CPlayer::Update(void)
 	{
 		m_pRadio->Update();
 	}
-
-
 
 	if ((m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE))
 	{
