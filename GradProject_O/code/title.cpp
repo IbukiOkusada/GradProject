@@ -9,11 +9,9 @@
 //<==============================================
 #include "title.h"
 #include "manager.h"
-#include "input.h"
 #include "fade.h"
 #include "sound.h"
 #include "camera.h"
-#include "texture.h"
 #include "input_gamepad.h"
 #include "input_keyboard.h"
 #include "object2D.h"
@@ -21,15 +19,11 @@
 #include "meshfield.h"
 #include "PlayerTitle.h"
 #include "PoliceTitle.h"
-#include "goal.h"
 #include "camera_manager.h"
-#include "number.h"
 #include "TitleBaggage.h"
 #include "debugproc.h"
-#include "objectsound.h"
 
 //Ã“Iƒƒ“ƒo•Ï”
-CPoliceTitle* CTitle::m_apPolice[POLICE_MAX] = {nullptr};
 CPlayerTitle* CTitle::m_pPlayer = nullptr;
 
 //<===============================================
@@ -49,8 +43,6 @@ namespace
 	constexpr int nNatPriority = 5;																//‹¤’Ê‚µ‚ÄŽg‚¤—Dæ“x•Ï”
 	const D3DXCOLOR INV_COL = { 0.0f,0.0f,0.0f,0.0f };											//“§–¾‚ÌŽž‚ÌF
 	const D3DXCOLOR VIS_COL = { 0.0f,0.0f,0.0f,1.0f };											//”ñ“§–¾‚ÌŽž‚ÌF
-
-
 	//<************************************************
 	//floatŒ^
 	//<************************************************ 
@@ -110,6 +102,11 @@ CTitle::CTitle()
 	for (int nCnt = 0; nCnt < SELECT_YN::SELECT_YN_MAX; nCnt++)
 	{
 		m_apYesNoObj[nCnt] = nullptr;
+	}
+	//ŒxŽ@‚Ì‰Šú‰»
+	for (int nCnt = 0; nCnt < SELECT_YN::SELECT_YN_MAX; nCnt++)
+	{
+		m_apPolice[nCnt] = nullptr;
 	}
 }
 //<===============================================

@@ -4,16 +4,14 @@
 //Author : Kazuki Watanabe
 //<=================================================
 #include "PoliceTitle.h"
-#include "police_manager.h"
 #include "debugproc.h"
-#include "manager.h"
 #include "title.h"
-#include "car_manager.h"
 #include "PlayerTitle.h"
 
 //サウンド再生
 CMasterSound::CObjectSound* CPoliceTitle::m_pSound = nullptr;
 
+//総数
 int CPoliceTitle::m_nNumAll = 0;
  
 //<======================================
@@ -43,14 +41,6 @@ HRESULT CPoliceTitle::Init(void)
 	constexpr char* MODEL_NAME = "data\\MODEL\\police.x";	//モデル名
 	constexpr char* SoundName = "data\\SE\\siren.wav";		//サウンド名
 	constexpr float fDis = 1000.0f;							//プレイヤーからの距離
-	constexpr float fDis_Police = 350.0f;
-	constexpr float fDiff = 150.0f;							//プレイヤーからの距離
-	
-	
-	////それぞれの座標設定
-	//rPos.x = aPos.x - fDiff + fDis_Police * nCnt;
-	//rPos.y = aPos.y;
-	//rPos.z = aPos.z - fDis;
 
 	//位置設定
 	D3DXVECTOR3 rPos = D3DXVECTOR3(
@@ -105,8 +95,10 @@ void CPoliceTitle::Chasing(const float fMoveZ)
 //<======================================
 void CPoliceTitle::TitleMove(void)
 {
-	const float fRad1 = 500.0f;		//範囲
+	//範囲
+	const float fRad1 = 500.0f;
 
+	//エフェクト生成
 	SettingPatLamp();
 
 	//目的地に到着したら判定をtrueにする
@@ -115,7 +107,6 @@ void CPoliceTitle::TitleMove(void)
 		//目的地変更
 		m_nNumDest = (m_nNumDest + 1) % DEST_MAX;
 	}
-
 	Move();
 }
 //<======================================
@@ -123,59 +114,22 @@ void CPoliceTitle::TitleMove(void)
 //<======================================
 void CPoliceTitle::Move(void)
 {
-	D3DXVECTOR3 rDestRot = VECTOR3_ZERO;
-	D3DXVECTOR3 rRot = GetRotation();
-	D3DXVECTOR3 rPos = GetPosition();
-	constexpr float fMove = 50.0f;
+	D3DXVECTOR3 rDestRot = VECTOR3_ZERO;		//目的向き
+	D3DXVECTOR3 rRot = GetRotation();			//向き
+	D3DXVECTOR3 rPos = GetPosition();			//位置
+	constexpr float fMove = 50.0f;				//移動値
+
+	//目的向き設定
+	rDestRot = DEST_ROT_SELECT[m_nNumDest];
 
 	//番号によって変更させる
 	switch (m_nNumDest)
 	{
 		//最初の目的地
-	case DEST::DEST_FIRST:
-
-		//最初の向きにする
-		rDestRot = DEST_ROT_SELECT[DEST::DEST_FIRST];
-
-		//移動
-		rPos.z += fMove;
-
-		break;
-
-		//二番目か四番目
-	case DEST::DEST_SECOND:
-	case DEST::DEST_FOUTH:
-
-		//二番目の向きにする
-		rDestRot = DEST_ROT_SELECT[DEST::DEST_SECOND];
-
-		//移動
-		rPos.x -= fMove;
-
-		break;
-
-		//三番目か五番目
-	case DEST::DEST_THIRD:
-	case DEST::DEST_FIFTH:
-
-		//三番目の向きにする
-		rDestRot = DEST_ROT_SELECT[DEST::DEST_THIRD];
-
-		//移動
-		rPos.z -= fMove;
-
-		break;
-
-		//最後の番号
-	case DEST::DEST_SIXTH:
-
-		//最終地点の向きにする
-		rDestRot = DEST_ROT_SELECT[DEST::DEST_SIXTH];
-
-		//移動
-		rPos.x += fMove;
-
-		break;
+	case DEST::DEST_FIRST:							rPos.z += fMove; break;			//最初の番号
+	case DEST::DEST_SECOND:case DEST::DEST_FOUTH:	rPos.x -= fMove; break;			//二番目か四番目
+	case DEST::DEST_THIRD: case DEST::DEST_FIFTH:	rPos.z -= fMove; break;			//三番目か五番目
+	case DEST::DEST_SIXTH:							rPos.x += fMove; break;			//最後の番号
 	}
 
 	//位置を設定

@@ -62,9 +62,9 @@ public:
 	void Chasing(const float fMoveZ);
 
 	void TitleMove(void);
-	void Move(void);
-
 private:
+
+	void Move(void);
 
 	static int m_nNumAll;
 
