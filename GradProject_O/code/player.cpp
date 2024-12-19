@@ -367,7 +367,7 @@ void CPlayer::Update(void)
 		m_pRadio->Update();
 	}
 
-	if ((m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE))
+	if ((m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE) && m_Info.state != STATE::STATE_DEATH)
 	{
 		// ÉvÉåÉCÉÑÅ[ëÄçÏ
 		Controller();

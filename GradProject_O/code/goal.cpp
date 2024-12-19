@@ -210,24 +210,27 @@ void CGoal::Update(void)
 bool CGoal::CheckRange(int nId)
 {
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
-	if (pPlayer != nullptr)
-	{
-		float fDis = GetDistance(m_Info.pos, pPlayer->GetPosition());
-		return (m_Info.fRange >= fDis);
-	}
-	return false;
+	if (pPlayer == nullptr) { return false; }
+
+	if (pPlayer->GetState() == CPlayer::STATE::STATE_DEATH) { return false; }
+
+	float fDis = GetDistance(m_Info.pos, pPlayer->GetPosition());
+	return (m_Info.fRange >= fDis);
 }
+
 //==========================================================
 // 速度のチェック
 //==========================================================
 bool CGoal::CheckSpeed(int nId)
 {
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
-	if (pPlayer != nullptr)
-	{
-		float fDis = GetDistance(VECTOR3_ZERO, pPlayer->GetMove());
-		return (m_Info.fLimit >= fDis);
-	}
+	if (pPlayer == nullptr) { return false; }
+
+	if (pPlayer->GetState() == CPlayer::STATE::STATE_DEATH) { return false; }
+
+	float fDis = GetDistance(VECTOR3_ZERO, pPlayer->GetMove());
+	return (m_Info.fLimit >= fDis);
+
 	return false;
 }
 //==========================================================
