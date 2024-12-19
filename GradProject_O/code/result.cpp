@@ -29,6 +29,8 @@
 #include "meshfield.h"
 #include "edit_manager.h"
 #include "input_keyboard.h"
+#include "motion.h"
+#include "character.h"
 
 //==========================================================
 // ’è”’è‹`
@@ -195,10 +197,20 @@ HRESULT CResult::Init(void)
 	if (m_bSuccess == true)
 	{// ¬Œ÷
 		m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::CLEAR_TEX_PATH));
+
+		if (m_pPlayer != nullptr)
+		{
+			m_pPlayer->GetCharacteter()->GetMotion()->BlendSet(CPlayer::MOTION::MOTION_CLEAR);
+		}
 	}
 	else if (m_bSuccess == false)
 	{// Ž¸”s
 		m_pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::FAIL_TEX_PATH));
+
+		if (m_pPlayer != nullptr)
+		{
+			m_pPlayer->GetCharacteter()->GetMotion()->BlendSet(CPlayer::MOTION::MOTION_FAILED);
+		}
 	}
 
 

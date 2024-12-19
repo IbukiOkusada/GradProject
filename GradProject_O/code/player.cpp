@@ -264,7 +264,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	m_pCharacter->SetParent(m_pObj->GetMtx());
 	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_NEUTRAL);
 	m_pCharacter->SetScale(D3DXVECTOR3(3.0f, 3.0f, 3.0f));
-	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -60.0f, 75.0f));
+	m_pCharacter->SetPosition(D3DXVECTOR3(0.0f, -80.0f, 75.0f));
 	m_pCharacter->SetRotation(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
 
 	SetCol();
