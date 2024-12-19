@@ -61,6 +61,7 @@ namespace
 
 	const D3DXCOLOR ZERO_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO);							//透明色の値
 	const D3DXCOLOR ONE_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA);							//非透明の値
+	const D3DXCOLOR HARF_ALPHA = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f);							//非透明の値
 	
 }
 //<===============================================
@@ -428,12 +429,20 @@ void CTitle::PreMove(void)
 	//その場所についているかつプレスエンターの文字が表示されていなければ
 	if (m_pPlayer->GetReached())
 	{
-		//
-		if (PlayerRot <= DEST_ROT.y) { PlayerRot = DEST_ROT.y; }
-		else { PlayerRot += -fRotMove; }
+		//<****************************************
+		//向き回転関連
+		float fDiff = DEST_ROT.y - PlayerRot;		//差分
+		float fIner = 0.05f;						//慣性の動き
+
+		//調整
+		Adjust(fDiff);
+
+		//回転させる
+		PlayerRot += fDiff * fIner;
 
 		//プレイヤーの向きに反映
 		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, PlayerRot, 0.0f));
+		//<****************************************
 
 		//サウンド再生
 		m_pPlayer->SetS(true);
@@ -957,14 +966,14 @@ void CTitle::SelectSingleMulti(void)
 	{
 		//"YES"を選択状態、"NO"を非選択状態
 		ColChange(m_apSelect[SELECT::SELECT_SINGLE], nChangeColTime);
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(ONE_COL);
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(HARF_ALPHA);
 	}
 	//"NO"を選択している時
 	else if (m_nSelect == SELECT::SELECT_MULTI)
 	{
 		//"YES"を非選択状態、"NO"を選択状態
 		ColChange(m_apSelect[SELECT::SELECT_MULTI], nChangeColTime);
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(ONE_COL);
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(HARF_ALPHA);
 	}
 }
 //<===============================================
@@ -1036,14 +1045,14 @@ void CTitle::SelectCol(void)
 	{
 		//"YES"を選択状態、"NO"を非選択状態
 		ColChange(m_apYesNoObj[SELECT_YN::SELECT_YN_YES], nChangeColTime);
-		m_apYesNoObj[SELECT_YN::SELECT_YN_NO]->SetCol(ONE_COL);
+		m_apYesNoObj[SELECT_YN::SELECT_YN_NO]->SetCol(HARF_ALPHA);
 	}
 	//"NO"を選択している時
 	else if (m_nSelectYN == SELECT_YN::SELECT_YN_NO)
 	{
 		//"YES"を非選択状態、"NO"を選択状態
 		ColChange(m_apYesNoObj[SELECT_YN::SELECT_YN_NO], nChangeColTime);
-		m_apYesNoObj[SELECT_YN::SELECT_YN_YES]->SetCol(ONE_COL);
+		m_apYesNoObj[SELECT_YN::SELECT_YN_YES]->SetCol(HARF_ALPHA);
 	}
 
 }

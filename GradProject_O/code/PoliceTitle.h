@@ -27,26 +27,26 @@ public:
 	//パトランプ生成
 	void SettingPatLamp(void)
 	{
-		////<*******************************************
-		////パトランプ生成
-		//if (!m_pPatrolLamp)
-		//{
-		//	m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-		//}
-		////ているらんぷ生成
-		//if (!m_pTailLamp)
-		//{
-		//	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
-		//}
+		//<*******************************************
+		//パトランプ生成
+		if (!m_pPatrolLamp)
+		{
+			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+		}
+		//ているらんぷ生成
+		if (!m_pTailLamp)
+		{
+			m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\taillamp.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+		}
 
-		////パトランプ
-		//m_pPatrolLamp->m_pos = this->GetPosition();
-		//m_pPatrolLamp->m_rot = this->GetRotation();
+		//パトランプ
+		m_pPatrolLamp->m_pos = this->GetPosition();
+		m_pPatrolLamp->m_rot = this->GetRotation();
 
-		////ているらんぷ
-		//m_pTailLamp->m_pos = this->GetPosition();
-		//m_pTailLamp->m_rot = this->GetRotation();
-		//
+		//ているらんぷ
+		m_pTailLamp->m_pos = this->GetPosition();
+		m_pTailLamp->m_rot = this->GetRotation();
+		
 		//<*******************************************
 	}
 

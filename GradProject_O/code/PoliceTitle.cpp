@@ -107,6 +107,8 @@ void CPoliceTitle::TitleMove(void)
 {
 	const float fRad1 = 500.0f;		//”ÍˆÍ
 
+	SettingPatLamp();
+
 	//–Ú“I’n‚É“ž’…‚µ‚½‚ç”»’è‚ðtrue‚É‚·‚é
 	if (Function::BoolDis(GetPosition(), DEST_POS_SELECT[m_nNumDest], fRad1))
 	{
