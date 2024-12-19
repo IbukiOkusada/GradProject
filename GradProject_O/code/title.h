@@ -26,9 +26,44 @@ class CNumber;
 //<**********************************************
 //名前宣言(ココでしか使わない変数)
 //<**********************************************
-namespace INITIAL
+namespace
 {
 	const int POLICE_MAX = 3;					//警察の数
+
+	//目的地ナンバー
+	const enum DEST
+	{
+		DEST_FIRST = 0,	//一番目
+		DEST_SECOND,	//二番目
+		DEST_THIRD,		//三番目
+		DEST_FOUTH,		//四番目
+		DEST_FIFTH,		//五番目
+		DEST_SIXTH,		//六番目
+		DEST_MAX,
+
+	};
+
+	//目的地の位置
+	const D3DXVECTOR3 DEST_POS_SELECT[DEST::DEST_MAX] =
+	{
+		D3DXVECTOR3(3000.0f, 0.0f, 6600.0f),		//１個目
+		D3DXVECTOR3(-3160.0f, 0.0f, 6000.0f),		//２個目
+		D3DXVECTOR3(-3160.0f, 0.0f, 3300.0f),		//３個目
+		D3DXVECTOR3(-5050.0f, 0.0f, 4000.0f),		//４個目
+		D3DXVECTOR3(-4750.0f, 0.0f, -200.0f),		//５個目
+		D3DXVECTOR3(3000.0f, 0.0f, -200.0f)			//６個目
+	};
+
+	//目的の向き
+	const D3DXVECTOR3 DEST_ROT_SELECT[DEST::DEST_MAX] =
+	{
+		D3DXVECTOR3(0.0f,-3.14f,0.0f),				//１個目
+		D3DXVECTOR3(0.0f,1.57f,0.0f),				//２個目
+		D3DXVECTOR3(0.0f,0.0f,0.0f),				//３個目
+		D3DXVECTOR3(0.0f,1.57f,0.0f),				//４個目
+		D3DXVECTOR3(0.0f,0.0f,0.0f),				//５個目
+		D3DXVECTOR3(0.0f,-1.57f,0.0f)				//６個目
+	};
 }
 
 //===============================================
@@ -178,7 +213,7 @@ private:
 	//ポインタ型
 	//<************************************
 	static CPlayerTitle* m_pPlayer;									//プレイヤーのポインタ
-	static CPoliceTitle* m_apPolice[INITIAL::POLICE_MAX];		//警察のポインタ
+	static CPoliceTitle* m_apPolice[POLICE_MAX];		//警察のポインタ
 
 	CObject2D* m_pObject2D[OBJ2D::OBJ2D_MAX];					//オブジェクト2Dのポインタ
 	CObject2D* m_apSelect[SELECT::SELECT_MAX];					//シングルとマルチの選択肢のポインタ

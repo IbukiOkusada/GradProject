@@ -11,6 +11,8 @@
 #include "list.h"
 //#include "task.h"	// これでファイルインクルードできます
 
+class CBridge;
+
 //==========================================================
 // ギミックのクラス定義
 //==========================================================
@@ -66,6 +68,7 @@ public:	// 誰でもアクセス可能
 	TYPE GetType() { return m_Info.type; }
 	void SetType(const TYPE type) { m_Info.type = type; }
 	int GetId() { return m_nId; }
+	virtual CBridge* GetBridge() { return nullptr; }
 
 	// 衝突時の判定
 	virtual void SetColMulti(const D3DXCOLOR& col) = 0;

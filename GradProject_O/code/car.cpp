@@ -15,6 +15,8 @@
 #include "slow.h"
 #include "player.h"
 #include "player_manager.h"
+#include "bridge.h"
+#include "meshfield.h"
 
 // マクロ定義
 
@@ -36,6 +38,7 @@ namespace
 	const float LENGTH_LANE = (-400.0f);		// 車線の幅
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
 	const float RECV_INER = (0.35f);			// 受信したデータの慣性
+	const float GRAVITY = (-24.0f);		//プレイヤー重力
 }
 
 //==========================================================
@@ -199,13 +202,13 @@ void CCar::Move()
 		m_Info.fSpeed += (m_Info.fSpeedDest - m_Info.fSpeed) * SPEED_INER;
 		//CManager::GetInstance()->GetDebugProc()->Print("一般車の速度 [ %f ]\n", m_Info.fSpeed);
 
-		// 移動量設定
-		m_Info.move.x = m_Info.fSpeed * sinf(m_Info.rot.y);
-		m_Info.move.y = 0.0f;
-		m_Info.move.z = m_Info.fSpeed * cosf(m_Info.rot.y);
-
 		// デルタタイム取得
 		float DeltaTime = CDeltaTime::GetInstance()->GetDeltaTime();
+
+		// 移動量設定
+		m_Info.move.x = m_Info.fSpeed * sinf(m_Info.rot.y);
+		m_Info.move.y += GRAVITY * DeltaTime;
+		m_Info.move.z = m_Info.fSpeed * cosf(m_Info.rot.y);
 
 		// 位置に加算
 		m_Info.pos += m_Info.move * FRAME_RATE_SCALER * DeltaTime;
@@ -458,8 +461,34 @@ bool CCar::Collision()
 {
 	if (!IsActive()) { return false; }
 
+	bool bCollision = false;
+
+	// オブジェクトとの当たり判定
+	if (CollisionObjX())
+		bCollision = true;
+
+	// 道との当たり判定
+	if (CollisionRoad())
+		bCollision = true;
+
+	// 地面との当たり判定
+	if (CollisionField())
+		bCollision = true;
+
+	// ギミックとの当たり判定
+	if (CollisionGimick())
+		bCollision = true;
+
+	return bCollision;
+}
+
+//==========================================================
+// オブジェクトとの当たり判定処理
+//==========================================================
+bool CCar::CollisionObjX(void)
+{
 	auto mgr = CObjectX::GetList();
-	for(int i = 0; i < mgr->GetNum(); i++)
+	for (int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
 
 		CObjectX* pObjectX = mgr->Get(i);	// 取得
@@ -474,7 +503,7 @@ bool CCar::Collision()
 
 		// OBBとの当たり判定を実行
 		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
-		
+
 		// 衝突していない場合繰り返す
 		if (!bCollision) { continue; }
 
@@ -484,6 +513,163 @@ bool CCar::Collision()
 		}
 
 		return true;
+	}
+
+	return false;
+}
+
+//==========================================================
+// 道との当たり判定処理
+//==========================================================
+bool CCar::CollisionRoad(void)
+{
+	// 道との判定
+	auto listRoad = CRoadManager::GetInstance()->GetList();
+	for (int i = 0; i < listRoad->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		// 道確認
+		CRoad* pRoad = listRoad->Get(i);	// 先頭を取得
+		if (pRoad == nullptr) { continue; }
+
+		D3DXVECTOR3* pVtx = pRoad->GetVtxPos();
+		D3DXVECTOR3 pos = pRoad->GetPosition();
+
+		float height = m_Info.pos.y - 0.1f;
+		D3DXVECTOR3 vec1 = pVtx[1] - pVtx[0], vec2 = pVtx[2] - pVtx[0];
+		D3DXVECTOR3 nor0, nor1;
+
+		D3DXVec3Cross(&nor0, &vec1, &vec2);
+		D3DXVec3Normalize(&nor0, &nor0);	// ベクトルを正規化する
+
+		vec1 = pVtx[2] - pVtx[3];
+		vec2 = pVtx[1] - pVtx[3];
+		D3DXVec3Cross(&nor1, &vec1, &vec2);
+		D3DXVec3Normalize(&nor1, &nor1);	// ベクトルを正規化する
+
+		// 判定
+		collision::IsOnSquarePolygon(pos + pVtx[0], pos + pVtx[1], pos + pVtx[2], pos + pVtx[3],
+			nor0, nor1, m_Info.pos, m_Info.posOld, height);
+
+		if (height >= m_Info.pos.y)
+		{
+			m_Info.pos.y = height;
+			m_Info.move.y = 0.0f;
+		}
+	}
+
+	return false;
+}
+
+//==========================================================
+// ギミックとの当たり判定処理
+//==========================================================
+bool CCar::CollisionGimick(void)
+{
+	auto listGimmick = CGimmick::GetList();
+	for (int i = 0; i < listGimmick->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		// 道確認
+		CGimmick* pGimmick = listGimmick->Get(i);	// 先頭を取得
+		if (pGimmick == nullptr) { continue; }
+
+		if (pGimmick->GetType() != CGimmick::TYPE_BRIDGE) { continue; }
+
+		CBridge* pBridge = dynamic_cast <CBridge*> (pGimmick);
+
+		for (int bridge = 0; bridge < BRIDGE_NUM; bridge++)
+		{
+			// ポリゴンの大きさを計算
+			CObjectX* pObjectX = pBridge->GetObjectX(bridge);
+			D3DXVECTOR3 posGimmick = pObjectX->GetPosition();
+			D3DXVECTOR3 rotGimmick = pObjectX->GetRotation();
+			D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
+			D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+			sizeMin.y = 0.0f;
+
+			sizeMax = collision::PosRelativeMtx(VECTOR3_ZERO, rotGimmick, sizeMax);
+			sizeMin = collision::PosRelativeMtx(VECTOR3_ZERO, rotGimmick, sizeMin);
+
+			float height = m_Info.pos.y - 0.1f;
+			D3DXVECTOR3 pVtx[4];
+			pVtx[0] = D3DXVECTOR3(sizeMax.x, sizeMax.y, sizeMax.z);
+			pVtx[1] = D3DXVECTOR3(sizeMin.x, sizeMin.y, sizeMax.z);
+			pVtx[2] = D3DXVECTOR3(sizeMax.x, sizeMax.y, sizeMin.z);
+			pVtx[3] = D3DXVECTOR3(sizeMin.x, sizeMin.y, sizeMin.z);
+
+			// 法線ベクトルを計算する
+			D3DXVECTOR3 vec1, vec2;
+			D3DXVECTOR3 nor0, nor1;
+
+			vec1 = pVtx[1] - pVtx[0];
+			vec2 = pVtx[2] - pVtx[0];
+			D3DXVec3Cross(&nor0, &vec1, &vec2);
+			D3DXVec3Normalize(&nor0, &nor0);	// ベクトルを正規化する
+
+			vec1 = pVtx[2] - pVtx[3];
+			vec2 = pVtx[1] - pVtx[3];
+			D3DXVec3Cross(&nor1, &vec1, &vec2);
+			D3DXVec3Normalize(&nor1, &nor1);	// ベクトルを正規化する
+
+			// 判定
+			collision::IsOnSquarePolygon(posGimmick + pVtx[0], posGimmick + pVtx[1], posGimmick + pVtx[2], posGimmick + pVtx[3],
+				nor0, nor1, m_Info.pos, m_Info.posOld, height);
+
+			if (height >= m_Info.pos.y)
+			{
+				m_Info.pos.y = height;
+				m_Info.move.y = 0.0f;
+			}
+		}
+	}
+
+	return false;
+}
+
+//==========================================================
+// 地面との当たり判定処理
+//==========================================================
+bool CCar::CollisionField(void)
+{
+	// 道との判定
+	auto listRoad = CMeshField::GetList();
+	for (int i = 0; i < listRoad->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		// 道確認
+		CMeshField* pRoad = listRoad->Get(i);	// 先頭を取得
+		if (pRoad == nullptr) { continue; }
+
+		D3DXVECTOR3 pVtx[4] = {};
+		D3DXVECTOR3 pos = pRoad->GetPosition();
+
+		pVtx[0] = D3DXVECTOR3(-(pRoad->GetWidth() * pRoad->GetNumWidth()), 0.0f, (pRoad->GetHeight() * pRoad->GetNumHeight()));
+		pVtx[1] = D3DXVECTOR3((pRoad->GetWidth() * pRoad->GetNumWidth()), 0.0f, (pRoad->GetHeight() * pRoad->GetNumHeight()));
+		pVtx[2] = D3DXVECTOR3(-(pRoad->GetWidth() * pRoad->GetNumWidth()), 0.0f, -(pRoad->GetHeight() * pRoad->GetNumHeight()));
+		pVtx[3] = D3DXVECTOR3((pRoad->GetWidth() * pRoad->GetNumWidth()), 0.0f, -(pRoad->GetHeight() * pRoad->GetNumHeight()));
+
+		float height = m_Info.pos.y - 0.1f;
+		D3DXVECTOR3 vec1 = pVtx[1] - pVtx[0], vec2 = pVtx[2] - pVtx[0];
+		D3DXVECTOR3 nor0, nor1;
+
+		D3DXVec3Cross(&nor0, &vec1, &vec2);
+		D3DXVec3Normalize(&nor0, &nor0);	// ベクトルを正規化する
+
+		vec1 = pVtx[2] - pVtx[3];
+		vec2 = pVtx[1] - pVtx[3];
+		D3DXVec3Cross(&nor1, &vec1, &vec2);
+		D3DXVec3Normalize(&nor1, &nor1);	// ベクトルを正規化する
+
+		// 判定
+		collision::IsOnSquarePolygon(pos + pVtx[0], pos + pVtx[1], pos + pVtx[2], pos + pVtx[3],
+			nor0, nor1, m_Info.pos, m_Info.posOld, height);
+
+		if (height >= m_Info.pos.y)
+		{
+			m_Info.pos.y = height;
+			m_Info.move.y = 0.0f;
+		}
 	}
 
 	return false;

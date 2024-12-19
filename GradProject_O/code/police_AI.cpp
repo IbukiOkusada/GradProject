@@ -26,12 +26,13 @@
 namespace
 {
 	const float CHASE_SECURE = (400.0f);			// 追跡確保距離
-	const float CHASE_CROSS = (500.0f);				// すれ違い判定距離
-	const float CHASE_NEAR = (2000.0f);				// 近距離判定
-	const float CHASE_FAR = (3500.0f);				// 遠距離判定
+	const float CHASE_CROSS = (750.0f);				// すれ違い判定距離
+	const float CHASE_NEAR = (4000.0f);				// 近距離判定
+	const float CHASE_FAR = (6000.0f);				// 遠距離判定
 
 	const float	LIFE_DAMAGE = (80.0f);				// 傷判定のダメージ
 	const float	LIFE_SMOKE = (50.0f);				// 煙判定のダメージ
+
 	const float	LEVEL_MAX = (30.0f);				// 警戒度の最大値
 	const float	LEVEL_MIN = (0.0f);					// 警戒度の最小値
 	const float	LEVEL_NORMAL = (-0.1f);				// 通常時の警戒度減少量
@@ -46,10 +47,10 @@ namespace
 
 	const float CHASE_SPEED[CPoliceAI::TYPE_MAX] =
 	{
-		(24.0f),		// デフォルトの追跡時の加速
-		(24.0f),		// 通常タイプの追跡時の加速
-		(26.0f),		// 回り込みタイプの追跡時の加速
-		(22.0f),		// 緩やかタイプの追跡時の加速
+		(28.0f),		// デフォルトの追跡時の加速
+		(28.0f),		// 通常タイプの追跡時の加速
+		(30.0f),		// 回り込みタイプの追跡時の加速
+		(25.0f),		// 緩やかタイプの追跡時の加速
 	};
 
 	const float SEARCH_TIME[CPoliceAI::TYPE_MAX] =

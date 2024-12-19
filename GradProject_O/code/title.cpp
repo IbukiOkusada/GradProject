@@ -29,7 +29,7 @@
 #include "objectsound.h"
 
 //静的メンバ変数
-CPoliceTitle* CTitle::m_apPolice[INITIAL::POLICE_MAX] = {nullptr};
+CPoliceTitle* CTitle::m_apPolice[POLICE_MAX] = {nullptr};
 CPlayerTitle* CTitle::m_pPlayer = nullptr;
 
 //<===============================================
@@ -61,6 +61,7 @@ namespace
 
 	const D3DXCOLOR ZERO_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, ALPHA_ZERO);							//透明色の値
 	const D3DXCOLOR ONE_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, MAX_ALPHA);							//非透明の値
+	const D3DXCOLOR HARF_ALPHA = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.4f);							//非透明の値
 	
 }
 //<===============================================
@@ -303,7 +304,7 @@ void CTitle::StateP_E(void)
 	}
 	//その場所についていないかつプレスエンターの文字が表示されていなければ一番目の目的地にプレイヤーを移動させる
 	else if (!m_pPlayer->GetReached() && !m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetDraw())
-	{m_pPlayer->Moving(CPlayerTitle::DEST_FIRST);}
+	{m_pPlayer->Moving(DEST::DEST_FIRST);}
 
 	//プレスエンターの文字が表示されていたらステートを変更
 	else if (m_pObject2D[OBJ2D::OBJ2D_PressEnter]->GetDraw())
@@ -334,7 +335,14 @@ void CTitle::MoveP_E(void)
 		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_PressEnter]);
 
 		//次のステートに移行する、ブラックカバーで隠す
-		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+		//m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+
+		//警察の生成
+		for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
+		{
+			m_apPolice[nCnt] = CPoliceTitle::Create(DEST_ROT, VECTOR3_ZERO);
+		}
+
 		m_eState = STATE::STATE_CHASING;
 	}
 	else { return; }
@@ -416,17 +424,25 @@ void CTitle::PreMove(void)
 	}
 
 	//一番目の目的地にプレイヤーを移動させる
-	m_pPlayer->Moving(CPlayerTitle::DEST_SECOND);
+	m_pPlayer->Moving(DEST::DEST_SECOND);
 
 	//その場所についているかつプレスエンターの文字が表示されていなければ
 	if (m_pPlayer->GetReached())
 	{
-		//
-		if (PlayerRot <= DEST_ROT.y) { PlayerRot = DEST_ROT.y; }
-		else { PlayerRot += -fRotMove; }
+		//<****************************************
+		//向き回転関連
+		float fDiff = DEST_ROT.y - PlayerRot;		//差分
+		float fIner = 0.05f;						//慣性の動き
+
+		//調整
+		Adjust(fDiff);
+
+		//回転させる
+		PlayerRot += fDiff * fIner;
 
 		//プレイヤーの向きに反映
 		m_pPlayer->SetRotation(D3DXVECTOR3(0.0f, PlayerRot, 0.0f));
+		//<****************************************
 
 		//サウンド再生
 		m_pPlayer->SetS(true);
@@ -515,14 +531,6 @@ void CTitle::InitingP_E(void)
 
 	// 左側
 	CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
-
-	//警察の生成
-	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
-	{
-		m_apPolice[nCnt] = CPoliceTitle::Create(
-			D3DXVECTOR3(PolicePos.x + 150.0f *nCnt, PolicePos.y, PolicePos.z),
-			DEST_ROT, VECTOR3_ZERO);
-	}
 
 	//タイトルBGM再生
 	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_TITLE);
@@ -662,6 +670,13 @@ void CTitle::Chasing(void)
 {
 	//プレイヤーと警察を動かす
 	m_pPlayer->MovingSelect();
+
+	//警察の生成
+	for (int nCnt = 0; nCnt <POLICE_MAX; nCnt++)
+	{
+		m_apPolice[nCnt]->TitleMove();
+	}
+
 	ChaseCamera();
 }
 //<===============================================
@@ -951,14 +966,14 @@ void CTitle::SelectSingleMulti(void)
 	{
 		//"YES"を選択状態、"NO"を非選択状態
 		ColChange(m_apSelect[SELECT::SELECT_SINGLE], nChangeColTime);
-		m_apSelect[SELECT::SELECT_MULTI]->SetCol(ONE_COL);
+		m_apSelect[SELECT::SELECT_MULTI]->SetCol(HARF_ALPHA);
 	}
 	//"NO"を選択している時
 	else if (m_nSelect == SELECT::SELECT_MULTI)
 	{
 		//"YES"を非選択状態、"NO"を選択状態
 		ColChange(m_apSelect[SELECT::SELECT_MULTI], nChangeColTime);
-		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(ONE_COL);
+		m_apSelect[SELECT::SELECT_SINGLE]->SetCol(HARF_ALPHA);
 	}
 }
 //<===============================================
@@ -1030,14 +1045,14 @@ void CTitle::SelectCol(void)
 	{
 		//"YES"を選択状態、"NO"を非選択状態
 		ColChange(m_apYesNoObj[SELECT_YN::SELECT_YN_YES], nChangeColTime);
-		m_apYesNoObj[SELECT_YN::SELECT_YN_NO]->SetCol(ONE_COL);
+		m_apYesNoObj[SELECT_YN::SELECT_YN_NO]->SetCol(HARF_ALPHA);
 	}
 	//"NO"を選択している時
 	else if (m_nSelectYN == SELECT_YN::SELECT_YN_NO)
 	{
 		//"YES"を非選択状態、"NO"を選択状態
 		ColChange(m_apYesNoObj[SELECT_YN::SELECT_YN_NO], nChangeColTime);
-		m_apYesNoObj[SELECT_YN::SELECT_YN_YES]->SetCol(ONE_COL);
+		m_apYesNoObj[SELECT_YN::SELECT_YN_YES]->SetCol(HARF_ALPHA);
 	}
 
 }
@@ -1088,7 +1103,7 @@ void CTitle::InitingIce(void)
 	m_pPlayer->SetRotation(DEST_ROT);
 
 	//警察の生成
-	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
 	{
 		//位置情報初期化
 		m_apPolice[nCnt]->SetPosition(D3DXVECTOR3(PolicePos.x + fDis * nCnt, PolicePos.y, PolicePos.z));
@@ -1129,7 +1144,7 @@ void CTitle::IceMovement(void)
 	m_pPlayer->SetPosition(PlayerPos);
 
 	//警察の生成
-	for (int nCnt = 0; nCnt < INITIAL::POLICE_MAX; nCnt++)
+	for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
 	{
 		//追跡
 		m_apPolice[nCnt]->Chasing(PlayerMove);

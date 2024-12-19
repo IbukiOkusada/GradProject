@@ -35,6 +35,8 @@ public:	// 誰でもアクセス可能
 	void SetColMulti(const D3DXCOLOR& col) override;
 	CObjectX* GetObjectX(int Idx);
 
+	CBridge* GetBridge() override { return this; }
+
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
