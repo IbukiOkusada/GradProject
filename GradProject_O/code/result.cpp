@@ -396,7 +396,7 @@ void CResult::Update(void)
 
 	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
 	{
-		//Display();
+		Display();
 	}
 
 	// エディター関連
