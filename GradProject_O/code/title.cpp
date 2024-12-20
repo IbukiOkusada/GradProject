@@ -332,7 +332,7 @@ void CTitle::MoveP_E(void)
 		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_PressEnter]);
 
 		//次のステートに移行する、ブラックカバーで隠す
-		//m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
 		//警察の生成
 		for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)
