@@ -40,9 +40,10 @@ public:
 	// 操作種類列挙型
 	enum TYPE
 	{
-		TYPE_SEND = 0,	// データ送信
-		TYPE_RECV,		// データ受信他操作
-		TYPE_ACTIVE,	// 操作可能
+		TYPE_SEND = 0,			// データ送信
+		TYPE_RECV,				// データ受信他操作
+		TYPE_ACTIVE,			// 操作可能
+		TYPE_GAMESTARTOK,		// 準備完了
 		TYPE_TUTOLERIAL_ACTIVE,  // チュートリアル時
 		TYPE_NONE,
 		TYPE_MAX
@@ -170,6 +171,7 @@ protected:	// 自分だけがアクセス可能
 	void SetStateSend();
 	void SetStateRecv();
 	void SetStateActive();
+	void SetStateGameStartOk();
 	void SetStateTutorialActive();
 	void SetStateNone();
 

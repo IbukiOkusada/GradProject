@@ -162,9 +162,10 @@ namespace
 // 状態管理
 CPlayer::SETTYPE_FUNC CPlayer::m_SetTypeFunc[] =
 {
-	&CPlayer::SetStateSend,		// 
-	&CPlayer::SetStateRecv,		// 接続した
-	&CPlayer::SetStateActive,	// ID取得
+	&CPlayer::SetStateSend,		// 送信のみ
+	&CPlayer::SetStateRecv,		// 受信用
+	&CPlayer::SetStateActive,	// 操作可能
+	&CPlayer::SetStateGameStartOk,	// ゲーム開始可能
 	&CPlayer::SetStateTutorialActive,  // チュートリアル
 	&CPlayer::SetStateNone,		// 
 };
@@ -332,7 +333,7 @@ void CPlayer::Update(void)
 	}
 
 	// 
-	if (m_type == TYPE::TYPE_ACTIVE)
+	if (m_type == TYPE::TYPE_ACTIVE || m_type == TYPE::TYPE_GAMESTARTOK)
 	{
 		for (int i = 0; i < NUM_TXT; i++)
 		{
@@ -553,7 +554,7 @@ void CPlayer::Move(void)
 	m_fBrake = 0.0f;
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
+	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
 		if (pInputKey->GetPress(DIK_W))
 		{
@@ -662,7 +663,7 @@ void CPlayer::Rotate(void)
 	float diff = 0.0f;
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	
-	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
+	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
 		if (pInputKey->GetPress(DIK_D))
 		{
@@ -1094,7 +1095,7 @@ void CPlayer::Nitro()
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
+	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
 		if (m_fNitroCool == 0.0f && (pInputKey->GetTrigger(DIK_SPACE) || pInputPad->GetTrigger(CInputPad::BUTTON_B, 0)))
 		{
@@ -1334,8 +1335,12 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	// 荷物を投げる
 	if (pBag != nullptr)
 	{
+		bool bActive = false;
+
+		if (GetType() == TYPE::TYPE_ACTIVE) { bActive = true; }
+
 		pBag->GetObj()->SetScale(D3DXVECTOR3(6.0f, 6.0f, 6.0f));
-		pBag->Set(pos, pTarget, 0.75f);
+		pBag->Set(pos, pTarget, 0.75f, bActive);
 	}
 
 	return pBag;
@@ -1494,6 +1499,14 @@ void CPlayer::SetStateActive()
 }
 
 //===============================================
+// ゲーム開始可能状態設定
+//===============================================
+void CPlayer::SetStateGameStartOk()
+{
+	m_type = TYPE::TYPE_GAMESTARTOK;
+}
+
+//===============================================
 // チュートリアルアクティブ状態設定
 //===============================================
 void CPlayer::SetStateTutorialActive()
@@ -1580,7 +1593,7 @@ void CPlayer::SendData()
 	{
 		pNet->SendPlPos(m_Info.pos, m_Info.rot);
 
-		if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME)
+		if (CManager::GetInstance()->GetMode() == CScene::MODE_GAME && CManager::GetInstance()->GetFade()->GetState() == CFade::STATE::STATE_NONE)
 		{
 			if (m_type == TYPE::TYPE_SEND)
 			{

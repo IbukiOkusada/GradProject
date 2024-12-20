@@ -53,7 +53,7 @@ public:	// 誰でもアクセス可能
 	static CBaggage* Create(const D3DXVECTOR3& pos);
 	static Clist<CBaggage*>* GetList() { return &m_List; }
 	static Clist<CBaggage*>* GetThrowList() { return &m_ThrowList; }
-	void Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime);
+	void Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime, bool bActive = false);
 	void SetPosition(const D3DXVECTOR3& pos) { m_pos = pos; }
 	STATE GetState(void) { return m_state; }
 	CModel* GetObj() { return m_pObj; }
@@ -76,6 +76,7 @@ private:	// 自分だけがアクセス可能
 	static Clist<CBaggage*> m_List;			// リスト
 	static Clist<CBaggage*> m_ThrowList;	// リスト
 	STATE m_state;		// 状態
+	bool m_bActive;		// 本人かどうか
 };
 
 #endif

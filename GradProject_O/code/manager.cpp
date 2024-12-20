@@ -531,28 +531,6 @@ void CManager::DataReset(void)
 	// オブジェクトマネージャーの終了
 	CObjectManager::GetInstance()->Uninit();
 
-	// テクスチャの廃棄
-	if (m_pTexture != nullptr)
-	{// 使用している場合
-	 // 終了処理
-		m_pTexture->Unload();
-
-		delete m_pTexture;	// メモリの開放
-
-		m_pTexture = nullptr;	// 使用していない状態にする
-	}
-
-	// Xファイル情報の廃棄
-	if (m_pModelFile != nullptr)
-	{// 使用している場合
-		// 終了処理
-		m_pModelFile->Unload();
-
-		delete m_pModelFile;	// メモリの開放
-
-		m_pModelFile = nullptr;	// 使用していない状態にする
-	}
-
 	if (GetRenderer() != nullptr)
 	{
 		// フィードバックエフェクトリセット
@@ -567,24 +545,6 @@ void CManager::DataReset(void)
 
 	//フェードの削除
 	m_pFade = nullptr;
-
-	//テクスチャの生成
-	if (m_pTexture == nullptr)
-	{// 使用していない場合
-		m_pTexture = DEBUG_NEW CTexture;
-
-		// 初期読み込み
-		if (m_pTexture != nullptr)
-		{
-			m_pTexture->Load();
-		}
-	}
-
-	// Xファイル情報の生成
-	if (m_pModelFile == nullptr)
-	{// 使用していない場合
-		m_pModelFile = DEBUG_NEW CXFile;
-	}
 
 	// タスクマネージャーの初期化
 	CTaskManager::GetInstance()->Init();
