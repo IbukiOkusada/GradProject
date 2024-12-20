@@ -54,6 +54,7 @@ CAddPolice::~CAddPolice()
 //==========================================================
 CAddPolice* CAddPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, int nId)
 {
+	if (m_List.GetNum() >= AddPolice::MAX) { return nullptr; }
 	CAddPolice* pCar = nullptr;
 
 	pCar = DEBUG_NEW CAddPolice(nId);
