@@ -39,6 +39,9 @@ namespace
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
 	const float RECV_INER = (0.35f);			// 受信したデータの慣性
 	const float GRAVITY = (-24.0f);		//プレイヤー重力
+
+	const int SET_COL_MAX = (100);				// 設定する色の最大値（100 = 1.0）
+	const float SET_FLOAT_COL = (100.0f);		// 色のintの値をfloatに直す用
 }
 
 //==========================================================
@@ -70,7 +73,13 @@ CCar::~CCar()
 //==========================================================
 HRESULT CCar::Init(void)
 {
+	// 車体の色をランダムに
+	float fColR = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL;
+	float fColG = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL;
+	float fColB = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL;
+
 	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, "data\\MODEL\\car002.x");
+	m_pObj->SetColMulti(D3DXCOLOR(fColR, fColG, fColB, 1.0f));
 
 	TailLamp();
 	m_Info.fRotMulti = ROT_MULTI;
