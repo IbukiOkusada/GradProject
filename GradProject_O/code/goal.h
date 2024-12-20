@@ -11,6 +11,7 @@
 #include "list.h"
 #include "effekseerControl.h"
 #include "road.h"
+#include "scrollText2D.h"
 
 //#include "task.h"	// これでファイルインクルードできます
 //前方宣言
@@ -92,6 +93,7 @@ private:	// 自分だけがアクセス可能
 	CBaggage* m_pBaggage;
 	CEffekseer::CEffectData* pEffect;
 	SPeople m_People;	// 人の情報
+	CScrollText2D* m_pFont;	// テキスト
 };
 
 #endif

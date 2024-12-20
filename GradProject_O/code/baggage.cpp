@@ -39,6 +39,7 @@ CBaggage::CBaggage()
 	m_bFirst = false;
 	m_List.Regist(this);
 	m_state = STATE_NONE;
+	m_bActive = false;
 }
 
 //==========================================================
@@ -68,7 +69,7 @@ CBaggage* CBaggage::Create(const D3DXVECTOR3& pos)
 //==========================================================
 // 値設定
 //==========================================================
-void CBaggage::Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime)
+void CBaggage::Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime, bool bActive)
 {
 	// 値設定
 	m_pos = pos;
@@ -76,6 +77,7 @@ void CBaggage::Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime)
 	m_time.fEnd = fTime;
 	m_rot.y = atan2f(m_pTarget->x - pos.x, m_pTarget->z - pos.z);
 	m_state = STATE_THROW;
+	m_bActive = bActive;
 
 	// 投げリストに入れる
 	m_ThrowList.Regist(this);
@@ -83,6 +85,10 @@ void CBaggage::Set(const D3DXVECTOR3& pos, D3DXVECTOR3* pTarget, float fTime)
 	if (m_pObj == nullptr) { return; }
 
 	m_pObj->SetPosition(pos);
+
+	if (m_bActive) { return; }
+
+
 }
 
 //==========================================================
@@ -228,6 +234,7 @@ void CBaggage::Throw()
 void CBaggage::SetCamera()
 {
 	if (m_pTarget == nullptr) { return; }
+	if (!m_bActive) { return; }
 
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	float rotY = atan2f(m_pos.z - m_pTarget->z, m_pos.x - m_pTarget->x);

@@ -553,7 +553,7 @@ void CPlayer::Move(void)
 	m_fBrake = 0.0f;
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
+	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
 		if (pInputKey->GetPress(DIK_W))
 		{
@@ -662,7 +662,7 @@ void CPlayer::Rotate(void)
 	float diff = 0.0f;
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	
-	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
+	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
 		if (pInputKey->GetPress(DIK_D))
 		{
@@ -1037,7 +1037,7 @@ void CPlayer::Nitro()
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
-	if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
+	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
 		if (m_fNitroCool == 0.0f && (pInputKey->GetTrigger(DIK_SPACE) || pInputPad->GetTrigger(CInputPad::BUTTON_B, 0)))
 		{
@@ -1277,8 +1277,12 @@ CBaggage* CPlayer::ThrowBaggage(D3DXVECTOR3* pTarget)
 	// ‰×•¨‚ð“Š‚°‚é
 	if (pBag != nullptr)
 	{
+		bool bActive = false;
+
+		if (GetType() == TYPE::TYPE_ACTIVE) { bActive = true; }
+
 		pBag->GetObj()->SetScale(D3DXVECTOR3(6.0f, 6.0f, 6.0f));
-		pBag->Set(pos, pTarget, 0.75f);
+		pBag->Set(pos, pTarget, 0.75f, bActive);
 	}
 
 	return pBag;

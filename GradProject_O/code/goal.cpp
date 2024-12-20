@@ -24,6 +24,7 @@
 #include "motion.h"
 #include "model.h"
 #include "network.h"
+#include "objectX.h"
 
 namespace
 {
@@ -41,6 +42,7 @@ CGoal::CGoal(int nId)
 	m_People = SPeople();
 	m_Info = SInfo();
 	m_pBaggage = nullptr;
+	m_pFont = nullptr;
 	m_bRecvEnd = false;
 	m_RecvId = -1;
 	CGoalManager::GetInstance()->ListIn(this);
@@ -104,6 +106,9 @@ HRESULT CGoal::Init(void)
 		}
 	}
 
+	m_pFont = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false,
+		SCREEN_CENTER, 0.035f, 100.0f, 100.0f, XALIGN_CENTER, YALIGN_BOTTOM);
+
 	return S_OK;
 }
 
@@ -117,6 +122,8 @@ void CGoal::Uninit(void)
 	SAFE_UNINIT(m_People.pChara);
 	SAFE_DELETE(pEffect);
 	Release();
+
+	SAFE_UNINIT(m_pFont);
 }
 
 //==========================================================
@@ -197,12 +204,16 @@ void CGoal::Update(void)
 		SAFE_DELETE(pEffect);
 	}
 
+	CDebugProc::GetInstance()->Print("%dPがゴールしたよ\n", m_RecvId);
+
 	// 到着
 	if (m_pBaggage == nullptr) { return; }
 	if (m_pBaggage->GetState() == CBaggage::STATE::STATE_THROW) { return; }
 	m_pBaggage->GetObj()->SetParent(m_People.pChara->GetParts(6)->GetMtx());
 	m_People.pChara->GetMotion()->BlendSet(4);
 	m_pBaggage->SetThrowScale(m_People.pChara->GetScale());
+	m_pFont->SetEnableScroll(false);
+	m_pFont->DeleteStringAll();
 }
 //==========================================================
 // 距離のチェック
@@ -308,6 +319,23 @@ void CGoal::SetEnd(int nId)
 	m_pBaggage = pPlayer->ThrowBaggage(m_People.pChara->GetParts(6)->GetMtxPos());
 	pPlayer->AddDeliveryCount();
 	m_People.pChara->GetMotion()->BlendSet(3);
+
+	if (pPlayer->GetType() == CPlayer::TYPE::TYPE_RECV)
+	{
+		// 文字設定
+		std::string str;
+		str.clear();
+
+		// ID
+		std::ostringstream id;
+		id << nId + 1;
+		str += id.str() + "P が配達地点に到着しました";
+
+		// 文字挿入
+		m_pFont->PushBackString(str);
+		m_pFont->SetEnableScroll(true);
+		m_pFont->SetColor(CPlayerManager::GetInstance()->GetPlayer(nId)->GetObj()->GetColMuliti());
+	}
 }
 
 //==========================================================

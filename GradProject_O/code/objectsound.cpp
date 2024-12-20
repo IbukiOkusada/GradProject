@@ -166,8 +166,10 @@ void CMasterSound::CObjectSound::Play()
 		// 一時停止
 		m_pSourceVoice->Stop(0);
 	}
+
 	// オーディオバッファの削除
 	m_pSourceVoice->FlushSourceBuffers();
+
 	// オーディオバッファの登録
 	m_pSourceVoice->SubmitSourceBuffer(&m_buffer);
 
