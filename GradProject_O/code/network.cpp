@@ -935,13 +935,19 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 	if (pCar == nullptr)
 	{
 		CAddPolice* pPolice = CAddPolice::Create(pos, rot, VECTOR3_ZERO, carid);
-		pPolice->SetType(CCar::TYPE::TYPE_RECV);
 
-		// ‰ž‰‡‚ÌŒxŽ@‚Í‰ž‰‡‚ðŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
-		pPolice->GetAi()->SetCall(true);
+		if (pPolice != nullptr)
+		{
+			pPolice->SetType(CCar::TYPE::TYPE_RECV);
 
-		pCar = pPolice;
+			// ‰ž‰‡‚ÌŒxŽ@‚Í‰ž‰‡‚ðŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
+			pPolice->GetAi()->SetCall(true);
+
+			pCar = pPolice;
+		}
 	}
+
+	if (pCar == nullptr) { return; }
 
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
@@ -1034,14 +1040,18 @@ void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 	if (pCar == nullptr)
 	{
 		CAddPolice* pPolice = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
-		pPolice->SetType(CCar::TYPE::TYPE_RECV);
 
-		// ‰ž‰‡‚ÌŒxŽ@‚Í‰ž‰‡‚ðŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
-		pPolice->GetAi()->SetCall(true);
+		if (pPolice != nullptr)
+		{
+			pPolice->SetType(CCar::TYPE::TYPE_RECV);
 
-		pCar = pPolice;
+			// ‰ž‰‡‚ÌŒxŽ@‚Í‰ž‰‡‚ðŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
+			pPolice->GetAi()->SetCall(true);
+		}
+			pCar = pPolice;
 	}
 
+	if (pCar == nullptr) { return; }
 	// ’ÇÕó‘Ô‚É‚·‚é
 	pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
 
@@ -1104,7 +1114,15 @@ void CNetWork::RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvDat
 	if (pCar == nullptr)
 	{
 		pCar = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+
+		if (pCar != nullptr)
+		{
+			pCar->SetType(CCar::TYPE::TYPE_RECV);
+		}
+		else
+		{
+			return;
+		}
 	}
 
 	// ’ÇÕI—¹ó‘Ô‚É‚·‚é
@@ -1509,26 +1527,26 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 //===================================================
 void CNetWork::SendPdChase(int nId, int plyid)
 {
-	//if (!GetActive()) { return; }
+	if (!GetActive()) { return; }
 
-	//char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	//int nProt = NetWork::COMMAND_PD_CHASE;
-	//int byte = 0;
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_PD_CHASE;
+	int byte = 0;
 
-	//// protocol‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nProt, sizeof(int));
-	//byte += sizeof(int);
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
-	//// Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nId, sizeof(int));
-	//byte += sizeof(int);
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
-	//// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &plyid, sizeof(int));
-	//byte += sizeof(int);
+	// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &plyid, sizeof(int));
+	byte += sizeof(int);
 
-	//// ‘—M
-	//m_pClient->SetData(&aSendData[0], byte);
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1536,26 +1554,26 @@ void CNetWork::SendPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendAddPdChase(int nId, int plyid)
 {
-	//if (!GetActive()) { return; }
+	if (!GetActive()) { return; }
 
-	//char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	//int nProt = NetWork::COMMAND_ADDPD_CHASE;
-	//int byte = 0;
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_ADDPD_CHASE;
+	int byte = 0;
 
-	//// protocol‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nProt, sizeof(int));
-	//byte += sizeof(int);
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
-	//// Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nId, sizeof(int));
-	//byte += sizeof(int);
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
-	//// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &plyid , sizeof(int));
-	//byte += sizeof(int);
+	// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &plyid , sizeof(int));
+	byte += sizeof(int);
 
-	//// ‘—M
-	//m_pClient->SetData(&aSendData[0], byte);
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1563,22 +1581,22 @@ void CNetWork::SendAddPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendPdChaseEnd(int nId)
 {
-	//if (!GetActive()) { return; }
+	if (!GetActive()) { return; }
 
-	//char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	//int nProt = NetWork::COMMAND_PD_CHASEEND;
-	//int byte = 0;
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_PD_CHASEEND;
+	int byte = 0;
 
-	//// protocol‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nProt, sizeof(int));
-	//byte += sizeof(int);
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
-	//// Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nId, sizeof(int));
-	//byte += sizeof(int);
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
-	//// ‘—M
-	//m_pClient->SetData(&aSendData[0], byte);
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1586,20 +1604,20 @@ void CNetWork::SendPdChaseEnd(int nId)
 //===================================================
 void CNetWork::SendAddPdChaseEnd(int nId)
 {
-	//if (!GetActive()) { return; }
+	if (!GetActive()) { return; }
 
-	//char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	//int nProt = NetWork::COMMAND_ADDPD_CHASEEND;
-	//int byte = 0;
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_ADDPD_CHASEEND;
+	int byte = 0;
 
-	//// protocol‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nProt, sizeof(int));
-	//byte += sizeof(int);
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
-	//// Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nId, sizeof(int));
-	//byte += sizeof(int);
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
-	//// ‘—M
-	//m_pClient->SetData(&aSendData[0], byte);
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
 }

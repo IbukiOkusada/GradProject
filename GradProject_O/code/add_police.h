@@ -13,6 +13,11 @@
 #include "player.h"
 #include "list.h"
 
+namespace AddPolice
+{
+	const int MAX = 14;
+}
+
 // ‘O•ûéŒ¾
 class CRoad;
 

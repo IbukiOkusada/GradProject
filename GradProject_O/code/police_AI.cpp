@@ -456,23 +456,26 @@ void CPoliceAI::CallBackup(void)
 		// ‰ž‰‡‚ÌŒxŽ@‚ð¶¬
 		CAddPolice* pP = CAddPolice::Create(pPoliceStation->GetPos(), pPoliceStation->GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
 
-		// ‰ž‰‡‚ÌŒxŽ@‚Ìƒ^ƒCƒv‚ðÝ’è
-		pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
-		pP->SetTypeAI(CPoliceAI::TYPE_ELITE);
-		pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+		if (pP != nullptr)
+		{
+			// ‰ž‰‡‚ÌŒxŽ@‚Ìƒ^ƒCƒv‚ðÝ’è
+			pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
+			pP->SetTypeAI(CPoliceAI::TYPE_ELITE);
+			pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 
-		// –Ú“I’nÝ’è
-		pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(pPoliceStation->GetPos()));
+			// –Ú“I’nÝ’è
+			pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(pPoliceStation->GetPos()));
 
-		// ’ÇÕó‘Ô‚É•ÏX
-		pP->SetChase(true);
-		pP->GetAi()->BeginChase(m_pPolice->GetPlayer());
+			// ’ÇÕó‘Ô‚É•ÏX
+			pP->SetChase(true);
+			pP->GetAi()->BeginChase(m_pPolice->GetPlayer());
 
-		// ‰ž‰‡‚ÌŒxŽ@‚Í‰ž‰‡‚ðŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
-		pP->GetAi()->m_bCall = true;
+			// ‰ž‰‡‚ÌŒxŽ@‚Í‰ž‰‡‚ðŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
+			pP->GetAi()->m_bCall = true;
 
-		// ‰ž‰‡‚ðŒÄ‚ñ‚¾ŒxŽ@‚ð•Û‘¶‚·‚é
-		pP->GetAi()->m_pPoliceBackUp = m_pPolice;
+			// ‰ž‰‡‚ðŒÄ‚ñ‚¾ŒxŽ@‚ð•Û‘¶‚·‚é
+			pP->GetAi()->m_pPoliceBackUp = m_pPolice;
+		}
 	}
 }
 

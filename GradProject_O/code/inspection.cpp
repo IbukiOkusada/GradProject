@@ -85,14 +85,18 @@ HRESULT CInspection::Init(void)
 		goalpos.z += cosf(rot.y) * POLICE_SETLENGTH;
 
 		m_aPoliceInfo[i].pPolice = CAddPolice::Create(pos, VECTOR3_ZERO, VECTOR3_ZERO, m_Info.nStartPdId + i);
-		m_aPoliceInfo[i].pPolice->SetState(CPolice::STATE::STATE_STOP);
-		m_aPoliceInfo[i].goalpos = goalpos;
 
-		// Œo˜H‚ðÝ’è
-		if (m_pRoad != nullptr)
+		if (m_aPoliceInfo[i].pPolice != nullptr)
 		{
-			m_aPoliceInfo[i].pPolice->SetNavi(AStar::AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf()));
-			m_aPoliceInfo[i].pPolice->SetState(CPolice::STATE::STATE_NORMAL);
+			m_aPoliceInfo[i].pPolice->SetState(CPolice::STATE::STATE_STOP);
+			m_aPoliceInfo[i].goalpos = goalpos;
+
+			// Œo˜H‚ðÝ’è
+			if (m_pRoad != nullptr)
+			{
+				m_aPoliceInfo[i].pPolice->SetNavi(AStar::AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf()));
+				m_aPoliceInfo[i].pPolice->SetState(CPolice::STATE::STATE_NORMAL);
+			}
 		}
 
 		rot.y += D3DX_PI;
