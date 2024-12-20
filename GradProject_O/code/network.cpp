@@ -1527,26 +1527,26 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 //===================================================
 void CNetWork::SendPdChase(int nId, int plyid)
 {
-	if (!GetActive()) { return; }
+	//if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	int nProt = NetWork::COMMAND_PD_CHASE;
-	int byte = 0;
+	//char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	//int nProt = NetWork::COMMAND_PD_CHASE;
+	//int byte = 0;
 
-	// protocol‚ð‘}“ü
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
+	//// protocol‚ð‘}“ü
+	//memcpy(&aSendData[byte], &nProt, sizeof(int));
+	//byte += sizeof(int);
 
-	// Id‚ð‘}“ü
-	memcpy(&aSendData[byte], &nId, sizeof(int));
-	byte += sizeof(int);
+	//// Id‚ð‘}“ü
+	//memcpy(&aSendData[byte], &nId, sizeof(int));
+	//byte += sizeof(int);
 
-	// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
-	memcpy(&aSendData[byte], &plyid, sizeof(int));
-	byte += sizeof(int);
+	//// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
+	//memcpy(&aSendData[byte], &plyid, sizeof(int));
+	//byte += sizeof(int);
 
-	// ‘—M
-	m_pClient->SetData(&aSendData[0], byte);
+	//// ‘—M
+	//m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1554,26 +1554,26 @@ void CNetWork::SendPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendAddPdChase(int nId, int plyid)
 {
-	if (!GetActive()) { return; }
+	//if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	int nProt = NetWork::COMMAND_ADDPD_CHASE;
-	int byte = 0;
+	//char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	//int nProt = NetWork::COMMAND_ADDPD_CHASE;
+	//int byte = 0;
 
-	// protocol‚ð‘}“ü
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
+	//// protocol‚ð‘}“ü
+	//memcpy(&aSendData[byte], &nProt, sizeof(int));
+	//byte += sizeof(int);
 
-	// Id‚ð‘}“ü
-	memcpy(&aSendData[byte], &nId, sizeof(int));
-	byte += sizeof(int);
+	//// Id‚ð‘}“ü
+	//memcpy(&aSendData[byte], &nId, sizeof(int));
+	//byte += sizeof(int);
 
-	// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
-	memcpy(&aSendData[byte], &plyid , sizeof(int));
-	byte += sizeof(int);
+	//// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
+	//memcpy(&aSendData[byte], &plyid , sizeof(int));
+	//byte += sizeof(int);
 
-	// ‘—M
-	m_pClient->SetData(&aSendData[0], byte);
+	//// ‘—M
+	//m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1581,22 +1581,22 @@ void CNetWork::SendAddPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendPdChaseEnd(int nId)
 {
-	if (!GetActive()) { return; }
+	//if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	int nProt = NetWork::COMMAND_PD_CHASEEND;
-	int byte = 0;
+	//char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	//int nProt = NetWork::COMMAND_PD_CHASEEND;
+	//int byte = 0;
 
-	// protocol‚ð‘}“ü
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
+	//// protocol‚ð‘}“ü
+	//memcpy(&aSendData[byte], &nProt, sizeof(int));
+	//byte += sizeof(int);
 
-	// Id‚ð‘}“ü
-	memcpy(&aSendData[byte], &nId, sizeof(int));
-	byte += sizeof(int);
+	//// Id‚ð‘}“ü
+	//memcpy(&aSendData[byte], &nId, sizeof(int));
+	//byte += sizeof(int);
 
-	// ‘—M
-	m_pClient->SetData(&aSendData[0], byte);
+	//// ‘—M
+	//m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1604,20 +1604,20 @@ void CNetWork::SendPdChaseEnd(int nId)
 //===================================================
 void CNetWork::SendAddPdChaseEnd(int nId)
 {
-	if (!GetActive()) { return; }
+	//if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	int nProt = NetWork::COMMAND_ADDPD_CHASEEND;
-	int byte = 0;
+	//char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	//int nProt = NetWork::COMMAND_ADDPD_CHASEEND;
+	//int byte = 0;
 
-	// protocol‚ð‘}“ü
-	memcpy(&aSendData[byte], &nProt, sizeof(int));
-	byte += sizeof(int);
+	//// protocol‚ð‘}“ü
+	//memcpy(&aSendData[byte], &nProt, sizeof(int));
+	//byte += sizeof(int);
 
-	// Id‚ð‘}“ü
-	memcpy(&aSendData[byte], &nId, sizeof(int));
-	byte += sizeof(int);
+	//// Id‚ð‘}“ü
+	//memcpy(&aSendData[byte], &nId, sizeof(int));
+	//byte += sizeof(int);
 
-	// ‘—M
-	m_pClient->SetData(&aSendData[0], byte);
+	//// ‘—M
+	//m_pClient->SetData(&aSendData[0], byte);
 }
