@@ -758,6 +758,10 @@ bool CPlayer::Collision(void)
 	if (CollisionObjX())
 		bCollision = true;
 
+	// 敵との当たり判定処理
+	/*if (CollisionEnemy())
+		bCollision = true;*/
+
 	// 道との当たり判定
 	if (CollisionRoad())
 		bCollision = true;
@@ -814,8 +818,61 @@ bool CPlayer::CollisionObjX(void)
 			float engineLow = fabsf(D3DXVec3Dot(&pVecCollision, &vecMoveNor) * 0.1f);
 			m_fEngine *= 0.9f + engineLow;
 
+			Damage(1.0f);
+
 			return true;
 		}
+	}
+
+	return false;
+}
+
+//===============================================
+// 敵との当たり判定処理
+//===============================================
+bool CPlayer::CollisionEnemy(void)
+{
+	D3DXVECTOR3 posPlayer = GetPosition();
+	D3DXVECTOR3 rotPlayer = GetRotation();
+	D3DXVECTOR3 sizeMaxPlayer = m_pObj->GetVtxMax();
+	D3DXVECTOR3 sizeMinPlayer = m_pObj->GetVtxMin();
+	D3DXVECTOR3 sizePlayer = (sizeMaxPlayer - sizeMinPlayer) * 0.5f;
+
+	auto mgr = CObjectX::GetList();
+	for (int i = 0; i < mgr->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		CObjectX* pObjectX = mgr->Get(i);	// 取得
+
+		if (pObjectX->GetType() == CObject::TYPE_ENEMY) { continue; }
+
+		if (!pObjectX->GetEnableCollision()) { continue; }
+
+		// オブジェクトの情報取得
+		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
+		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
+		D3DXVECTOR3 sizeMaxObjectX = pObjectX->GetVtxMax();
+		D3DXVECTOR3 sizeMinObjectX = pObjectX->GetVtxMin();
+		D3DXVECTOR3 sizeObjectX = (sizeMaxObjectX - sizeMinObjectX) * 0.5f;
+
+		// OBBとの当たり判定を実行
+		bool bCollision = collision::CollideOBBToOBBTrigger(posPlayer, rotPlayer, sizePlayer, posObjectX, rotObjectX, sizeObjectX);
+
+		// 衝突していない場合繰り返す
+		if (!bCollision) { continue; }
+
+		CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\spark.efkefc", (m_Info.pos + m_Info.move), VECTOR3_ZERO, VECTOR3_ZERO, 300.0f);
+
+		if (m_pCollSound != nullptr)
+		{
+			m_pCollSound->SetVolume(m_fEngine * 2.0f);
+			m_pCollSound->Play();
+		}
+
+		m_fEngine *= 1.2f;
+		Damage(5.0f);
+
+		return true;
 	}
 
 	return false;

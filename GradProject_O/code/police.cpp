@@ -431,13 +431,14 @@ bool CPolice::CollisionObjX(void)
 		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
 
 		// OBB‚Æ‚Ì“–‚½‚è”»’è‚ðŽÀs
-		bool bCollision = collision::CollidePointToOBBTrigger(GetPosition(), GetOldPosition(), posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		bool bCollision = collision::CollideOBBToOBBTrigger(GetPosition(), GetRotation(), (m_pObj->GetVtxMax() - m_pObj->GetVtxMin()) * 0.5f, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
 
 		// Õ“Ë‚µ‚Ä‚¢‚È‚¢ê‡ŒJ‚è•Ô‚·
 		if (!bCollision) { continue; }
 
 		if (pObjectX->GetType() == CObject::TYPE_ENEMY)
 		{
+			m_Info.nLaneTime = 0;
 			LanePlayer();
 		}
 

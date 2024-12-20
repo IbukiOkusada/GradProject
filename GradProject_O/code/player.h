@@ -181,6 +181,7 @@ protected:	// 自分だけがアクセス可能
 	void Rotate(void);
 	bool Collision(void);
 	bool CollisionObjX(void);
+	bool CollisionEnemy(void);
 	bool CollisionRoad(void);
 	bool CollisionGimick(void);
 	bool CollisionField(void);
