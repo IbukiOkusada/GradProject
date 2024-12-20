@@ -174,6 +174,11 @@ HRESULT CResult::Init(void)
 	m_fTime = CTimer::GetTime();
 	m_fLife = CManager::GetInstance()->GetLife();
 
+	if (m_fLife <= 0.0f)
+	{
+		m_fTime = 0.0f;
+	}
+
 	// 総合スコアの計算
 	m_nScore = ((float)m_nDeli + m_fTime / 100.0f + m_fLife / 100.0f) * 10.0f;
 

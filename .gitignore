@@ -397,3 +397,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /GradProject_O/*.exe
+/GradProject_O/data/FILE/map/ranking.bin
