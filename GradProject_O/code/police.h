@@ -59,7 +59,7 @@ private:	// 自分だけがアクセス可能
 		bool bChase;
 
 		// コンストラクタ
-		SInfo() : pPlayer(nullptr), nChaseCount(0), bChase(false) {}
+		SInfo() : pPlayer(nullptr), nChaseCount(0), bChase(false),  nLaneCount(0), nLaneTime(0) {}
 	};
 
 protected:
@@ -159,7 +159,8 @@ private:	// 自分だけがアクセス可能
 	void ChasePlayer();
 	void SearchPlayer();
 	void LanePlayer();
-	void Collision();
+	bool Collision() override;
+	bool CollisionObjX() override;
 	void Hit() override;
 	void Break() override;
 	void RecvTypeSet() override;

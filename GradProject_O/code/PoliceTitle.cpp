@@ -125,7 +125,6 @@ void CPoliceTitle::Move(void)
 	//番号によって変更させる
 	switch (m_nNumDest)
 	{
-		//最初の目的地
 	case DEST::DEST_FIRST:							rPos.z += fMove; break;			//最初の番号
 	case DEST::DEST_SECOND:case DEST::DEST_FOUTH:	rPos.x -= fMove; break;			//二番目か四番目
 	case DEST::DEST_THIRD: case DEST::DEST_FIFTH:	rPos.z -= fMove; break;			//三番目か五番目

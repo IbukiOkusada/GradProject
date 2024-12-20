@@ -137,6 +137,7 @@ HRESULT CTitle::Init(void)
 		VECTOR3_ZERO,3, fSize[SIZING_WIDTH], fSize[SIZING_HEIGHT],true, TEX_TEAMLOGO);
 
 	//カメラ初期状態
+	CCameraManager::GetInstance()->GetTop()->Init();
 	m_pCam = CCameraManager::GetInstance()->GetTop();
 	m_pCam->SetPositionR(CAMERA_POS);
 	m_pCam->SetLength(100.0f);
@@ -332,7 +333,7 @@ void CTitle::MoveP_E(void)
 		SAFE_UNINIT(m_pObject2D[OBJ2D::OBJ2D_PressEnter]);
 
 		//次のステートに移行する、ブラックカバーで隠す
-		//m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
+		m_pObject2D[OBJ2D::OBJ2D_BLACKCOVER]->SetCol(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 
 		//警察の生成
 		for (int nCnt = 0; nCnt < POLICE_MAX; nCnt++)

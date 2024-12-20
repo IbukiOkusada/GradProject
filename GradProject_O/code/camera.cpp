@@ -93,7 +93,11 @@ HRESULT CCamera::Init(void)
 	m_nZoomCount = 0;
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_GoalPos = D3DXVECTOR3(-660.0f, 100.0f, 1300.0f);
-	m_pAction = DEBUG_NEW CCameraAction;
+
+	if (m_pAction == nullptr)
+	{
+		m_pAction = DEBUG_NEW CCameraAction;
+	}
 
 	//éãì_ê›íË
 	SetV();

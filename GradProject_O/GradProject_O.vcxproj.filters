@@ -187,6 +187,9 @@
     <Filter Include="mode\result\multi">
       <UniqueIdentifier>{82e2590b-1023-483a-ada8-14b29de3effe}</UniqueIdentifier>
     </Filter>
+    <Filter Include="system\magic_enum">
+      <UniqueIdentifier>{752db915-e56e-426d-995a-6ab6da4b5fb1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -922,6 +925,33 @@
     </ClInclude>
     <ClInclude Include="code\multi_result_state.h">
       <Filter>mode\result\multi</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum.hpp">
+      <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum_all.hpp">
+      <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum_containers.hpp">
+      <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum_flags.hpp">
+      <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum_format.hpp">
+      <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum_fuse.hpp">
+      <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum_iostream.hpp">
+      <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum_switch.hpp">
+      <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\magic_enum\magic_enum_utility.hpp">
+      <Filter>system\magic_enum</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

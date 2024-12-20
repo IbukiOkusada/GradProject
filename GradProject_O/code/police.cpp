@@ -91,6 +91,7 @@ CPolice::~CPolice()
 HRESULT CPolice::Init(void)
 {
 	m_pObj = CObjectX::Create(GetPosition(), VECTOR3_ZERO, "data\\MODEL\\police.x");
+	m_pObj->SetType(CObject::TYPE_ENEMY);
 
 	// AIを生成
 	m_pPoliceAI = CPoliceAI::Create(this, CPoliceAI::TYPE_NORMAL);
@@ -290,7 +291,7 @@ void CPolice::MoveRoad()
 			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
 
 			// プレイヤーの座標を目指す
-			SetPosTarget(m_Info.pPlayer->GetPosition());
+			SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
 
 			// 速度を設定
 			SetSpeedDest(SECURE_SPEEDDEST);
@@ -302,7 +303,7 @@ void CPolice::MoveRoad()
 			if (m_Info.pPlayer == nullptr) { return; }
 
 			// プレイヤーの座標を目指す
-			SetPosTarget(m_Info.pPlayer->GetPosition());
+			SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
 
 			// 一定距離まで近づいたら減速させる
 			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
@@ -373,6 +374,9 @@ void CPolice::LanePlayer()
 {
 	m_Info.nLaneCount++;
 
+	CDebugProc::GetInstance()->Print("警察の蛇行のオフセット : [ %f, %f, %f ]\n", m_Info.offsetLane.x, m_Info.offsetLane.y, m_Info.offsetLane.z);
+	CDebugProc::GetInstance()->Print("警察の蛇行のカウント : [ %d, %d ]\n", m_Info.nLaneCount, m_Info.nLaneTime);
+
 	if (m_Info.nLaneCount > m_Info.nLaneTime)
 	{
 		// 移動の幅取得
@@ -397,17 +401,50 @@ void CPolice::LanePlayer()
 	}
 
 	SetOffsetLane(m_Info.offsetLane);
-
-	CDebugProc::GetInstance()->Print("警察の蛇行のオフセット : [ %f, %f, %f ]\n", m_Info.offsetLane.x, m_Info.offsetLane.y, m_Info.offsetLane.z);
-	CDebugProc::GetInstance()->Print("警察の蛇行のカウント : [ %d, %d ]\n", m_Info.nLaneCount, m_Info.nLaneTime);
 }
 
 //==========================================================
 // 当たり判定処理
 //==========================================================
-void CPolice::Collision()
+bool CPolice::Collision()
 {
-	
+	return CCar::Collision();
+}
+
+//==========================================================
+// オブジェクトとの当たり判定処理
+//==========================================================
+bool CPolice::CollisionObjX(void)
+{
+	auto mgr = CObjectX::GetList();
+	for (int i = 0; i < mgr->GetNum(); i++)
+	{// 使用されていない状態まで
+
+		CObjectX* pObjectX = mgr->Get(i);	// 取得
+
+		if (!pObjectX->GetEnableCollision()) { continue; }
+
+		// オブジェクトの情報取得
+		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
+		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
+		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
+		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+
+		// OBBとの当たり判定を実行
+		bool bCollision = collision::CollidePointToOBBTrigger(GetPosition(), GetOldPosition(), posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+
+		// 衝突していない場合繰り返す
+		if (!bCollision) { continue; }
+
+		if (pObjectX->GetType() == CObject::TYPE_ENEMY)
+		{
+			LanePlayer();
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 //==========================================================
