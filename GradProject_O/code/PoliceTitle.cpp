@@ -17,7 +17,7 @@ int CPoliceTitle::m_nNumAll = 0;
 //<======================================
 //コンストラクタ
 //<======================================
-CPoliceTitle::CPoliceTitle() : CPolice(-1)
+CPoliceTitle::CPoliceTitle() : CPolice(-1, CAR_TYPE::CAR_TYPE_POLICE)
 {
 	//初期化
 	m_pPatrolLamp = nullptr;

@@ -296,6 +296,8 @@ bool CPoliceManager::Hit(D3DXVECTOR3& pos, const float fRange, const float fHeig
 //==========================================================
 void CPoliceManager::Warning(CPolice* pPolice)
 {
+	if (pPolice->GetState() == CPolice::STATE::STATE_FADEOUT) { return; }
+
 	for (int i = 0; i < GetList()->GetNum(); i++)
 	{
 		// ŒxŽ@‚ÆŽ©•ª‚ªˆê’v‚µ‚Ä‚½‚ç‘Ê–Ú

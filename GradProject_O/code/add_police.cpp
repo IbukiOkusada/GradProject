@@ -33,7 +33,7 @@ Clist<CAddPolice*> CAddPolice::m_List = {};
 //==========================================================
 // コンストラクタ
 //==========================================================
-CAddPolice::CAddPolice(int nId) : CPolice(nId)
+CAddPolice::CAddPolice(int nId) : CPolice(nId, CAR_TYPE::CAR_TYPE_ADDPOLICE)
 {
 	m_SpawnPos = VECTOR3_ZERO;
 	m_List.Regist(this);
@@ -219,6 +219,7 @@ void CAddPolice::ReachRoad()
 //===============================================
 void CAddPolice::SendPosition()
 {
+	if (GetState() == STATE_FADEOUT) { return; }
 	CNetWork* pNet = CNetWork::GetInstance();
 
 	pNet->SendAddPdPos(GetId(), GetPosition(), GetRotation());

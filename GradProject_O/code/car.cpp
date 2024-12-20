@@ -17,6 +17,7 @@
 #include "player_manager.h"
 #include "bridge.h"
 #include "meshfield.h"
+#include "magic_enum/magic_enum.hpp"
 
 // マクロ定義
 
@@ -47,7 +48,7 @@ namespace
 //==========================================================
 // コンストラクタ
 //==========================================================
-CCar::CCar(int nId)
+CCar::CCar(int nId, CAR_TYPE type)
 {
 	// 値のクリア
 	m_Info = SInfo();
@@ -55,6 +56,7 @@ CCar::CCar(int nId)
 	m_RecvInfo = SRecvInfo();
 	m_pObj = nullptr;
 	m_pTailLamp = nullptr;
+	m_type = type;
 
 	// リストに入れる
 	CCarManager::GetInstance()->ListIn(this);
@@ -134,8 +136,6 @@ void CCar::Update(void)
 		}
 	}
 
-	//CDebugProc::GetInstance()->Print("車の座標 : [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-
 	// 座標系設定
 	Set();
 }
@@ -147,7 +147,7 @@ CCar *CCar::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVEC
 {
 	CCar *pCar = nullptr;
 
-	pCar = DEBUG_NEW CCar(nId);
+	pCar = DEBUG_NEW CCar(nId, CAR_TYPE::CAR_TYPE_CAR);
 
 	if (pCar != nullptr)
 	{
@@ -775,6 +775,9 @@ void CCar::RecvInerSet()
 		m_Info.rot = rot;
 		Adjust(m_Info.rot);
 	}
+
+	CDebugProc::GetInstance()->Print(" %s 受信しています %d 座標 : [%f, %f, %f]\n", magic_enum::enum_name(m_type).data(),
+		m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
 }
 
 //===============================================

@@ -79,7 +79,7 @@ protected:
 
 public:	// 誰でもアクセス可能
 
-	CPolice(int nId);	// コンストラクタ(オーバーロード)
+	CPolice(int nId, CAR_TYPE type);	// コンストラクタ(オーバーロード)
 	virtual ~CPolice() override;	// デストラクタ
 
 	// メンバ関数

@@ -163,8 +163,10 @@ int CClient::Recv(char *pRecvData, int nRecvDataSize)
 void CClient::SetData(const char* pSendData, int nSendDataSize)
 {
 	if (m_nSendByte + nSendDataSize < NetWork::MAX_SEND_DATA)
-	memcpy(&m_aSendData[m_nSendByte], pSendData, nSendDataSize);
-	m_nSendByte += nSendDataSize;
+	{
+		memcpy(&m_aSendData[m_nSendByte], pSendData, nSendDataSize);
+		m_nSendByte += nSendDataSize;
+	}
 }
 
 //==========================================================

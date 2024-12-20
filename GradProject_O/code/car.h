@@ -35,6 +35,15 @@ public:
 		TYPE_MAX
 	};
 
+	// 種類
+	enum CAR_TYPE
+	{
+		CAR_TYPE_CAR = 0,
+		CAR_TYPE_POLICE,
+		CAR_TYPE_ADDPOLICE,
+		CAR_TYPE_MAX
+	};
+
 private:	// 自分だけがアクセス可能
 
 	// 情報構造体
@@ -79,7 +88,7 @@ private:	// 自分だけがアクセス可能
 
 public:	// 誰でもアクセス可能
 
-	CCar(int nId);	// コンストラクタ(オーバーロード)
+	CCar(int nId, CAR_TYPE type);	// コンストラクタ(オーバーロード)
 	virtual ~CCar();	// デストラクタ
 
 	// メンバ関数
@@ -175,6 +184,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	SInfo m_Info;				// 自分自身の情報
 	CEffekseer::CEffectData* m_pTailLamp;
+	CAR_TYPE m_type;
 
 	// オンライン関連
 	SRecvInfo m_RecvInfo;		// 受信情報
