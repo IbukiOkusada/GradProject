@@ -870,7 +870,13 @@ bool CPlayer::CollisionEnemy(void)
 			m_pCollSound->Play();
 		}
 
-		m_fEngine *= 1.2f;
+		D3DXVECTOR3 vecHit = posObjectX - posPlayer;
+		float rotVec = atan2f(vecHit.z, vecHit.x);								// äpìxåvéZ
+
+		m_Info.move.x += sinf(rotVec) * 30.0f;
+		m_Info.move.y += 0.0f;
+		m_Info.move.z += cosf(rotVec) * 30.0f;
+
 		Damage(5.0f);
 
 		return true;
