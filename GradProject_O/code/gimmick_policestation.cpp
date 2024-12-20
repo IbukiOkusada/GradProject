@@ -109,49 +109,105 @@ void CGimmickPoliceStation::Update(void)
 		return;
 	}
 
-	// プレイヤーを確認
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-	if (pPlayer == nullptr) { return; }
-	if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// セーフ
-
-	// 距離判定
-	D3DXVECTOR3 pos = GetPos() - pPlayer->GetPosition();
-	float distance = D3DXVec3Length(&pos);
-	CDebugProc::GetInstance()->Print("距離 [ %f ]", distance);
-
-	if (distance > SEARCH_DISTANCE) { return; }
-
-	// 向き判定
-	float rot = atan2f(pos.x, pos.z);
-	Adjust(rot);
-	float dest = rot - GetRot().y;
-	Adjust(dest);
-	dest = fabsf(dest);
-	CDebugProc::GetInstance()->Print("差分 [ %f ]", dest);
-
-	// 範囲内のみ警察生成
-	if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
-	m_Info.fSpawnTime = 0.0f;
-
-	CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
-
-	if (pP != nullptr)
+	if (CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_SINGLE)
 	{
-		// 応援の警察のタイプを設定
-		pP->SetTypeAI(CPoliceAI::TYPE_NONE);
-		pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+		// プレイヤーを確認
+		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+		if (pPlayer == nullptr) { return; }
+		if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// セーフ
 
-		// 目的地設定
-		pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(GetPos()));
+		// 距離判定
+		D3DXVECTOR3 pos = GetPos() - pPlayer->GetPosition();
+		float distance = D3DXVec3Length(&pos);
+		CDebugProc::GetInstance()->Print("距離 [ %f ]", distance);
 
-		// 追跡状態に変更
-		pP->SetChase(true);
-		pP->GetAi()->BeginChase(pPlayer);
+		if (distance > SEARCH_DISTANCE) { return; }
 
-		// 応援の警察は応援を呼ばないようにする
-		pP->GetAi()->SetCall(true);
+		// 向き判定
+		float rot = atan2f(pos.x, pos.z);
+		Adjust(rot);
+		float dest = rot - GetRot().y;
+		Adjust(dest);
+		dest = fabsf(dest);
+		CDebugProc::GetInstance()->Print("差分 [ %f ]", dest);
+
+		// 範囲内のみ警察生成
+		if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
+		m_Info.fSpawnTime = 0.0f;
+
+		CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+
+		if (pP != nullptr)
+		{
+			// 応援の警察のタイプを設定
+			pP->SetTypeAI(CPoliceAI::TYPE_NONE);
+			pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+
+			// 目的地設定
+			pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(GetPos()));
+
+			// 追跡状態に変更
+			pP->SetChase(true);
+			pP->GetAi()->BeginChase(pPlayer);
+
+			// 応援の警察は応援を呼ばないようにする
+			pP->GetAi()->SetCall(true);
+		}
 	}
+	else
+	{
+		for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+		{
+			if (!CNetWork::GetInstance()->GetConnect(i)) { continue; }
 
+			// プレイヤーを確認
+			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(i);
+			if (pPlayer == nullptr) { return; }
+			if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// セーフ
+
+			// 距離判定
+			D3DXVECTOR3 pos = GetPos() - pPlayer->GetPosition();
+			float distance = D3DXVec3Length(&pos);
+			CDebugProc::GetInstance()->Print("距離 [ %f ]", distance);
+
+			if (distance > SEARCH_DISTANCE) { return; }
+
+			// 向き判定
+			float rot = atan2f(pos.x, pos.z);
+			Adjust(rot);
+			float dest = rot - GetRot().y;
+			Adjust(dest);
+			dest = fabsf(dest);
+			CDebugProc::GetInstance()->Print("差分 [ %f ]", dest);
+
+			// 範囲内のみ警察生成
+			if (dest < -SEARCH_RANGE || dest > SEARCH_RANGE) { return; }
+			m_Info.fSpawnTime = 0.0f;
+
+			if (i == CNetWork::GetInstance()->GetIdx())
+			{
+
+				CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+
+				if (pP != nullptr)
+				{
+					// 応援の警察のタイプを設定
+					pP->SetTypeAI(CPoliceAI::TYPE_NONE);
+					pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+
+					// 目的地設定
+					pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(GetPos()));
+
+					// 追跡状態に変更
+					pP->SetChase(true);
+					pP->GetAi()->BeginChase(pPlayer);
+
+					// 応援の警察は応援を呼ばないようにする
+					pP->GetAi()->SetCall(true);
+				}
+			}
+		}
+	}
 }
 
 //==========================================================

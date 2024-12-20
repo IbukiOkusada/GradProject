@@ -694,7 +694,10 @@ void CNetWork::RecvGameStart(int* pByte, const int nId, const char* pRecvData)
 	}
 
 	// À•WÝ’è
-	pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
+	if (pPlayer->GetType() != CPlayer::TYPE::TYPE_ACTIVE)
+	{
+		pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
+	}
 }
 
 //===================================================
