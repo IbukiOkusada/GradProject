@@ -760,8 +760,8 @@ bool CPlayer::Collision(void)
 		bCollision = true;
 
 	// ìGÇ∆ÇÃìñÇΩÇËîªíËèàóù
-	/*if (CollisionEnemy())
-		bCollision = true;*/
+	if (CollisionEnemy())
+		bCollision = true;
 
 	// ìπÇ∆ÇÃìñÇΩÇËîªíË
 	if (CollisionRoad())
@@ -833,6 +833,15 @@ bool CPlayer::CollisionObjX(void)
 //===============================================
 bool CPlayer::CollisionEnemy(void)
 {
+	m_Info.bHitInterval--;
+	if (m_Info.bHitInterval < 0)
+	{
+		m_Info.bHitInterval = 0;
+		m_Info.bHit = false;
+	}
+
+	if (m_Info.bHit) { return false; }
+
 	D3DXVECTOR3 posPlayer = GetPosition();
 	D3DXVECTOR3 rotPlayer = GetRotation();
 	D3DXVECTOR3 sizeMaxPlayer = m_pObj->GetVtxMax();
@@ -845,7 +854,7 @@ bool CPlayer::CollisionEnemy(void)
 
 		CObjectX* pObjectX = mgr->Get(i);	// éÊìæ
 
-		if (pObjectX->GetType() == CObject::TYPE_ENEMY) { continue; }
+		if (pObjectX->GetType() != CObject::TYPE_ENEMY) { continue; }
 
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
@@ -873,9 +882,12 @@ bool CPlayer::CollisionEnemy(void)
 		D3DXVECTOR3 vecHit = posObjectX - posPlayer;
 		float rotVec = atan2f(vecHit.z, vecHit.x);								// äpìxåvéZ
 
-		m_Info.move.x += sinf(rotVec) * 30.0f;
+		m_Info.move.x += sinf(rotVec) * 20.0f;
 		m_Info.move.y += 0.0f;
-		m_Info.move.z += cosf(rotVec) * 30.0f;
+		m_Info.move.z += cosf(rotVec) * 20.0f;
+
+		m_Info.bHitInterval = 10;
+		m_Info.bHit = true;
 
 		Damage(5.0f);
 

@@ -89,6 +89,8 @@ private:	// 自分だけがアクセス可能な定義
 		STATE state;			// 状態
 		float fStateCounter;	// 状態管理カウンター
 		CRoad* pRoad;			// 最寄りの道
+		bool bHit;
+		int bHitInterval;
 
 		// コンストラクタ
 		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), move(VECTOR3_ZERO), fSlideMove(0.0f), 
