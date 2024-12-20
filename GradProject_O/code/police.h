@@ -59,7 +59,7 @@ private:	// 自分だけがアクセス可能
 		bool bChase;
 
 		// コンストラクタ
-		SInfo() : pPlayer(nullptr), nChaseCount(0), bChase(false) {}
+		SInfo() : pPlayer(nullptr), nChaseCount(0), bChase(false),  nLaneCount(0), nLaneTime(0) {}
 	};
 
 protected:

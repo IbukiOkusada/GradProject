@@ -137,6 +137,7 @@ HRESULT CTitle::Init(void)
 		VECTOR3_ZERO,3, fSize[SIZING_WIDTH], fSize[SIZING_HEIGHT],true, TEX_TEAMLOGO);
 
 	//ƒJƒƒ‰‰Šúó‘Ô
+	CCameraManager::GetInstance()->GetTop()->Init();
 	m_pCam = CCameraManager::GetInstance()->GetTop();
 	m_pCam->SetPositionR(CAMERA_POS);
 	m_pCam->SetLength(100.0f);

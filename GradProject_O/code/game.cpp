@@ -60,6 +60,7 @@
 #include "deltatime.h"
 #include "multi_result_manager.h"
 #include "meshdome.h"
+#include "magic_enum/magic_enum.hpp"
 // ネットワーク
 #include "network.h"
 
@@ -73,7 +74,7 @@ namespace {
         D3DXVECTOR3(0.0f, D3DX_PI * 1.0f, D3DX_PI * 0.4f),
         D3DXVECTOR3(0.0f, D3DX_PI* 1.0f, D3DX_PI * 0.45f),
         D3DXVECTOR3(0.0f, -D3DX_PI* 1.0f, D3DX_PI * 0.2f),
-        D3DXVECTOR3(0.0f, -D3DX_PI * 0.6f, D3DX_PI * 0.15f),
+        D3DXVECTOR3(0.0f, -D3DX_PI * 0.6f, 0.33f),
     };
 
     const float CAMERA_LENGTH[4] =
@@ -232,6 +233,7 @@ HRESULT CGame::Init(void)
         }
     }
 
+    CCameraManager::GetInstance()->GetTop()->Init();
     CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
     if (m_pDeliveryStatus == nullptr)
@@ -244,11 +246,6 @@ HRESULT CGame::Init(void)
         m_pGameTimer = CTimer::Create();
     }
 
-#if NDEBUG
-    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-    CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pCamera->GetPositionR(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGTH[m_nStartCameraCount], 1.0f, 1.0f, CCameraAction::MOVE_POSV, true);
-#endif  
   /*  pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
     return S_OK;
@@ -505,10 +502,12 @@ CFileLoad *CGame::GetFileLoad(void)
 //===================================================
 void CGame::StartIntro(void)
 {
-#if NDEBUG
+    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+    auto& it = magic_enum::enum_name(pPlayer->GetType());
+    CDebugProc::GetInstance()->Print("プレイヤーの今の状態 %s : カメラの開始番号 [ %d ]\n", it.data(), m_nStartCameraCount);
+    if (pPlayer->GetType() != CPlayer::TYPE::TYPE_GAMESTARTOK) { return; }
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 
     if (m_nStartCameraCount >= 4)
     {
@@ -518,25 +517,36 @@ void CGame::StartIntro(void)
             pos.x += MOVE * 0.5f;
             pPlayer->SetPosition(pos);
         }
+        else
+        {
+            if (m_nStartCameraCount == 4)
+            {
+                m_nStartCameraCount++;
+                pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
+            }
+        }
         return;
     }
 
-    if (pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount < 3)
+    if ((pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount < 3))
     {
-        m_nStartCameraCount++;
         CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGTH[m_nStartCameraCount], 2.0f, 1.0f, CCameraAction::MOVE_POSV, true);
+        m_nStartCameraCount++;
     }
-    else if (m_nStartCameraCount >= 3)
+    else if ((pCamera->GetAction()->IsNext() && pCamera->GetAction()->IsPause() && m_nStartCameraCount >= 3))
     {
         CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pPlayer->GetPosition(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGTH[m_nStartCameraCount], 2.0f, 1.0f, CCameraAction::MOVE_POSV, false);
+        m_nStartCameraCount++;
+    }
+    else if (m_nStartCameraCount == 0)
+    {
+        CCameraManager::GetInstance()->GetTop()->GetAction()->Set(pCamera, pCamera->GetPositionR(), CAMERA_ROT[m_nStartCameraCount], CAMERA_LENGTH[m_nStartCameraCount], 1.0f, 1.0f, CCameraAction::MOVE_POSV, true); 
         m_nStartCameraCount++;
     }
 
     D3DXVECTOR3 pos = pPlayer->GetPosition();
     pos.x += MOVE;
     pPlayer->SetPosition(pos);
-
-#endif
 }
 
 //===================================================
@@ -598,6 +608,7 @@ void CGame::CreateSinglePlayer(void)
     CPlayer* pPlayer = CPlayer::Create(SET_PLAYER_POS,
         VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());
     pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
+    pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
 }
 
 //===================================================
@@ -612,7 +623,7 @@ void CGame::CreateMultiPlayer(void)
         if (!net->GetConnect(i)) { continue; }
 
         D3DXVECTOR3 pos = SET_PLAYER_POS;
-        pos.z += 100.0f;
+        pos.z += 200.0f;
         CPlayer* pPlayer = CPlayer::Create(pos,
             VECTOR3_ZERO, VECTOR3_ZERO, i);
 
