@@ -83,11 +83,11 @@ void CCarManager::Update(void)
 		auto info = it.second;
 
 		// 種類ごとに生成
-		switch (it.second.type)
+		switch (it.second->type)
 		{
 		case CCar::CAR_TYPE::CAR_TYPE_CAR:
 		{
-			pCar = CCar::Create(info.pos, info.rot, info.move, it.first);
+			pCar = CCar::Create(info->pos, info->rot, info->move, it.first);
 			pCar->SetType(CCar::TYPE::TYPE_RECV);
 		}
 			break;
@@ -95,23 +95,23 @@ void CCarManager::Update(void)
 		case CCar::CAR_TYPE::CAR_TYPE_POLICE:
 		{
 			// 応援の警察を生成
-			CPolice* pP = CPolice::Create(info.pos, info.rot, info.move, it.first);
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(info.nChaseId);
+			CPolice* pP = CPolice::Create(info->pos, info->rot, info->move, it.first);
+			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(info->nChaseId);
 
 			pP->SetType(CCar::TYPE::TYPE_RECV);
-			pP->SetChaseNext(info.chase);
+			//pP->SetChaseNext(info->chase);
 
-			if (info.nChaseId == CNetWork::GetInstance()->GetIdx())
-			{
-				// 自分自身
-				pP->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
-				pP->SetNextPlayer(pPlayer);
-			}
-			else
-			{
-				pP->SetTypeNext(CCar::TYPE::TYPE_RECV);
-				pP->SetNextPlayer(pPlayer);
-			}
+			//if (info->nChaseId == CNetWork::GetInstance()->GetIdx())
+			//{
+			//	// 自分自身
+			//	pP->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
+			//	pP->SetNextPlayer(pPlayer);
+			//}
+			//else
+			//{
+			//	pP->SetTypeNext(CCar::TYPE::TYPE_RECV);
+			//	pP->SetNextPlayer(pPlayer);
+			//}
 
 			pCar = pP;
 		}
@@ -120,47 +120,47 @@ void CCarManager::Update(void)
 		case CCar::CAR_TYPE::CAR_TYPE_ADDPOLICE:
 		{
 			// 応援の警察を生成
-			CAddPolice* pP = CAddPolice::Create(info.pos, info.rot, info.move, it.first);
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(info.nChaseId);
+			CAddPolice* pP = CAddPolice::Create(info->pos, info->rot, info->move, it.first);
+			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(info->nChaseId);
 
 			if (pP == nullptr) { continue; }
 
 			pP->SetType(CCar::TYPE::TYPE_RECV);
 
-			if (info.chase == CPolice::CHASE::CHASE_BEGIN)
-			{
-				// 追跡状態に変更
-				pP->SetChase(true);
-				pP->GetAi()->BeginChase(pPlayer);
+			//if (info->chase == CPolice::CHASE::CHASE_BEGIN)
+			//{
+			//	// 追跡状態に変更
+			//	pP->SetChase(true);
+			//	pP->GetAi()->BeginChase(pPlayer);
 
-				// 応援の警察は応援を呼ばないようにする
-				pP->GetAi()->SetCall(true);
-				pP->SetChaseNext(info.chase);
-			}
-			else if (info.chase == CPolice::CHASE::CHASE_END)
-			{
-				pP->SetChaseNext(info.chase);
-			}
+			//	// 応援の警察は応援を呼ばないようにする
+			//	pP->GetAi()->SetCall(true);
+			//	pP->SetChaseNext(info->chase);
+			//}
+			//else if (info->chase == CPolice::CHASE::CHASE_END)
+			//{
+			//	pP->SetChaseNext(info->chase);
+			//}
 
-			// 応援の警察のタイプを設定
-			pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
-			pP->SetTypeAI(CPoliceAI::TYPE_ELITE);
-			pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+			//// 応援の警察のタイプを設定
+			//pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
+			//pP->SetTypeAI(CPoliceAI::TYPE_ELITE);
+			//pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 
-			// 目的地設定
-			pP->SetRoadTarget(nullptr);
+			//// 目的地設定
+			//pP->SetRoadTarget(nullptr);
 
-			if (info.nChaseId == CNetWork::GetInstance()->GetIdx())
-			{
-				// 自分自身
-				pP->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
-				pP->SetNextPlayer(pPlayer);
-			}
-			else
-			{
-				pP->SetTypeNext(CCar::TYPE::TYPE_RECV);
-				pP->SetNextPlayer(pPlayer);
-			}
+			//if (info->nChaseId == CNetWork::GetInstance()->GetIdx())
+			//{
+			//	// 自分自身
+			//	pP->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
+			//	pP->SetNextPlayer(pPlayer);
+			//}
+			//else
+			//{
+			//	pP->SetTypeNext(CCar::TYPE::TYPE_RECV);
+			//	pP->SetNextPlayer(pPlayer);
+			//}
 
 			pCar = pP;
 		}
@@ -227,19 +227,52 @@ void CCarManager::ListOut(CCar* pCar)
 //==========================================================
 // 次生成用のリストに挿入
 //==========================================================
-void CCarManager::CreateListIn(const NextCreateInfo& info, int nId)
+void CCarManager::CreateListIn(NextCreateInfo& info, int nId)
 {
 	// 既に保存済み
 	if (m_NextList.IdFind(nId) || m_NextTempList.IdFind(nId)) { return; }
 
 	if (!m_bSet)
 	{
-		m_NextList.Regist(nId,info);
+		m_NextList.Regist(nId, &info);
 	}
 	else
 	{
-		m_NextTempList.Regist(nId, info);
+		m_NextTempList.Regist(nId, &info);
 	}
+}
+
+//==========================================================
+// リストから外す
+//==========================================================
+void CCarManager::CreateListOut(NextCreateInfo& info, int nId)
+{
+	// 存在しない
+	if (m_NextList.IdFind(nId))
+	{
+		m_NextList.Delete(nId, &info);
+	}
+	else if(m_NextTempList.IdFind(nId))
+	{
+		m_NextTempList.Delete(nId, &info);
+	}
+}
+
+//==========================================================
+// 次の生成
+//==========================================================
+CCarManager::NextCreateInfo* CCarManager::CreateGet(int nId)
+{
+	if (m_NextList.IdFind(nId))
+	{
+		return m_NextList.Get(nId);
+	}
+	else if (m_NextTempList.IdFind(nId))
+	{
+		return m_NextTempList.Get(nId);
+	}
+
+	return nullptr;
 }
 
 //==========================================================
