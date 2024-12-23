@@ -65,15 +65,15 @@ CPolice::SETSTATE_FUNC CPolice::m_SetStateFunc[] =
 //==========================================================
 // コンストラクタ
 //==========================================================
-CPolice::CPolice(int nId, CAR_TYPE type) : CCar(nId, type)
+CPolice::CPolice(int nId, CAR_TYPE type) : CCar(nId, type),
+m_Info(SInfo()),
+m_pPatrolLamp(nullptr),
+m_pSiren(nullptr),
+m_pPoliceAI(nullptr),
+m_pShaderLight(nullptr),
+m_stateInfo(SState())
 {
 	// 値のクリア
-	m_Info = SInfo();
-	m_pPatrolLamp = nullptr;
-	m_pSiren = nullptr;
-	m_stateInfo = SState();
-	m_pPoliceAI = nullptr;
-	m_pShaderLight = nullptr;
 	CPoliceManager::GetInstance()->ListIn(this);
 }
 
@@ -128,6 +128,8 @@ void CPolice::Uninit(void)
 //==========================================================
 void CPolice::Update(void)
 {
+	if (m_pObj == nullptr) { return; }
+
 	// 停止状態なら動かない
 	if (m_stateInfo.state == STATE::STATE_STOP) 
 	{ 
@@ -156,7 +158,7 @@ void CPolice::Update(void)
 	auto list = CPoliceManager::GetInstance()->GetNearList();
 	auto it = find(list->begin(), list->end(), this);
 
-	if (m_Info.bChase)
+	if (m_Info.bChase && list->end() != it)
 	{
 		if (m_pPatrolLamp == nullptr)
 		{

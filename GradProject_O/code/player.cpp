@@ -1064,6 +1064,10 @@ bool CPlayer::CollisionGimick(void)
 //===============================================
 void CPlayer::Damage(float fDamage)
 {
+	if (m_Info.state == STATE::STATE_DEATH | m_Info.state == STATE::STATE_APPEAR) {
+		return;
+	}
+
 	m_fLife -= fDamage;
 	SAFE_DELETE(m_pDamageEffect);
 
@@ -1628,6 +1632,7 @@ void CPlayer::Respawn()
 {
 	m_Info.rot = VECTOR3_ZERO;
 	m_Info.pos = VECTOR3_ZERO;
+	m_Info.posOld = VECTOR3_ZERO;
 	m_Info.move = VECTOR3_ZERO;
 	m_fBrake = 0.0f;
 	m_fEngine = 0.0f;

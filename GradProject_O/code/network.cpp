@@ -745,7 +745,6 @@ void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
 {
-
 	CScene* pScene = CManager::GetInstance()->GetScene();
 
 	if (pScene == nullptr) { return; }
@@ -854,8 +853,23 @@ void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		pCar = CCar::Create(pos, rot, VECTOR3_ZERO, carid);
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+		auto it = CCarManager::GetInstance()->CreateGet(carid);
+
+		if (it != nullptr)
+		{
+			it->pos = pos;
+			it->rot = rot;
+		}
+		else
+		{
+			auto info = CCarManager::NextCreateInfo();
+			info.pos = pos;
+			info.rot = rot;
+			info.type = CCar::CAR_TYPE::CAR_TYPE_CAR;
+			CCarManager::GetInstance()->CreateListIn(info, carid);
+		}
+
+		return;
 	}
 
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
@@ -893,8 +907,23 @@ void CNetWork::RecvPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		pCar = CPolice::Create(pos, rot, VECTOR3_ZERO, carid);
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+		auto it = CCarManager::GetInstance()->CreateGet(carid);
+
+		if (it != nullptr)
+		{
+			it->pos = pos;
+			it->rot = rot;
+		}
+		else
+		{
+			auto info = CCarManager::NextCreateInfo();
+			info.pos = pos;
+			info.rot = rot;
+			info.type = CCar::CAR_TYPE::CAR_TYPE_POLICE;
+			CCarManager::GetInstance()->CreateListIn(info, carid);
+		}
+
+		return;
 	}
 
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
@@ -932,17 +961,23 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		CAddPolice* pPolice = CAddPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+		auto it = CCarManager::GetInstance()->CreateGet(carid);
 
-		if (pPolice != nullptr)
+		if (it != nullptr)
 		{
-			pPolice->SetType(CCar::TYPE::TYPE_RECV);
-
-			// 応援の警察は応援を呼ばないようにする
-			pPolice->GetAi()->SetCall(true);
-
-			pCar = pPolice;
+			it->pos = pos;
+			it->rot = rot;
 		}
+		else
+		{
+			auto info = CCarManager::NextCreateInfo();
+			info.pos = pos;
+			info.rot = rot;
+			info.type = CCar::CAR_TYPE::CAR_TYPE_ADDPOLICE;
+			CCarManager::GetInstance()->CreateListIn(info, carid);
+		}
+
+		return;
 	}
 
 	if (pCar == nullptr) { return; }
@@ -1529,6 +1564,7 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 //===================================================
 void CNetWork::SendPdChase(int nId, int plyid)
 {
+	return;
 	if (!GetActive()) { return; }
 
 	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// 送信用
@@ -1556,6 +1592,7 @@ void CNetWork::SendPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendAddPdChase(int nId, int plyid)
 {
+	return;
 	if (!GetActive()) { return; }
 
 	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// 送信用
@@ -1583,6 +1620,7 @@ void CNetWork::SendAddPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendPdChaseEnd(int nId)
 {
+	return;
 	if (!GetActive()) { return; }
 
 	char aSendData[sizeof(int) + sizeof(int)] = {};	// 送信用
@@ -1606,6 +1644,7 @@ void CNetWork::SendPdChaseEnd(int nId)
 //===================================================
 void CNetWork::SendAddPdChaseEnd(int nId)
 {
+	return;
 	if (!GetActive()) { return; }
 
 	char aSendData[sizeof(int) + sizeof(int)] = {};	// 送信用

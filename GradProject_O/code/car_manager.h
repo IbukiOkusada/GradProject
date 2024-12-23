@@ -55,7 +55,9 @@ public:	// 誰でもアクセス可能
 	void ListRelease() { if (m_pList != nullptr) { delete m_pList; m_pList = nullptr; } }			// リスト解放
 	void ListIn(CCar* pCar);
 	void ListOut(CCar* pCar);
-	void CreateListIn(const NextCreateInfo& info, int nId);
+	void CreateListIn(NextCreateInfo& info, int nId);
+	void CreateListOut(NextCreateInfo& info, int nId);
+	NextCreateInfo* CreateGet(int nId);
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
 
 private:	// 自分だけがアクセス可能
@@ -67,8 +69,8 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	Clist<CCar*>* m_pList;
 	Cmaplist<CCar*> m_List;
-	Cmaplist<NextCreateInfo> m_NextList;
-	Cmaplist<NextCreateInfo> m_NextTempList;
+	Cmaplist<NextCreateInfo*> m_NextList;
+	Cmaplist<NextCreateInfo*> m_NextTempList;
 	int m_nNum;		// 総数
 	bool m_bSet;	// 設定中かどうか
 	static CCarManager* m_pInstance;	// インスタンス

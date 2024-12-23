@@ -329,9 +329,12 @@ void CGame::Update(void)
     if (m_pGameTimer != nullptr && CEditManager::GetInstance() == nullptr)
     {
         CPlayer* player = CPlayerManager::GetInstance()->GetPlayer();
-        if (player->GetType() == CPlayer::TYPE::TYPE_ACTIVE)
+        if (player != nullptr)
         {
-            m_pGameTimer->Update();
+            if (player->GetType() == CPlayer::TYPE::TYPE_ACTIVE)
+            {
+                m_pGameTimer->Update();
+            }
         }
     }
 
@@ -345,7 +348,7 @@ void CGame::Update(void)
     StartIntro();
 
     // エディター関連
-#if NDEBUG
+#if _DEBUG
 
     CEditManager* pMgr = CEditManager::GetInstance();
     // エディター生成

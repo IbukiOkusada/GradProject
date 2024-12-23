@@ -33,12 +33,13 @@ Clist<CAddPolice*> CAddPolice::m_List = {};
 //==========================================================
 // コンストラクタ
 //==========================================================
-CAddPolice::CAddPolice(int nId) : CPolice(nId, CAR_TYPE::CAR_TYPE_ADDPOLICE)
+CAddPolice::CAddPolice(int nId) : CPolice(nId, CAR_TYPE::CAR_TYPE_ADDPOLICE),
+m_SpawnPos(VECTOR3_ZERO),
+m_Path(),
+m_nNowRoad(0)
 {
-	m_SpawnPos = VECTOR3_ZERO;
+	// リストに入れる
 	m_List.Regist(this);
-	m_Path.clear();
-	m_nNowRoad = 0;
 }
 
 //==========================================================

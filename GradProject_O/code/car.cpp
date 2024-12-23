@@ -48,15 +48,15 @@ namespace
 //==========================================================
 // コンストラクタ
 //==========================================================
-CCar::CCar(int nId, CAR_TYPE type)
+CCar::CCar(int nId, CAR_TYPE type) : 
+m_Info(SInfo()),
+m_RecvInfo(SRecvInfo()),
+m_pObj(nullptr),
+m_pTailLamp(nullptr),
+m_type(type)
 {
 	// 値のクリア
-	m_Info = SInfo();
 	m_Info.nId = nId;
-	m_RecvInfo = SRecvInfo();
-	m_pObj = nullptr;
-	m_pTailLamp = nullptr;
-	m_type = type;
 
 	// リストに入れる
 	CCarManager::GetInstance()->ListIn(this);
@@ -106,6 +106,8 @@ void CCar::Uninit(void)
 //==========================================================
 void CCar::Update(void)
 {
+	if (m_pObj == nullptr) { return; }
+
 	m_Info.posOld = m_Info.pos;
 	m_Info.fSpeedDest = 0.0f;
 
