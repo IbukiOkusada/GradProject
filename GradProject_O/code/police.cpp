@@ -343,6 +343,12 @@ void CPolice::MoveRoad()
 			SetRotMulti(ROT_MULTI_DEF);
 		}
 	}
+
+	if (!GetBack()) { return; }
+
+	// ‘¬“x‚ðÝ’è
+	SetSpeedDest(SECURE_SPEEDDEST * 2.0f);
+	SetSpeed(GetSpeed() * SECURE_SPEED);
 }
 
 //==========================================================
@@ -479,9 +485,10 @@ void CPolice::Hit()
 		CRoad* pRoadNext = GetRoadTarget();
 		SetRoadTarget(GetRoadStart());
 		SetRoadStart(pRoadNext);
-		SetBack(true);
-		SetBackTime(80);
 	}
+
+	SetBack(true);
+	SetBackTime(80);
 
 	m_pPoliceAI->StopAttack();
 }

@@ -50,7 +50,7 @@ namespace
 		(27.0f),		// デフォルトの追跡時の加速
 		(27.0f),		// 通常タイプの追跡時の加速
 		(30.0f),		// 回り込みタイプの追跡時の加速
-		(24.0f),		// 緩やかタイプの追跡時の加速
+		(25.0f),		// 緩やかタイプの追跡時の加速
 	};
 
 	const float ATTACK_SPEED[CPoliceAI::TYPE_MAX] =
@@ -518,15 +518,13 @@ void CPoliceAI::Attack(void)
 		{
 			D3DXVECTOR3 vecPlayer = m_pPolice->GetPlayer()->GetPosition() - m_pPolice->GetPosition();		// プレイヤーと警察間のベクトル計算
 			float length = D3DXVec3Length(&vecPlayer);										// 距離計算
+			float rotVec = atan2f(vecPlayer.x, vecPlayer.z);								// 角度計算
+			float rotView = m_pPolice->GetRotation().y - rotVec;							// 向いてる方向との差を計算
 
-			if (length < CHASE_NEAR)
+			if (length < CHASE_NEAR && fabs(rotView) < D3DX_PI * 0.3f)
 			{// 近距離
 				nAttackTime = 120;
 				bAttack = true;
-			}
-			else
-			{
-				nAttackTime = rand() % 120 + 360;
 			}
 		}
 	}
