@@ -416,31 +416,37 @@ bool CPolice::Collision()
 //==========================================================
 bool CPolice::CollisionObjX(void)
 {
+	D3DXVECTOR3 posPolice = GetPosition();
+	D3DXVECTOR3 rotPolice = GetRotation();
+	D3DXVECTOR3 sizeMaxPolice = m_pObj->GetVtxMax();
+	D3DXVECTOR3 sizeMinPolice = m_pObj->GetVtxMin();
+	D3DXVECTOR3 sizePolice = (sizeMaxPolice - sizeMinPolice) * 0.5f;
+
 	auto mgr = CObjectX::GetList();
 	for (int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
 
 		CObjectX* pObjectX = mgr->Get(i);	// 取得
 
+		if (pObjectX->GetType() != CObject::TYPE_ENEMY) { continue; }
+
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
 		// オブジェクトの情報取得
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
-		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
-		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+		D3DXVECTOR3 sizeMaxObjectX = pObjectX->GetVtxMax();
+		D3DXVECTOR3 sizeMinObjectX = pObjectX->GetVtxMin();
+		D3DXVECTOR3 sizeObjectX = (sizeMaxObjectX - sizeMinObjectX) * 0.5f;
 
 		// OBBとの当たり判定を実行
-		bool bCollision = collision::CollideOBBToOBBTrigger(GetPosition(), GetRotation(), (m_pObj->GetVtxMax() - m_pObj->GetVtxMin()) * 0.5f, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		bool bCollision = collision::CollideOBBToOBBTrigger(posPolice, rotPolice, sizePolice, posObjectX, rotObjectX, sizeObjectX);
 
 		// 衝突していない場合繰り返す
 		if (!bCollision) { continue; }
 
-		if (pObjectX->GetType() == CObject::TYPE_ENEMY)
-		{
-			m_Info.nLaneTime = 0;
-			LanePlayer();
-		}
+		m_Info.nLaneTime = 0;
+		LanePlayer();
 
 		return true;
 	}

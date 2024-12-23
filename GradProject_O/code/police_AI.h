@@ -92,6 +92,8 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	float m_fSearchTimer;
 	float m_fLevelSearch;
+	int nAttackTime;
+	bool bAttack;
 	TYPE m_type;
 	CPolice* m_pPoliceBackUp;
 };
