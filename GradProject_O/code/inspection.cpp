@@ -100,7 +100,7 @@ HRESULT CInspection::Init(void)
 		}
 
 		rot.y += D3DX_PI;
-		Adjust(rot.y);
+		Adjust(&rot.y);
 	}
 
 	return S_OK;
@@ -193,7 +193,7 @@ void CInspection::Away()
 		if (pInfo->fTimer == 0.0f) { 
 			pInfo->startpos = pInfo->pPolice->GetPosition();
 			pInfo->goalrot.y = atan2f(pInfo->goalpos.x - pInfo->startpos.x, pInfo->goalpos.z - pInfo->startpos.z);
-			Adjust(pInfo->goalrot.y);
+			Adjust(&pInfo->goalrot.y);
 		}
 
 		// タイマーを進行
@@ -209,7 +209,7 @@ void CInspection::Away()
 		// 向き
 		D3DXVECTOR3 rot = pInfo->pPolice->GetRotation();
 		float rotdiff = pInfo->goalrot.y - rot.y;
-		Adjust(rotdiff);
+		Adjust(&rotdiff);
 		rot.y += rotdiff * 0.1f;
 		Adjust(rot);
 		pInfo->pPolice->SetRotation(rot);
@@ -272,7 +272,7 @@ void CInspection::LagerSet()
 
 		// 向き
 		float diff = atan2f(m_Info.pos.x - pInfo->goalpos.x, m_Info.pos.z - pInfo->goalpos.z);
-		Adjust(diff);
+		Adjust(&diff);
 		D3DXVECTOR3 rot = VECTOR3_ZERO;
 		rot.y = diff;
 		m_LagerInfo.apEffect[i]->m_rot = rot;
@@ -309,9 +309,9 @@ void CInspection::LagerSetRotation()
 
 		// 差分を求める
 		float diff = atan2f(m_Info.pos.x - pInfo->goalpos.x, m_Info.pos.z - pInfo->goalpos.z);
-		Adjust(diff);
+		Adjust(&diff);
 		float dest = diff - pInfo->goalrot.y;
-		Adjust(dest);
+		Adjust(&dest);
 
 		// 向きを設定
 		D3DXVECTOR3 rot = pInfo->goalrot;
@@ -320,7 +320,7 @@ void CInspection::LagerSetRotation()
 
 		// 座標も少し調整
 		diff += D3DX_PI;
-		Adjust(diff);
+		Adjust(&diff);
 		D3DXVECTOR3 pos = pInfo->goalpos;
 		pos.x += sinf(diff) * (100.0f * range);
 		pos.z += cosf(diff) * (100.0f * range);

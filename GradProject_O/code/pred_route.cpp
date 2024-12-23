@@ -164,16 +164,16 @@ void CPredRoute::TurnCheck()
 	// •ûŒü‚ð‹‚ß‚é
 	float vecnow = atan2f(pNow->GetPosition().x - pOld->GetPosition().x, 
 		pNow->GetPosition().z - pOld->GetPosition().z);
-	Adjust(vecnow);
+	Adjust(&vecnow);
 
 	// ‘O‰ñ‚Ì•ûŒü‚ð‹‚ß‚é
 	float vecold = atan2f(pOld->GetPosition().x - pOlder->GetPosition().x,
 		pOld->GetPosition().z - pOlder->GetPosition().z);
-	Adjust(vecold);
+	Adjust(&vecold);
 
 	// ·•ª‚ð‹‚ß‚é
 	float diff = vecnow - vecold;
-	Adjust(diff);
+	Adjust(&diff);
 
 	float RANGE = D3DX_PI * 0.25f;
 	// ·•ª‚©‚ç‹È‚ª‚Á‚½•ûŒü‚ð‹‚ß‚é
@@ -284,10 +284,10 @@ float CPredRoute::GetNextRot(const VEC& vec)
 	// •ûŒü‚ð‹‚ß‚é
 	float vecnow = atan2f(pNow->GetPosition().x - pOld->GetPosition().x,
 		pNow->GetPosition().z - pOld->GetPosition().z);
-	Adjust(vecnow);
+	Adjust(&vecnow);
 
 	vecnow += rot;
-	Adjust(vecnow);
+	Adjust(&vecnow);
 
 	return vecnow;
 }

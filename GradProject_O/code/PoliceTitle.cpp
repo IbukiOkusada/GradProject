@@ -139,7 +139,7 @@ void CPoliceTitle::Move(void)
 	float fIner = 0.3f;					//Šµ«‚Ì“®‚«
 
 	//’²®
-	Adjust(fDiff);
+	Adjust(&fDiff);
 
 	//‰ñ“]‚³‚¹‚é
 	rRot.y += fDiff * fIner;

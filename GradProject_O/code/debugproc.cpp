@@ -159,7 +159,6 @@ void CDebugProc::Update(void)
 //==========================================================
 void CDebugProc::Draw(void)
 {
-
 	RECT rect = { 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT };
 
 	if (m_bDisp == true)
