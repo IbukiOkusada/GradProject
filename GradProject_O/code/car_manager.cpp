@@ -71,7 +71,6 @@ void CCarManager::Uninit(void)
 //==========================================================
 void CCarManager::Update(void)
 {
-	if (m_NextList.Empty()) { return; }
 	m_bSet = true;
 
 	for (const auto& it : *m_NextList.GetList())
@@ -177,10 +176,12 @@ void CCarManager::Update(void)
 
 	// âºÉfÅ[É^Çì¸ÇÍë÷Ç¶ÇÈ
 	m_NextList.Clear();
+	m_NextList.ResetInCnt();
 	m_NextList = m_NextTempList;
-	m_NextTempList.Clear();
 
 	m_bSet = false;
+	m_NextTempList.Clear();
+	m_NextTempList.ResetInCnt();
 }
 
 //==========================================================
