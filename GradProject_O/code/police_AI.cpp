@@ -419,7 +419,7 @@ void CPoliceAI::CallBackup(void)
 	// 応援要請時間になっていなければ時間を加算し抜ける
 	if (m_nCntCall < CALL_TIME[m_type]) 
 	{ 
-		m_nCntCall++; 
+		m_nCntCall++;
 		return; 
 	}
 
@@ -460,7 +460,6 @@ void CPoliceAI::CallBackup(void)
 		{
 			// 応援の警察のタイプを設定
 			pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
-			pP->SetTypeAI(CPoliceAI::TYPE_ELITE);
 			pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 
 			// 目的地設定
@@ -477,6 +476,14 @@ void CPoliceAI::CallBackup(void)
 			pP->GetAi()->m_pPoliceBackUp = m_pPolice;
 		}
 	}
+}
+
+//==========================================================
+// 攻撃処理
+//==========================================================
+void CPoliceAI::Attack(void)
+{
+
 }
 
 //==========================================================

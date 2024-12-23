@@ -43,6 +43,7 @@ public:	// 誰でもアクセス可能
 	void Search(void);
 	void Chase(void);
 	void CallBackup(void);
+	void Attack(void);
 
 	void BeginChase(CPlayer* pPlayer);
 	void EndChase(void);
