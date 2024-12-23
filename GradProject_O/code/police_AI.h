@@ -57,6 +57,7 @@ public:	// 誰でもアクセス可能
 	CPolice* GetPolice() { return m_pPolice; }
 	float GetChaseSpeed() { return m_fChaseSpeed; }
 	bool GetCall() { return m_bCall; }
+	bool GetAttack() { return bAttack; }
 
 	// メンバ関数(設定)
 	void SetCall(bool bCall) { m_bCall = bCall; }

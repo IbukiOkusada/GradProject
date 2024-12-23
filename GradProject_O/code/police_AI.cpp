@@ -53,6 +53,14 @@ namespace
 		(25.0f),		// 緩やかタイプの追跡時の加速
 	};
 
+	const float ATTACK_SPEED[CPoliceAI::TYPE_MAX] =
+	{
+		(60.0f),		// デフォルトの攻撃時の加速
+		(60.0f),		// 通常タイプの攻撃時の加速
+		(65.0f),		// 回り込みタイプの攻撃時の加速
+		(70.0f),		// 緩やかタイプの攻撃時の加速
+	};
+
 	const float SEARCH_TIME[CPoliceAI::TYPE_MAX] =
 	{
 		(3.0f),		// デフォルトの経路確認間隔
@@ -86,8 +94,10 @@ CPoliceAI::CPoliceAI()
 	m_fChaseSpeed = 0.0f;
 	m_fSearchInterval = 0.0f;
 	m_nCntThread = 0;
+	nAttackTime = 0;
 	m_bCross = false;
 	m_bCall = false;
+	bAttack = false;
 }
 
 //==========================================================
@@ -107,6 +117,7 @@ HRESULT CPoliceAI::Init(void)
 	m_fChaseSpeed = CHASE_SPEED[m_type];
 	m_fSearchInterval = SEARCH_TIME[m_type];
 	m_nCntCall = 0;
+	nAttackTime = 420;
 
 	return S_OK;
 }
@@ -451,30 +462,29 @@ void CPoliceAI::CallBackup(void)
 	for (int i = 0; i < NUM_BACKUP; i++)
 	{
 		// ランダムな警察署を選択
-		CGimmick* pPoliceStation = listStation.Get(rand() % nNumStation); 
+		CGimmick* pPoliceStation = listStation.Get(rand() % nNumStation);
 
 		// 応援の警察を生成
 		CAddPolice* pP = CAddPolice::Create(pPoliceStation->GetPos(), pPoliceStation->GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
 
-		if (pP != nullptr)
-		{
-			// 応援の警察のタイプを設定
-			pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
-			pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+		if (pP == nullptr) { continue; }
 
-			// 目的地設定
-			pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(pPoliceStation->GetPos()));
+		// 応援の警察のタイプを設定
+		pP->SetTypeAI((CPoliceAI::TYPE)(rand() % CPoliceAI::TYPE_MAX));
+		pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 
-			// 追跡状態に変更
-			pP->SetChase(true);
-			pP->GetAi()->BeginChase(m_pPolice->GetPlayer());
+		// 目的地設定
+		pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(pPoliceStation->GetPos()));
 
-			// 応援の警察は応援を呼ばないようにする
-			pP->GetAi()->m_bCall = true;
+		// 追跡状態に変更
+		pP->SetChase(true);
+		pP->GetAi()->BeginChase(m_pPolice->GetPlayer());
 
-			// 応援を呼んだ警察を保存する
-			pP->GetAi()->m_pPoliceBackUp = m_pPolice;
-		}
+		// 応援の警察は応援を呼ばないようにする
+		pP->GetAi()->m_bCall = true;
+
+		// 応援を呼んだ警察を保存する
+		pP->GetAi()->m_pPoliceBackUp = m_pPolice;
 	}
 }
 
@@ -483,7 +493,43 @@ void CPoliceAI::CallBackup(void)
 //==========================================================
 void CPoliceAI::Attack(void)
 {
+	// 攻撃インターバルを減少させる
+	nAttackTime--;
 
+	if (bAttack)
+	{
+		// 速度を設定
+		m_fChaseSpeed = ATTACK_SPEED[m_type];
+		m_pSearchTarget = nullptr;
+	}
+	else
+	{
+		m_fChaseSpeed = CHASE_SPEED[m_type];
+	}
+
+	if (nAttackTime < 0)
+	{
+		if (bAttack)
+		{
+			nAttackTime = rand() % 120 + 360;
+			bAttack = false;
+		}
+		else
+		{
+			D3DXVECTOR3 vecPlayer = m_pPolice->GetPlayer()->GetPosition() - m_pPolice->GetPosition();		// プレイヤーと警察間のベクトル計算
+			float length = D3DXVec3Length(&vecPlayer);										// 距離計算
+
+			if (length < CHASE_NEAR)
+			{// 近距離
+				nAttackTime = 120;
+				bAttack = true;
+			}
+			else
+			{
+				nAttackTime = rand() % 120 + 360;
+			}
+		}
+	}
 }
 
 //==========================================================

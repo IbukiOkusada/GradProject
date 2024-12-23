@@ -297,15 +297,30 @@ void CPolice::MoveRoad()
 			// プレイヤーが存在しないなら最寄りの道に戻る
 			if (m_Info.pPlayer == nullptr) { return; }
 
-			// プレイヤーの座標を目指す
-			SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
+			// 追跡用に加速する
+			SetSpeedDest(GetSpeedDest() + m_pPoliceAI->GetChaseSpeed());
 
-			// 一定距離まで近づいたら減速させる
-			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+			if (m_pPoliceAI->GetAttack())
+			{
+				SetRotMulti(0.01f);
 
-			// 速度を設定
-			SetSpeedDest(SECURE_SPEEDDEST);
-			SetSpeed(GetSpeed() * SECURE_SPEED);
+				// プレイヤーの座標を目指す
+				SetPosTarget(m_Info.pPlayer->GetPosition());
+			}
+			else
+			{
+				SetRotMulti(ROT_MULTI_CHASE);
+
+				// プレイヤーの座標を目指す
+				SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
+
+				// 一定距離まで近づいたら減速させる
+				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+
+				// 速度を設定
+				SetSpeedDest(SECURE_SPEEDDEST);
+				SetSpeed(GetSpeed() * SECURE_SPEED);
+			}
 		}
 	}
 	else
@@ -348,6 +363,8 @@ void CPolice::ChasePlayer()
 	if (m_pPoliceAI == nullptr || !IsActive()) { return; }
 
 	m_pPoliceAI->Chase();
+
+	m_pPoliceAI->Attack();
 
 	LanePlayer();
 
