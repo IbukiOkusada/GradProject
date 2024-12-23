@@ -40,6 +40,7 @@ public:
 
 	// メンバ関数
 	int GetInCnt() { return m_nInCnt; }	// 今まで登録した総数取得
+	void ResetInCnt() { m_nInCnt = 0; }
 
 private:
 
@@ -52,10 +53,10 @@ private:
 // コンストラクタ
 //===============================================
 template <typename T>
-Cmaplist<T>::Cmaplist()
+Cmaplist<T>::Cmaplist() :
+m_nInCnt(0)
 {
 	m_list.clear();
-	m_nInCnt = 0;
 }
 
 //===============================================
