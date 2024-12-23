@@ -401,7 +401,7 @@ void CGame::Update(void)
             auto player = mgr->GetPlayer(i);
 
             // l”‚ª‘½‚¢
-            if (player != nullptr && !net->GetConnect(i))
+            if (player != nullptr && !net->GetConnect(i) && i != net->GetIdx())
             {
                 player->Uninit();
             }
@@ -427,6 +427,7 @@ void CGame::Update(void)
     CPoliceManager::GetInstance()->Update();
     CPoliceAIManager::GetInstance()->Update();
     CInspectionManager::GetInstance()->Update();
+    CCarManager::GetInstance()->Update();
 
 #if NDEBUG
     CScene::Update();

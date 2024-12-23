@@ -65,7 +65,7 @@ CPolice::SETSTATE_FUNC CPolice::m_SetStateFunc[] =
 //==========================================================
 // コンストラクタ
 //==========================================================
-CPolice::CPolice(int nId) : CCar(nId)
+CPolice::CPolice(int nId, CAR_TYPE type) : CCar(nId, type)
 {
 	// 値のクリア
 	m_Info = SInfo();
@@ -135,13 +135,6 @@ void CPolice::Update(void)
 		return;
 	}
 
-	if (m_pSiren != nullptr)
-	{
-		CDebugProc::GetInstance()->Print("サイレンある\n");
-	}
-
-	CDebugProc::GetInstance()->Print("警察の座標 : [ %f, %f, %f ] : 移動量 : [ %f, %f, %f ]\n", GetPosition().x, GetPosition().y, GetPosition().z, GetMove().x, GetMove().y, GetMove().z);
-
 	// アップデート
 	CCar::Update();
 
@@ -201,6 +194,7 @@ void CPolice::Update(void)
 		SAFE_DELETE(m_pShaderLight)
 	}
 
+	// 状態更新
 	UpdateState();
 }
 
@@ -211,7 +205,7 @@ CPolice *CPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D
 {
 	CPolice *pCar = nullptr;
 
-	pCar = DEBUG_NEW CPolice(nId);
+	pCar = DEBUG_NEW CPolice(nId, CAR_TYPE::CAR_TYPE_POLICE);
 
 	if (pCar != nullptr)
 	{
@@ -272,7 +266,6 @@ void CPolice::MoveRoad()
 		SetSpeedCurve(5.0f);
 
 		float length = D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition()));
-		CDebugProc::GetInstance()->Print("警察との距離 : [ %f ]\n", length);
 
 		// 目的地が存在するかどうか
 		if (pRoadTarget != nullptr)
@@ -373,9 +366,6 @@ void CPolice::ChasePlayer()
 void CPolice::LanePlayer()
 {
 	m_Info.nLaneCount++;
-
-	CDebugProc::GetInstance()->Print("警察の蛇行のオフセット : [ %f, %f, %f ]\n", m_Info.offsetLane.x, m_Info.offsetLane.y, m_Info.offsetLane.z);
-	CDebugProc::GetInstance()->Print("警察の蛇行のカウント : [ %d, %d ]\n", m_Info.nLaneCount, m_Info.nLaneTime);
 
 	if (m_Info.nLaneCount > m_Info.nLaneTime)
 	{

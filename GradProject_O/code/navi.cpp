@@ -200,6 +200,7 @@ void CNavi::CreateEffect(void)
 void CNavi::UpdateNavigation(void)
 {
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+	if (pPlayer == nullptr) { return; }
 	float fDis = FLT_MAX;
 	int nID = 0;
 	for (int i = 0; i < m_Path.size(); i++)
@@ -254,7 +255,7 @@ void CNavi::Reach(void)
 {
 	m_nTime++;
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-
+	if (pPlayer == nullptr) { return; }
 
 	if (m_pGole != nullptr)
 	{
