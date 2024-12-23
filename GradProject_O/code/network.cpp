@@ -960,6 +960,7 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 {
+	return;
 	int byte = 0;
 
 	// ŽÔ‚ÌID‚ð“¾‚é
@@ -1016,6 +1017,7 @@ void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 {
+	return;
 	int byte = 0;
 
 	// ŽÔ‚ÌID‚ð“¾‚é
@@ -1074,6 +1076,7 @@ void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 {
+	return;
 	int byte = 0;
 
 	// ŽÔ‚ÌID‚ð“¾‚é
@@ -1103,6 +1106,7 @@ void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 {
+	return;
 	int byte = 0;
 
 	// ŽÔ‚ÌID‚ð“¾‚é
