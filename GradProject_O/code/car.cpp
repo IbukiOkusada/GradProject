@@ -34,7 +34,7 @@ namespace
 	const float SPEED_INER = (0.05f);			// 速度の慣性
 	const float ROT_MULTI = (0.015f);			// 向き補正倍率
 	const float ROT_MULTI_BACK = (0.015f);		// バック時の向き補正倍率
-	const float ROT_CURVE = (0.3f);				// カーブ判定角度
+	const float ROT_CURVE = (0.2f);				// カーブ判定角度
 	const float LENGTH_POINT = (900.0f);		// 到達判定距離
 	const float LENGTH_LANE = (-400.0f);		// 車線の幅
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
@@ -505,6 +505,7 @@ bool CCar::CollisionObjX(void)
 
 		CObjectX* pObjectX = mgr->Get(i);	// 取得
 
+		if (pObjectX == m_pObj) { continue; }
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
 		// オブジェクトの情報取得
@@ -512,9 +513,10 @@ bool CCar::CollisionObjX(void)
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
 		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
 		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+		D3DXVECTOR3 pVecCollision;
 
 		// OBBとの当たり判定を実行
-		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		bool bCollision = collision::ReflectPointToOBB(&pVecCollision, &m_Info.pos, &m_Info.move, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f, 2.0f);
 
 		// 衝突していない場合繰り返す
 		if (!bCollision) { continue; }
@@ -522,6 +524,10 @@ bool CCar::CollisionObjX(void)
 		if (pObjectX->GetType() == TYPE_PLAYER)
 		{
 			Break();
+		}
+		else
+		{
+			Hit();
 		}
 
 		return true;

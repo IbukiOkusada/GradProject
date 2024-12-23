@@ -44,6 +44,7 @@ public:	// 誰でもアクセス可能
 	void Chase(void);
 	void CallBackup(void);
 	void Attack(void);
+	void StopAttack(void);
 
 	void BeginChase(CPlayer* pPlayer);
 	void EndChase(void);

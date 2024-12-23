@@ -302,7 +302,7 @@ void CPolice::MoveRoad()
 
 			if (m_pPoliceAI->GetAttack())
 			{
-				SetRotMulti(0.01f);
+				SetRotMulti(0.005f);
 
 				// プレイヤーの座標を目指す
 				SetPosTarget(m_Info.pPlayer->GetPosition());
@@ -417,13 +417,15 @@ void CPolice::LanePlayer()
 //==========================================================
 bool CPolice::Collision()
 {
+	CollisionEnemy();
+
 	return CCar::Collision();
 }
 
 //==========================================================
 // オブジェクトとの当たり判定処理
 //==========================================================
-bool CPolice::CollisionObjX(void)
+bool CPolice::CollisionEnemy(void)
 {
 	D3DXVECTOR3 posPolice = GetPosition();
 	D3DXVECTOR3 rotPolice = GetRotation();
@@ -437,7 +439,7 @@ bool CPolice::CollisionObjX(void)
 
 		CObjectX* pObjectX = mgr->Get(i);	// 取得
 
-		if (pObjectX->GetType() != CObject::TYPE_ENEMY) { continue; }
+		if (pObjectX->GetType() != CObject::TYPE_ENEMY){ continue; }
 
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
@@ -475,10 +477,11 @@ void CPolice::Hit()
 		CRoad* pRoadNext = GetRoadTarget();
 		SetRoadTarget(GetRoadStart());
 		SetRoadStart(pRoadNext);
+		SetBack(true);
+		SetBackTime(80);
 	}
 
-	SetBack(true);
-	SetBackTime(80);
+	m_pPoliceAI->StopAttack();
 }
 
 //==========================================================

@@ -160,7 +160,7 @@ private:	// 自分だけがアクセス可能
 	void SearchPlayer();
 	void LanePlayer();
 	bool Collision() override;
-	bool CollisionObjX() override;
+	bool CollisionEnemy();
 	void Hit() override;
 	void Break() override;
 	void RecvTypeSet() override;
