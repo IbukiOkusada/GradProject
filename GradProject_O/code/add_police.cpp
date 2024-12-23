@@ -64,6 +64,7 @@ CAddPolice* CAddPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, c
 	{
 		// À•WÝ’è
 		pCar->SetPosition(pos);
+		pCar->SetRecvPosition(pos);
 
 		// ‰Šú‰»ˆ—
 		pCar->Init();
@@ -72,6 +73,7 @@ CAddPolice* CAddPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, c
 
 		// Œü‚«Ý’è
 		pCar->SetRotation(rot);
+		pCar->SetRecvRotation(rot);
 
 		// ˆÚ“®—ÊÝ’è
 		pCar->SetMove(move);

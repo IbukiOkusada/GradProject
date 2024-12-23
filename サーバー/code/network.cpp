@@ -222,24 +222,17 @@ void CNetWork::Accept(CServer* pServer)
 			pClient->SetCliePort(pServer->GetPort());
 			pClient->SetIP(pServer->GetIP());
 
-			for (int j = 0; j < NetWork::MAX_CONNECT; j++)
-			{
-				if (m_apClient[j] != nullptr) { continue; }
-
-				// ID設定
-				pClient->SetId(j);
-
-				// フラグ初期化
-				m_aFlag[j] = SFlagInfo();
-
-				m_apClient[j] = pClient;
-
-			}
+			// ID設定
+			pClient->SetId(i);
 
 			// マルチスレッド
 			std::thread th(&CNetWork::Access, this, pClient);
 			th.detach();
 
+			// フラグ初期化
+			m_aFlag[i] = SFlagInfo();
+
+			m_apClient[i] = pClient;
 			m_nConnectCnt++;
 		}
 	}

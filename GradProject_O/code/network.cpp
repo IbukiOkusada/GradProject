@@ -851,7 +851,7 @@ void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
 
 	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
 
-	//if (pCar == nullptr)
+	if (pCar == nullptr)
 	{
 		auto it = CCarManager::GetInstance()->CreateGet(carid);
 

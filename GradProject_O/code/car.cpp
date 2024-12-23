@@ -107,6 +107,10 @@ void CCar::Uninit(void)
 void CCar::Update(void)
 {
 	if (m_pObj == nullptr) { return; }
+	if (m_Info.nId < 0) { 
+		Uninit();
+		return; 
+	}
 
 	m_Info.posOld = m_Info.pos;
 	m_Info.fSpeedDest = 0.0f;
@@ -126,6 +130,9 @@ void CCar::Update(void)
 	if (m_Info.type == TYPE::TYPE_RECV)
 	{
 		RecvInerSet();
+
+		//Uninit();
+		//return;
 	}
 	else if(m_Info.type != TYPE::TYPE_NONE)
 	{
@@ -155,12 +162,14 @@ CCar *CCar::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVEC
 	{
 		// 座標設定
 		pCar->SetPosition(pos);
+		pCar->SetRecvPosition(pos);
 
 		// 初期化処理
 		pCar->Init();
 
 		// 向き設定
 		pCar->SetRotation(rot);
+		pCar->SetRecvRotation(rot);
 
 		// 移動量設定
 		pCar->SetMove(move);
@@ -778,14 +787,14 @@ void CCar::RecvInerSet()
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
 		Adjust(diff);
 
-		D3DXVECTOR3 rot = m_Info.rot + diff;
+		D3DXVECTOR3 rot = m_Info.rot + diff * RECV_INER;
 		Adjust(rot);
 		m_Info.rot = rot;
 		Adjust(m_Info.rot);
 	}
 
-	CDebugProc::GetInstance()->Print(" %s 受信しています %d 座標 : [%f, %f, %f]\n", magic_enum::enum_name(m_type).data(),
-		m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
+	CDebugProc::GetInstance()->Print(" 受信しています %d 座標 : [%f, %f, %f]\n", m_Info.nId,
+		m_RecvInfo.pos.x, m_RecvInfo.pos.y, m_RecvInfo.pos.z);
 }
 
 //===============================================
