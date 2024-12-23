@@ -540,7 +540,7 @@ void CPlayer::Controller(void)
 
 	// å¸Ç´ï‚ê≥
 	m_Info.rot.y += m_fTurnSpeed;
-	Adjust(m_Info.rot.y);
+	Adjust(&m_Info.rot.y);
 }
 
 //===============================================

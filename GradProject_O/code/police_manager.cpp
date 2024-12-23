@@ -348,7 +348,7 @@ void CPoliceManager::SetInspection()
 	float targetrot = atan2f(pPrev->GetPosition().x - pRoad->GetPosition().x,
 		pPrev->GetPosition().z - pRoad->GetPosition().z);
 	rot.y = targetrot + D3DX_PI * 0.5f;
-	Adjust(rot.y);
+	Adjust(&rot.y);
 
 	// Ý’u
 	D3DXVECTOR3 pos = pRoad->GetPosition();

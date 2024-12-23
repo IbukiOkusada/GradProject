@@ -433,7 +433,7 @@ void CTitle::PreMove(void)
 		float fIner = 0.05f;						//Šµ«‚Ì“®‚«
 
 		//’²®
-		Adjust(fDiff);
+		Adjust(&fDiff);
 
 		//‰ñ“]‚³‚¹‚é
 		PlayerRot += fDiff * fIner;

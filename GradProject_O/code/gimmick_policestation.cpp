@@ -125,9 +125,9 @@ void CGimmickPoliceStation::Update(void)
 
 		// Œü‚«”»’è
 		float rot = atan2f(pos.x, pos.z);
-		Adjust(rot);
+		Adjust(&rot);
 		float dest = rot - GetRot().y;
-		Adjust(dest);
+		Adjust(&dest);
 		dest = fabsf(dest);
 		CDebugProc::GetInstance()->Print("·•ª [ %f ]", dest);
 
@@ -174,9 +174,9 @@ void CGimmickPoliceStation::Update(void)
 
 			// Œü‚«”»’è
 			float rot = atan2f(pos.x, pos.z);
-			Adjust(rot);
+			Adjust(&rot);
 			float dest = rot - GetRot().y;
-			Adjust(dest);
+			Adjust(&dest);
 			dest = fabsf(dest);
 			CDebugProc::GetInstance()->Print("·•ª [ %f ]", dest);
 

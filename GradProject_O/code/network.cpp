@@ -574,6 +574,7 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 
 	// 座標設定
 	pPlayer->SetRecvPosition(pos);
+	Adjust(&rot);
 	pPlayer->SetRecvRotation(rot);
 }
 
@@ -611,7 +612,7 @@ void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
 	// ゴールのIdを得る
 	int goalid = -1;
 	memcpy(&goalid, pRecvData, sizeof(int));
-	*pByte += 4;
+	*pByte += sizeof(int);
 
 	CGoal* pGoal = CGoalManager::GetInstance()->GetGoal(goalid);
 
@@ -669,7 +670,10 @@ void CNetWork::RecvNextGoal(int* pByte, const int nId, const char* pRecvData)
 	memcpy(&goalid, &pRecvData[byte], sizeof(int));
 	*pByte += sizeof(int);
 
-	CGoalManager::GetInstance()->SetNetId(goalid);
+	if (goalid >= 0 && goalid <= CGoalManager::GetInstance()->GetInfoList()->size())
+	{
+		CGoalManager::GetInstance()->SetNetId(goalid);
+	}
 }
 
 //===================================================
@@ -875,6 +879,7 @@ void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
+	Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
@@ -929,6 +934,7 @@ void CNetWork::RecvPdPos(int* pByte, const int nId, const char* pRecvData)
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
+	Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
@@ -985,6 +991,7 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
+	Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
@@ -993,7 +1000,6 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 {
-	return;
 	int byte = 0;
 
 	// 車のIDを得る
@@ -1109,7 +1115,6 @@ void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 {
-	return;
 	int byte = 0;
 
 	// 車のIDを得る
@@ -1136,7 +1141,6 @@ void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 {
-	return;
 	int byte = 0;
 
 	// 車のIDを得る
@@ -1227,7 +1231,7 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + 1] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PL_POS;
 	int byte = 0;
 
@@ -1277,7 +1281,7 @@ void CNetWork::SendPlGoal(int nId)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PL_GOAL;
 	int byte = 0;
 
@@ -1300,7 +1304,7 @@ void CNetWork::SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float f
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float) + 1] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_GM_HIT;
 	int byte = 0;
 
@@ -1564,7 +1568,6 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 //===================================================
 void CNetWork::SendPdChase(int nId, int plyid)
 {
-	return;
 	if (!GetActive()) { return; }
 
 	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// 送信用
@@ -1592,7 +1595,6 @@ void CNetWork::SendPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendAddPdChase(int nId, int plyid)
 {
-	return;
 	if (!GetActive()) { return; }
 
 	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// 送信用
@@ -1620,7 +1622,6 @@ void CNetWork::SendAddPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendPdChaseEnd(int nId)
 {
-	return;
 	if (!GetActive()) { return; }
 
 	char aSendData[sizeof(int) + sizeof(int)] = {};	// 送信用
@@ -1644,7 +1645,6 @@ void CNetWork::SendPdChaseEnd(int nId)
 //===================================================
 void CNetWork::SendAddPdChaseEnd(int nId)
 {
-	return;
 	if (!GetActive()) { return; }
 
 	char aSendData[sizeof(int) + sizeof(int)] = {};	// 送信用

@@ -270,7 +270,7 @@ void CPlayerTitle::PlayerRotSet(void)
 	float fDiff = rDestRot.y - rRot.y;	//ç∑ï™
 	float fIner = 0.3f;							//äµê´
 
-	Adjust(fDiff);
+	Adjust(&fDiff);
 
 	rRot.y += fDiff * fIner;
 

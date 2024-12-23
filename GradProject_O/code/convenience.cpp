@@ -75,29 +75,29 @@ std::string WideToMultiByte(const std::wstring& rSrcStr)
 //=============================================
 // Œü‚«•â³(‘S‘Ì)
 //=============================================
-void Adjust(D3DXVECTOR3& rot)
+void Adjust(D3DXVECTOR3* rot)
 {
 	// ˆê‚Â‚¸‚Â•â³
-	Adjust(rot.x);
-	Adjust(rot.y);
-	Adjust(rot.z);
+	Adjust(&rot->x);
+	Adjust(&rot->y);
+	Adjust(&rot->z);
 }
 
 //=============================================
 // Œü‚«•â³(’P‘Ì)
 //=============================================
-void Adjust(float& rot)
+void Adjust(float* rot)
 {
 	// -3.14‚©‚ç3.14‚ÌŠÔ‚É•â³
 	while (1)
 	{
-		if (rot > D3DX_PI)
+		if (*rot > D3DX_PI)
 		{
-			rot += -D3DX_PI * 2;
+			*rot += -D3DX_PI * 2;
 		}
-		else if (rot < -D3DX_PI)
+		else if (*rot < -D3DX_PI)
 		{
-			rot += D3DX_PI * 2;
+			*rot += D3DX_PI * 2;
 		}
 		else
 		{
