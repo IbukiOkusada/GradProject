@@ -131,8 +131,8 @@ void CCar::Update(void)
 	{
 		RecvInerSet();
 
-		Uninit();
-		return;
+		//Uninit();
+		//return;
 	}
 	else if(m_Info.type != TYPE::TYPE_NONE)
 	{
