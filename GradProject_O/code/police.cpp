@@ -194,6 +194,7 @@ void CPolice::Update(void)
 		SAFE_DELETE(m_pShaderLight)
 	}
 
+	// ó‘ÔXV
 	UpdateState();
 }
 

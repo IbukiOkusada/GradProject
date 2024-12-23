@@ -21,7 +21,7 @@
 // 名前空間
 namespace
 {
-	const int MAX_NEAR = 3;			// 近い警察の確認数
+	const int MAX_NEAR = 2;			// 近い警察の確認数
 	const float INTERVAL = 5.0f;	// インターバル
 	const int MAX_POLICE = (15);	// 警察の最大値
 }
