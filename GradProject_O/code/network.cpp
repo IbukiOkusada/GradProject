@@ -745,6 +745,7 @@ void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
 {
+
 	CScene* pScene = CManager::GetInstance()->GetScene();
 
 	if (pScene == nullptr) { return; }
@@ -853,12 +854,8 @@ void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		CCarManager::NextCreateInfo info = CCarManager::NextCreateInfo();
-		info.pos = pos;
-		info.rot = rot;
-		info.type = CCar::CAR_TYPE::CAR_TYPE_CAR;
-		CCarManager::GetInstance()->CreateListIn(info, carid);
-		return;
+		pCar = CCar::Create(pos, rot, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
 	}
 
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
@@ -896,12 +893,8 @@ void CNetWork::RecvPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		CCarManager::NextCreateInfo info = CCarManager::NextCreateInfo();
-		info.pos = pos;
-		info.rot = rot;
-		info.type = CCar::CAR_TYPE::CAR_TYPE_POLICE;
-		CCarManager::GetInstance()->CreateListIn(info, carid);
-		return;
+		pCar = CPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
 	}
 
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
@@ -939,12 +932,17 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		CCarManager::NextCreateInfo info = CCarManager::NextCreateInfo();
-		info.pos = pos;
-		info.rot = rot;
-		info.type = CCar::CAR_TYPE::CAR_TYPE_ADDPOLICE;
-		CCarManager::GetInstance()->CreateListIn(info, carid);
-		return;
+		CAddPolice* pPolice = CAddPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+
+		if (pPolice != nullptr)
+		{
+			pPolice->SetType(CCar::TYPE::TYPE_RECV);
+
+			// ‰‰‡‚ÌŒx@‚Í‰‰‡‚ğŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
+			pPolice->GetAi()->SetCall(true);
+
+			pCar = pPolice;
+		}
 	}
 
 	if (pCar == nullptr) { return; }
@@ -988,12 +986,8 @@ void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 	// Ô‚ª‘¶İ‚µ‚Ä‚¢‚È‚¢
 	if (pCar == nullptr)
 	{
-		CCarManager::NextCreateInfo info = CCarManager::NextCreateInfo();
-		info.type = CCar::CAR_TYPE::CAR_TYPE_POLICE;
-		info.chase = CPolice::CHASE::CHASE_BEGIN;
-		info.nChaseId = plyid;
-		CCarManager::GetInstance()->CreateListIn(info, carid);
-		return;
+		pCar = CPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
 	}
 
 	pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
@@ -1045,12 +1039,16 @@ void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 	// Ô‚ª‘¶İ‚µ‚Ä‚¢‚È‚¢
 	if (pCar == nullptr)
 	{
-		CCarManager::NextCreateInfo info = CCarManager::NextCreateInfo();
-		info.type = CCar::CAR_TYPE::CAR_TYPE_ADDPOLICE;
-		info.chase = CPolice::CHASE::CHASE_BEGIN;
-		info.nChaseId = plyid;
-		CCarManager::GetInstance()->CreateListIn(info, carid);
-		return;
+		CAddPolice* pPolice = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+
+		if (pPolice != nullptr)
+		{
+			pPolice->SetType(CCar::TYPE::TYPE_RECV);
+
+			// ‰‰‡‚ÌŒx@‚Í‰‰‡‚ğŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
+			pPolice->GetAi()->SetCall(true);
+		}
+			pCar = pPolice;
 	}
 
 	if (pCar == nullptr) { return; }
@@ -1090,11 +1088,8 @@ void CNetWork::RecvPdChaseEnd(int* pByte, const int nId, const char* pRecvData)
 	// Ô‚ª‘¶İ‚µ‚Ä‚¢‚È‚¢
 	if (pCar == nullptr)
 	{
-		CCarManager::NextCreateInfo info = CCarManager::NextCreateInfo();
-		info.type = CCar::CAR_TYPE::CAR_TYPE_POLICE;
-		info.chase = CPolice::CHASE::CHASE_END;
-		CCarManager::GetInstance()->CreateListIn(info, carid);
-		return;
+		pCar = CPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+		pCar->SetType(CCar::TYPE::TYPE_RECV);
 	}
 
 	// ’ÇÕI—¹ó‘Ô‚É‚·‚é
@@ -1120,11 +1115,16 @@ void CNetWork::RecvAddPdChaseEnd(int* pByte, const int nId, const char* pRecvDat
 	// Ô‚ª‘¶İ‚µ‚Ä‚¢‚È‚¢
 	if (pCar == nullptr)
 	{
-		CCarManager::NextCreateInfo info = CCarManager::NextCreateInfo();
-		info.type = CCar::CAR_TYPE::CAR_TYPE_ADDPOLICE;
-		info.chase = CPolice::CHASE::CHASE_END;
-		CCarManager::GetInstance()->CreateListIn(info, carid);
-		return;
+		pCar = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+
+		if (pCar != nullptr)
+		{
+			pCar->SetType(CCar::TYPE::TYPE_RECV);
+		}
+		else
+		{
+			return;
+		}
 	}
 
 	// ’ÇÕI—¹ó‘Ô‚É‚·‚é
