@@ -73,7 +73,9 @@ void CCarManager::Update(void)
 {
 	m_bSet = true;
 
-	for (const auto& it : *m_NextList.GetList())
+	auto list = *m_NextList.GetList();
+
+	for (const auto& it : list)
 	{
 		// Šù‚É‘¶İ‚·‚éê‡‚Í¶¬‚µ‚È‚¢
 		CCar* pCar = m_List.Get(it.first);
