@@ -43,6 +43,8 @@ public:	// 誰でもアクセス可能
 	void Search(void);
 	void Chase(void);
 	void CallBackup(void);
+	void Attack(void);
+	void StopAttack(void);
 
 	void BeginChase(CPlayer* pPlayer);
 	void EndChase(void);
@@ -56,6 +58,7 @@ public:	// 誰でもアクセス可能
 	CPolice* GetPolice() { return m_pPolice; }
 	float GetChaseSpeed() { return m_fChaseSpeed; }
 	bool GetCall() { return m_bCall; }
+	bool GetAttack() { return bAttack; }
 
 	// メンバ関数(設定)
 	void SetCall(bool bCall) { m_bCall = bCall; }
@@ -92,6 +95,8 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	float m_fSearchTimer;
 	float m_fLevelSearch;
+	int nAttackTime;
+	bool bAttack;
 	TYPE m_type;
 	CPolice* m_pPoliceBackUp;
 };

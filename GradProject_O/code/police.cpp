@@ -299,15 +299,30 @@ void CPolice::MoveRoad()
 			// プレイヤーが存在しないなら最寄りの道に戻る
 			if (m_Info.pPlayer == nullptr) { return; }
 
-			// プレイヤーの座標を目指す
-			SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
+			// 追跡用に加速する
+			SetSpeedDest(GetSpeedDest() + m_pPoliceAI->GetChaseSpeed());
 
-			// 一定距離まで近づいたら減速させる
-			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+			if (m_pPoliceAI->GetAttack())
+			{
+				SetRotMulti(0.005f);
 
-			// 速度を設定
-			SetSpeedDest(SECURE_SPEEDDEST);
-			SetSpeed(GetSpeed() * SECURE_SPEED);
+				// プレイヤーの座標を目指す
+				SetPosTarget(m_Info.pPlayer->GetPosition());
+			}
+			else
+			{
+				SetRotMulti(ROT_MULTI_CHASE);
+
+				// プレイヤーの座標を目指す
+				SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
+
+				// 一定距離まで近づいたら減速させる
+				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+
+				// 速度を設定
+				SetSpeedDest(SECURE_SPEEDDEST);
+				SetSpeed(GetSpeed() * SECURE_SPEED);
+			}
 		}
 	}
 	else
@@ -350,6 +365,8 @@ void CPolice::ChasePlayer()
 	if (m_pPoliceAI == nullptr || !IsActive()) { return; }
 
 	m_pPoliceAI->Chase();
+
+	m_pPoliceAI->Attack();
 
 	LanePlayer();
 
@@ -402,39 +419,47 @@ void CPolice::LanePlayer()
 //==========================================================
 bool CPolice::Collision()
 {
+	CollisionEnemy();
+
 	return CCar::Collision();
 }
 
 //==========================================================
 // オブジェクトとの当たり判定処理
 //==========================================================
-bool CPolice::CollisionObjX(void)
+bool CPolice::CollisionEnemy(void)
 {
+	D3DXVECTOR3 posPolice = GetPosition();
+	D3DXVECTOR3 rotPolice = GetRotation();
+	D3DXVECTOR3 sizeMaxPolice = m_pObj->GetVtxMax();
+	D3DXVECTOR3 sizeMinPolice = m_pObj->GetVtxMin();
+	D3DXVECTOR3 sizePolice = (sizeMaxPolice - sizeMinPolice) * 0.5f;
+
 	auto mgr = CObjectX::GetList();
 	for (int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
 
 		CObjectX* pObjectX = mgr->Get(i);	// 取得
 
+		if (pObjectX->GetType() != CObject::TYPE_ENEMY){ continue; }
+
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
 		// オブジェクトの情報取得
 		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
-		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
-		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+		D3DXVECTOR3 sizeMaxObjectX = pObjectX->GetVtxMax();
+		D3DXVECTOR3 sizeMinObjectX = pObjectX->GetVtxMin();
+		D3DXVECTOR3 sizeObjectX = (sizeMaxObjectX - sizeMinObjectX) * 0.5f;
 
 		// OBBとの当たり判定を実行
-		bool bCollision = collision::CollideOBBToOBBTrigger(GetPosition(), GetRotation(), (m_pObj->GetVtxMax() - m_pObj->GetVtxMin()) * 0.5f, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		bool bCollision = collision::CollideOBBToOBBTrigger(posPolice, rotPolice, sizePolice, posObjectX, rotObjectX, sizeObjectX);
 
 		// 衝突していない場合繰り返す
 		if (!bCollision) { continue; }
 
-		if (pObjectX->GetType() == CObject::TYPE_ENEMY)
-		{
-			m_Info.nLaneTime = 0;
-			LanePlayer();
-		}
+		m_Info.nLaneTime = 0;
+		LanePlayer();
 
 		return true;
 	}
@@ -454,10 +479,11 @@ void CPolice::Hit()
 		CRoad* pRoadNext = GetRoadTarget();
 		SetRoadTarget(GetRoadStart());
 		SetRoadStart(pRoadNext);
+		SetBack(true);
+		SetBackTime(80);
 	}
 
-	SetBack(true);
-	SetBackTime(80);
+	m_pPoliceAI->StopAttack();
 }
 
 //==========================================================
