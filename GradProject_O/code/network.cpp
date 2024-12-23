@@ -351,7 +351,7 @@ void CNetWork::Online(void)
 		if (*pRecvByte > 0)
 		{
 			// マルチスレッド
-#if 0
+#if 1
 			std::thread th(&CNetWork::ByteCheck, this, pData, pRecvByte);
 			th.detach();
 #else
