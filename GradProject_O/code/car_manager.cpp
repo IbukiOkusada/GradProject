@@ -79,7 +79,7 @@ void CCarManager::Update(void)
 	{
 		// Šù‚É‘¶İ‚·‚éê‡‚Í¶¬‚µ‚È‚¢
 		CCar* pCar = m_List.Get(it.first);
-		if (pCar != nullptr) { continue; }
+		//if (pCar != nullptr) { continue; }
 
 		auto info = it.second;
 

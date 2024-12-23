@@ -213,12 +213,14 @@ CPolice *CPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D
 	{
 		// À•WÝ’è
 		pCar->SetPosition(pos);
+		pCar->SetRecvPosition(pos);
 
 		// ‰Šú‰»ˆ—
 		pCar->Init();
 
 		// Œü‚«Ý’è
 		pCar->SetRotation(rot);
+		pCar->SetRecvRotation(rot);
 
 		// ˆÚ“®—ÊÝ’è
 		pCar->SetMove(move);
