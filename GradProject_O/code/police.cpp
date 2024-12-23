@@ -334,6 +334,7 @@ void CPolice::MoveRoad()
 			pRoadTarget = GetRoadTarget();
 
 			// ˆê’è‹——£‚Ü‚Å‹ß‚Ã‚¢‚½‚ç“ž’B”»’èˆ—‚ðs‚¤
+			if (pRoadTarget == nullptr) { return; }
 			float length = D3DXVec3Length(&(pRoadTarget->GetPosition() - GetPosition()));
 			if (length < LENGTH_POINT)
 				ReachRoad();
