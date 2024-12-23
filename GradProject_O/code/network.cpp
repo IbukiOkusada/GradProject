@@ -574,7 +574,6 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 
 	// À•WÝ’è
 	pPlayer->SetRecvPosition(pos);
-	Adjust(&rot);
 	pPlayer->SetRecvRotation(rot);
 }
 
