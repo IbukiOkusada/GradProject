@@ -95,9 +95,6 @@ public:	// 誰でもアクセス可能
 
 private:	// 自分だけがアクセス可能
 
-	// メンバ関数
-	void Adjust(D3DXVECTOR3& rot);
-
 	// メンバ変数
 	SStartInfo m_startInfo;		// 開始地点情報
 	STargetInfo m_targetInfo;	// ターゲット情報
