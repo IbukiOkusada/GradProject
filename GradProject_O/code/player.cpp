@@ -887,7 +887,7 @@ bool CPlayer::CollisionEnemy(void)
 		m_Info.move.y += 0.0f;
 		m_Info.move.z += cosf(rotVec) * 20.0f;
 
-		m_Info.bHitInterval = 10;
+		m_Info.bHitInterval = 20;
 		m_Info.bHit = true;
 
 		Damage(2.0f);
