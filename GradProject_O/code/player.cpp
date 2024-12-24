@@ -60,7 +60,7 @@
 
 namespace
 {
-	const float RECV_INER = (0.65f);		// 受信したデータの慣性
+	const float RECV_INER = (10.0f / NetWork::SEND_MS);		// 受信したデータの慣性
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
 	const float DEATH_INTERVAL = (180.0f);	// 死亡インターバル
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
@@ -271,8 +271,7 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	SetCol();
 
 	SetMatrix();
-	//m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(0.8f,0.9f,1.0f), 2.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f),D3DXToRadian(35));
-	
+
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -398,6 +397,7 @@ void CPlayer::Update(void)
 
 		rot.z += m_fTurnSpeed * 20.0f;
 		m_pObj->SetPosition(pos);
+		Adjust(&rot);
 		m_pObj->SetRotation(rot);
 		m_pObj->SetShadowHeight(GetPosition().y);
 		// エフェクト
@@ -484,7 +484,7 @@ void CPlayer::Update(void)
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー : 種類 [ %d ] : ", m_type);
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
+	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
 }
 
 //===============================================
@@ -540,7 +540,8 @@ void CPlayer::Controller(void)
 
 	// 向き補正
 	m_Info.rot.y += m_fTurnSpeed;
-	Adjust(m_Info.rot.y);
+	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	Adjust(&m_Info.rot.y);
 }
 
 //===============================================
@@ -889,7 +890,7 @@ bool CPlayer::CollisionEnemy(void)
 		m_Info.bHitInterval = 10;
 		m_Info.bHit = true;
 
-		Damage(5.0f);
+		Damage(2.0f);
 
 		return true;
 	}
@@ -1064,6 +1065,10 @@ bool CPlayer::CollisionGimick(void)
 //===============================================
 void CPlayer::Damage(float fDamage)
 {
+	if (m_Info.state == STATE::STATE_DEATH | m_Info.state == STATE::STATE_APPEAR) {
+		return;
+	}
+
 	m_fLife -= fDamage;
 	SAFE_DELETE(m_pDamageEffect);
 
@@ -1379,12 +1384,10 @@ void CPlayer::RecvInerSet()
 	// 向き
 	{
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
-		Adjust(diff);
-
-		D3DXVECTOR3 rot = m_Info.rot + diff * (RECV_INER * 0.5f);
-		Adjust(rot);
+		Adjust(&diff);
+		D3DXVECTOR3 rot = m_Info.rot + (diff * RECV_INER);
 		m_Info.rot = rot;
-		Adjust(m_Info.rot);
+		Adjust(&m_Info.rot);
 	}
 }
 
@@ -1470,6 +1473,11 @@ void CPlayer::SetStateActive()
 		{
 			m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
 			m_pCollSound->Stop();
+		}
+
+		if (m_pShaderLight == nullptr)
+		{
+			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(0.8f,0.9f,1.0f), 2.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f),D3DXToRadian(35));
 		}
 
 #if NDEBUG
@@ -1628,6 +1636,7 @@ void CPlayer::Respawn()
 {
 	m_Info.rot = VECTOR3_ZERO;
 	m_Info.pos = VECTOR3_ZERO;
+	m_Info.posOld = VECTOR3_ZERO;
 	m_Info.move = VECTOR3_ZERO;
 	m_fBrake = 0.0f;
 	m_fEngine = 0.0f;

@@ -79,7 +79,7 @@ protected:
 
 public:	// 誰でもアクセス可能
 
-	CPolice(int nId);	// コンストラクタ(オーバーロード)
+	CPolice(int nId, CAR_TYPE type);	// コンストラクタ(オーバーロード)
 	virtual ~CPolice() override;	// デストラクタ
 
 	// メンバ関数
@@ -160,7 +160,7 @@ private:	// 自分だけがアクセス可能
 	void SearchPlayer();
 	void LanePlayer();
 	bool Collision() override;
-	bool CollisionObjX() override;
+	bool CollisionEnemy();
 	void Hit() override;
 	void Break() override;
 	void RecvTypeSet() override;

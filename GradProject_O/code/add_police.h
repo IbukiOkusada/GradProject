@@ -15,7 +15,7 @@
 
 namespace AddPolice
 {
-	const int MAX = 14;
+	const int MAX = 8;
 }
 
 // ‘O•ûéŒ¾

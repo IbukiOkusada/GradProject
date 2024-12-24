@@ -121,7 +121,6 @@ CNetWork* CNetWork::GetInstance()
 	return m_pInstance;
 }
 
-
 //===============================================
 // ‰ð•ú
 //===============================================
@@ -526,9 +525,11 @@ void CNetWork::RecvJoin(int* pByte, const int nId, const char* pRecvData)
 void CNetWork::RecvGetId(int* pByte, const int nId, const char* pRecvData)
 {
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT) { return; }
+	if (m_nMyIdx >= 0) { return; }
 
 	// Ú‘±‚³‚ê‚½‚±‚Æ‚É‚·‚é
 	m_aConnect[nId] = true;
+
 	m_nMyIdx = nId;
 }
 
@@ -573,6 +574,7 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 	}
 
 	// À•WÝ’è
+	Adjust(&rot);
 	pPlayer->SetRecvPosition(pos);
 	pPlayer->SetRecvRotation(rot);
 }
@@ -611,7 +613,7 @@ void CNetWork::RecvPlGoal(int* pByte, const int nId, const char* pRecvData)
 	// ƒS[ƒ‹‚ÌId‚ð“¾‚é
 	int goalid = -1;
 	memcpy(&goalid, pRecvData, sizeof(int));
-	*pByte += 4;
+	*pByte += sizeof(int);
 
 	CGoal* pGoal = CGoalManager::GetInstance()->GetGoal(goalid);
 
@@ -669,7 +671,10 @@ void CNetWork::RecvNextGoal(int* pByte, const int nId, const char* pRecvData)
 	memcpy(&goalid, &pRecvData[byte], sizeof(int));
 	*pByte += sizeof(int);
 
-	CGoalManager::GetInstance()->SetNetId(goalid);
+	if (goalid >= 0 && goalid <= CGoalManager::GetInstance()->GetInfoList()->size())
+	{
+		CGoalManager::GetInstance()->SetNetId(goalid);
+	}
 }
 
 //===================================================
@@ -745,12 +750,6 @@ void CNetWork::RecvTutorialNo(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvTutorialEnd(int* pByte, const int nId, const char* pRecvData)
 {
-	//// ŽŸ‚Ì‰æ–Ê‚É‘JˆÚ
-	//if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_ENTRY)
-	//{
-	//	CManager::GetInstance()->GetFade()->Set(CScene::MODE::MODE_GAME);
-	//}
-
 	CScene* pScene = CManager::GetInstance()->GetScene();
 
 	if (pScene == nullptr) { return; }
@@ -859,13 +858,29 @@ void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		pCar = CCar::Create(pos, rot, VECTOR3_ZERO, carid);
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+		auto it = CCarManager::GetInstance()->CreateGet(carid);
+
+		if (it != nullptr)
+		{
+			it->pos = pos;
+			it->rot = rot;
+		}
+		else
+		{
+			auto info = CCarManager::NextCreateInfo();
+			info.pos = pos;
+			info.rot = rot;
+			info.type = CCar::CAR_TYPE::CAR_TYPE_CAR;
+			CCarManager::GetInstance()->CreateListIn(info, carid);
+		}
+
+		return;
 	}
 
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
+	Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
@@ -898,13 +913,29 @@ void CNetWork::RecvPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		pCar = CPolice::Create(pos, rot, VECTOR3_ZERO, carid);
-		pCar->SetType(CCar::TYPE::TYPE_RECV);
+		auto it = CCarManager::GetInstance()->CreateGet(carid);
+
+		if (it != nullptr)
+		{
+			it->pos = pos;
+			it->rot = rot;
+		}
+		else
+		{
+			auto info = CCarManager::NextCreateInfo();
+			info.pos = pos;
+			info.rot = rot;
+			info.type = CCar::CAR_TYPE::CAR_TYPE_POLICE;
+			CCarManager::GetInstance()->CreateListIn(info, carid);
+		}
+
+		return;
 	}
 
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
+	Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
@@ -937,17 +968,23 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	if (pCar == nullptr)
 	{
-		CAddPolice* pPolice = CAddPolice::Create(pos, rot, VECTOR3_ZERO, carid);
+		auto it = CCarManager::GetInstance()->CreateGet(carid);
 
-		if (pPolice != nullptr)
+		if (it != nullptr)
 		{
-			pPolice->SetType(CCar::TYPE::TYPE_RECV);
-
-			// ‰ž‰‡‚ÌŒxŽ@‚Í‰ž‰‡‚ðŒÄ‚Î‚È‚¢‚æ‚¤‚É‚·‚é
-			pPolice->GetAi()->SetCall(true);
-
-			pCar = pPolice;
+			it->pos = pos;
+			it->rot = rot;
 		}
+		else
+		{
+			auto info = CCarManager::NextCreateInfo();
+			info.pos = pos;
+			info.rot = rot;
+			info.type = CCar::CAR_TYPE::CAR_TYPE_ADDPOLICE;
+			CCarManager::GetInstance()->CreateListIn(info, carid);
+		}
+
+		return;
 	}
 
 	if (pCar == nullptr) { return; }
@@ -955,6 +992,7 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
+	Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
@@ -1015,6 +1053,7 @@ void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 {
+	return;
 	int byte = 0;
 
 	// ŽÔ‚ÌID‚ð“¾‚é
@@ -1193,7 +1232,7 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + 1] = {};	// ‘—M—p
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// ‘—M—p
 	int nProt = NetWork::COMMAND_PL_POS;
 	int byte = 0;
 
@@ -1243,7 +1282,7 @@ void CNetWork::SendPlGoal(int nId)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + 1] = {};	// ‘—M—p
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
 	int nProt = NetWork::COMMAND_PL_GOAL;
 	int byte = 0;
 
@@ -1266,7 +1305,7 @@ void CNetWork::SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float f
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float) + 1] = {};	// ‘—M—p
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// ‘—M—p
 	int nProt = NetWork::COMMAND_GM_HIT;
 	int byte = 0;
 
@@ -1530,26 +1569,26 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 //===================================================
 void CNetWork::SendPdChase(int nId, int plyid)
 {
-	//if (!GetActive()) { return; }
+	if (!GetActive()) { return; }
 
-	//char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	//int nProt = NetWork::COMMAND_PD_CHASE;
-	//int byte = 0;
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_PD_CHASE;
+	int byte = 0;
 
-	//// protocol‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nProt, sizeof(int));
-	//byte += sizeof(int);
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
-	//// Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nId, sizeof(int));
-	//byte += sizeof(int);
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
-	//// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &plyid, sizeof(int));
-	//byte += sizeof(int);
+	// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &plyid, sizeof(int));
+	byte += sizeof(int);
 
-	//// ‘—M
-	//m_pClient->SetData(&aSendData[0], byte);
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1557,26 +1596,26 @@ void CNetWork::SendPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendAddPdChase(int nId, int plyid)
 {
-	//if (!GetActive()) { return; }
+	if (!GetActive()) { return; }
 
-	//char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	//int nProt = NetWork::COMMAND_ADDPD_CHASE;
-	//int byte = 0;
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_ADDPD_CHASE;
+	int byte = 0;
 
-	//// protocol‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nProt, sizeof(int));
-	//byte += sizeof(int);
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
-	//// Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nId, sizeof(int));
-	//byte += sizeof(int);
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
-	//// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &plyid , sizeof(int));
-	//byte += sizeof(int);
+	// ’ÇÕ‚·‚éƒvƒŒƒCƒ„[Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &plyid , sizeof(int));
+	byte += sizeof(int);
 
-	//// ‘—M
-	//m_pClient->SetData(&aSendData[0], byte);
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1584,22 +1623,22 @@ void CNetWork::SendAddPdChase(int nId, int plyid)
 //===================================================
 void CNetWork::SendPdChaseEnd(int nId)
 {
-	//if (!GetActive()) { return; }
+	if (!GetActive()) { return; }
 
-	//char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	//int nProt = NetWork::COMMAND_PD_CHASEEND;
-	//int byte = 0;
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_PD_CHASEEND;
+	int byte = 0;
 
-	//// protocol‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nProt, sizeof(int));
-	//byte += sizeof(int);
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
-	//// Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nId, sizeof(int));
-	//byte += sizeof(int);
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
-	//// ‘—M
-	//m_pClient->SetData(&aSendData[0], byte);
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
 }
 
 //===================================================
@@ -1607,20 +1646,20 @@ void CNetWork::SendPdChaseEnd(int nId)
 //===================================================
 void CNetWork::SendAddPdChaseEnd(int nId)
 {
-	//if (!GetActive()) { return; }
+	if (!GetActive()) { return; }
 
-	//char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
-	//int nProt = NetWork::COMMAND_ADDPD_CHASEEND;
-	//int byte = 0;
+	char aSendData[sizeof(int) + sizeof(int)] = {};	// ‘—M—p
+	int nProt = NetWork::COMMAND_ADDPD_CHASEEND;
+	int byte = 0;
 
-	//// protocol‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nProt, sizeof(int));
-	//byte += sizeof(int);
+	// protocol‚ð‘}“ü
+	memcpy(&aSendData[byte], &nProt, sizeof(int));
+	byte += sizeof(int);
 
-	//// Id‚ð‘}“ü
-	//memcpy(&aSendData[byte], &nId, sizeof(int));
-	//byte += sizeof(int);
+	// Id‚ð‘}“ü
+	memcpy(&aSendData[byte], &nId, sizeof(int));
+	byte += sizeof(int);
 
-	//// ‘—M
-	//m_pClient->SetData(&aSendData[0], byte);
+	// ‘—M
+	m_pClient->SetData(&aSendData[0], byte);
 }

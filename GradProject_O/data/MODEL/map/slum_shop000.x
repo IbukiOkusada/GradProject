@@ -2498,7 +2498,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\ë≤ã∆êßçÏ\\GradProject\\GradProject_O\\data\\TEXTURE\\rotting_wood001.jpg";
+    "data\\TEXTURE\\rotting_wood001.jpg";
    }
   }
   Material {
@@ -2507,7 +2507,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\ë≤ã∆êßçÏ\\GradProject\\GradProject_O\\data\\TEXTURE\\mat000.jpg";
+    "data\\TEXTURE\\mat000.jpg";
    }
   }
   Material {
@@ -2516,7 +2516,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\ë≤ã∆êßçÏ\\GradProject\\GradProject_O\\data\\TEXTURE\\totan001.jpg";
+    "data\\TEXTURE\\totan001.jpg";
    }
   }
   Material {
@@ -2570,7 +2570,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\ë≤ã∆êßçÏ\\GradProject\\GradProject_O\\data\\TEXTURE\\goods000.jpg";
+    "data\\TEXTURE\\goods000.jpg";
    }
   }
   Material {
@@ -2579,7 +2579,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\ë≤ã∆êßçÏ\\GradProject\\GradProject_O\\data\\TEXTURE\\goods001.jpg";
+    "data\\TEXTURE\\goods001.jpg";
    }
   }
  }

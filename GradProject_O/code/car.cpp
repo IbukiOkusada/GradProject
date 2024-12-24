@@ -17,6 +17,7 @@
 #include "player_manager.h"
 #include "bridge.h"
 #include "meshfield.h"
+#include "magic_enum/magic_enum.hpp"
 
 // マクロ定義
 
@@ -33,12 +34,12 @@ namespace
 	const float SPEED_INER = (0.05f);			// 速度の慣性
 	const float ROT_MULTI = (0.015f);			// 向き補正倍率
 	const float ROT_MULTI_BACK = (0.015f);		// バック時の向き補正倍率
-	const float ROT_CURVE = (0.3f);				// カーブ判定角度
+	const float ROT_CURVE = (0.2f);				// カーブ判定角度
 	const float LENGTH_POINT = (900.0f);		// 到達判定距離
 	const float LENGTH_LANE = (-400.0f);		// 車線の幅
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
-	const float RECV_INER = (0.35f);			// 受信したデータの慣性
-	const float GRAVITY = (-24.0f);		//プレイヤー重力
+	const float RECV_INER = (1.0f / NetWork::SEND_MS);			// 受信したデータの慣性
+	const float GRAVITY = (-24.0f);				//プレイヤー重力
 
 	const int SET_COL_MAX = (100);				// 設定する色の最大値（100 = 1.0）
 	const float SET_FLOAT_COL = (100.0f);		// 色のintの値をfloatに直す用
@@ -47,14 +48,15 @@ namespace
 //==========================================================
 // コンストラクタ
 //==========================================================
-CCar::CCar(int nId)
+CCar::CCar(int nId, CAR_TYPE type) : 
+m_Info(SInfo()),
+m_RecvInfo(SRecvInfo()),
+m_pObj(nullptr),
+m_pTailLamp(nullptr),
+m_type(type)
 {
 	// 値のクリア
-	m_Info = SInfo();
 	m_Info.nId = nId;
-	m_RecvInfo = SRecvInfo();
-	m_pObj = nullptr;
-	m_pTailLamp = nullptr;
 
 	// リストに入れる
 	CCarManager::GetInstance()->ListIn(this);
@@ -104,6 +106,12 @@ void CCar::Uninit(void)
 //==========================================================
 void CCar::Update(void)
 {
+	if (m_pObj == nullptr) { return; }
+	if (m_Info.nId < 0) { 
+		Uninit();
+		return; 
+	}
+
 	m_Info.posOld = m_Info.pos;
 	m_Info.fSpeedDest = 0.0f;
 
@@ -122,6 +130,9 @@ void CCar::Update(void)
 	if (m_Info.type == TYPE::TYPE_RECV)
 	{
 		RecvInerSet();
+
+		//Uninit();
+		//return;
 	}
 	else if(m_Info.type != TYPE::TYPE_NONE)
 	{
@@ -134,8 +145,6 @@ void CCar::Update(void)
 		}
 	}
 
-	//CDebugProc::GetInstance()->Print("車の座標 : [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-
 	// 座標系設定
 	Set();
 }
@@ -147,18 +156,20 @@ CCar *CCar::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVEC
 {
 	CCar *pCar = nullptr;
 
-	pCar = DEBUG_NEW CCar(nId);
+	pCar = DEBUG_NEW CCar(nId, CAR_TYPE::CAR_TYPE_CAR);
 
 	if (pCar != nullptr)
 	{
 		// 座標設定
 		pCar->SetPosition(pos);
+		pCar->SetRecvPosition(pos);
 
 		// 初期化処理
 		pCar->Init();
 
 		// 向き設定
 		pCar->SetRotation(rot);
+		pCar->SetRecvRotation(rot);
 
 		// 移動量設定
 		pCar->SetMove(move);
@@ -503,6 +514,7 @@ bool CCar::CollisionObjX(void)
 
 		CObjectX* pObjectX = mgr->Get(i);	// 取得
 
+		if (pObjectX == m_pObj) { continue; }
 		if (!pObjectX->GetEnableCollision()) { continue; }
 
 		// オブジェクトの情報取得
@@ -510,9 +522,10 @@ bool CCar::CollisionObjX(void)
 		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
 		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
 		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+		D3DXVECTOR3 pVecCollision;
 
 		// OBBとの当たり判定を実行
-		bool bCollision = collision::CollidePointToOBB(&m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+		bool bCollision = collision::ReflectPointToOBB(&pVecCollision, &m_Info.pos, &m_Info.move, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f, 2.0f);
 
 		// 衝突していない場合繰り返す
 		if (!bCollision) { continue; }
@@ -520,6 +533,10 @@ bool CCar::CollisionObjX(void)
 		if (pObjectX->GetType() == TYPE_PLAYER)
 		{
 			Break();
+		}
+		else
+		{
+			Hit();
 		}
 
 		return true;
@@ -768,13 +785,16 @@ void CCar::RecvInerSet()
 	// 向き
 	{
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
-		Adjust(diff);
+		Adjust(&diff);
 
-		D3DXVECTOR3 rot = m_Info.rot + diff;
-		Adjust(rot);
+		D3DXVECTOR3 rot = m_Info.rot + diff * RECV_INER;
+		Adjust(&rot);
 		m_Info.rot = rot;
-		Adjust(m_Info.rot);
+		Adjust(&m_Info.rot);
 	}
+
+	CDebugProc::GetInstance()->Print(" 受信しています %d 座標 : [%f, %f, %f]\n", m_Info.nId,
+		m_RecvInfo.pos.x, m_RecvInfo.pos.y, m_RecvInfo.pos.z);
 }
 
 //===============================================

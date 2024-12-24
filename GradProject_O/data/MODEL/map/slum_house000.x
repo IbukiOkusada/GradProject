@@ -525,7 +525,7 @@ Mesh {
    0.000000;0.000000;0.000000;;
    0.000000;0.000000;0.000000;;
    TextureFilename {
-    "C:\\Users\\student\\Desktop\\ë≤ã∆êßçÏ\\GradProject\\GradProject_O\\data\\TEXTURE\\totan000.jpg";
+    "data\\TEXTURE\\totan000.jpg";
    }
   }
   Material {

@@ -33,12 +33,13 @@ Clist<CAddPolice*> CAddPolice::m_List = {};
 //==========================================================
 // コンストラクタ
 //==========================================================
-CAddPolice::CAddPolice(int nId) : CPolice(nId)
+CAddPolice::CAddPolice(int nId) : CPolice(nId, CAR_TYPE::CAR_TYPE_ADDPOLICE),
+m_SpawnPos(VECTOR3_ZERO),
+m_Path(),
+m_nNowRoad(0)
 {
-	m_SpawnPos = VECTOR3_ZERO;
+	// リストに入れる
 	m_List.Regist(this);
-	m_Path.clear();
-	m_nNowRoad = 0;
 }
 
 //==========================================================
@@ -63,6 +64,7 @@ CAddPolice* CAddPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, c
 	{
 		// 座標設定
 		pCar->SetPosition(pos);
+		pCar->SetRecvPosition(pos);
 
 		// 初期化処理
 		pCar->Init();
@@ -71,6 +73,7 @@ CAddPolice* CAddPolice::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, c
 
 		// 向き設定
 		pCar->SetRotation(rot);
+		pCar->SetRecvRotation(rot);
 
 		// 移動量設定
 		pCar->SetMove(move);
@@ -219,6 +222,7 @@ void CAddPolice::ReachRoad()
 //===============================================
 void CAddPolice::SendPosition()
 {
+	if (GetState() == STATE_FADEOUT) { return; }
 	CNetWork* pNet = CNetWork::GetInstance();
 
 	pNet->SendAddPdPos(GetId(), GetPosition(), GetRotation());

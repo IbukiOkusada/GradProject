@@ -1,5 +1,6 @@
 #include "manager.h"
 #include "texture.h"
+#include "debugproc.h"
 //=============================================
 //ãóó£éÊìæä÷êî
 //=============================================
@@ -75,29 +76,31 @@ std::string WideToMultiByte(const std::wstring& rSrcStr)
 //=============================================
 // å¸Ç´ï‚ê≥(ëSëÃ)
 //=============================================
-void Adjust(D3DXVECTOR3& rot)
+void Adjust(D3DXVECTOR3* rot)
 {
 	// àÍÇ¬Ç∏Ç¬ï‚ê≥
-	Adjust(rot.x);
-	Adjust(rot.y);
-	Adjust(rot.z);
+	Adjust(&rot->x);
+	Adjust(&rot->y);
+	Adjust(&rot->z);
 }
 
 //=============================================
 // å¸Ç´ï‚ê≥(íPëÃ)
 //=============================================
-void Adjust(float& rot)
+void Adjust(float* rot)
 {
 	// -3.14Ç©ÇÁ3.14ÇÃä‘Ç…ï‚ê≥
 	while (1)
 	{
-		if (rot > D3DX_PI)
+		if (*rot > D3DX_PI)
 		{
-			rot += -D3DX_PI * 2;
+			*rot += -D3DX_PI * 2;
+			CDebugProc::GetInstance()->Print("ï‚ê≥ÇµÇΩÇÊ");
 		}
-		else if (rot < -D3DX_PI)
+		else if (*rot < -D3DX_PI)
 		{
-			rot += D3DX_PI * 2;
+			*rot += D3DX_PI * 2;
+			CDebugProc::GetInstance()->Print("ï‚ê≥ÇµÇΩÇÊ");
 		}
 		else
 		{

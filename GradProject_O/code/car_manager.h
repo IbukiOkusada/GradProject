@@ -10,15 +10,33 @@
 #include "list_manager.h"
 #include "list.h"
 #include "map_list.h"
+#include "car.h"
+#include "police.h"
 
 // 前方宣言
-class CCar;
 
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
 class CCarManager : public CListManager
 {
+public:
+
+	// 受信用構造体
+	struct NextCreateInfo
+	{
+		int nChaseId;		// 追跡しているプレイヤーID
+		CCar::CAR_TYPE type;	// 種類
+		D3DXVECTOR3 pos;	// 位置
+		D3DXVECTOR3 rot;	// 向き
+		D3DXVECTOR3 move;	// 移動量
+		CPolice::CHASE chase;
+
+		// コンストラクタ
+		NextCreateInfo() : nChaseId(-1), type(CCar::CAR_TYPE::CAR_TYPE_MAX),
+			pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), move(VECTOR3_ZERO), chase(CPolice::CHASE::CHASE_MAX) {}
+	};
+
 private:
 
 	CCarManager();		// コンストラクタ
@@ -37,6 +55,9 @@ public:	// 誰でもアクセス可能
 	void ListRelease() { if (m_pList != nullptr) { delete m_pList; m_pList = nullptr; } }			// リスト解放
 	void ListIn(CCar* pCar);
 	void ListOut(CCar* pCar);
+	void CreateListIn(NextCreateInfo& info, int nId);
+	void CreateListOut(NextCreateInfo& info, int nId);
+	NextCreateInfo* CreateGet(int nId);
 	bool Hit(D3DXVECTOR3& pos, const float fRange, const float fHeight, const int nDamage);
 
 private:	// 自分だけがアクセス可能
@@ -48,7 +69,10 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	Clist<CCar*>* m_pList;
 	Cmaplist<CCar*> m_List;
-	int m_nNum;
+	Cmaplist<NextCreateInfo*> m_NextList;
+	Cmaplist<NextCreateInfo*> m_NextTempList;
+	int m_nNum;		// 総数
+	bool m_bSet;	// 設定中かどうか
 	static CCarManager* m_pInstance;	// インスタンス
 };
 

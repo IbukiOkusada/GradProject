@@ -21,7 +21,7 @@
 // –¼‘O‹óŠÔ
 namespace
 {
-	const int MAX_NEAR = 3;			// ‹ß‚¢ŒxŽ@‚ÌŠm”F”
+	const int MAX_NEAR = 2;			// ‹ß‚¢ŒxŽ@‚ÌŠm”F”
 	const float INTERVAL = 5.0f;	// ƒCƒ“ƒ^[ƒoƒ‹
 	const int MAX_POLICE = (15);	// ŒxŽ@‚ÌÅ‘å’l
 }
@@ -296,6 +296,8 @@ bool CPoliceManager::Hit(D3DXVECTOR3& pos, const float fRange, const float fHeig
 //==========================================================
 void CPoliceManager::Warning(CPolice* pPolice)
 {
+	if (pPolice->GetState() == CPolice::STATE::STATE_FADEOUT) { return; }
+
 	for (int i = 0; i < GetList()->GetNum(); i++)
 	{
 		// ŒxŽ@‚ÆŽ©•ª‚ªˆê’v‚µ‚Ä‚½‚ç‘Ê–Ú
@@ -346,7 +348,7 @@ void CPoliceManager::SetInspection()
 	float targetrot = atan2f(pPrev->GetPosition().x - pRoad->GetPosition().x,
 		pPrev->GetPosition().z - pRoad->GetPosition().z);
 	rot.y = targetrot + D3DX_PI * 0.5f;
-	Adjust(rot.y);
+	Adjust(&rot.y);
 
 	// Ý’u
 	D3DXVECTOR3 pos = pRoad->GetPosition();

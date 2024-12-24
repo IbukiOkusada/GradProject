@@ -17,7 +17,7 @@ int CPoliceTitle::m_nNumAll = 0;
 //<======================================
 //コンストラクタ
 //<======================================
-CPoliceTitle::CPoliceTitle() : CPolice(-1)
+CPoliceTitle::CPoliceTitle() : CPolice(-1, CAR_TYPE::CAR_TYPE_POLICE)
 {
 	//初期化
 	m_pPatrolLamp = nullptr;
@@ -139,7 +139,7 @@ void CPoliceTitle::Move(void)
 	float fIner = 0.3f;					//慣性の動き
 
 	//調整
-	Adjust(fDiff);
+	Adjust(&fDiff);
 
 	//回転させる
 	rRot.y += fDiff * fIner;

@@ -13,6 +13,10 @@
 const CSound::SOUNDINFO CSound::m_aSoundInfo[LABEL_MAX] =
 {
 	{ "data/BGM/title.wav", -1 },		// BGMタイトル
+	{ "data/BGM/entry.wav", -1 },		// BGMエントリー
+	{ "data/BGM/Result-Failed.wav", -1 },		// BGMリザルトしっぱい
+	{ "data/BGM/Result-Succeed.wav", -1 },		// BGMリザルト成功
+	{ "data/BGM/M-Result.wav", -1 },		// BGM複数人リザルト
 	//{ "data/SE/coin00.wav", 0 },		// Enter
 };										
 

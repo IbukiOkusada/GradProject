@@ -34,6 +34,15 @@ public:	// 誰でもアクセス可能
 		TYPE_MAX
 	};
 
+	// AIタイプ列挙型
+	enum STATE
+	{
+		STATE_NORMAL = 0,		// 通常状態
+		STATE_PREP,				// 攻撃準備状態
+		STATE_ATTACK,			// 攻撃状態
+		STATE_MAX
+	};
+
 	CPoliceAI();	// コンストラクタ
 	~CPoliceAI();	// デストラクタ
 
@@ -43,6 +52,8 @@ public:	// 誰でもアクセス可能
 	void Search(void);
 	void Chase(void);
 	void CallBackup(void);
+	void Attack(void);
+	void StopAttack(void);
 
 	void BeginChase(CPlayer* pPlayer);
 	void EndChase(void);
@@ -54,6 +65,7 @@ public:	// 誰でもアクセス可能
 	// メンバ関数(取得)
 	CRoad::SInfoSearch* GetSearchRoad() { return m_pSearchTarget; }
 	CPolice* GetPolice() { return m_pPolice; }
+	STATE GetState() { return m_state; }
 	float GetChaseSpeed() { return m_fChaseSpeed; }
 	bool GetCall() { return m_bCall; }
 
@@ -92,7 +104,9 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	float m_fSearchTimer;
 	float m_fLevelSearch;
+	int nAttackTime;
 	TYPE m_type;
+	STATE m_state;
 	CPolice* m_pPoliceBackUp;
 };
 

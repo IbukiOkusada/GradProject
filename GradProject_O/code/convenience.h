@@ -35,8 +35,8 @@ void PathToBaseName(std::string* pPath);
 std::wstring MultiByteToWide(const std::string& rSrcStr);
 float GetTexWidthFromAspect(const float fHeight, const int nTexIdx);
 std::string WideToMultiByte(const std::wstring& rSrcStr);
-void Adjust(D3DXVECTOR3& rot);
-void Adjust(float& rot);
+void Adjust(D3DXVECTOR3* rot);
+void Adjust(float* rot);
 
 #define my_max(a,b)            (((a) > (b)) ? (a) : (b))// ‘å‚«‚¢”’l‚ğ•Ô‚·
 #define my_min(a,b)            (((a) < (b)) ? (a) : (b))// ¬‚³‚¢”’l‚ğ•Ô‚·
