@@ -11,6 +11,7 @@
 #define _TITLE_H_		// 二重インクルード防止用マクロを定義
 
 #include "manager.h"
+#include "objectsound.h"
 
 //<**********************************************
 //前方宣言
@@ -26,8 +27,19 @@ namespace
 {
 	const int POLICE_MAX = 3;					//警察の数
 
+
+	//効果音名(ココでしか使わないのでstaticにしました)
+	const enum TITLE_SE : unsigned int
+	{
+		TITLE_SE_SELECT = 0,	//選択
+		TITLE_SE_CANCEL,		//キャンセル
+		TITLE_SE_DECIDE0,		//決定1
+		TITLE_SE_DECIDE1,		//決定2
+		TITLE_SE_MAX
+	};
+
 	//目的地ナンバー
-	const enum DEST
+	const enum DEST : unsigned int
 	{
 		DEST_FIRST = 0,	//一番目
 		DEST_SECOND,	//二番目
@@ -59,6 +71,15 @@ namespace
 		D3DXVECTOR3(0.0f,1.57f,0.0f),				//４個目
 		D3DXVECTOR3(0.0f,0.0f,0.0f),				//５個目
 		D3DXVECTOR3(0.0f,-1.57f,0.0f)				//６個目
+	};
+
+	//タイトルに使うSEのファイル名(ココでしか使わないのでstaticにしました)
+	static const std::string TitleSEName[TITLE_SE_MAX] =
+	{
+		"data/SE/TITLE/Title-Select.wav",		//選択
+		"data/SE/TITLE/Title-Cancel.wav",		//キャンセル
+		"data/SE/TITLE/Title-Decide0.wav",		//決定音1
+		"data/SE/TITLE/Title-Decide1.wav",		//決定音2
 	};
 }
 //===============================================
@@ -96,7 +117,7 @@ public:
 private:
 
 	// オブジェクト2Dの列挙型
-	const enum OBJ2D
+	const enum OBJ2D : unsigned int
 	{
 		OBJ2D_TeamLogo = 0,		//チームロゴ
 		OBJ2D_BLACKCOVER,		//黒カバー
@@ -109,7 +130,7 @@ private:
 
 	};
 	// ステート
-	const enum STATE
+	const enum STATE : unsigned int
 	{
 		STATE_TEAMLOGO = 0,	//チームロゴ
 		STATE_PRE,			//仮名
@@ -120,7 +141,7 @@ private:
 	};
 
 	//シングルかマルチかの選択肢
-	const enum SELECT
+	const enum SELECT : unsigned int
 	{
 		SELECT_SINGLE = 0,		//シングル
 		SELECT_MULTI,			//マルチ
@@ -128,7 +149,7 @@ private:
 	};
 
 	//選択肢
-	const enum SELECT_YN
+	const enum SELECT_YN : unsigned int
 	{
 		SELECT_YN_YES = 0,
 		SELECT_YN_NO,
@@ -136,7 +157,7 @@ private:
 	};
 
 	//サイズに関係する列挙型
-	const enum SIZING
+	const enum SIZING : unsigned int
 	{
 		SIZING_WIDTH = 0,	//横
 		SIZING_HEIGHT,		//縦
@@ -182,6 +203,14 @@ private:
 
 	bool TriggerEnter(void);
 
+	void SelectNum(int *nNum,const int nMax);
+
+	//効果音再生
+	inline void SEPlay(const TITLE_SE eTitleSE)
+	{
+		m_apMSound[eTitleSE]->Play();
+	}
+
 	//オブジェクト2Dの初期化
 	CObject2D* InitObj2D(const D3DXVECTOR3 rPos,		
 		const D3DXVECTOR3 rRot,								
@@ -192,17 +221,18 @@ private:
 		const char* pTexName,								
 		const D3DXCOLOR rCol = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f));
 
-	STATE m_eState;								//ステート
+	STATE m_eState;												//ステート
 	//<************************************
 	//ポインタ型
 	//<************************************
-	static CPlayerTitle* m_pPlayer;									//プレイヤーのポインタ
-	CPoliceTitle* m_apPolice[POLICE_MAX];							//警察のポインタ
+	static CPlayerTitle* m_pPlayer;								//プレイヤーのポインタ
+	CPoliceTitle* m_apPolice[POLICE_MAX];						//警察のポインタ
 
 	CObject2D* m_pObject2D[OBJ2D::OBJ2D_MAX];					//オブジェクト2Dのポインタ
 	CObject2D* m_apSelect[SELECT::SELECT_MAX];					//シングルとマルチの選択肢のポインタ
 	CObject2D* m_apYesNoObj[SELECT_YN::SELECT_YN_MAX];			//YESとNOの選択肢のポインタ
 	CCamera* m_pCam;
+	CMasterSound::CObjectSound* m_apMSound[TITLE_SE_MAX];
 
 	//<************************************
 	//int型
