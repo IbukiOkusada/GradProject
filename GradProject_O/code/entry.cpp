@@ -23,6 +23,7 @@
 #include "goal_manager.h"
 #include "edit_manager.h"
 #include "scrollText2D.h"
+#include "sound.h"
 
 //===============================================
 // 定数定義
@@ -224,7 +225,10 @@ HRESULT CEntry::Init(void)
         m_pString->PushBackString("配達開始!!");
         m_pString->SetEnableScroll(false);
     }
-  
+
+    // エントリーBGM再生
+    CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_ENTRY);
+
 	return S_OK;
 }
 
@@ -233,6 +237,8 @@ HRESULT CEntry::Init(void)
 //===============================================
 void CEntry::Uninit(void)
 {
+    CManager::GetInstance()->GetSound()->Stop();
+
     // カメラの破棄
     if (m_ppCamera != nullptr)
     {
