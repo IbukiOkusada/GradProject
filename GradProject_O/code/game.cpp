@@ -653,7 +653,7 @@ void CGame::CreateMultiPlayer(void)
 //===================================================
 void CGame::CreatePolice()
 {
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < 2; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
@@ -667,7 +667,7 @@ void CGame::CreatePolice()
 void CGame::CreateCar()
 {
 
-    for (int i = 0; i < 0; i++)
+    for (int i = 0; i < 3; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(3000.0f + 750.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
