@@ -65,6 +65,8 @@ CTitle::CTitle()
 	m_nCounterRanking = 0;
 	m_nLogoAlpgha = 0;
 	m_nLogoCou = 0;
+	m_nLogoStart = 0;
+	m_nBlinkCount = 0;
 
 	//選択肢関連
 	m_nSelect = SELECT::SELECT_SINGLE;
@@ -622,35 +624,65 @@ void CTitle::ColChange(CObject2D* pObj2D, const int nCntMax)
 //<===============================================
 void CTitle::LightOff(void)
 {
-	constexpr int nCountMax = 200;													//カウンターの固定値
+	constexpr int nCountMax = 150;													//カウンターの固定値
 	constexpr int nRandMax = 7;														//ランダム変数の最大値
+	constexpr int nMaxBlink = 5;													//点滅回数の最大値
 	constexpr char* TEX_LIGHTON = "data\\TEXTURE\\Title\\Title_logo.png";			//タイトルロゴ(ライトオン)
 	constexpr char* TEX_LIGHTOFF = "data\\TEXTURE\\Title\\Title_logo_lightoff.png";	//タイトルロゴ(ライトオフVer);
 
 	//最大値まで行っていたら
-	if (m_nLogoCou >= nCountMax)
+	if (m_nLogoStart >= nCountMax)
 	{
-		//テクスチャがライトオフされていない状態だったら
-		if (m_pObject2D[OBJ2D_TITLELOGO]->GetIdxTex() ==
-			CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTON))
+		//その値になっていたら
+		if (m_nLogoCou >= nMaxBlink)
 		{
-			//ライトオフされているテクスチャに変更する
-			m_pObject2D[OBJ2D_TITLELOGO]->BindTexture
-			(CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTOFF));
-		}
-		//テクスチャがライトオフされていたら
-		else if (m_pObject2D[OBJ2D_TITLELOGO]->GetIdxTex() ==
-			CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTOFF))
-		{
-			//ライトオフされていないテクスチャにする
-			m_pObject2D[OBJ2D_TITLELOGO]->BindTexture
-			(CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTON));
-		}
+			//点滅回数を増やす
+			m_nBlinkCount++;
 
-		//初期化
-		m_nLogoCou = 0;
+			//テクスチャがライトオフされていない状態だったら
+			if (m_pObject2D[OBJ2D_TITLELOGO]->GetIdxTex() ==
+				CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTON))
+			{
+				//ライトオフされているテクスチャに変更する
+				m_pObject2D[OBJ2D_TITLELOGO]->BindTexture
+				(CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTOFF));
+			}
+			//テクスチャがライトオフされていたら
+			else if (m_pObject2D[OBJ2D_TITLELOGO]->GetIdxTex() ==
+				CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTOFF))
+			{
+				//ライトオフされていないテクスチャにする
+				m_pObject2D[OBJ2D_TITLELOGO]->BindTexture
+				(CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTON));
+			}
+
+			//初期化
+			m_nLogoCou = 0;
+		}
+		//加算
+		else { m_nLogoCou++; }
+
+
+		//点滅カウントが一定数に到達したら
+		if (m_nBlinkCount >= nMaxBlink)
+		{
+			//値を初期化
+			m_nLogoStart = 0;
+			m_nBlinkCount = 0;
+
+			//テクスチャがライトオフされていたら
+			if (m_pObject2D[OBJ2D_TITLELOGO]->GetIdxTex() ==
+				CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTOFF))
+			{
+				//ライトオフされていないテクスチャにする
+				m_pObject2D[OBJ2D_TITLELOGO]->BindTexture
+				(CManager::GetInstance()->GetTexture()->Regist(TEX_LIGHTON));
+			}
+		}
 	}
-	else { m_nLogoCou += rand() % nRandMax; }
+	//それ以外だったらカウントを進める
+	else
+	{m_nLogoStart += rand() % nRandMax;}
 }
 //<===============================================
 //追跡ステートに移行した際の動き
