@@ -202,7 +202,7 @@ HRESULT CGame::Init(void)
     // プレイヤー生成
     (this->*(m_CreatePlayerFunc[net->GetState()]))();
 
-    CMeter::Create();
+    //CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
     int myid = net->GetIdx();
@@ -238,7 +238,7 @@ HRESULT CGame::Init(void)
 
     if (m_pDeliveryStatus == nullptr)
     {
-        m_pDeliveryStatus = CDeliveryStatus::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.6f, 0.0f), m_nTotalDeliveryStatus);
+        //m_pDeliveryStatus = CDeliveryStatus::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.6f, 0.0f), m_nTotalDeliveryStatus);
     }
 
     if (m_pGameTimer == nullptr)
@@ -348,7 +348,7 @@ void CGame::Update(void)
     StartIntro();
 
     // エディター関連
-#if _DEBUG
+#if NDEBUG
 
     CEditManager* pMgr = CEditManager::GetInstance();
     // エディター生成
@@ -510,6 +510,7 @@ CFileLoad *CGame::GetFileLoad(void)
 void CGame::StartIntro(void)
 {
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+    if (pPlayer == nullptr) { return; }
     auto& it = magic_enum::enum_name(pPlayer->GetType());
     CDebugProc::GetInstance()->Print("プレイヤーの今の状態 %s : カメラの開始番号 [ %d ]\n", it.data(), m_nStartCameraCount);
     if (pPlayer->GetType() != CPlayer::TYPE::TYPE_GAMESTARTOK) { return; }
@@ -652,7 +653,7 @@ void CGame::CreateMultiPlayer(void)
 //===================================================
 void CGame::CreatePolice()
 {
-    for (int i = 0; i < 3; i++)
+    for (int i = 0; i < 0; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
@@ -666,7 +667,7 @@ void CGame::CreatePolice()
 void CGame::CreateCar()
 {
 
-    for (int i = 0; i < 6; i++)
+    for (int i = 0; i < 0; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(3000.0f + 750.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());

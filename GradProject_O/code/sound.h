@@ -21,6 +21,9 @@ public:	// 誰でもアクセス可能な定義
 	{
 		LABEL_BGM_TITLE = 0,	// BGMタイトル
 		LABEL_BGM_ENTRY,		// BGMエントリー
+		LABEL_BGM_RESULT_FAI,	// BGMエントリー
+		LABEL_BGM_RESULT_SUC,	// BGMエントリー
+		LABEL_BGM_RESULT_M,		// BGMエントリー
 		//LABEL_SE_ENTER,			// PRESSENTER音
 		LABEL_MAX
 	} LABEL;

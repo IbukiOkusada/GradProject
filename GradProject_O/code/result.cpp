@@ -201,6 +201,8 @@ HRESULT CResult::Init(void)
 		{
 			m_pPlayer->GetCharacteter()->GetMotion()->BlendSet(CPlayer::MOTION::MOTION_CLEAR);
 		}
+
+		CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT_SUC);
 	}
 	else if (m_bSuccess == false)
 	{// 失敗
@@ -210,6 +212,8 @@ HRESULT CResult::Init(void)
 		{
 			m_pPlayer->GetCharacteter()->GetMotion()->BlendSet(CPlayer::MOTION::MOTION_FAILED);
 		}
+
+		CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT_FAI);
 	}
 
 
@@ -241,6 +245,8 @@ HRESULT CResult::Init(void)
 //===============================================
 void CResult::Uninit(void)
 {
+	CManager::GetInstance()->GetSound()->Stop();
+
 	// 失敗or成功のオブジェクト
 	if (m_pObj != NULL)
 	{

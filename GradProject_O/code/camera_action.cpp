@@ -74,9 +74,9 @@ void CCameraAction::Update(CCamera* pCamera)
 
 		// 向き
 		D3DXVECTOR3 rotDiff = m_targetInfo.rot - rot;
-		Adjust(rotDiff);
+		Adjust(&rotDiff);
 		rot += rotDiff * multi;
-		Adjust(rot);
+		Adjust(&rot);
 
 		// 長さ
 		float lenDiff = m_targetInfo.fLength - length;
@@ -168,13 +168,14 @@ void CCameraAction::Set(CCamera* pCamera, const D3DXVECTOR3& pos, const D3DXVECT
 	m_startInfo.posR = pCamera->GetPositionR();
 	m_startInfo.fLength = pCamera->GetLength();
 	m_startInfo.rot = pCamera->GetRotation();
-	Adjust(m_startInfo.rot);
+
+	Adjust(&m_startInfo.rot);
 	
 	// 目標地点の値の設定
 	m_targetInfo.pos = pos;
 	m_targetInfo.rot = rot;
 	m_targetInfo.fLength = fLength;
-	Adjust(m_targetInfo.rot);
+	Adjust(&m_targetInfo.rot);
 
 	// 時間の設定
 	m_time.fEnd = fTime;
@@ -187,67 +188,4 @@ void CCameraAction::Set(CCamera* pCamera, const D3DXVECTOR3& pos, const D3DXVECT
 	m_bPause = false;
 	m_bNext = bNext;
 	m_move = move;
-}
-
-//==========================================================
-// 向き補正
-//==========================================================
-void CCameraAction::Adjust(D3DXVECTOR3& rot)
-{
-	while (1)
-	{
-		if (rot.x > D3DX_PI || rot.x < -D3DX_PI)
-		{//-3.14～3.14の範囲外の場合
-			if (rot.x > D3DX_PI)
-			{
-				rot.x += (-D3DX_PI * 2);
-			}
-			else if (rot.x < -D3DX_PI)
-			{
-				rot.x += (D3DX_PI * 2);
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	while (1)
-	{
-		if (rot.y > D3DX_PI || rot.y < -D3DX_PI)
-		{//-3.14～3.14の範囲外の場合
-			if (rot.y > D3DX_PI)
-			{
-				rot.y += (-D3DX_PI * 2);
-			}
-			else if (rot.y < -D3DX_PI)
-			{
-				rot.y += (D3DX_PI * 2);
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
-
-	while (1)
-	{
-		if (rot.z > D3DX_PI || rot.z < -D3DX_PI)
-		{//-3.14～3.14の範囲外の場合
-			if (rot.z > D3DX_PI)
-			{
-				rot.z += (-D3DX_PI * 2);
-			}
-			else if (rot.z < -D3DX_PI)
-			{
-				rot.z += (D3DX_PI * 2);
-			}
-		}
-		else
-		{
-			break;
-		}
-	}
 }

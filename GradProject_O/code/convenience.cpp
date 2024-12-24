@@ -1,5 +1,6 @@
 #include "manager.h"
 #include "texture.h"
+#include "debugproc.h"
 //=============================================
 //ãóó£éÊìæä÷êî
 //=============================================
@@ -94,10 +95,12 @@ void Adjust(float* rot)
 		if (*rot > D3DX_PI)
 		{
 			*rot += -D3DX_PI * 2;
+			CDebugProc::GetInstance()->Print("ï‚ê≥ÇµÇΩÇÊ");
 		}
 		else if (*rot < -D3DX_PI)
 		{
 			*rot += D3DX_PI * 2;
+			CDebugProc::GetInstance()->Print("ï‚ê≥ÇµÇΩÇÊ");
 		}
 		else
 		{

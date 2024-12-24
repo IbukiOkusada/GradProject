@@ -560,7 +560,7 @@ void CObjectX::SetRotation(const D3DXVECTOR3& rot)
 { 
 	m_rot = rot;
 
-	Adjust(m_rot);
+	Adjust(&m_rot);
 }
 
 //==========================================================

@@ -228,6 +228,9 @@ HRESULT CMultiResult::Init(void)
 	// 空生成
 	CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 20000.0f, 1000.0f, 3, 20, 20);
 
+	// エントリーBGM再生
+	CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT_M);
+
 	return S_OK;
 }
 
@@ -236,6 +239,10 @@ HRESULT CMultiResult::Init(void)
 //===============================================
 void CMultiResult::Uninit(void)
 {
+
+	// エントリーBGM再生
+	CManager::GetInstance()->GetSound()->Stop();
+
 	// マネージャー廃棄
 	if(m_pMgr != nullptr)
 	{
