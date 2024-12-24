@@ -13,6 +13,10 @@ namespace
 {
 	std::vector<std::vector<const char*>> Path =
 	{
+		{//サイバー
+			"data\\BGM\\lan_party.wav",
+			"data\\BGM\\synthwave.wav",
+		},
 		{//リラックス
 			"data\\BGM\\jazz.wav",
 			"data\\BGM\\moment.wav",
@@ -51,7 +55,7 @@ namespace
 CRadio::CRadio()
 {
 	// 値のクリア
-	 m_fVolume = 0.25f;
+	 m_fVolume = 0.75f;
 	 m_nChannel = 0;
 	 m_bSwitch = false;
 	 m_fFade = 0.0f;
@@ -163,9 +167,9 @@ void CRadio::VolumeChange(void)
 	{
 		m_fVolume = 0.0f;
 	}
-	if (m_fVolume > 1.0f)
+	if (m_fVolume > 2.0f)
 	{
-		m_fVolume = 1.0f;
+		m_fVolume = 2.0f;
 	}
 }
 //==========================================================

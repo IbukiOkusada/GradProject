@@ -265,7 +265,7 @@ void CPolice::MoveRoad()
 
 		if (m_pSiren != nullptr)
 		{
-			m_pSiren->SetVolume(vol);
+			m_pSiren->SetVolume(vol*0.5f);
 		}
 
 		// カーブ時の速度を設定

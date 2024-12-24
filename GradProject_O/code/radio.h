@@ -33,7 +33,8 @@ public:	// 誰でもアクセス可能
 	float GetVol() { return m_fVolume; }
 	enum CHANNEL
 	{
-		CHANNEL_RELAX = 0,
+		CHANNEL_CYBER = 0,
+		CHANNEL_RELAX,
 		CHANNEL_METAL,
 		CHANNEL_TECHNO,
 		CHANNEL_POPS,
