@@ -890,7 +890,7 @@ bool CPlayer::CollisionEnemy(void)
 		m_Info.bHitInterval = 10;
 		m_Info.bHit = true;
 
-		Damage(5.0f);
+		Damage(2.0f);
 
 		return true;
 	}

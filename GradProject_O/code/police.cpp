@@ -34,6 +34,8 @@ namespace
 	const float SPEED_CURVE_UTURN = (7.0f);			// Uターン時の速度
 	const float ROT_MULTI_DEF = (0.02f);			// 通常時の向き補正倍率
 	const float ROT_MULTI_CHASE = (0.04f);			// 追跡時の向き補正倍率
+	const float ROT_MULTI_ATTACK = (0.005f);		// 攻撃時の向き補正倍率
+	const float ROT_MULTI_PREP = (0.08f);			// 準備時の向き補正倍率
 	const float LENGTH_LANE = (-400.0f);			// 車線の幅
 	const D3DXVECTOR3 LIGHT_OFFSET = D3DXVECTOR3(0.0f, 100.0f, 250.0f);
 	const D3DXVECTOR3 LIGHT_VEC = D3DXVECTOR3(0.0f, -0.25f, 1.0f);
@@ -302,12 +304,26 @@ void CPolice::MoveRoad()
 			// 追跡用に加速する
 			SetSpeedDest(GetSpeedDest() + m_pPoliceAI->GetChaseSpeed());
 
-			if (m_pPoliceAI->GetAttack())
+			if (m_pPoliceAI->GetState() == CPoliceAI::STATE_ATTACK)
 			{
-				SetRotMulti(0.005f);
+				SetRotMulti(ROT_MULTI_ATTACK);
 
 				// プレイヤーの座標を目指す
 				SetPosTarget(m_Info.pPlayer->GetPosition());
+			}
+			else if(m_pPoliceAI->GetState() == CPoliceAI::STATE_PREP)
+			{
+				SetRotMulti(ROT_MULTI_PREP);
+
+				// プレイヤーの座標を目指す
+				SetPosTarget(m_Info.pPlayer->GetPosition());
+
+				// 一定距離まで近づいたら減速させる
+				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+
+				// 速度を設定
+				SetSpeedDest(SECURE_SPEEDDEST);
+				SetSpeed(GetSpeed() * SECURE_SPEED);
 			}
 			else
 			{
@@ -486,10 +502,9 @@ void CPolice::Hit()
 		CRoad* pRoadNext = GetRoadTarget();
 		SetRoadTarget(GetRoadStart());
 		SetRoadStart(pRoadNext);
+		SetBack(true);
+		SetBackTime(80);
 	}
-
-	SetBack(true);
-	SetBackTime(80);
 
 	m_pPoliceAI->StopAttack();
 }
