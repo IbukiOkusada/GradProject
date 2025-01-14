@@ -1,0 +1,33 @@
+#==============================================================================
+#
+# エフェクシア読み込みファイル [effect_info.txt]
+# Author : RIKU NAKAMURA
+#
+#==============================================================================
+
+SCRIPT
+
+EFFECT_FILENAME = data\EFFEKSEER\afterburner.efkefc	# [0]
+EFFECT_FILENAME = data\EFFEKSEER\backdust.efkefc	# [1]
+EFFECT_FILENAME = data\EFFEKSEER\check.efkefc	# [2]
+EFFECT_FILENAME = data\EFFEKSEER\cyber_line.efkefc	# [3]
+EFFECT_FILENAME = data\EFFEKSEER\explosion.efkefc	# [4]
+EFFECT_FILENAME = data\EFFEKSEER\goal_radius.efkefc	# [5]
+EFFECT_FILENAME = data\EFFEKSEER\guide.efkefc	# [6]
+EFFECT_FILENAME = data\EFFEKSEER\guide_player.efkefc	# [7]
+EFFECT_FILENAME = data\EFFEKSEER\guide_simple.efkefc	# [8]
+EFFECT_FILENAME = data\EFFEKSEER\marker_laser.efkefc	# [9]
+EFFECT_FILENAME = data\EFFEKSEER\marker_pin.efkefc	# [10]
+EFFECT_FILENAME = data\EFFEKSEER\minor_damage.efkefc	# [11]
+EFFECT_FILENAME = data\EFFEKSEER\moderately_damage.efkefc	# [12]
+EFFECT_FILENAME = data\EFFEKSEER\patrollamp.efkefc	# [13]
+EFFECT_FILENAME = data\EFFEKSEER\signage.efkefc	# [14]
+EFFECT_FILENAME = data\EFFEKSEER\spark.efkefc	# [15]
+EFFECT_FILENAME = data\EFFEKSEER\splash.efkefc	# [16]
+EFFECT_FILENAME = data\EFFEKSEER\straight.efkefc	# [17]
+EFFECT_FILENAME = data\EFFEKSEER\taillamp.efkefc	# [18]
+EFFECT_FILENAME = data\EFFEKSEER\trail.efkefc	# [19]
+EFFECT_FILENAME = data\EFFEKSEER\turn_left.efkefc	# [20]
+EFFECT_FILENAME = data\EFFEKSEER\turn_right.efkefc	# [21]
+
+END_SCRIPT

@@ -555,6 +555,12 @@
     <ClCompile Include="code\multi_result_state.cpp">
       <Filter>mode\result\multi</Filter>
     </ClCompile>
+    <ClCompile Include="code\robot.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\robot_manager.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -952,6 +958,12 @@
     </ClInclude>
     <ClInclude Include="code\magic_enum\magic_enum_utility.hpp">
       <Filter>system\magic_enum</Filter>
+    </ClInclude>
+    <ClInclude Include="code\robot.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\robot_manager.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
