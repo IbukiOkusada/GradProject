@@ -190,12 +190,12 @@
     <Filter Include="system\magic_enum">
       <UniqueIdentifier>{752db915-e56e-426d-995a-6ab6da4b5fb1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="light">
+      <UniqueIdentifier>{05fed616-9dde-4e65-81d2-625876c2d594}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="code\light.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="code\precompile.cpp">
@@ -561,12 +561,15 @@
     <ClCompile Include="code\robot_manager.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="code\light.cpp">
+      <Filter>light</Filter>
+    </ClCompile>
+    <ClCompile Include="code\spot_light.cpp">
+      <Filter>light</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
-    <ClInclude Include="code\light.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
     <ClInclude Include="code\precompile.h">
@@ -964,6 +967,12 @@
     </ClInclude>
     <ClInclude Include="code\robot_manager.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\light.h">
+      <Filter>light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\spot_light.h">
+      <Filter>light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

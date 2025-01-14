@@ -267,6 +267,7 @@
     <ClCompile Include="code\slow.cpp" />
     <ClCompile Include="code\sound.cpp" />
     <ClCompile Include="code\speedmeter.cpp" />
+    <ClCompile Include="code\spot_light.cpp" />
     <ClCompile Include="code\string2D.cpp" />
     <ClCompile Include="code\task.cpp" />
     <ClCompile Include="code\task_manager.cpp" />
@@ -400,6 +401,7 @@
     <ClInclude Include="code\slow.h" />
     <ClInclude Include="code\sound.h" />
     <ClInclude Include="code\speedmeter.h" />
+    <ClInclude Include="code\spot_light.h" />
     <ClInclude Include="code\string2D.h" />
     <ClInclude Include="code\task.h" />
     <ClInclude Include="code\task_manager.h" />

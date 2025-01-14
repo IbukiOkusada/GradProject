@@ -9,6 +9,9 @@
 #include "objectX.h"
 #include "manager.h"
 #include "renderer.h"
+#include "camera.h"
+#include "camera_manager.h"
+#include "game.h"
 
 namespace
 {
@@ -220,6 +223,17 @@ void CMapObstacle::DrawCheck()
 		m_pObj->SetColMulti(col);
 
 		return;
+	}
+
+	// ‹——£‚ğæ‚é
+	{
+		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+		D3DXVECTOR3 lenpos = pCamera->GetPositionR() - m_Info.pos;
+		if (D3DXVec3Length(&lenpos) >= Game::DOME_LENGTH)
+		{
+			m_pObj->SetDraw(false);
+			return;
+		}
 	}
 
 	// F‚ğŒ³‚É‹ß‚Ã‚¯‚é

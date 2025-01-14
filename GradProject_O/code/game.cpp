@@ -188,7 +188,7 @@ HRESULT CGame::Init(void)
     CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
 
     // ‹ó¶¬
-    m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 20000.0f, 1000.0f, 3, 20, 20);
+    m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
     // ƒ}ƒbƒv“Ç‚Ýž‚Ý
     CMapManager::GetInstance()->Load();
@@ -245,8 +245,8 @@ HRESULT CGame::Init(void)
         m_pGameTimer = CTimer::Create();
     }
 
-  /*  pFog = DEBUG_NEW CFog;
-    pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
+    pFog = DEBUG_NEW CFog;
+    pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.01f), 100.0f, 40000.0f, 0.5f);
     return S_OK;
 }
 
