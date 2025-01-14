@@ -38,7 +38,7 @@ namespace
 	const float LENGTH_POINT = (900.0f);		// 到達判定距離
 	const float LENGTH_LANE = (-400.0f);		// 車線の幅
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
-	const float RECV_INER = (1.0f / NetWork::SEND_MS);			// 受信したデータの慣性
+	const float RECV_INER = (10.0f / NetWork::SEND_MS);			// 受信したデータの慣性
 	const float GRAVITY = (-24.0f);				//プレイヤー重力
 
 	const int SET_COL_MAX = (100);				// 設定する色の最大値（100 = 1.0）

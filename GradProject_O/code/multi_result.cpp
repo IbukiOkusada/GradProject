@@ -142,7 +142,7 @@ HRESULT CMultiResult::Init(void)
 
 		// ¶¬
 		m_pInfo[i].pString = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, pos, 
-			0.1f, STR_SIZE, STR_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, m_pInfo[i].pPlayer->GetObj()->GetColMuliti());
+			0.1f, STR_SIZE, STR_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, m_pInfo[i].pPlayer->GetObj()->GetColMulti());
 		
 		// •¶šİ’è
 		std::string str;
@@ -187,7 +187,7 @@ HRESULT CMultiResult::Init(void)
 	if (m_pMgr != nullptr) { myId = m_pMgr->GetMyId(); }
 
 	m_pEndStr = CScrollText2D::Create("data\\FONT\\x12y16pxMaruMonica.ttf", false, RESULT_POS,
-		0.1f, RESULT_SIZE, RESULT_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, m_pInfo[topid].pPlayer->GetObj()->GetColMuliti());
+		0.1f, RESULT_SIZE, RESULT_SIZE, XALIGN_CENTER, YALIGN_CENTER, VECTOR3_ZERO, m_pInfo[topid].pPlayer->GetObj()->GetColMulti());
 	if (m_pEndStr != nullptr)
 	{
 		// •¶šİ’è

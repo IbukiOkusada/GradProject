@@ -531,7 +531,7 @@ void CPoliceAI::Attack(void)
 			float rotVec = atan2f(vecPlayer.x, vecPlayer.z);								// Šp“xŒvZ
 			float rotView = m_pPolice->GetRotation().y - rotVec;							// Œü‚¢‚Ä‚é•ûŒü‚Æ‚Ì·‚ğŒvZ
 			
-			//if (fabs(rotView) < D3DX_PI * 0.3f)
+			if (fabs(rotView) < D3DX_PI * 0.3f)
 			{// ‹ß‹——£
 				nAttackTime = 120;
 				m_state = STATE_ATTACK;

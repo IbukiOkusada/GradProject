@@ -69,6 +69,7 @@ public:	// 誰でもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void DrawCheck();
 
 	// メンバ変数
 	CObjectX* m_pObj;	// 障害物

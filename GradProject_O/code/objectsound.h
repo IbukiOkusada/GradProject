@@ -20,7 +20,7 @@ public:	// 誰でもアクセス可能な定義
 	// 種類列挙
 	typedef enum
 	{
-		LABEL_BGM_TITLE = 0,	// BGMタイトル
+		LABEL_BGM_TITLE = 0,		// BGMタイトル
 		//LABEL_SE_ENTER,			// PRESSENTER音
 		LABEL_MAX
 	} LABEL;

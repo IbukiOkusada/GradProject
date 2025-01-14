@@ -28,8 +28,10 @@ class CGoalManager;
 class CFog;
 class CScrollText2D;
 
-// マクロ定義
-#define NUM_FILTER	(2)
+namespace Game
+{
+	const float DOME_LENGTH = 20000.0f;
+}
 
 //===============================================
 // ゲームクラスの定義(派生クラス)
@@ -37,7 +39,6 @@ class CScrollText2D;
 class CGame : public CScene
 {
 public:
-
 	
 	enum STATE
 	{
@@ -48,6 +49,7 @@ public:
 		STATE_MULTIEND,
 		STATE_MAX
 	};
+
 public:
 
 	// メンバ関数

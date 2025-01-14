@@ -43,7 +43,7 @@ public:
 	void Uninit();
 
 	void AllClear();
-	Effekseer::EffectRef Loading(std::string path);
+	void Loading(const std::string& filename);
 	CEffectData* Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale = 1.0f, bool bLoop = false, bool bAutoDelete = true);
 	static CEffekseer* GetInstance() {
 		if (pInstance == NULL) { pInstance = DEBUG_NEW CEffekseer;  return pInstance; }
@@ -68,6 +68,7 @@ private:
 	EffekseerRendererDX9::RendererRef m_efkRenderer;	//レンダラー
 	Effekseer::ManagerRef m_EfkManager;					//マネージャ
 	int32_t time = 0;									//時間
+	std::map<std::string, Effekseer::EffectRef> mapEffekseer;
 };
 
 

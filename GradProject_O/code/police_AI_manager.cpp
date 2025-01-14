@@ -29,6 +29,7 @@ CPoliceAIManager::CPoliceAIManager()
 {
 	// 値のクリア
 	m_maplist.Clear();
+	m_bFlag = false;
 }
 
 //==========================================================
@@ -69,8 +70,12 @@ void CPoliceAIManager::Uninit(void)
 void CPoliceAIManager::Update(void)
 {
 	// マルチスレッド
-	std::thread th(&CPoliceAIManager::Search, this);
-	th.detach();
+	if (!m_bFlag)
+	{
+		m_bFlag = true;
+		std::thread th(&CPoliceAIManager::Search, this);
+		th.detach();
+	}
 }
 
 //==========================================================
@@ -128,4 +133,5 @@ void  CPoliceAIManager::Search(void)
 		// プレイヤーへの経路探索
 		pair.second->ChaseAStar();
 	}
+	m_bFlag = false;
 }
