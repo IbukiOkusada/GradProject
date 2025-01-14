@@ -164,7 +164,7 @@ void CPlayerTitle::Update(void)
 		CPlayer::Update();
 	}
 
-	Adjust(m_Info.rot);
+	Adjust(&m_Info.rot);
 
 	//デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー座標: [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);

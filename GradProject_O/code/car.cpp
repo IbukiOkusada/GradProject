@@ -38,8 +38,8 @@ namespace
 	const float LENGTH_POINT = (900.0f);		// 到達判定距離
 	const float LENGTH_LANE = (-400.0f);		// 車線の幅
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
-	const float RECV_INER = (0.35f);			// 受信したデータの慣性
-	const float GRAVITY = (-24.0f);		//プレイヤー重力
+	const float RECV_INER = (1.0f / NetWork::SEND_MS);			// 受信したデータの慣性
+	const float GRAVITY = (-24.0f);				//プレイヤー重力
 
 	const int SET_COL_MAX = (100);				// 設定する色の最大値（100 = 1.0）
 	const float SET_FLOAT_COL = (100.0f);		// 色のintの値をfloatに直す用
@@ -785,12 +785,12 @@ void CCar::RecvInerSet()
 	// 向き
 	{
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
-		Adjust(diff);
+		Adjust(&diff);
 
 		D3DXVECTOR3 rot = m_Info.rot + diff * RECV_INER;
-		Adjust(rot);
+		Adjust(&rot);
 		m_Info.rot = rot;
-		Adjust(m_Info.rot);
+		Adjust(&m_Info.rot);
 	}
 
 	CDebugProc::GetInstance()->Print(" 受信しています %d 座標 : [%f, %f, %f]\n", m_Info.nId,

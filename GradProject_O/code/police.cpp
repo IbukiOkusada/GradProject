@@ -164,8 +164,8 @@ void CPolice::Update(void)
 	{
 		if (m_pPatrolLamp == nullptr)
 		{
-			//m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", 
-				//VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+			m_pPatrolLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\patrollamp.efkefc", 
+				VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 		}
 
 		if (m_pPatrolLamp != nullptr)
@@ -181,10 +181,10 @@ void CPolice::Update(void)
 
 	if (list->end() != it)
 	{
-		//TailLamp();
+		TailLamp();
 		if (m_pShaderLight == nullptr)
 		{
-			//m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
+			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
 		}
 	}
 	else
@@ -265,7 +265,7 @@ void CPolice::MoveRoad()
 
 		if (m_pSiren != nullptr)
 		{
-			m_pSiren->SetVolume(vol);
+			m_pSiren->SetVolume(vol*0.5f);
 		}
 
 		// カーブ時の速度を設定
