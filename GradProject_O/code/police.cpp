@@ -182,7 +182,7 @@ void CPolice::Update(void)
 	if (list->end() != it)
 	{
 		TailLamp();
-		if (m_pShaderLight == nullptr)
+		if (m_pShaderLight == nullptr && list->begin() == it)
 		{
 			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
 		}

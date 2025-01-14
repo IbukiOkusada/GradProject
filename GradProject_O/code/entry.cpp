@@ -487,7 +487,7 @@ void CEntry::AddPlayer(void)
                 m_ppObjX[i] = CObjectX::Create(pos, D3DXVECTOR3(0.0f, CAMERA_ROT[i].y, 0.0f), MODEL_PATH, 7);
                 m_ppObjX[i]->SetType(CObject::TYPE::TYPE_PLAYER);
                 m_ppObjX[i]->SetRotateType(CObjectX::TYPE_QUATERNION);
-                m_ppObjX[i]->SetColMulti(pPlayer->GetObj()->GetColMuliti());
+                m_ppObjX[i]->SetColMulti(pPlayer->GetObj()->GetColMulti());
 
                 // €”õ‚Å‚«‚Ä‚é‚©‚Ç‚¤‚©‚ÌUI‚Ì¶¬
                 D3DXVECTOR3 POS = D3DXVECTOR3((SCREEN_WIDTH * (0.25f * float(i + 1)) - 150.0f), SCREEN_HEIGHT * 0.7f, 0.0f);

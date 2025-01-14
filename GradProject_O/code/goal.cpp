@@ -334,7 +334,7 @@ void CGoal::SetEnd(int nId)
 		// •¶Žš‘}“ü
 		m_pFont->PushBackString(str);
 		m_pFont->SetEnableScroll(true);
-		m_pFont->SetColor(CPlayerManager::GetInstance()->GetPlayer(nId)->GetObj()->GetColMuliti());
+		m_pFont->SetColor(CPlayerManager::GetInstance()->GetPlayer(nId)->GetObj()->GetColMulti());
 	}
 }
 

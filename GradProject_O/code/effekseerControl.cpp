@@ -16,6 +16,14 @@
 #pragma warning(disable : 4996)
 #pragma warning(disable : 4099)
 CEffekseer* CEffekseer::pInstance = NULL;
+
+namespace
+{
+	const std::string EFFECTNAMEFILE = {	// モデル名ファイル
+		"data\\TXT\\effect_info.txt",
+	};
+}
+
 //======================================================
 //コンストラクタ
 //======================================================
@@ -64,6 +72,7 @@ void CEffekseer::Init()
 	// 座標系を設定する。アプリケーションと一致させる必要がある。
 	m_EfkManager->SetCoordinateSystem(Effekseer::CoordinateSystem::LH);
 
+	Loading(EFFECTNAMEFILE);
 }
 //======================================================
 //終了
@@ -234,7 +243,22 @@ void CEffekseer::Draw()
 CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale, bool bLoop, bool bAutoDelete)
 {
 	CEffectData* pEffect = DEBUG_NEW CEffectData;
-	pEffect->efcRef = Loading(path);
+	pEffect->efcRef = mapEffekseer[path];
+
+	// リストに存在しないエフェクトなら改めて読み込み
+	if (pEffect->efcRef == nullptr)
+	{
+		// char16_tに変換
+		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+		std::u16string string16t = converter.from_bytes(path);
+
+		// エフェクトの読込
+		auto effect = Effekseer::Effect::Create(m_EfkManager, string16t.c_str());
+
+		mapEffekseer[path] = effect;
+		pEffect->efcRef = mapEffekseer[path];
+	}
+
 	pEffect->Path = path;
 	// エフェクトの再生
 	pEffect->handle = m_EfkManager->Play(pEffect->efcRef, pos.x, pos.y, pos.z);
@@ -251,35 +275,67 @@ CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D
 //======================================================
 //読み込み
 //======================================================
-Effekseer::EffectRef CEffekseer::Loading(std::string path)
+void CEffekseer::Loading(const std::string& filename)
 {
-	// char16_tに変換
-	std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
-	std::u16string string16t = converter.from_bytes(path);
+	// ファイルを開く
+	std::ifstream File(filename);
 
-	// エフェクトの読込
-	auto effect = Effekseer::Effect::Create(m_EfkManager, string16t.c_str());
+	// ファイルが開いていなかったら抜ける
+	if (!File.is_open()) { return; }
 
+	// コメント用
+	std::string hoge;
 
-	//onLostDevice = [effect]() -> void
-	//{
-	//	// 読み込んだエフェクトのリソースは全て破棄する。
-	//	if (effect != nullptr)
-	//	{
-	//		effect->UnloadResources();
-	//	}
-	//};
+	// モデル名
+	std::string modelname;
 
-	//onResetDevice = [effect]() -> void
-	//{
-	//	// エフェクトのリソースを再読み込みする。
-	//	if (effect != nullptr)
-	//	{
-	//		effect->ReloadResources();
-	//	}
-	//};
+	// データ読み込み
+	std::string line;
 
-	return effect;
+	while (std::getline(File, line))
+	{
+		// コメントはスキップ
+		if (line.empty() ||
+			line[0] == '#')
+		{
+			continue;
+		}
+
+		// ストリーム作成
+		std::istringstream lineStream(line);
+
+		if (line.find("EFFECT_FILENAME") != std::string::npos)
+		{// TEXT_FILENAMEでモデル名読み込み
+
+			// ストリーム作成
+			std::istringstream lineStr(line);
+
+			// 情報渡す
+			lineStr >>
+				hoge >>
+				hoge >>			// ＝
+				modelname;// モデルファイル名
+
+			// char16_tに変換
+			std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+			std::u16string string16t = converter.from_bytes(modelname);
+
+			// エフェクトの読込
+			auto effect = Effekseer::Effect::Create(m_EfkManager, string16t.c_str());
+
+			mapEffekseer[modelname] = effect;
+
+			continue;
+		}
+
+		if (line.find("END_SCRIPT") != std::string::npos)
+		{
+			break;
+		}
+	}
+
+	// ファイルを閉じる
+	File.close();
 }
 //======================================================
 //エフェクト側コンストラクタ

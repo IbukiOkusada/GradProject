@@ -65,7 +65,7 @@ public:	// 誰でもアクセス可能
 	int GetModelType(void) { return m_nIdxModel; }
 	D3DXVECTOR3& GetVtxMax(void);
 	D3DXVECTOR3& GetVtxMin(void);
-	D3DXCOLOR& GetColMuliti() { return m_ColMulti; }
+	D3DXCOLOR& GetColMulti() { return m_ColMulti; }
 	void SetColMulti(const D3DXCOLOR& col) { m_ColMulti = col; }
 	D3DXCOLOR& GetColAdd() { return m_AddCol; }
 	void SetColAdd(const D3DXCOLOR& col) { m_AddCol = col; }
