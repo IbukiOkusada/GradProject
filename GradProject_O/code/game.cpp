@@ -186,8 +186,7 @@ HRESULT CGame::Init(void)
 
     // 左側
     CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
-    // CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 150000.0f, 1000.0f, 3, 20, 20)->SetDrawShader(false);
-    
+
     // 空生成
     m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, 20000.0f, 1000.0f, 3, 20, 20);
 
@@ -238,7 +237,7 @@ HRESULT CGame::Init(void)
 
     if (m_pDeliveryStatus == nullptr)
     {
-        //m_pDeliveryStatus = CDeliveryStatus::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.6f, 0.0f), m_nTotalDeliveryStatus);
+        m_pDeliveryStatus = CDeliveryStatus::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.8f, SCREEN_HEIGHT * 0.6f, 0.0f), m_nTotalDeliveryStatus);
     }
 
     if (m_pGameTimer == nullptr)
@@ -371,28 +370,32 @@ void CGame::Update(void)
     auto mgr = CPlayerManager::GetInstance();
 
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
-    int nNum = pPlayer->GetNumDeliverStatus();
-    CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-    if (m_nTotalDeliveryStatus <= nNum && pCamera->GetAction()->IsFinish() && CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_SINGLE)
-    {// 配達する総数以上かつカメラの演出が終了している
-        End_Success();
-    }
-    else if (m_pGameTimer != nullptr)
+    if (pPlayer != nullptr)
     {
-        // 時間切れ
-        if (m_pGameTimer->GetTime() <= 0.0f)
+        int nNum = pPlayer->GetNumDeliverStatus();
+        CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+        if (m_nTotalDeliveryStatus <= nNum && pCamera->GetAction()->IsFinish() &&
+            CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_SINGLE)
+        {// 配達する総数以上かつカメラの演出が終了している
+            End_Success();
+        }
+        else if (m_pGameTimer != nullptr)
         {
-            // 通信状態で終了変更
-            if (net->GetState() == CNetWork::STATE::STATE_SINGLE)
+            // 時間切れ
+            if (m_pGameTimer->GetTime() <= 0.0f)
             {
-                // 配達失敗
-                End_Fail();
+                // 通信状態で終了変更
+                if (net->GetState() == CNetWork::STATE::STATE_SINGLE)
+                {
+                    // 配達失敗
+                    End_Fail();
+                }
+                else
+                {   // 複数人終了
+                    End_MultiEnd();
+                }
+
             }
-            else
-            {   // 複数人終了
-                End_MultiEnd();
-            }
-            
         }
     }
 
@@ -414,14 +417,17 @@ void CGame::Update(void)
     // シングルモードで体力がキレた
     if (net->GetState() == CNetWork::STATE::STATE_SINGLE)
     {
-        if (mgr->GetPlayer()->GetLife() <= 0.0f)
+        if (mgr->GetPlayer() != nullptr)
         {
-            End_Fail();
+            if (mgr->GetPlayer()->GetLife() <= 0.0f)
+            {
+                End_Fail();
+            }
         }
     }
 
     // 空の位置更新
-    if (m_pMeshDome != nullptr)
+    if (m_pMeshDome != nullptr && pPlayer != nullptr)
     {
         m_pMeshDome->SetPosition(pPlayer->GetPosition());
     }
@@ -653,7 +659,7 @@ void CGame::CreateMultiPlayer(void)
 //===================================================
 void CGame::CreatePolice()
 {
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 3; i++)
     {
         CCar* pCar = CPolice::Create(D3DXVECTOR3(6000.0f + 1000.0f * i, 0.0f, 1000.0f * i), 
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
@@ -666,7 +672,6 @@ void CGame::CreatePolice()
 //===================================================
 void CGame::CreateCar()
 {
-
     for (int i = 0; i < 3; i++)
     {
         CCar* pCar = CCar::Create(D3DXVECTOR3(3000.0f + 750.0f * i, 0.0f, 1000.0f * i), 

@@ -110,6 +110,8 @@ void CPoliceManager::Update(void)
 {
 	m_InspInfo.fInterval += CDeltaTime::GetInstance()->GetDeltaTime();
 
+	if (m_pList == nullptr) { return; }
+
 	CDebugProc::GetInstance()->Print("Œx@‚Ì‘” : [ %d ]\n", m_pList->GetNum());
 
 	// ‹ß‚¢Œx@‚ğæ“¾‚·‚é
