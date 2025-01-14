@@ -283,6 +283,8 @@
     <ClCompile Include="code\map_manager.cpp" />
     <ClCompile Include="code\timer.cpp" />
     <ClCompile Include="code\player_result.cpp" />
+    <ClCompile Include="code\robot.cpp" />
+    <ClCompile Include="code\robot_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\add_police.h" />
@@ -417,6 +419,8 @@
     <ClInclude Include="code\pred_route.h" />
     <ClInclude Include="code\inspection_manager.h" />
     <ClInclude Include="code\player_result.h" />
+    <ClInclude Include="code\robot.h" />
+    <ClInclude Include="code\robot_manager.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="code\shader\BrightCheck.fx">
