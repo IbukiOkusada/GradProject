@@ -4,8 +4,8 @@
 // Author : Ibuki Okusada
 //
 //==========================================================
-#ifndef _SAMPLEMANAGER_H_		// このマクロが定義されていない場合
-#define _SAMPLEMANAGER_H_		// 二重インクルード防止用マクロを定義
+#ifndef _ROBOTMANAGER_H_		// このマクロが定義されていない場合
+#define _ROBOTMANAGER_H_		// 二重インクルード防止用マクロを定義
 
 // 前方宣言
 class CRobot;

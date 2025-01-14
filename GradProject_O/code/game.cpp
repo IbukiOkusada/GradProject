@@ -60,6 +60,8 @@
 #include "deltatime.h"
 #include "multi_result_manager.h"
 #include "meshdome.h"
+#include "robot.h"
+#include "robot_manager.h"
 #include "magic_enum/magic_enum.hpp"
 // ネットワーク
 #include "network.h"
@@ -245,6 +247,8 @@ HRESULT CGame::Init(void)
     {
         m_pGameTimer = CTimer::Create();
     }
+
+    CRobot* pRobot = CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), VECTOR3_ZERO, 1000.0f);
 
   /*  pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/

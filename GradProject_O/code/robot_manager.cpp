@@ -86,18 +86,18 @@ void CRobotManager::Release(void)
 //==========================================================
 // リストに挿入
 //==========================================================
-void CRobotManager::ListIn(CRobot* pSample)
+void CRobotManager::ListIn(CRobot* pRobot)
 {
 	if (m_pTop != nullptr)
 	{// 先頭が存在している場合
-		m_pCur->SetNext(pSample);	// 現在最後尾のオブジェクトのポインタにつなげる
-		pSample->SetPrev(m_pCur);
-		m_pCur = pSample;	// 自分自身が最後尾になる
+		m_pCur->SetNext(pRobot);	// 現在最後尾のオブジェクトのポインタにつなげる
+		pRobot->SetPrev(m_pCur);
+		m_pCur = pRobot;	// 自分自身が最後尾になる
 	}
 	else
 	{// 存在しない場合
-		m_pTop = pSample;	// 自分自身が先頭になる
-		m_pCur = pSample;	// 自分自身が最後尾になる
+		m_pTop = pRobot;	// 自分自身が先頭になる
+		m_pCur = pRobot;	// 自分自身が最後尾になる
 	}
 
 	m_nNum++;
@@ -106,14 +106,14 @@ void CRobotManager::ListIn(CRobot* pSample)
 //==========================================================
 // リストから外す
 //==========================================================
-void CRobotManager::ListOut(CRobot* pSample)
+void CRobotManager::ListOut(CRobot* pRobot)
 {
 	// リストから自分自身を削除する
-	if (m_pTop == pSample)
+	if (m_pTop == pRobot)
 	{// 自身が先頭
-		if (pSample->GetNext() != nullptr)
+		if (pRobot->GetNext() != nullptr)
 		{// 次が存在している
-			m_pTop = pSample->GetNext();	// 次を先頭にする
+			m_pTop = pRobot->GetNext();	// 次を先頭にする
 			m_pTop->SetPrev(nullptr);	// 次の前のポインタを覚えていないようにする
 		}
 		else
@@ -122,11 +122,11 @@ void CRobotManager::ListOut(CRobot* pSample)
 			m_pCur = nullptr;	// 最後尾がない状態にする
 		}
 	}
-	else if (m_pCur == pSample)
+	else if (m_pCur == pRobot)
 	{// 自身が最後尾
-		if (pSample->GetPrev() != nullptr)
+		if (pRobot->GetPrev() != nullptr)
 		{// 次が存在している
-			m_pCur = pSample->GetPrev();		// 前を最後尾にする
+			m_pCur = pRobot->GetPrev();		// 前を最後尾にする
 			m_pCur->SetNext(nullptr);			// 前の次のポインタを覚えていないようにする
 		}
 		else
@@ -137,13 +137,13 @@ void CRobotManager::ListOut(CRobot* pSample)
 	}
 	else
 	{
-		if (pSample->GetNext() != nullptr)
+		if (pRobot->GetNext() != nullptr)
 		{
-			pSample->GetNext()->SetPrev(pSample->GetPrev());	// 自身の次に前のポインタを覚えさせる
+			pRobot->GetNext()->SetPrev(pRobot->GetPrev());	// 自身の次に前のポインタを覚えさせる
 		}
-		if (pSample->GetPrev() != nullptr)
+		if (pRobot->GetPrev() != nullptr)
 		{
-			pSample->GetPrev()->SetNext(pSample->GetNext());	// 自身の前に次のポインタを覚えさせる
+			pRobot->GetPrev()->SetNext(pRobot->GetNext());	// 自身の前に次のポインタを覚えさせる
 		}
 	}
 
