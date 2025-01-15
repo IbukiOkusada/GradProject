@@ -243,22 +243,7 @@ void CEffekseer::Draw()
 CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale, bool bLoop, bool bAutoDelete)
 {
 	CEffectData* pEffect = DEBUG_NEW CEffectData;
-	pEffect->efcRef = mapEffekseer[path];
-
-	// リストに存在しないエフェクトなら改めて読み込み
-	if (pEffect->efcRef == nullptr)
-	{
-		// char16_tに変換
-		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
-		std::u16string string16t = converter.from_bytes(path);
-
-		// エフェクトの読込
-		auto effect = Effekseer::Effect::Create(m_EfkManager, string16t.c_str());
-
-		mapEffekseer[path] = effect;
-		pEffect->efcRef = mapEffekseer[path];
-	}
-
+	pEffect->efcRef = Regist(path);
 	pEffect->Path = path;
 	// エフェクトの再生
 	pEffect->handle = m_EfkManager->Play(pEffect->efcRef, pos.x, pos.y, pos.z);
@@ -273,7 +258,7 @@ CEffekseer::CEffectData* CEffekseer::Create(std::string path, D3DXVECTOR3 pos, D
 	return pEffect;
 }
 //======================================================
-//読み込み
+//ファイル読み込み
 //======================================================
 void CEffekseer::Loading(const std::string& filename)
 {
@@ -316,14 +301,7 @@ void CEffekseer::Loading(const std::string& filename)
 				hoge >>			// ＝
 				modelname;// モデルファイル名
 
-			// char16_tに変換
-			std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
-			std::u16string string16t = converter.from_bytes(modelname);
-
-			// エフェクトの読込
-			auto effect = Effekseer::Effect::Create(m_EfkManager, string16t.c_str());
-
-			mapEffekseer[modelname] = effect;
+			Regist(modelname);
 
 			continue;
 		}
@@ -336,6 +314,25 @@ void CEffekseer::Loading(const std::string& filename)
 
 	// ファイルを閉じる
 	File.close();
+}
+//======================================================
+//エフェクト読み込み
+//======================================================
+Effekseer::EffectRef CEffekseer::Regist(const std::string& filename)
+{
+	if (mapEffekseer[filename] == nullptr)
+	{
+		// char16_tに変換
+		std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> converter;
+		std::u16string string16t = converter.from_bytes(filename);
+
+		// エフェクトの読込
+		auto effect = Effekseer::Effect::Create(m_EfkManager, string16t.c_str());
+
+		mapEffekseer[filename] = effect;
+	}
+
+	return mapEffekseer[filename];
 }
 //======================================================
 //エフェクト側コンストラクタ
