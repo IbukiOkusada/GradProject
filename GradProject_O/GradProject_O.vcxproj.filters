@@ -567,6 +567,9 @@
     <ClCompile Include="code\spot_light.cpp">
       <Filter>light</Filter>
     </ClCompile>
+    <ClCompile Include="code\postprocess.cpp">
+      <Filter>shader\manager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -973,6 +976,9 @@
     </ClInclude>
     <ClInclude Include="code\spot_light.h">
       <Filter>light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\postprocess.h">
+      <Filter>shader\manager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

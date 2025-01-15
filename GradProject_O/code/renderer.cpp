@@ -15,7 +15,7 @@
 #include "input_keyboard.h"
 #include "effekseerControl.h"
 #include "edit_manager.h"
-
+#include "postprocess.h"
 namespace
 {
 	const D3DXCOLOR ALPHACOLOR = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.6f);	// マルチターゲット透明度
@@ -329,6 +329,8 @@ void CRenderer::Draw(void)
 		m_Multitarget.pRenderMT[1] = pRenderWk;
 
 		CManager::GetInstance()->GetCamera()->SetCamera();
+
+		CPostprocess::GetInstance()->Draw();
 
 		// デバッグ表示
 		if (pDebugProc != NULL)
