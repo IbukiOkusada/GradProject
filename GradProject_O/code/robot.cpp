@@ -7,6 +7,10 @@
 #include "robot.h"
 #include "robot_manager.h"
 #include "manager.h"
+#include "character.h"
+#include "motion.h"
+#include "player.h"
+#include "player_manager.h"
 
 //==========================================================
 // 定数定義
@@ -15,7 +19,8 @@ namespace
 {
 	const float MOVE_MAG = 10.0f;
 	const float ROT_INERTIA = 10.0f;
-	const char* MODEL_PATH = "data\\MODEL\\sample_box.x";
+	const float AVOID_COLLISION = 800.0f;
+	const char* MODEL_PATH = "data\\TXT\\character\\robot\\motion_robot.txt";
 }
 
 //==========================================================
@@ -26,6 +31,7 @@ CRobot::CRobot()
 	// 値のクリア
 	m_pNext = nullptr;
 	m_pPrev = nullptr;
+	m_pCharacter = nullptr;
 	m_PosTarget[0] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_PosTarget[1] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
@@ -45,7 +51,10 @@ CRobot::~CRobot()
 //==========================================================
 HRESULT CRobot::Init()
 {
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, MODEL_PATH);
+	m_pCharacter = CCharacter::Create(MODEL_PATH);
+	m_pCharacter->SetParent(NULL);
+	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_WALK);
+	m_pCharacter->SetScale(D3DXVECTOR3(4.0f, 4.0f, 4.0f));
 
 	return S_OK;
 }
@@ -55,10 +64,15 @@ HRESULT CRobot::Init()
 //==========================================================
 HRESULT CRobot::Init(const D3DXVECTOR3& rot)
 {
-	m_pObj = CObjectX::Create(VECTOR3_ZERO, VECTOR3_ZERO, MODEL_PATH);
+	m_pCharacter = CCharacter::Create(MODEL_PATH);
+	m_pCharacter->SetParent(NULL);
+	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_WALK);
+	m_pCharacter->SetScale(D3DXVECTOR3(4.0f, 4.0f, 4.0f));
 
 	m_Info.move.x = -sinf(D3DX_PI * 0.0f + rot.y) * MOVE_MAG;
 	m_Info.move.z = -cosf(D3DX_PI * 0.0f + rot.y) * MOVE_MAG;
+
+	m_Info.state = STATE_WALK;
 
 	return S_OK;
 }
@@ -68,6 +82,7 @@ HRESULT CRobot::Init(const D3DXVECTOR3& rot)
 //==========================================================
 void CRobot::Uninit(void)
 {
+	SAFE_UNINIT(m_pCharacter)
 	CRobotManager::GetInstance()->ListOut(this);
 
 	Release();
@@ -78,30 +93,26 @@ void CRobot::Uninit(void)
 //==========================================================
 void CRobot::Update(void)
 {
-	m_Info.pos += m_Info.move;
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 
-	m_Info.rot.y += (m_Info.rotDest.y - m_Info.rot.y) / ROT_INERTIA;
+	switch (m_Info.state)
+	{
+	case STATE_WALK:
+		Walk();
 
-	if (TergetReach() == true)
-	{		
-		if (m_Info.nTargetID == 0)
-		{
-			m_Info.nTargetID = 1;
-		}
-		else if (m_Info.nTargetID == 1)
-		{
-			m_Info.nTargetID = 0;
-		}
+		Collision(pPlayer->GetPosition());
+		break;
 
-		// 対角線の角度を算出
-		m_Info.rotDest.y = atan2f(m_Info.pos.x - m_PosTarget[m_Info.nTargetID].x,
-			m_Info.pos.z - m_PosTarget[m_Info.nTargetID].z);
-	
-		m_Info.move.x = -sinf(D3DX_PI * 0.0f + m_Info.rotDest.y) * MOVE_MAG;
-		m_Info.move.z = -cosf(D3DX_PI * 0.0f + m_Info.rotDest.y) * MOVE_MAG;
+	case STATE_AVOID:
+
+		break;
 	}
 
-	Set();
+	if (m_pCharacter != nullptr)
+	{
+		m_pCharacter->Update();
+	}
+
 }
 
 //==========================================================
@@ -138,9 +149,9 @@ void CRobot::SetPosition(const D3DXVECTOR3& pos)
 {
 	m_Info.pos = pos;
 
-	if (m_pObj != nullptr)
+	if (m_pCharacter != nullptr)
 	{
-		m_pObj->SetPosition(m_Info.pos);
+		m_pCharacter->SetPosition(m_Info.pos);
 	}
 }
 
@@ -151,9 +162,9 @@ void CRobot::SetRotation(const D3DXVECTOR3& rot)
 {
 	m_Info.rot = rot;
 
-	if (m_pObj != nullptr)
+	if (m_pCharacter != nullptr)
 	{
-		m_pObj->SetRotation(m_Info.rot);
+		m_pCharacter->SetRotation(m_Info.rot);
 	}
 }
 
@@ -162,10 +173,10 @@ void CRobot::SetRotation(const D3DXVECTOR3& rot)
 //==========================================================
 void CRobot::Set()
 {
-	if (m_pObj != nullptr)
+	if (m_pCharacter != nullptr)
 	{
-		m_pObj->SetPosition(m_Info.pos);
-		m_pObj->SetRotation(m_Info.rot);
+		m_pCharacter->SetPosition(m_Info.pos);
+		m_pCharacter->SetRotation(m_Info.rot);
 	}
 }
 
@@ -277,4 +288,47 @@ bool CRobot::TergetReach()
 	}
 
 	return Reach;
+}
+
+//==========================================================
+// 目標位置に到達したかどうか
+//==========================================================
+void CRobot::Walk()
+{
+	m_Info.pos += m_Info.move;
+
+	m_Info.rot.y += (m_Info.rotDest.y - m_Info.rot.y) / ROT_INERTIA;
+
+	if (TergetReach() == true)
+	{
+		if (m_Info.nTargetID == 0)
+		{
+			m_Info.nTargetID = 1;
+		}
+		else if (m_Info.nTargetID == 1)
+		{
+			m_Info.nTargetID = 0;
+		}
+
+		// 対角線の角度を算出
+		m_Info.rotDest.y = atan2f(m_Info.pos.x - m_PosTarget[m_Info.nTargetID].x,
+			m_Info.pos.z - m_PosTarget[m_Info.nTargetID].z);
+
+		m_Info.move.x = -sinf(D3DX_PI * 0.0f + m_Info.rotDest.y) * MOVE_MAG;
+		m_Info.move.z = -cosf(D3DX_PI * 0.0f + m_Info.rotDest.y) * MOVE_MAG;
+	}
+
+	Set();
+}
+
+//==========================================================
+// 目標位置に到達したかどうか
+//==========================================================
+void CRobot::Collision(D3DXVECTOR3 pos)
+{
+	if (sqrtf((m_Info.pos.x - pos.x) * (m_Info.pos.x - pos.x)
+		+ (m_Info.pos.z - pos.z) * (m_Info.pos.z - pos.z)) <= AVOID_COLLISION)
+	{
+		m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_AVOID);
+	}
 }
