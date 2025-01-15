@@ -134,6 +134,13 @@ HRESULT CRenderer::Init(HWND hWnd, BOOL bWindow)
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG1, D3DTA_TEXTURE);
 	m_pD3DDevice->SetTextureStageState(0, D3DTSS_ALPHAARG2, D3DTA_CURRENT);
 
+	// グローバル環境光の設定
+	m_pD3DDevice->SetRenderState(D3DRS_AMBIENT, D3DCOLOR_XRGB(0, 0, 0));
+
+	m_pD3DDevice->SetRenderState(D3DRS_ZENABLE, TRUE);  // Zバッファ有効
+	m_pD3DDevice->SetRenderState(D3DRS_LIGHTING, TRUE);  // ライト有効化
+	m_pD3DDevice->SetRenderState(D3DRS_SPECULARENABLE, TRUE);  // スペキュラ有効
+
 	// マルチターゲットレンダラーの初期化
 	InitMTRender();
 
