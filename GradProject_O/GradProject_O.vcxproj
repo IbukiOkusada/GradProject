@@ -188,6 +188,7 @@
     <ClCompile Include="code\edit_scale.cpp" />
     <ClCompile Include="code\effect2D.cpp" />
     <ClCompile Include="code\effect3D.cpp" />
+    <ClCompile Include="code\effect_effekseer.cpp" />
     <ClCompile Include="code\effekseerControl.cpp" />
     <ClCompile Include="code\entry.cpp" />
     <ClCompile Include="code\extension.cpp" />
@@ -309,6 +310,7 @@
     <ClInclude Include="code\edit_rotate.h" />
     <ClInclude Include="code\edit_scale.h" />
     <ClInclude Include="code\effect2D.h" />
+    <ClInclude Include="code\effect_effekseer.h" />
     <ClInclude Include="code\effekseerControl.h" />
     <ClInclude Include="code\edit.h" />
     <ClInclude Include="code\edit_manager.h" />

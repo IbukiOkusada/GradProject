@@ -25,10 +25,11 @@ public:	// 誰でもアクセス可能
 	~CRobot();	// デストラクタ
 
 	// メンバ関数
-	HRESULT Init(void);
+	HRESULT Init();
+	HRESULT Init(const D3DXVECTOR3& rot);
 	void Uninit(void);
 	void Update(void);
-	static CRobot* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& move, const float& Distance);
+	static CRobot* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const float& Distance);
 
 	// メンバ関数(取得)
 	CRobot* GetNext(void) { return m_pNext; }
@@ -53,6 +54,7 @@ protected:	// 派生クラスからもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void MoveControl();
 	void SetPosTerget(const float& Distance);
 	bool TergetReach();
 

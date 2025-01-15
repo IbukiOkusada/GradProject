@@ -19,6 +19,7 @@
 #include "deltatime.h"
 #include "a_star.h"
 #include "police_AI.h"
+#include "spot_light.h"
 
 // マクロ定義
 
@@ -73,6 +74,7 @@ m_pPatrolLamp(nullptr),
 m_pSiren(nullptr),
 m_pPoliceAI(nullptr),
 m_pShaderLight(nullptr),
+m_pSpotLight(nullptr),
 m_stateInfo(SState())
 {
 	// 値のクリア
@@ -121,7 +123,8 @@ void CPolice::Uninit(void)
 	{
 		CShaderLight::Delete(m_pShaderLight);
 	}
-	SAFE_DELETE(m_pShaderLight)
+	SAFE_UNINIT(m_pSpotLight);
+	SAFE_DELETE(m_pShaderLight);
 	Release();
 }
 
@@ -155,6 +158,12 @@ void CPolice::Update(void)
 		m_pShaderLight->position = GetPosition() + lightpos;
 		m_pShaderLight->direction = lightvec;
 	}
+	if (m_pSpotLight != nullptr)
+	{
+		m_pSpotLight->SetPositon(GetPosition() + lightpos);
+		m_pSpotLight->SetDirection(lightvec);
+		m_pSpotLight->Update();
+	}
 
 	CPoliceManager* pMgr = CPoliceManager::GetInstance();
 	auto list = CPoliceManager::GetInstance()->GetNearList();
@@ -182,9 +191,42 @@ void CPolice::Update(void)
 	if (list->end() != it)
 	{
 		TailLamp();
-		if (m_pShaderLight == nullptr && list->begin() == it)
+
+		// 一番近いとシェーダーライト、それ以外はスポットライトを設定
+		if (std::distance(list->begin(), it) < 1)
 		{
-			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 3.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));;
+			if (m_pShaderLight == nullptr)
+			{
+				m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(1.0f, 0.9f, 0.8f), 0.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(45));
+				SAFE_UNINIT(m_pSpotLight);
+			}
+
+			if (m_pShaderLight != nullptr)
+			{
+				if (m_pShaderLight->intensity < 3.0f)
+				{
+					m_pShaderLight->intensity += 3.0f * 0.1f;
+				}
+			}
+
+		}
+		else
+		{
+			if (m_pSpotLight == nullptr)
+			{
+				m_pSpotLight = CSpotLight::Create();
+				m_pSpotLight->SetDiffuse(D3DXCOLOR(3.0f, 2.7f, 2.4f, 1.0f));
+			}
+
+			if (m_pShaderLight != nullptr)
+			{
+				m_pShaderLight->intensity -= 3.0f * 0.1f;
+				if (m_pShaderLight->intensity <= 0.0f)
+				{
+					CShaderLight::Delete(m_pShaderLight);
+					SAFE_DELETE(m_pShaderLight);
+				}
+			}
 		}
 	}
 	else
@@ -193,9 +235,15 @@ void CPolice::Update(void)
 
 		if (m_pShaderLight != nullptr)
 		{
-			CShaderLight::Delete(m_pShaderLight);
+			m_pShaderLight->intensity -= 3.0f * 0.1f;
+			if (m_pShaderLight->intensity <= 0.0f)
+			{
+				CShaderLight::Delete(m_pShaderLight);
+				SAFE_DELETE(m_pShaderLight);
+			}
 		}
-		SAFE_DELETE(m_pShaderLight)
+
+		SAFE_UNINIT(m_pSpotLight);
 	}
 
 	// 状態更新

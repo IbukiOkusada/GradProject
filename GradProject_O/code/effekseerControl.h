@@ -44,6 +44,7 @@ public:
 
 	void AllClear();
 	void Loading(const std::string& filename);
+	Effekseer::EffectRef Regist(const std::string& filename);
 	CEffectData* Create(std::string path, D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale = 1.0f, bool bLoop = false, bool bAutoDelete = true);
 	static CEffekseer* GetInstance() {
 		if (pInstance == NULL) { pInstance = DEBUG_NEW CEffekseer;  return pInstance; }
