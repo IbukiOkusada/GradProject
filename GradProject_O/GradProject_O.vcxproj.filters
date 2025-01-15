@@ -570,6 +570,9 @@
     <ClCompile Include="code\spot_light.cpp">
       <Filter>light</Filter>
     </ClCompile>
+    <ClCompile Include="code\postprocess.cpp">
+      <Filter>shader\manager</Filter>
+    </ClCompile>
     <ClCompile Include="code\effect_effekseer.cpp">
       <Filter>effect\effekseer</Filter>
     </ClCompile>
@@ -979,6 +982,9 @@
     </ClInclude>
     <ClInclude Include="code\spot_light.h">
       <Filter>light</Filter>
+    </ClInclude>
+    <ClInclude Include="code\postprocess.h">
+      <Filter>shader\manager</Filter>
     </ClInclude>
     <ClInclude Include="code\effect_effekseer.h">
       <Filter>effect\effekseer</Filter>

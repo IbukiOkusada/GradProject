@@ -9,7 +9,7 @@ sampler2D InputSampler = sampler_state {
 };
 
 
-float2 texelSize = 1.0 / float2(160, 90); // 画面の幅と高さ
+float2 texelSize = 1.0 / float2(320, 180); // 画面の幅と高さ
 float2 texelSize2 = 1.0 / float2(1280, 720); // 画面の幅と高さ
 #define KERNEL_SIZE 9 // カーネルサイズ
 float weights[KERNEL_SIZE] = { 0.05, 0.09, 0.12, 0.15, 0.18, 0.15, 0.12, 0.09, 0.05 }; // カーネルの重み
