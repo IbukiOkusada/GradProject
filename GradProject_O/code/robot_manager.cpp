@@ -1,7 +1,7 @@
 //==========================================================
 //
-// サンプルマネージャー [robot_manager.cpp]
-// Author : Ibuki Okusada
+// ロボットマネージャー [robot_manager.cpp]
+// Author : Kenta Hashimoto
 //
 //==========================================================
 #include "robot_manager.h"
