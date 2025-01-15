@@ -200,7 +200,7 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 	CEffekseer::GetInstance()->Init();
 	
 	// モードの生成
-	SetMode(CScene::MODE::MODE_TITLE);
+	SetMode(CScene::MODE::MODE_GAME);
 
 	return S_OK;
 }
@@ -539,9 +539,6 @@ void CManager::DataReset(void)
 			1.0f,
 			0.01f);
 	}
-
-	// ポイントライトを無効にする
-	m_pLight->EnablePointLight(false);
 
 	//フェードの削除
 	m_pFade = nullptr;
