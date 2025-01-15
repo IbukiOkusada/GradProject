@@ -540,9 +540,6 @@ void CManager::DataReset(void)
 			0.01f);
 	}
 
-	// ポイントライトを無効にする
-	m_pLight->EnablePointLight(false);
-
 	//フェードの削除
 	m_pFade = nullptr;
 

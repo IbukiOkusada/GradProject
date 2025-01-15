@@ -19,6 +19,7 @@
 // 前方宣言
 class CRoad;
 class CPoliceAI;
+class CSpotLight;
 
 //==========================================================
 // 警察のクラス定義
@@ -167,6 +168,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	SInfo m_Info;					// 自分自身の情報
+	CSpotLight* m_pSpotLight;
 		//シェーダーライト
 	CShaderLight::SLight* m_pShaderLight;
 	CMasterSound::CObjectSound* m_pSiren;
