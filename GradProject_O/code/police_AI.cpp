@@ -55,10 +55,10 @@ namespace
 
 	const float ATTACK_SPEED[CPoliceAI::TYPE_MAX] =
 	{
-		(90.0f),		// デフォルトの攻撃時の加速
-		(90.0f),		// 通常タイプの攻撃時の加速
-		(100.0f),		// 回り込みタイプの攻撃時の加速
-		(120.0f),		// 緩やかタイプの攻撃時の加速
+		(2.0f),		// デフォルトの攻撃時の加速
+		(2.0f),		// 通常タイプの攻撃時の加速
+		(3.0f),		// 回り込みタイプの攻撃時の加速
+		(4.0f),		// 緩やかタイプの攻撃時の加速
 	};
 
 	const float SEARCH_TIME[CPoliceAI::TYPE_MAX] =
@@ -501,14 +501,20 @@ void CPoliceAI::Attack(void)
 	if (m_state == STATE_ATTACK)
 	{
 		// 速度を設定
-		m_fChaseSpeed = ATTACK_SPEED[m_type];
+		m_fChaseSpeed += ATTACK_SPEED[m_type];
 		m_pSearchTarget = nullptr;
 
 		CDebugProc::GetInstance()->Print(" 攻撃中 %d インターバル : [%d]\n", (int)m_state, nAttackTime);
 	}
 	else if (m_state == STATE_PREP)
 	{
+		m_fChaseSpeed = 0.0f;
 		CDebugProc::GetInstance()->Print(" 準備中 %d インターバル : [%d]\n", (int)m_state, nAttackTime);
+	}
+	else if (m_state == STATE_FINISH)
+	{
+		m_fChaseSpeed -= 5.0f;
+		CDebugProc::GetInstance()->Print(" 減速中 %d インターバル : [%d]\n", (int)m_state, nAttackTime);
 	}
 	else
 	{
@@ -523,8 +529,8 @@ void CPoliceAI::Attack(void)
 
 		if (m_state == STATE_ATTACK)
 		{
-			nAttackTime = rand() % 120 + 360;
-			m_state = STATE_NORMAL;
+			nAttackTime = 30;
+			m_state = STATE_FINISH;
 		}
 		else if (m_state == STATE_PREP)
 		{
@@ -533,9 +539,14 @@ void CPoliceAI::Attack(void)
 			
 			if (fabs(rotView) < D3DX_PI * 0.3f)
 			{// 近距離
-				nAttackTime = 120;
+				nAttackTime = 90;
 				m_state = STATE_ATTACK;
 			}
+		}
+		else if (m_state == STATE_FINISH)
+		{
+			nAttackTime = rand() % 120 + 360;
+			m_state = STATE_NORMAL;
 		}
 		else
 		{
@@ -543,7 +554,7 @@ void CPoliceAI::Attack(void)
 			
 			if (length < CHASE_NEAR)
 			{// 近距離
-				nAttackTime = 30;
+				nAttackTime = 20;
 				m_state = STATE_PREP;
 			}
 		}
