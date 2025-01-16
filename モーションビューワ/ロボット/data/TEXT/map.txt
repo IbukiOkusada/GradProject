@@ -1,0 +1,52 @@
+#------------------------------------------------------------------------------
+# テクスチャ数
+#------------------------------------------------------------------------------
+NUM_TEXTURE = 14
+
+#------------------------------------------------------------------------------
+# テクスチャファイル名
+#------------------------------------------------------------------------------
+TEXTURE_FILENAME = data/TEXTURE/FIELD/concreat.png		# [0]コンクリ
+TEXTURE_FILENAME = data/TEXTURE/FIELD/senter.png		# [1]真ん中線
+TEXTURE_FILENAME = data/TEXTURE/FIELD/senterlong.png	# [2]真ん中線(長い)
+TEXTURE_FILENAME = data/TEXTURE/FIELD/sideL.png			# [3]左線
+TEXTURE_FILENAME = data/TEXTURE/FIELD/sideR.png			# [4]右線
+TEXTURE_FILENAME = data/TEXTURE/FIELD/odan.png			# [5]横断歩道
+TEXTURE_FILENAME = data/TEXTURE/FIELD/walkroad.jpg		# [6]歩道00
+TEXTURE_FILENAME = data/TEXTURE/FIELD/walkroad_01.jpg	# [7]歩道01
+TEXTURE_FILENAME = data/TEXTURE/FIELD/tile_04.jpg		# [8]タイル00
+TEXTURE_FILENAME = data/TEXTURE/FIELD/tile_03.jpg		# [9]タイル01
+TEXTURE_FILENAME = data/TEXTURE/sky101.png				# [10]空テクスチャ
+TEXTURE_FILENAME = data/TEXTURE/city001.png				# [11]山テクスチャ
+TEXTURE_FILENAME = data/TEXTURE/line.png				# [12]メッシュわかりやす素材
+TEXTURE_FILENAME = data/TEXTURE/glass.jpg				# [13]メッシュわかりやす素材
+
+
+#==============================================================================
+# 空情報
+#==============================================================================
+SKYSET
+	TEXTYPE = 10
+	MOVE = 0.0002
+END_SKYSET
+
+#==============================================================================
+# 山情報
+#==============================================================================
+MOUNTAINSET
+	TEXTYPE = 11
+END_MOUNTAINSET
+
+#==============================================================================
+# 地面情報
+#==============================================================================
+FIELDSET
+	TEXTYPE = 13
+	POS = 0 0 0
+	ROT = 0 0 0
+	BLOCK = 50 50
+	SIZE = 200 200
+END_FIELDSET
+
+
+END_SCRIPT		# この行は絶対消さないこと！

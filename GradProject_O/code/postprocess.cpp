@@ -17,6 +17,7 @@ namespace
 {
 	const char* EFFECT_BRIGHT = "code\\shader\\BrightCheck.fx";	// シェーダーのエフェクトファイル
 	const char* EFFECT_GAUSS = "code\\shader\\Gauss.fx";	// シェーダーのエフェクトファイル
+	const char* EFFECT_ABERRATION = "code\\shader\\aberration.fx";	// シェーダーのエフェクトファイル
 	const D3DXCOLOR LIGHT_COLOR = D3DXVECTOR4(0.6f, 0.6f, 0.7f, 1.0f);
 	const D3DXVECTOR4 LIGHT_VEC = D3DXVECTOR4(-0.5f, -0.87f, 0.05f, 0.0f);
 }
@@ -54,8 +55,7 @@ HRESULT CPostprocess::Init(void)
 	// ポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイス情報
 	LPD3DXBUFFER pError = nullptr;	// コンパイルエラー情報
-	LPD3DXEFFECT pBrightEffect = nullptr;	// エフェクト設定用
-	LPD3DXEFFECT pGaussEffect = nullptr;	// エフェクト設定用
+	
 
 	// メンバ変数を初期化
 
@@ -66,63 +66,9 @@ HRESULT CPostprocess::Init(void)
 		&& caps.PixelShaderVersion >= D3DPS_VERSION(2, 0))
 	{ // 頂点・ピクセルシェーダのバージョンが使用可能な場合
 
-		// エフェクトファイルの読込
-		hr = D3DXCreateEffectFromFile
-		( // 引数
-			pDevice,	// デバイスへのポインタ
-			EFFECT_BRIGHT,	// エフェクトファイル
-			nullptr,	// プリプロセッサ定義
-			nullptr,	// インクルード操作
-			0,			// 読込オプションフラグ
-			nullptr,	// ハンドルインターフェース
-			&pBrightEffect,	// エフェクトインターフェース
-			&pError		// コンパイルエラー情報
-		);
-		if (SUCCEEDED(hr))
-		{ // 読込に成功した場合
-			m_pBright = pBrightEffect;
-		}
-		else
-		{ // 読込に失敗した場合
-			if (pError)
-			{
-				OutputDebugStringA((LPCSTR)pError->GetBufferPointer());
-				//デバッグコンソールに表示する
-				MessageBoxA(NULL, (LPCSTR)pError->GetBufferPointer(), "Shader Error", MB_OK);
-			}
-			// 読み込み失敗を返す
-			assert(false);
-			return E_FAIL;
-		}
-
-		// エフェクトファイルの読込
-		hr = D3DXCreateEffectFromFile
-		( // 引数
-			pDevice,	// デバイスへのポインタ
-			EFFECT_GAUSS,	// エフェクトファイル
-			nullptr,	// プリプロセッサ定義
-			nullptr,	// インクルード操作
-			0,			// 読込オプションフラグ
-			nullptr,	// ハンドルインターフェース
-			&pGaussEffect,	// エフェクトインターフェース
-			&pError		// コンパイルエラー情報
-		);
-		if (SUCCEEDED(hr))
-		{ // 読込に成功した場合
-			m_pGauss = pGaussEffect;
-		}
-		else
-		{ // 読込に失敗した場合
-			if (pError)
-			{
-				OutputDebugStringA((LPCSTR)pError->GetBufferPointer());
-				//デバッグコンソールに表示する
-				MessageBoxA(NULL, (LPCSTR)pError->GetBufferPointer(), "Shader Error", MB_OK);
-			}
-			// 読み込み失敗を返す
-			assert(false);
-			return E_FAIL;
-		}
+		Loadshader((char*)EFFECT_BRIGHT, &m_pBright);
+		Loadshader((char*)EFFECT_GAUSS, &m_pGauss);
+		Loadshader((char*)EFFECT_ABERRATION, &m_pAberration);
 	}
 	else
 	{ // バージョンが使用不可な場合
@@ -228,6 +174,12 @@ void CPostprocess::Draw(void)
 	pDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
 	//特定輝度の抜きだし
 
+	m_pAberration->Begin(NULL, 0);
+	m_pAberration->BeginPass(0);
+	m_pAberration->SetTechnique("ChromaticAberration");
+	Rendering(CManager::GetInstance()->GetRenderer()->GetTextureMT(0), 0xffffffff);
+	m_pAberration->EndPass();
+	m_pAberration->End();
 	pDevice->SetRenderTarget(0, m_pGaussSurface);//レンダーターゲット切り替え
 
 	m_pBright->Begin(NULL, 0);
@@ -332,3 +284,30 @@ void CPostprocess::Release(void)
 	SAFE_DELETE(m_pShader);
 }
 
+
+//シェーダーファイル読み込み
+HRESULT  CPostprocess::Loadshader(char* path, LPD3DXEFFECT* pEffect)
+{
+
+	ID3DXBuffer* pError = NULL;
+	CRenderer* pRenderer = CManager::GetInstance()->GetRenderer();
+	LPDIRECT3DDEVICE9 pDevice; //デバイスのポインタ
+	pDevice = pRenderer->GetDevice();
+	HRESULT hr = D3DXCreateEffectFromFile(
+		pDevice,				// デバイスへのポインタ
+		path,			// fxファイルのパス
+		NULL,                  // プリプロセッサ定義
+		NULL,                  // プリプロセッサ定義ファイル
+		D3DXSHADER_DEBUG,                     // フラグ
+		NULL,                  // カスタムエフェクトプール
+		pEffect,              // 読み込まれたエフェクト
+		&pError                // エラーメッセージ
+	);
+	if (pError)
+	{
+		OutputDebugStringA((LPCSTR)pError->GetBufferPointer());
+		//デバッグコンソールに表示する
+		MessageBoxA(NULL, (LPCSTR)pError->GetBufferPointer(), "Shader Error", MB_OK);
+	}
+	return hr;
+}

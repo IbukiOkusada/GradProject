@@ -1,0 +1,128 @@
+SCRIPT			# この行は絶対消さないこと！
+
+#==============================================================================
+#
+# 『モーションビューワ』スクリプトファイル [motion.txt]
+# Author : AKIRA TANAKA
+#
+#==============================================================================
+
+
+#------------------------------------------------------------------------------
+# モデル数
+#------------------------------------------------------------------------------
+NUM_MODEL = 10
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MODEL_FILENAME = data/MODEL/robot/00_body.x		# [0]体
+MODEL_FILENAME = data/MODEL/robot/01_hed.x		# [1]頭
+MODEL_FILENAME = data/MODEL/robot/02_uparmR.x 	# [2]左上腕
+MODEL_FILENAME = data/MODEL/robot/03_downarmR.x	# [3]左前腕
+MODEL_FILENAME = data/MODEL/robot/04_handR.x	# [4]左手
+MODEL_FILENAME = data/MODEL/robot/05_uparmL.x	# [5]右上腕
+MODEL_FILENAME = data/MODEL/robot/06_downarmL.x	# [6]右前腕
+MODEL_FILENAME = data/MODEL/robot/07_handL.x	# [7]右手
+MODEL_FILENAME = data/MODEL/robot/08_leg.x		# [8]右手
+MODEL_FILENAME = data/MODEL/robot/100_broom.x	# [100]左太もも
+
+#------------------------------------------------------------------------------
+# キャラクター情報
+#------------------------------------------------------------------------------
+CHARACTERSET
+	NUM_PARTS = 10
+	
+	PARTSSET
+		INDEX = 0
+		PARENT = -1
+		POS = 0.00 33.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 1
+		PARENT = 0
+		POS = 0.00 22.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 2
+		PARENT = 0
+		POS = 8.00 17.50 -0.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 3
+		PARENT = 2
+		POS = 11.00 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 4
+		PARENT = 3
+		POS = 11.50 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 5
+		PARENT = 0
+		POS = -8.00 17.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 6
+		PARENT = 5
+		POS = -10.00 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 7
+		PARENT = 6
+		POS = -12.50 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 8
+		PARENT = 0
+		POS = 0.00 1.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 9
+		PARENT = 7
+		POS = -2.50 -20.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+END_CHARACTERSET
+
+#==============================================================================
+#
+# モーション情報
+#
+#==============================================================================
+NUM_MOTION = 2
+
+MOTION_FILENAME = data/TEXT/character/player/robot/neutral.txt			# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/player/robot/avoid.txt			# [0]デフォルト
+
+END_SCRIPT		# この行は絶対消さないこと！

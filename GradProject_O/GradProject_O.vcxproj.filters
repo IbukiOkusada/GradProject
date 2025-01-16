@@ -1012,5 +1012,8 @@
     <FxCompile Include="code\shader\Gauss.fx">
       <Filter>shader\FX</Filter>
     </FxCompile>
+    <FxCompile Include="code\shader\aberration.fx">
+      <Filter>shader\FX</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

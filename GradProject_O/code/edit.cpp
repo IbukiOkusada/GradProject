@@ -9,6 +9,7 @@
 #include "edit_road.h"
 #include "edit_gimmick.h"
 #include "edit_goal.h"
+#include "edit_robot.h"
 #include "edit_effect.h"
 
 //==========================================================
@@ -78,6 +79,10 @@ CEdit* CEdit::Create(const TYPE& type)
 
 	case TYPE_GOAL:
 		pEdit = DEBUG_NEW CEdit_Goal;
+		break;
+
+	case TYPE_ROBOT:
+		pEdit = DEBUG_NEW CEdit_Robot;
 		break;
 
 	case TYPE_EFFECT:

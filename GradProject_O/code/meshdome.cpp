@@ -136,7 +136,7 @@ void CMeshDome::SetVtxInfo(void)
 		m_pVtx[nCntVtx].nor = vecDir;
 
 		//êF
-		m_pVtx[nCntVtx].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+		m_pVtx[nCntVtx].col = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
 
 		m_pVtx[nCntVtx].tex = D3DXVECTOR2((1.0f / nNumWidth) * (nCntVtx % (nNumWidth + 1)), 1.0f -((1.0f / nNumHeight) * (nCntVtx / (nNumWidth + 1))));
 	}

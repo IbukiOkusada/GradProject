@@ -45,6 +45,18 @@ CEdit_Obj::~CEdit_Obj()
 //==========================================================
 HRESULT CEdit_Obj::Init(void)
 {
+	Clist<CMapObstacle*>* pList = CMapObstacle::GetList();
+
+	if (pList != nullptr)
+	{
+		for (int i = 0; i < pList->GetNum(); i++)
+		{
+			CMapObstacle* pObj = pList->Get(i);
+			pObj->GetObj()->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			pObj->GetObj()->SetDraw();
+		}
+	}
+
 	return S_OK;
 }
 
