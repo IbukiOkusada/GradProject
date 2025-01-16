@@ -161,6 +161,9 @@ void CPostprocess::Uninit(void)
 {
 	SAFE_RELEASE(m_pBright);
 	SAFE_RELEASE(m_pGauss);
+	SAFE_RELEASE(m_pAberration);
+	SAFE_RELEASE(m_pGaussTex);
+	SAFE_RELEASE(m_pGaussSurface);
 }
 //============================================================
 //	ï`âÊèàóù

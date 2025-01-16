@@ -227,6 +227,7 @@ void CRenderer::Uninit(void)
 		m_pOrgZBuffer->Release();
 		m_pOrgZBuffer = nullptr;
 	}
+	CPostprocess::Release();
 }
 
 //===================================================

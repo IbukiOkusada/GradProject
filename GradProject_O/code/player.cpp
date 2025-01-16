@@ -271,10 +271,12 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	SetCol();
 
 	SetMatrix();
-
+	m_pambient = CMasterSound::CObjectSound::Create("data\\SE\\ambient_city.wav", -1);
+	m_pambient->SetVolume(0.5f);
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
+	m_pDust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\dust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, false, false);
 	return S_OK;
 }
 
@@ -292,12 +294,14 @@ void CPlayer::Uninit(void)
 	SAFE_UNINIT(m_pBaggage)
 	SAFE_DELETE(m_pTailLamp)
 	SAFE_DELETE(m_pBackdust)
+	SAFE_DELETE(m_pDust)
 	SAFE_DELETE(m_pAfterburner)
 	SAFE_DELETE(m_pDamageEffect)
 	SAFE_UNINIT_DELETE(m_pSound)
 	SAFE_UNINIT_DELETE(m_pSoundBrake)
 	SAFE_UNINIT_DELETE(m_pRadio)
 	SAFE_UNINIT_DELETE(m_pCollSound)
+		SAFE_UNINIT_DELETE(m_pambient)
 	if (m_pShaderLight != nullptr)
 	{
 		CShaderLight::Delete(m_pShaderLight);
@@ -323,7 +327,7 @@ void CPlayer::Update(void)
 	D3DXVec3Normalize(&lightvec, &lightvec);
 	D3DXVec3TransformCoord(&lightpos, &lightpos, &mat);
 	D3DXVec3TransformCoord(&lightvec, &lightvec, &mat);
-
+	m_pDust->m_pos = GetPosition();
 	// シェーダーライト
 	if (m_pShaderLight != nullptr)
 	{

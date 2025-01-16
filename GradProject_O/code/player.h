@@ -237,11 +237,12 @@ protected:	// 自分だけがアクセス可能
 	CEffekseer::CEffectData* m_pBackdust;
 	CEffekseer::CEffectData* m_pAfterburner;
 	CEffekseer::CEffectData* m_pDamageEffect;
-
+	CEffekseer::CEffectData* m_pDust;
 	// サウンド
 	CMasterSound::CObjectSound* m_pSound;
 	CMasterSound::CObjectSound* m_pSoundBrake;
 	CMasterSound::CObjectSound* m_pCollSound;
+	CMasterSound::CObjectSound* m_pambient;
 	float m_fbrakeVolume;
 	float m_fbrakePitch;
 	CRadio* m_pRadio;
