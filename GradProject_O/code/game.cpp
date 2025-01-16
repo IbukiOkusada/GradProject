@@ -174,7 +174,7 @@ CGame::~CGame()
 HRESULT CGame::Init(void)
 {
     m_pInstance = this;
-    memset(&m_aAddress[0], '\0', sizeof(m_aAddress));
+
 
     // 外部ファイル読み込みの生成
     if (nullptr == m_pFileLoad)
@@ -194,18 +194,20 @@ HRESULT CGame::Init(void)
     // 空生成
     m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
-    // マップ読み込み
-    CMapManager::GetInstance()->Load();
 
     //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f));
     //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(20900.0f, 5000.0f, -1700.0f), D3DXVECTOR3(1.0f, 0.0f, 1.0f), 1.0f, 10000.0f));
     //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f));
     auto net = CNetWork::GetInstance();
 
+    // マップ読み込み
+    CMapManager::GetInstance()->Load();
+
     // プレイヤー生成
     (this->*(m_CreatePlayerFunc[net->GetState()]))();
 
-    //CMeter::Create();
+
+    CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
     int myid = net->GetIdx();
@@ -224,7 +226,7 @@ HRESULT CGame::Init(void)
         //CreateCar();
 
         // 警察の生成
-       // CreatePolice();
+        //CreatePolice();
     }
 
     if (m_pGoalManager == nullptr)
@@ -249,7 +251,8 @@ HRESULT CGame::Init(void)
         m_pGameTimer = CTimer::Create();
     }
 
-    CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
+
+    //CRobot* pRobot = CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
 
   /*  pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
@@ -316,7 +319,7 @@ void CGame::Uninit(void)
     CPoliceManager::Release();
     CPoliceAIManager::Release();
     CInspectionManager::Release();
-    CPlayerManager::Release();
+
 }
 
 //===============================================
@@ -441,10 +444,10 @@ void CGame::Update(void)
     }
 
     // 各マネージャー更新
-    CPoliceManager::GetInstance()->Update();
+
     CPoliceAIManager::GetInstance()->Update();
     CInspectionManager::GetInstance()->Update();
-    CCarManager::GetInstance()->Update();
+
 
 #if NDEBUG
     CScene::Update();

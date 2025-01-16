@@ -50,10 +50,7 @@ private:
 	LPD3DXEFFECT m_pBright;						// エフェクト
 	LPD3DXEFFECT m_pGauss;						// エフェクト
 	LPD3DXEFFECT m_pAberration;						// エフェクト
-	D3DXHANDLE m_pBrightTechnique;					// テクニック
-	D3DXHANDLE m_pGaussTechnique;					// テクニック
 
-	
 	LPDIRECT3DTEXTURE9 m_pGaussTex;
 	LPDIRECT3DSURFACE9 m_pGaussSurface;
 	ID3DXSprite* m_pSprite;

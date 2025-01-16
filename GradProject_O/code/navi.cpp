@@ -71,6 +71,13 @@ void CNavi::Uninit(void)
 		SAFE_DELETE(pEffect);
 	}
 
+	if (m_pFont != nullptr)
+	{
+		SAFE_UNINIT(m_pFont);
+	}
+
+	SAFE_UNINIT_DELETE(m_pSound);
+
 	Release();
 }
 
