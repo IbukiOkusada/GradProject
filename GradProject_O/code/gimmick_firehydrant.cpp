@@ -36,6 +36,7 @@ CGimmickFireHydrant::CGimmickFireHydrant()
 	m_bHit = false;
 	m_TargetPos = VECTOR3_ZERO;
 	m_TargetRot = VECTOR3_ZERO;
+	m_pEffect = nullptr;
 }
 
 //==========================================================
@@ -174,11 +175,18 @@ void CGimmickFireHydrant::SetEffect()
 	// âÊñ äOÇ»ÇÁèoÇ≥Ç»Ç¢
 	if (pos.x < 0.0f - RANGE_WIDTH || pos.x > SCREEN_WIDTH + RANGE_WIDTH ||
 		pos.y < 0.0f - RANGE_HEIGHT || pos.y > SCREEN_HEIGHT + RANGE_HEIGHT) {
+		SAFE_DELETE(m_pEffect);
 		return;
 	}
 
 	D3DXVECTOR3 objpos = GetPos();
-	CParticle3D::Create(objpos, CEffect3D::TYPE_SPLASH);
+	
+	if (m_pEffect == nullptr)
+	{
+		m_pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\splash.efkefc", 
+			GetPos(), VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, true, false);
+
+	}
 }
 
 //==========================================================
