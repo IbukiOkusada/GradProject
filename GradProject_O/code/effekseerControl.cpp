@@ -176,7 +176,6 @@ void CEffekseer::Update()
 			m_EfkManager->SetRotation(m_vEffect[i]->handle, m_vEffect[i]->m_rot.X, m_vEffect[i]->m_rot.Y, m_vEffect[i]->m_rot.Z);
 			m_EfkManager->SetScale(m_vEffect[i]->handle, m_vEffect[i]->m_Scale.X, m_vEffect[i]->m_Scale.Y, m_vEffect[i]->m_Scale.Z);
 		}
-
 	}
 	// レイヤーパラメータの設定
 	Effekseer::Manager::LayerParameter layerParameter;

@@ -1,10 +1,10 @@
 //==========================================================
 //
-// エディターオブジェクト [edit_object.cpp]
-// Author : Ibuki Okusada
+// エディターエフェクト [edit_effect.cpp]
+// Author : Riku Nakamura
 //
 //==========================================================
-#include "edit_gimmick.h"
+#include "edit_effect.h"
 #include "manager.h"
 #include "debugproc.h"
 #include "edit_handle.h"
@@ -13,7 +13,7 @@
 #include "input_mouse.h"
 #include "input_keyboard.h"
 #include "map_manager.h"
-#include "gimmick.h"
+#include "effect_effekseer.h"
 
 namespace
 {
@@ -23,7 +23,7 @@ namespace
 //==========================================================
 // コンストラクタ
 //==========================================================
-CEdit_Gimmick::CEdit_Gimmick()
+CEdit_Effect::CEdit_Effect()
 {
 	// 値のクリア
 	m_pSelect = nullptr;
@@ -36,7 +36,7 @@ CEdit_Gimmick::CEdit_Gimmick()
 //==========================================================
 // デストラクタ
 //==========================================================
-CEdit_Gimmick::~CEdit_Gimmick()
+CEdit_Effect::~CEdit_Effect()
 {
 
 }
@@ -44,7 +44,7 @@ CEdit_Gimmick::~CEdit_Gimmick()
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CEdit_Gimmick::Init(void)
+HRESULT CEdit_Effect::Init(void)
 {
 	return S_OK;
 }
@@ -52,7 +52,7 @@ HRESULT CEdit_Gimmick::Init(void)
 //==========================================================
 // 終了処理
 //==========================================================
-void CEdit_Gimmick::Uninit(void)
+void CEdit_Effect::Uninit(void)
 {
 	if (m_pHandle != nullptr)
 	{
@@ -66,11 +66,11 @@ void CEdit_Gimmick::Uninit(void)
 //==========================================================
 // 更新処理
 //==========================================================
-void CEdit_Gimmick::Update(void)
+void CEdit_Effect::Update(void)
 {
-	CDebugProc::GetInstance()->Print(" [ ギミック配置モード ]\n");
+	CDebugProc::GetInstance()->Print(" [ エフェクト配置モード ]\n");
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
-	CGimmick* pOld = m_pSelect;
+	CEffectEffekseer* pOld = m_pSelect;
 
 	// 選択
 	ClickCheck();
@@ -93,7 +93,7 @@ void CEdit_Gimmick::Update(void)
 	}
 
 	// 選択されたものを色変える
-	m_pSelect->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
+	//m_pSelect->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f));
 
 	// 矢印の更新
 	if (m_pHandle != nullptr)
@@ -102,8 +102,10 @@ void CEdit_Gimmick::Update(void)
 
 		if (m_pHandle->GetOldHold() == nullptr && m_pHandle->GetHold() != nullptr)
 		{
-			m_startScale = m_pSelect->GetScale();
-			m_startRotate = m_pSelect->GetRot();
+			m_startScale.x = m_pSelect->GetScale();
+			m_startScale.y = m_pSelect->GetScale();
+			m_startScale.z = m_pSelect->GetScale();
+			m_startRotate = m_pSelect->GetRotation();
 		}
 	}
 
@@ -130,12 +132,23 @@ void CEdit_Gimmick::Update(void)
 
 	CDebugProc::GetInstance()->Print("]\n\n");
 
+	Clist<CEffectEffekseer*>* pList = CEffectEffekseer::GetList();
+
+	if (pList == nullptr) { return; }
+
+	for (int i = 0; i < pList->GetNum(); i++)
+	{
+		CEffectEffekseer* pEffect = pList->Get(i);
+
+		pEffect->Update();
+	}
+
 	// 障害物情報
 	if (m_pSelect == nullptr) { return; }
 	CDebugProc::GetInstance()->Print("[ 情報 : ");
-	D3DXVECTOR3 pos = m_pSelect->GetPos();
+	D3DXVECTOR3 pos = m_pSelect->GetPosition();
 	CDebugProc::GetInstance()->Print("座標 : [ %f, %f, %f] : ", pos.x, pos.y, pos.z);
-	D3DXVECTOR3 rot = m_pSelect->GetRot();
+	D3DXVECTOR3 rot = m_pSelect->GetRotation();
 	CDebugProc::GetInstance()->Print("向き : [ %f, %f, %f] : ", rot.x, rot.y, rot.z);
 	CDebugProc::GetInstance()->Print("]\n");
 }
@@ -143,12 +156,12 @@ void CEdit_Gimmick::Update(void)
 //==========================================================
 // 選択
 //==========================================================
-void CEdit_Gimmick::ClickCheck()
+void CEdit_Effect::ClickCheck()
 {
 	CInputMouse* pMouse = CInputMouse::GetInstance();
-	Clist<CGimmick*>* pList = CGimmick::GetList();
+	Clist<CEffectEffekseer*>* pList = CEffectEffekseer::GetList();
 
-	if (CGimmick::GetList() == nullptr) { return; }
+	if (pList == nullptr) { return; }
 
 	// 入力があれば確認する
 	if (!pMouse->GetTrigger(CInputMouse::BUTTON_LBUTTON))
@@ -167,14 +180,14 @@ void CEdit_Gimmick::ClickCheck()
 
 	if (m_pSelect != nullptr)
 	{
-		m_pSelect->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		//m_pSelect->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 
 	m_pSelect = nullptr;
 
 	for (int i = 0; i < pList->GetNum(); i++)
 	{
-		CGimmick* pGimmick = pList->Get(i);
+		CEffectEffekseer* pGimmick = pList->Get(i);
 
 		// 衝突した
 		if (CursorCollision(pGimmick))
@@ -183,10 +196,10 @@ void CEdit_Gimmick::ClickCheck()
 
 			if (m_pHandle == nullptr)
 			{
-				m_pHandle = CEdit_Handle::Create(m_pSelect->GetPos(), CEdit_Handle::TYPE_MOVE);
+				m_pHandle = CEdit_Handle::Create(m_pSelect->GetPosition(), CEdit_Handle::TYPE_MOVE);
 			}
 
-			m_pHandle->SetPosition(m_pSelect->GetPos());
+			m_pHandle->SetPosition(m_pSelect->GetPosition());
 		}
 	}
 
@@ -203,17 +216,22 @@ void CEdit_Gimmick::ClickCheck()
 //==========================================================
 // 選択したものとの衝突判定
 //==========================================================
-bool CEdit_Gimmick::CursorCollision(CGimmick* pGimmick)
+bool CEdit_Effect::CursorCollision(CEffectEffekseer* pGimmick)
 {
 	// マウス情報
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 	CInputMouse::SRayInfo info = pMouse->GetRayInfo();
 
 	// 床情報
-	D3DXVECTOR3 pos = pGimmick->GetPos();
-	D3DXVECTOR3 rot = pGimmick->GetRot();
-	D3DXVECTOR3 vtxmax = pGimmick->GetVtxMax();
-	D3DXVECTOR3 vtxmin = pGimmick->GetVtxMin();
+	D3DXVECTOR3 pos = pGimmick->GetPosition();
+	D3DXVECTOR3 rot = pGimmick->GetRotation();
+	D3DXVECTOR3 vtxmax, vtxmin;
+	vtxmax.x = pGimmick->GetScale();
+	vtxmax.y = pGimmick->GetScale();
+	vtxmax.z = pGimmick->GetScale();
+	vtxmin.x = pGimmick->GetScale();
+	vtxmin.y = pGimmick->GetScale();
+	vtxmin.z = pGimmick->GetScale();
 	D3DXVECTOR3 touchpos = VECTOR3_ZERO;
 	D3DXVECTOR3 origin = pMouse->GetRayInfo().origin;
 	D3DXVECTOR3 vec = pMouse->GetRayInfo().vec;
@@ -226,7 +244,7 @@ bool CEdit_Gimmick::CursorCollision(CGimmick* pGimmick)
 			vec = touchpos - origin;
 			float nowlength = D3DXVec3Length(&vec);
 
-			vec = m_pSelect->GetPos() - origin;
+			vec = m_pSelect->GetPosition() - origin;
 			float length = D3DXVec3Length(&vec);
 
 			if (nowlength > length)
@@ -244,7 +262,7 @@ bool CEdit_Gimmick::CursorCollision(CGimmick* pGimmick)
 //==========================================================
 // 削除
 //==========================================================
-void CEdit_Gimmick::Delete()
+void CEdit_Effect::Delete()
 {
 	CDebugProc::GetInstance()->Print(" 削除 : Delete or BackSpace, ");
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
@@ -266,7 +284,7 @@ void CEdit_Gimmick::Delete()
 //==========================================================
 // 移動
 //==========================================================
-void CEdit_Gimmick::Move()
+void CEdit_Effect::Move()
 {
 	if (m_pSelect == nullptr) { return; }
 	if (m_pHandle == nullptr) { return; }
@@ -275,13 +293,13 @@ void CEdit_Gimmick::Move()
 	D3DXVECTOR3 pos = m_pHandle->GetPosition();	// 座標
 
 	// 選択した道の座標設定
-	m_pSelect->SetPos(pos);
+	m_pSelect->SetPosition(pos);
 }
 
 //==========================================================
 // スケール
 //==========================================================
-void CEdit_Gimmick::Scale()
+void CEdit_Effect::Scale()
 {
 	if (m_pSelect == nullptr) { return; }
 	if (m_pHandle == nullptr) { return; }
@@ -300,13 +318,13 @@ void CEdit_Gimmick::Scale()
 	scale.z *= handlescale.z;
 
 	// 選択した道の座標設定
-	m_pSelect->SetScale(scale);
+	m_pSelect->SetScale(scale.x);
 }
 
 //==========================================================
 // 回転
 //==========================================================
-void CEdit_Gimmick::Rotate()
+void CEdit_Effect::Rotate()
 {
 	if (m_pSelect == nullptr) { return; }
 	if (m_pHandle == nullptr) { return; }
@@ -323,13 +341,13 @@ void CEdit_Gimmick::Rotate()
 	rotate.z += handlerotate.z;
 
 	// 選択した障害物の向き設定
-	m_pSelect->SetRot(rotate);
+	m_pSelect->SetRotation(rotate);
 }
 
 //==========================================================
 // 回転リセット
 //==========================================================
-void CEdit_Gimmick::RotateReset()
+void CEdit_Effect::RotateReset()
 {
 	if (m_pSelect == nullptr) { return; }
 	CDebugProc::GetInstance()->Print(" 回転リセット : Enter, ");
@@ -339,13 +357,13 @@ void CEdit_Gimmick::RotateReset()
 	// 入力確認
 	if (!pKey->GetTrigger(DIK_RETURN)) { return; }
 
-	m_pSelect->SetRot(VECTOR3_ZERO);
+	m_pSelect->SetRotation(VECTOR3_ZERO);
 }
 
 //==========================================================
 // モデル変更
 //==========================================================
-void CEdit_Gimmick::ModelChange()
+void CEdit_Effect::ModelChange()
 {
 	if (m_pSelect == nullptr) { return; }
 	CInputMouse* pMouse = CInputMouse::GetInstance();
@@ -358,43 +376,43 @@ void CEdit_Gimmick::ModelChange()
 
 	if (static_cast<int>(m_fMouseWheel) % 20 != 0) { return; }
 
-	int idx = m_pSelect->GetInfo().type;
+	int idx = m_pSelect->GetType();
 
 	if (m_fMouseWheel >= old)
 	{
-		idx = (idx + 1) % CGimmick::TYPE::TYPE_MAX;
+		idx = (idx + 1) % CEffectEffekseer::TYPE::TYPE_MAX;
 	}
 	else
 	{
-		idx = (idx + CGimmick::TYPE::TYPE_MAX - 1) % CGimmick::TYPE::TYPE_MAX;
+		idx = (idx + CEffectEffekseer::TYPE::TYPE_MAX - 1) % CEffectEffekseer::TYPE::TYPE_MAX;
 	}
 
-	CGimmick::SInfo info = m_pSelect->GetInfo();
+	CEffectEffekseer::SInfo info = m_pSelect->GetInfo();
 	m_pSelect->Uninit();
-	m_pSelect = CGimmick::Create(info.pos, info.rot, info.scale, static_cast<CGimmick::TYPE>(idx));
+	m_pSelect = CEffectEffekseer::Create(info.pos, info.rot, info.move, info.fScale, static_cast<CEffectEffekseer::TYPE>(idx));
 }
 
 //==========================================================
 // 保存
 //==========================================================
-void CEdit_Gimmick::Save()
+void CEdit_Effect::Save()
 {
 	CDebugProc::GetInstance()->Print(" 保存 : F7, ");
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 
-	Clist<CGimmick*>* pList = CGimmick::GetList();
+	Clist<CEffectEffekseer*>* pList = CEffectEffekseer::GetList();
 	if (pList == nullptr) { return; }
 
 	// 入力確認
 	if (!pKey->GetTrigger(DIK_F7)) { return; }
 
 	// ファイルを開く
-	std::ofstream File(EDITFILENAME::EFFECT, std::ios::binary);
+	std::ofstream File(EDITFILENAME::GIMMICK, std::ios::binary);
 	if (!File.is_open()) {
 		return;
 	}
 
-	std::vector<CGimmick::SInfo> savedata;
+	std::vector<CEffectEffekseer::SInfo> savedata;
 
 	for (int i = 0; i < pList->GetNum(); i++)
 	{
@@ -407,7 +425,7 @@ void CEdit_Gimmick::Save()
 	File.write(reinterpret_cast<const char*>(&size), sizeof(size));
 
 	// データをバイナリファイルに書き出す
-	File.write(reinterpret_cast<char*>(savedata.data()), size * sizeof(CGimmick::SInfo));
+	File.write(reinterpret_cast<char*>(savedata.data()), size * sizeof(CEffectEffekseer::SInfo));
 
 	// ファイルを閉じる
 	File.close();
@@ -416,14 +434,14 @@ void CEdit_Gimmick::Save()
 //==========================================================
 // 生成
 //==========================================================
-void CEdit_Gimmick::Create()
+void CEdit_Effect::Create()
 {
 	CDebugProc::GetInstance()->Print(" 生成 : マウスホイールクリック, ");
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 
 	// 入力確認
 	if (!pMouse->GetTrigger(CInputMouse::BUTTON_WHEEL)) { return; }
-
+	
 	D3DXVECTOR3 rayDir = pMouse->GetRayInfo().vec;
 	D3DXVECTOR3 rayOrigin = pMouse->GetRayInfo().origin;
 
@@ -440,22 +458,23 @@ void CEdit_Gimmick::Create()
 		return;
 	}
 
-	CGimmick::SInfo info = CGimmick::SInfo();
+	CEffectEffekseer::SInfo info = CEffectEffekseer::SInfo();
 
 	// 交点の座標を計算（Y = 0 平面上）
 	info.pos.x = rayOrigin.x + t * rayDir.x;
 	info.pos.y = 0.0f;  // Y = 0 なので固定
 	info.pos.z = rayOrigin.z + t * rayDir.z;
 	info.rot = VECTOR3_ZERO;
-	info.scale = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
+	info.move = VECTOR3_ZERO;
+	info.fScale = 45.0f;
 
-	CGimmick::Create(info.pos, info.rot, info.scale, CGimmick::TYPE::TYPE_FIREHYDRANT);
+	CEffectEffekseer::Create(info.pos, info.rot, info.move, info.fScale, CEffectEffekseer::TYPE::TYPE_LAMP);
 }
 
 //==========================================================
 // 状態変更
 //==========================================================
-void CEdit_Gimmick::ModeChange()
+void CEdit_Effect::ModeChange()
 {
 	if (m_pHandle == nullptr) { return; }
 
@@ -472,5 +491,5 @@ void CEdit_Gimmick::ModeChange()
 	// 廃棄
 	m_pHandle->Uninit();
 	m_pHandle = nullptr;
-	m_pHandle = CEdit_Handle::Create(m_pSelect->GetPos(), static_cast<CEdit_Handle::TYPE>(type));
+	m_pHandle = CEdit_Handle::Create(m_pSelect->GetPosition(), static_cast<CEdit_Handle::TYPE>(type));
 }

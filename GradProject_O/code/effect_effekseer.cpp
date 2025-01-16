@@ -7,6 +7,8 @@
 #include "effect_effekseer.h"
 #include "debugproc.h"
 
+Clist<CEffectEffekseer*> CEffectEffekseer::m_List = {};
+
 //===============================================
 // 無名名前空間
 //===============================================
@@ -25,6 +27,8 @@ namespace {
 CEffectEffekseer::CEffectEffekseer()
 {
 	m_Info = SInfo();
+	m_nId = m_List.GetNum();
+	m_List.Regist(this);
 }
 
 //===============================================
@@ -51,6 +55,7 @@ HRESULT CEffectEffekseer::Init(void)
 //===============================================
 void CEffectEffekseer::Uninit(void)
 {
+	m_List.Delete(this);
 	SAFE_DELETE(m_pEffekseer)
 
 	Release();
@@ -67,6 +72,8 @@ void CEffectEffekseer::Update(void)
 	m_pEffekseer->m_Scale.X = m_Info.fScale;
 	m_pEffekseer->m_Scale.Y = m_Info.fScale;
 	m_pEffekseer->m_Scale.Z = m_Info.fScale;
+
+	CDebugProc::GetInstance()->Print(" エフェクト総数 : %d", m_List.GetNum());
 }
 
 //===============================================
