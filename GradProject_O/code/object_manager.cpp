@@ -105,7 +105,7 @@ void CObjectManager::Draw(void)
 				// ƒŠƒXƒg‚Ì‘S•`‰æ
 				//DrawAll();
 				DrawAllShader();
-				DrawAllnotShader();
+			//	DrawAllnotShader();
 			}
 			
 			//DrawOneDimension(TYPE_3D);

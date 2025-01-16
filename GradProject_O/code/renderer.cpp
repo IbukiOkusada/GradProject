@@ -298,18 +298,10 @@ void CRenderer::Draw(void)
 		// オブジェクトの描画
 		CObjectManager::GetInstance()->Draw();
 
-		if (CEditManager::GetInstance() == nullptr)
+		//if (CEditManager::GetInstance() == nullptr)
 		{
 			pCamera->SetCamera();
 			CEffekseer::GetInstance()->Draw();
-		}
-		else
-		{
-			if (CEditManager::GetInstance()->GetSelectType() == CEdit::TYPE_GOAL)
-			{
-				pCamera->SetCamera();
-				CEffekseer::GetInstance()->Draw();
-			}
 		}
 
 		// フィードバックエフェクトにテクスチャ[1]を貼り付けて描画
@@ -338,7 +330,7 @@ void CRenderer::Draw(void)
 		CManager::GetInstance()->GetCamera()->SetCamera();
 
 		CPostprocess::GetInstance()->Draw();
-
+		CObjectManager::GetInstance()->DrawAllnotShader();
 		// デバッグ表示
 		if (pDebugProc != NULL)
 		{

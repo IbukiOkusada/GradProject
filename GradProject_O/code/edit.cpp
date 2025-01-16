@@ -10,6 +10,7 @@
 #include "edit_gimmick.h"
 #include "edit_goal.h"
 #include "edit_robot.h"
+#include "edit_effect.h"
 
 //==========================================================
 // コンストラクタ
@@ -82,6 +83,10 @@ CEdit* CEdit::Create(const TYPE& type)
 
 	case TYPE_ROBOT:
 		pEdit = DEBUG_NEW CEdit_Robot;
+		break;
+
+	case TYPE_EFFECT:
+		pEdit = DEBUG_NEW CEdit_Effect;
 		break;
 
 	default:
