@@ -10,6 +10,7 @@
 #include "deltatime.h"
 #include "player_manager.h"
 #include "texture.h"
+#include "game.h"
 // マクロ定義
 
 //==========================================================
@@ -100,7 +101,17 @@ void CContainer::Update(void)
 	{
 		m_state = STATE_NORMAL;
 	}
-
+	for (int i = 0; i < ICE_NUM; i++)
+	{
+		if (i < CGame::GetInstance()->GetRestDeliveryStatus())
+		{
+			m_pIce[i]->pIce->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		else
+		{
+			m_pIce[i]->pIce->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.25f));
+		}
+	}
 }
 //==========================================================
 // 更新処理
