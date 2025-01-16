@@ -24,4 +24,8 @@ MODEL_FILENAME = data/MODEL/map/slum_house001.x	# [0]スラムハウス
 MODEL_FILENAME = data/MODEL/map/slum_house002.x	# [0]スラムハウス
 MODEL_FILENAME = data/MODEL/map/slum_shop000.x	# [0]スラムショップ
 
+#追加サイバーパンクモデル
+MODEL_FILENAME = data/MODEL/map/beer.x	# [0]サイバービル
+MODEL_FILENAME = data/MODEL/map/bill_02.x	# [0]ビル
+
 END_SCRIPT

@@ -12,6 +12,7 @@
 #include "camera.h"
 #include "camera_manager.h"
 #include "game.h"
+#include "edit_manager.h"
 
 namespace
 {
@@ -180,8 +181,15 @@ void CMapObstacle::BindModel(const int& idx)
 //==========================================================
 void CMapObstacle::DrawCheck()
 {
-	// Á‰Îð‚ªˆÚ“®‚µ‚½
 	if (m_pObj == nullptr) { return; }
+
+	if (CEditManager::GetInstance() != nullptr)
+	{
+		m_pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		m_pObj->SetDraw();
+
+		return;
+	}
 
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 	D3DXMATRIX mtxProjection, mtxView, mtxWorld;
