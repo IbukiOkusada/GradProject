@@ -1451,7 +1451,7 @@ void CPlayer::SetStateActive()
 		// ラジオ生成
 		if (m_pRadio == nullptr)
 		{
-			//m_pRadio = CRadio::Create();
+			m_pRadio = CRadio::Create();
 		}
 
 		// アイスContainer生成

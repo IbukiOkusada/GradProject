@@ -25,6 +25,7 @@
 #include "model.h"
 #include "network.h"
 #include "objectX.h"
+#include "game.h"
 
 namespace
 {
@@ -131,6 +132,12 @@ void CGoal::Uninit(void)
 //==========================================================
 void CGoal::Update(void)
 {
+	if (CGame::GetInstance() != nullptr) {
+		if (CGame::GetInstance()->GetState() != CGame::STATE::STATE_NONE)
+		{
+			return;
+		}
+	}
 	// エフェクト表示
 	//ScreenEffect();
 

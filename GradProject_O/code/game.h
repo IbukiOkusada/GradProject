@@ -65,6 +65,7 @@ public:
 	static void SetNumPlayer(int nNum) { m_nNumPlayer = nNum; }
 	static int GetNumPlayer(void) { return m_nNumPlayer; }
 	void SetGameState(STATE state) { m_GameState = state; }
+	STATE GetState() { return m_GameState; }
 	// メンバ関数(ポインタ)
 	CPlayer *GetPlayer(void);
 	CFileLoad *GetFileLoad(void);
