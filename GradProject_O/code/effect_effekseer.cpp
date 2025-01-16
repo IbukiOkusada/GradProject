@@ -1,20 +1,13 @@
 //===============================================
 //
 // エフェクトの処理 [effect.cpp]
-// Author : Ibuki Okusada
+// Author : Riku Nakamura
 //
 //===============================================
 #include "effect_effekseer.h"
-#include "manager.h"
-#include "renderer.h"
-#include "input.h"
 #include "debugproc.h"
-#include "texture.h"
-#include "deltatime.h"
-#include "game.h"
-#include "meshfield.h"
-#include "billboard.h"
-#include "deltatime.h"
+
+Clist<CEffectEffekseer*> CEffectEffekseer::m_List = {};
 
 //===============================================
 // 無名名前空間
@@ -22,6 +15,9 @@
 namespace {
 	const std::string EFFECTNAMEPATH[CEffectEffekseer::TYPE_MAX] = {	// エフェクトのパス
 		"data\\EFFEKSEER\\patrollamp.efkefc",
+		"data\\EFFEKSEER\\explosion.efkefc",
+		"data\\EFFEKSEER\\splash.efkefc",
+		"data\\EFFEKSEER\\trail.efkefc",
 	};
 }
 
@@ -31,6 +27,8 @@ namespace {
 CEffectEffekseer::CEffectEffekseer()
 {
 	m_Info = SInfo();
+	m_nId = m_List.GetNum();
+	m_List.Regist(this);
 }
 
 //===============================================
@@ -57,6 +55,7 @@ HRESULT CEffectEffekseer::Init(void)
 //===============================================
 void CEffectEffekseer::Uninit(void)
 {
+	m_List.Delete(this);
 	SAFE_DELETE(m_pEffekseer)
 
 	Release();
@@ -67,7 +66,14 @@ void CEffectEffekseer::Uninit(void)
 //===============================================
 void CEffectEffekseer::Update(void)
 {
-	
+	m_pEffekseer->m_pos = m_Info.pos;
+	m_pEffekseer->m_rot = m_Info.rot;
+	m_pEffekseer->m_move = m_Info.move;
+	m_pEffekseer->m_Scale.X = m_Info.fScale;
+	m_pEffekseer->m_Scale.Y = m_Info.fScale;
+	m_pEffekseer->m_Scale.Z = m_Info.fScale;
+
+	CDebugProc::GetInstance()->Print(" エフェクト総数 : %d", m_List.GetNum());
 }
 
 //===============================================

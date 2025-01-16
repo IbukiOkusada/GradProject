@@ -959,6 +959,10 @@ bool CPlayer::CollisionField(void)
 
 	// 道との判定
 	auto listRoad = CMeshField::GetList();
+	if (listRoad == nullptr) {
+		return false;
+	}
+
 	for (int i = 0; i < listRoad->GetNum(); i++)
 	{// 使用されていない状態まで
 
@@ -1451,7 +1455,7 @@ void CPlayer::SetStateActive()
 		// ラジオ生成
 		if (m_pRadio == nullptr)
 		{
-			m_pRadio = CRadio::Create();
+			//m_pRadio = CRadio::Create();
 		}
 
 		// アイスContainer生成

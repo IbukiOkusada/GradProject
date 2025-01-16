@@ -9,6 +9,7 @@
 
 #include "task.h"
 #include "effekseerControl.h"
+#include "list.h"
 
 // 前方宣言
 
@@ -22,11 +23,12 @@ public:	// 誰でもアクセス可能な定義
 	// 種類の列挙型定義
 	typedef enum
 	{
-		TYPE_NONE = 0,			// 通常
+		TYPE_LAMP = 0,			// 通常
+		TYPE_EXPLOSION,			// 通常
+		TYPE_SPLASH,			// 通常
+		TYPE_TRAIL,				// 通常
 		TYPE_MAX
 	}TYPE;
-
-private:	// 自分だけアクセス可能な定義
 
 	// 情報構造体の定義
 	struct SInfo
@@ -38,8 +40,10 @@ private:	// 自分だけアクセス可能な定義
 		TYPE Type;	// 種類
 
 		// コンストラクタ
-		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), move(VECTOR3_ZERO), fScale(1.0f), Type(TYPE_NONE) {}
+		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), move(VECTOR3_ZERO), fScale(1.0f), Type(TYPE_LAMP) {}
 	};
+
+private:	// 自分だけアクセス可能な定義
 
 public:	// 誰でもアクセス可能
 
@@ -51,6 +55,8 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Update(void);
 	static CEffectEffekseer*Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale, TYPE type);
+
+	SInfo GetInfo(void) { return m_Info; }
 
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
 	void SetPosition(const D3DXVECTOR3& pos) { m_Info.pos = pos; }
@@ -65,15 +71,21 @@ public:	// 誰でもアクセス可能
 	void SetScale(const float& fScale) { m_Info.fScale = fScale; }
 
 	TYPE GetType(void) { return m_Info.Type; }
-	void SetType(TYPE type) { m_Info.Type = type; }
+
+	static Clist<CEffectEffekseer*>* GetList() { return &m_List; }
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void SetType(TYPE type) { m_Info.Type = type; }
 
 	// メンバ変数
 	SInfo m_Info;	// 情報の構造体
+	int m_nId;
 	CEffekseer::CEffectData* m_pEffekseer;
+
+	// 静的メンバ変数
+	static Clist<CEffectEffekseer*> m_List;
 };
 
 #endif 

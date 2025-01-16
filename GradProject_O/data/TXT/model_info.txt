@@ -27,7 +27,7 @@ MODEL_FILENAME = data/MODEL/map/slum_shop000.x	# [0]スラムショップ
 #追加サイバーパンクモデル
 MODEL_FILENAME = data/MODEL/map/beer.x		# [0]ビール
 MODEL_FILENAME = data/MODEL/map/bill_02.x	# [0]ビル
-MODEL_FILENAME = data/MODEL/map/cycle.x	# [0]ビル
+MODEL_FILENAME = data/MODEL/map/cycle.x		# [0]ビル
 MODEL_FILENAME = data/MODEL/map/bar_01.x	# [0]ビル
 MODEL_FILENAME = data/MODEL/map/hotel_01.x	# [0]ビル
 

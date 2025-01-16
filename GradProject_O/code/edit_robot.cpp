@@ -30,8 +30,8 @@ namespace
 CEdit_Robot::CEdit_Robot()
 {
 	// 値のクリア
-	/*m_pSelect = nullptr;
-	m_pHandle = nullptr;*/
+	m_pSelect = nullptr;
+	m_pHandle = nullptr;
 	m_fMouseWheel = 0.0f;
 }
 
@@ -104,7 +104,7 @@ void CEdit_Robot::Update(void)
 {
 	CDebugProc::GetInstance()->Print(" [ ロボット配置モード ]\n");
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
-	//CGoal* pOld = m_pSelect;
+	auto* pOld = m_pSelect;
 
 	// 選択
 	ClickCheck();
@@ -117,7 +117,7 @@ void CEdit_Robot::Update(void)
 	if (pKey->GetPress(DIK_LALT) || pKey->GetPress(DIK_RALT)) { CDebugProc::GetInstance()->Print("]\n"); return; }
 
 	// 選択されていない、もしくは選択した直後
-	if (m_pSelect == nullptr) {
+	if (m_pSelect == nullptr || pOld == nullptr) {
 
 		// 生成
 		Create();
@@ -126,13 +126,13 @@ void CEdit_Robot::Update(void)
 		return;
 	}
 
-	// 選択されたものを色変える
+	 // 選択されたものを色変える
 
-	//// 矢印の更新
-	//if (m_pHandle != nullptr)
-	//{
-	//	m_pHandle->Update();
-	//}
+	// 矢印の更新
+	if (m_pHandle != nullptr)
+	{
+		m_pHandle->Update();
+	}
 
 	// 移動
 	Move();
@@ -142,12 +142,12 @@ void CEdit_Robot::Update(void)
 
 	CDebugProc::GetInstance()->Print("]\n\n");
 
-	//// ゴール情報
-	//if (m_pSelect == nullptr) { return; }
-	//CDebugProc::GetInstance()->Print("[ ゴール情報 : ");
-	//D3DXVECTOR3 pos = m_pSelect->GetPos();
-	//CDebugProc::GetInstance()->Print("座標 : [ %f, %f, %f ] : ", pos.x, pos.y, pos.z);
-	//CDebugProc::GetInstance()->Print("]\n");
+	// ゴール情報
+	if (m_pSelect == nullptr) { return; }
+	CDebugProc::GetInstance()->Print("[ ロボット情報 : ");
+	D3DXVECTOR3 pos = m_pSelect->GetPosition();
+	CDebugProc::GetInstance()->Print("座標 : [ %f, %f, %f ] : ", pos.x, pos.y, pos.z);
+	CDebugProc::GetInstance()->Print("]\n");
 }
 
 //==========================================================
@@ -176,35 +176,39 @@ void CEdit_Robot::ClickCheck()
 	//m_pSelect = nullptr;
 	auto mgr = CGoalManager::GetInstance()->GetList();
 
-	// ゴールを全て確認
-	for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd(); ite++)
+	CRobot* pTop = CRobotManager::GetInstance()->GetTop();
+
+	while (pTop != nullptr)
 	{
-		CGoal* pGoal = ite->second;
+		CRobot* pNext = pTop->GetNext();
 
-		//// 衝突した
-		//if (CursorCollision(pGoal))
-		//{
-		//	m_pSelect = pGoal;
+		// 衝突判定
+		if (CursorCollision(pTop))
+		{
+			m_pSelect = pTop;
 
-		//	if (m_pHandle == nullptr)
-		//	{
-		//		m_pHandle = CEdit_Handle::Create(m_pSelect->GetPos(), CEdit_Handle::TYPE_MOVE);
-		//	}
+			if (m_pHandle == nullptr)
+			{
+				m_pHandle = CEdit_Handle::Create(m_pSelect->GetPosition(), CEdit_Handle::TYPE_MOVE);
+			}
 
-		//	m_pHandle->SetPosition(m_pSelect->GetPos());
+			// 位置設定
+			m_pHandle->SetPosition(m_pSelect->GetPosition());
 
-		//	return;
-		//}
+			return;
+		}
+
+		pTop = pNext;
 	}
 
-	//// ゴールが選ばれていない
-	//if (m_pSelect != nullptr) { return; }
+	// ゴールが選ばれていない
+	if (m_pSelect != nullptr) { return; }
 
-	//// 矢印使用中
-	//if (m_pHandle == nullptr) { return; }
+	// 矢印使用中
+	if (m_pHandle == nullptr) { return; }
 
-	/*m_pHandle->Uninit();
-	m_pHandle = nullptr;*/
+	m_pHandle->Uninit();
+	m_pHandle = nullptr;
 }
 
 //==========================================================
@@ -218,25 +222,25 @@ bool CEdit_Robot::CursorCollision(CRobot* pRobot)
 
 	// ロボットの情報
 	D3DXVECTOR3 pos = pRobot->GetPosition();
-	//float range = pRobot->GetRange();
+	float range = 50.0f;
 
-	//D3DXVECTOR3 pos0 = pos + D3DXVECTOR3(-range, 0.0f, range), pos1 = pos + D3DXVECTOR3(range, 0.0f, range),
-	//	pos2 = pos + D3DXVECTOR3(-range, 0.0f, -range);
+	D3DXVECTOR3 pos0 = pos + D3DXVECTOR3(-range, 0.0f, range), pos1 = pos + D3DXVECTOR3(range, 0.0f, range),
+		pos2 = pos + D3DXVECTOR3(-range, 0.0f, -range);
 
-	//// 三角形と線分の衝突確認
-	//if (TriangleCollision(info.origin, info.vec, pos0, pos1, pos2))
-	//{
-	//	return true;
-	//}
+	// 三角形と線分の衝突確認
+	if (TriangleCollision(info.origin, info.vec, pos0, pos1, pos2))
+	{
+		return true;
+	}
 
-	//// 反対の三角へ
-	//pos0 = pos + D3DXVECTOR3(range, 0.0f, -range);
+	// 反対の三角へ
+	pos0 = pos + D3DXVECTOR3(range, 0.0f, -range);
 
-	//// 同じく衝突確認
-	//if (TriangleCollision(info.origin, info.vec, pos0, pos1, pos2))
-	//{
-	//	return true;
-	//}
+	// 同じく衝突確認
+	if (TriangleCollision(info.origin, info.vec, pos0, pos1, pos2))
+	{
+		return true;
+	}
 
 	return false;
 }
@@ -308,7 +312,7 @@ void CEdit_Robot::Move()
 	if (m_pSelect == nullptr) { return; }
 	if (m_pHandle == nullptr) { return; }
 
-	D3DXVECTOR3 pos = m_pSelect->GetPos();	// 座標
+	D3DXVECTOR3 pos = m_pSelect->GetPosition();	// 座標
 	D3DXVECTOR3 Handlepos = m_pHandle->GetPosition();	// 矢印座標
 
 	// X座標
@@ -345,7 +349,7 @@ void CEdit_Robot::Move()
 	}
 
 	// 選択したゴールの座標設定
-	m_pSelect->SetPos(pos);
+	m_pSelect->SetPosition(pos);
 }
 
 //==========================================================
@@ -365,15 +369,26 @@ void CEdit_Robot::Save()
 		return;
 	}
 
-	std::vector<CGoal::SInfo> savedata;
+	std::vector<CRobot::SInfo> savedata;
 
-	auto mgr = CGoalManager::GetInstance()->GetList();
+	CRobot* pTop = CRobotManager::GetInstance()->GetTop();
 
-	// ゴールを全て確認
-	for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd(); ite++)
+	while (pTop != nullptr)
 	{
-		savedata.push_back(*ite->second->GetInfo());
+		CRobot* pNext = pTop->GetNext();
+
+		savedata.push_back(pTop->GetInfo());
+
+		pTop = pNext;
 	}
+
+	//auto mgr = CGoalManager::GetInstance()->GetList();
+
+	//// ゴールを全て確認
+	//for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd(); ite++)
+	//{
+	//	savedata.push_back(*ite->second->GetInfo());
+	//}
 
 	int size = savedata.size();
 
@@ -430,13 +445,7 @@ void CEdit_Robot::Create()
 	rot = VECTOR3_ZERO;
 
 	CRobot* pRobot = CRobot::Create(pos, rot, DEFAULT_DISTANCE);
-	//CRobotManager* mgr = CRobotManager::GetInstance();
-
-	//if (mgr != nullptr)
-	//{
-	//	// リストに挿入する
-	//	mgr->ListIn(pRobot);
-	//}
+	pRobot->Update();
 }
 
 //==========================================================
@@ -459,5 +468,5 @@ void CEdit_Robot::ModeChange()
 	// 廃棄
 	m_pHandle->Uninit();
 	m_pHandle = nullptr;
-	m_pHandle = CEdit_Handle::Create(m_pRobot->GetPosition(), static_cast<CEdit_Handle::TYPE>(type));
+	m_pHandle = CEdit_Handle::Create(m_pSelect->GetPosition(), static_cast<CEdit_Handle::TYPE>(type));
 }

@@ -40,7 +40,7 @@ namespace BLINKING
 
 namespace
 {
-	const float START_TIME = 40.0f;	// “_–Å‚É‚È‚éŽžŠÔ
+	const float START_TIME = 120.0f;	// “_–Å‚É‚È‚éŽžŠÔ
 }
 
 //===============================================

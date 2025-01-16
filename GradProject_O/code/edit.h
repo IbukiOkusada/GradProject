@@ -14,6 +14,7 @@ namespace EDITFILENAME
 	const std::string ROAD =		"data\\FILE\\map\\road.bin";
 	const std::string GIMMICK =		"data\\FILE\\map\\gimmick.bin";
 	const std::string GOAL =		"data\\FILE\\map\\goal.bin";
+	const std::string EFFECT =		"data\\FILE\\map\\effect.bin";
 }
 
 //==========================================================
@@ -30,6 +31,7 @@ public:	// 誰でもアクセス可能な定義
 		TYPE_GIMMICK,	// ギミック
 		TYPE_GOAL,		// ゴール
 		TYPE_ROBOT,     // ロボット
+		TYPE_EFFECT,    // エフェクト
 		TYPE_MAX
 	};
 

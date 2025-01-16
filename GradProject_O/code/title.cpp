@@ -179,7 +179,10 @@ void CTitle::Uninit(void)
 	for (int nCnt = 0; nCnt < TITLE_SE_MAX; nCnt++)
 	{
 		//’†g‚ ‚ê‚ÎI—¹ˆ—
-		if (m_apMSound[nCnt]) { SAFE_UNINIT(m_apMSound[nCnt]); }
+		if (m_apMSound[nCnt] != nullptr) 
+		{ 
+			SAFE_UNINIT_DELETE(m_apMSound[nCnt]); 
+		}
 
 		//‚È‚¯‚ê‚Îˆ—‚©‚ç”²‚¯‚é
 		else { break; }

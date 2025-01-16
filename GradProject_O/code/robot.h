@@ -21,9 +21,9 @@ class CCharacter;
 //==========================================================
 class CRobot : public CTask
 {
-
 public:	// 誰でもアクセス可能
-		// 状態列挙型
+
+	// 状態列挙型
 	enum STATE
 	{
 		STATE_WALK = 0,	// 歩き状態
@@ -31,6 +31,32 @@ public:	// 誰でもアクセス可能
 		STATE_MAX
 	};
 
+	// 情報構造体
+	struct SInfo
+	{
+		D3DXVECTOR3 pos;		// 位置
+		D3DXVECTOR3 rot;		// 向き
+		D3DXVECTOR3 rotDest;	// 目標向き
+		D3DXVECTOR3 move;		// 移動量
+		D3DXVECTOR3 posOld;		// 設定位置
+		STATE state;			// 状態
+		CPlayer* pPlayer;
+		int nTargetID;
+		int nId;
+		float fDistance;        // 距離
+
+		// コンストラクタ
+		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), rotDest(VECTOR3_ZERO),
+			move(VECTOR3_ZERO), posOld(VECTOR3_ZERO),
+			nTargetID(0), nId(-1) {}
+	};
+
+private:
+
+	
+
+public:	// 誰でもアクセス可能
+	
 	// モーション列挙型
 	enum MOTION
 	{
@@ -54,11 +80,14 @@ public:	// 誰でもアクセス可能
 	CRobot* GetPrev(void) { return m_pPrev; }
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
 	D3DXVECTOR3 GetRotation(void) { return m_Info.rot; }
+	float GetDistace(void) { return m_Info.fDistance; }
+	CRobot::SInfo GetInfo(void) { return m_Info; }
 
 	// メンバ関数(設定)
 	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetRotation(const D3DXVECTOR3& rot);
+	void SetDistance(const float distance) { m_Info.fDistance = distance; }
 
 	void SetNext(CRobot* pNext) { m_pNext = pNext; }
 	void SetPrev(CRobot* pPrev) { m_pPrev = pPrev; }
@@ -79,25 +108,6 @@ private:	// 自分だけがアクセス可能
 
 	void Walk();
 	void Collision(D3DXVECTOR3 pos);
-
-	// 情報構造体
-	struct SInfo
-	{
-		D3DXVECTOR3 pos;		// 位置
-		D3DXVECTOR3 rot;		// 向き
-		D3DXVECTOR3 rotDest;	// 目標向き
-		D3DXVECTOR3 move;		// 移動量
-		D3DXVECTOR3 posOld;		// 設定位置
-		STATE state;			// 状態
-		CPlayer* pPlayer;
-		int nTargetID;
-		int nId;
-
-		// コンストラクタ
-		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), rotDest(VECTOR3_ZERO),
-			move(VECTOR3_ZERO), posOld(VECTOR3_ZERO),
-			nTargetID(0), nId(-1) {}
-	};
 
 	// メンバ変数
 	SInfo m_Info;				// 自分自身の情報

@@ -38,6 +38,7 @@ CModel::CModel() : CObject(1)
 	m_pCharacterMtx = nullptr;
 	m_ColMulti = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_AddCol = D3DXCOLOR(0.0f, 0.0f, 0.0f, 0.0f);
+	SetDrawShader(true);
 
 	//ワールドマトリックスの初期化
 	D3DXMatrixIdentity(&m_mtxWorld);
@@ -109,7 +110,6 @@ void CModel::Draw(void)
 	D3DMATERIAL9 changemat;
 	D3DXMATERIAL *pMat;	// マテリアルデータへのポインタ
 	D3DXMATRIX mtxParent;	// 親のマトリックス情報
-	CSlow *pSlow = CManager::GetInstance()->GetSlow();
 
 	// 正規化を有効にする
 	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
@@ -287,16 +287,105 @@ void CModel::DrawOnShader(void)
 		return;
 	}
 
+	//LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスへのポインタを取得
+	//CFXManager* pFx = CFXManager::GetInstance();
+	//CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
+	//D3DXMATRIX mtxRot, mtxTrans, mtxscale;	// 計算用マトリックス
+	//CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
+	//D3DMATERIAL9 matDef;	// 現在のマテリアル保存用
+	//D3DMATERIAL9 changemat;
+	//D3DXMATERIAL* pMat;	// マテリアルデータへのポインタ
+	//D3DXMATRIX mtxParent;	// 親のマトリックス情報
+
+	//// 正規化を有効にする
+	//pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
+
+	////ワールドマトリックスの初期化
+	//D3DXMatrixIdentity(&m_mtxWorld);
+
+	//// スケールの反映
+	//D3DXMatrixScaling(&m_mtxscale, m_scale.x, m_scale.y, m_scale.z);
+	//D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &m_mtxscale);
+
+	////向きを反映
+	//D3DXMatrixRotationYawPitchRoll(&mtxRot, m_CurRot.y, m_CurRot.x, m_CurRot.z);
+	//D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+
+	////位置を反映
+	//D3DXMatrixTranslation(&mtxTrans, m_CurPos.x, m_CurPos.y, m_CurPos.z);
+	//D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld,
+	//	&mtxTrans);
+
+	//if (m_pParentMtx != NULL)
+	//{// 覚えている場合
+	//	mtxParent = *m_pParentMtx;
+
+	//	// パーツのマトリックスと親のマトリックスをかけ合わせる
+	//	D3DXMatrixMultiply(&m_mtxWorld,
+	//		&m_mtxWorld, &mtxParent);
+	//}
+
+	//// ワールドマトリックスの設定
+	//pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+	//pFx->SetMatrixWorld(m_mtxWorld);
+	//pFx->SetScale(m_mtxscale);
+	//// 現在のマテリアルを取得
+	//pDevice->GetMaterial(&matDef);
+
+	//// モデル情報を取得
+	//CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
+
+	//if (pFileData != NULL)
+	//{// 使用されている場合
+	//	// マテリアルデータへのポインタを取得
+	//	pMat = (D3DXMATERIAL*)pFileData->pBuffMat->GetBufferPointer();
+	//	for (int nCntMat = 0; nCntMat < (int)pFileData->dwNumMat; nCntMat++)
+	//	{
+	//		int nIdxTex = pFileData->pIdexTexture[nCntMat];	// テクスチャ番号
+
+	//		if (m_bChangeCol == false)
+	//		{
+	//			// マテリアルの設定
+	//			pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
+	//			pFx->SetMaterial(pMat[nCntMat].MatD3D);
+	//		}
+	//		else
+	//		{
+	//			changemat = pMat[nCntMat].MatD3D;
+	//			changemat = m_ChangeMat;
+
+	//			// マテリアルの設定
+	//			pDevice->SetMaterial(&changemat);
+	//			pFx->SetMaterial(changemat);
+	//		}
+
+	//		// テクスチャの設定
+	//		pDevice->SetTexture(0, pTexture->SetAddress(nIdxTex));
+	//		pFx->BeginPass();
+	//		pFx->SetParamToEffect();
+	//		// モデル(パーツ)の描画
+	//		pFileData->pMesh->DrawSubset(nCntMat);
+	//		pFx->EndPass();
+	//	}
+	//}
+
+	//// 保存していたマテリアルを戻す
+	//pDevice->SetMaterial(&matDef);
+
+	//// 正規化を無効にする
+	//pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, FALSE);
+
+	//m_mtxpos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
+
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイスへのポインタを取得
-	CFXManager* pFx = CFXManager::GetInstance();
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
-	D3DXMATRIX mtxRot, mtxTrans, mtxscale;	// 計算用マトリックス
+	CFXManager* pFx = CFXManager::GetInstance();
+	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	D3DMATERIAL9 matDef;	// 現在のマテリアル保存用
 	D3DMATERIAL9 changemat;
 	D3DXMATERIAL* pMat;	// マテリアルデータへのポインタ
 	D3DXMATRIX mtxParent;	// 親のマトリックス情報
-	CSlow* pSlow = CManager::GetInstance()->GetSlow();
 
 	// 正規化を有効にする
 	pDevice->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE);
@@ -330,6 +419,7 @@ void CModel::DrawOnShader(void)
 	pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
 	pFx->SetMatrixWorld(m_mtxWorld);
 	pFx->SetScale(m_mtxscale);
+
 	// 現在のマテリアルを取得
 	pDevice->GetMaterial(&matDef);
 
@@ -344,29 +434,31 @@ void CModel::DrawOnShader(void)
 		{
 			int nIdxTex = pFileData->pIdexTexture[nCntMat];	// テクスチャ番号
 
-			if (m_bChangeCol == false)
-			{
-				// マテリアルの設定
-				pDevice->SetMaterial(&pMat[nCntMat].MatD3D);
-				pFx->SetMaterial(pMat[nCntMat].MatD3D);
-			}
-			else
-			{
-				changemat = pMat[nCntMat].MatD3D;
-				changemat = m_ChangeMat;
+			D3DMATERIAL9 mat = pMat[nCntMat].MatD3D;
+			mat.Diffuse.r = mat.Diffuse.r * m_ColMulti.r + m_AddCol.r;
+			mat.Diffuse.g = mat.Diffuse.g * m_ColMulti.g + m_AddCol.g;
+			mat.Diffuse.b = mat.Diffuse.b * m_ColMulti.b + m_AddCol.b;
+			mat.Diffuse.a = mat.Diffuse.a * m_ColMulti.a + m_AddCol.a;
+			mat.Ambient.r = mat.Ambient.r * m_ColMulti.r + m_AddCol.r;
+			mat.Ambient.g = mat.Ambient.g * m_ColMulti.g + m_AddCol.g;
+			mat.Ambient.b = mat.Ambient.b * m_ColMulti.b + m_AddCol.b;
+			mat.Ambient.a = mat.Ambient.a * m_ColMulti.a + m_AddCol.a;
 
-				// マテリアルの設定
-				pDevice->SetMaterial(&changemat);
-				pFx->SetMaterial(changemat);
-			}
+			//マテリアルの設定
+			pDevice->SetMaterial(&mat);
+			pFx->SetMaterial(mat);
+
+			pFx->SetParamToEffect();
 
 			// テクスチャの設定
+			pFx->Begin();
 			pDevice->SetTexture(0, pTexture->SetAddress(nIdxTex));
 			pFx->BeginPass();
-			pFx->SetParamToEffect();
+
 			// モデル(パーツ)の描画
 			pFileData->pMesh->DrawSubset(nCntMat);
 			pFx->EndPass();
+			pFx->End();
 		}
 	}
 
@@ -378,7 +470,6 @@ void CModel::DrawOnShader(void)
 
 	m_mtxpos = D3DXVECTOR3(m_mtxWorld._41, m_mtxWorld._42, m_mtxWorld._43);
 
-	
 }
 //==========================================================
 // 生成

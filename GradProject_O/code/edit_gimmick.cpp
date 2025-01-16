@@ -389,7 +389,7 @@ void CEdit_Gimmick::Save()
 	if (!pKey->GetTrigger(DIK_F7)) { return; }
 
 	// ファイルを開く
-	std::ofstream File(EDITFILENAME::GIMMICK, std::ios::binary);
+	std::ofstream File(EDITFILENAME::EFFECT, std::ios::binary);
 	if (!File.is_open()) {
 		return;
 	}
