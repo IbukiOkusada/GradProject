@@ -249,7 +249,7 @@ HRESULT CGame::Init(void)
         m_pGameTimer = CTimer::Create();
     }
 
-    CRobot* pRobot = CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
+    CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
 
   /*  pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/

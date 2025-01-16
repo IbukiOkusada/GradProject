@@ -47,8 +47,7 @@ private:	// 自分だけがアクセス可能
 		const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, const D3DXVECTOR3& pos2);
 
 	// メンバ変数
-	CGoal* m_pSelect;	// 選択した道
-	CRobot* m_pRobot;   // 洗濯したロボット
+	CRobot* m_pSelect;  // 選択したロボット
 	CEdit_Handle* m_pHandle;	// 矢印
 	float m_fMouseWheel;	// マウスホイールの移動量
 	float m_fMoveLength;	// 移動距離
