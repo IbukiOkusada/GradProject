@@ -68,11 +68,13 @@ public:
 	// メンバ関数(ポインタ)
 	CPlayer *GetPlayer(void);
 	CFileLoad *GetFileLoad(void);
-
+	int GetTotalDeliveryStatus() { return m_nTotalDeliveryStatus; }
+	int GetRestDeliveryStatus();
 
 	void End_Success();
 	void End_Fail();
 	void End_MultiEnd();
+	static CGame* GetInstance() { return m_pInstance; }
 private:
 
 	//=============================
@@ -115,6 +117,8 @@ private:
 	CScrollText2D* m_pEndText;
 	CMasterSound::CObjectSound* m_pEndSound;
 	CFog * pFog;
+
+	static CGame* m_pInstance;
 };
 
 #endif

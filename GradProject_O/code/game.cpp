@@ -95,6 +95,7 @@ namespace {
 // 静的メンバ変数
 //===============================================
 int CGame::m_nNumPlayer = 0;
+CGame* CGame::m_pInstance = nullptr;
 
 //===============================================
 // 関数ポインタ
@@ -172,6 +173,7 @@ CGame::~CGame()
 //===============================================
 HRESULT CGame::Init(void)
 {
+    m_pInstance = this;
     memset(&m_aAddress[0], '\0', sizeof(m_aAddress));
 
     // 外部ファイル読み込みの生成
@@ -259,9 +261,11 @@ HRESULT CGame::Init(void)
 //===============================================
 void CGame::Uninit(void)
 {
-   CManager::GetInstance()->GetSound()->Stop();
+    m_pInstance = nullptr;
 
-   CManager::GetInstance()->GetDeltaTime()->SetSlow(1.0f);
+    CManager::GetInstance()->GetSound()->Stop();
+
+    CManager::GetInstance()->GetDeltaTime()->SetSlow(1.0f);
 
     m_bEnd = true;
 
@@ -272,7 +276,7 @@ void CGame::Uninit(void)
         {
             break;
         }
-       
+
     }
 
     // ライト
@@ -292,7 +296,7 @@ void CGame::Uninit(void)
 
     // 廃棄
     SAFE_UNINIT_DELETE(pFog);
-    
+
     // ネットワーク切断
     auto net = CNetWork::GetInstance();
     net->DisConnect();
@@ -682,4 +686,16 @@ void CGame::CreateCar()
             D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), CCarManager::GetInstance()->GetMapList()->GetInCnt());
         pCar->SetType(CCar::TYPE::TYPE_ACTIVE);
     }
+}
+
+int CGame::GetRestDeliveryStatus()
+{
+    int num = m_nTotalDeliveryStatus;
+    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+    if (pPlayer != nullptr)
+    {
+        num -= pPlayer->GetNumDeliverStatus();
+    }
+
+    return num;
 }
