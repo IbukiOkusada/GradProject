@@ -338,7 +338,7 @@ void CRenderer::Draw(void)
 		CManager::GetInstance()->GetCamera()->SetCamera();
 
 		CPostprocess::GetInstance()->Draw();
-
+		CObjectManager::GetInstance()->DrawAllnotShader();
 		// デバッグ表示
 		if (pDebugProc != NULL)
 		{
