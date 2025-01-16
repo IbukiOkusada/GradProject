@@ -11,6 +11,7 @@
 #include "motion.h"
 #include "player.h"
 #include "player_manager.h"
+#include "debugproc.h"
 
 //==========================================================
 // ’è”’è‹`
@@ -112,7 +113,6 @@ void CRobot::Update(void)
 	{
 		m_pCharacter->Update();
 	}
-
 }
 
 //==========================================================
@@ -187,10 +187,10 @@ void CRobot::SetPosTerget(const float& Distance)
 {
 	m_Info.fDistance = Distance;
 
-	m_PosTarget[0].x = m_Info.pos.x + sinf(m_Info.rot.y) * m_Info.fDistance;
-	m_PosTarget[0].z = m_Info.pos.z + cosf(m_Info.rot.y) * m_Info.fDistance;
-	m_PosTarget[1].x = m_Info.pos.x + sinf(m_Info.rot.y) * -m_Info.fDistance;
-	m_PosTarget[1].z = m_Info.pos.z + cosf(m_Info.rot.y) * -m_Info.fDistance;
+	m_PosTarget[0].x = m_Info.pos.x + sinf(m_Info.rot.y) * Distance;
+	m_PosTarget[0].z = m_Info.pos.z + cosf(m_Info.rot.y) * Distance;
+	m_PosTarget[1].x = m_Info.pos.x + sinf(m_Info.rot.y) * -Distance;
+	m_PosTarget[1].z = m_Info.pos.z + cosf(m_Info.rot.y) * -Distance;
 }
 
 //==========================================================

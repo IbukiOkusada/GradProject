@@ -134,11 +134,25 @@ void CEdit_Robot::Update(void)
 		m_pHandle->Update();
 	}
 
+	// ハンドルの状態変化
+	ModeChange();
+
 	// 移動
 	Move();
 
 	// 削除
 	Delete();
+
+	CRobot* pTop = CRobotManager::GetInstance()->GetTop();
+
+	while (pTop != nullptr)
+	{
+		CRobot* pNext = pTop->GetNext();
+
+		pTop->Update();
+	
+		pTop = pNext;
+	}
 
 	CDebugProc::GetInstance()->Print("]\n\n");
 
@@ -382,14 +396,6 @@ void CEdit_Robot::Save()
 		pTop = pNext;
 	}
 
-	//auto mgr = CGoalManager::GetInstance()->GetList();
-
-	//// ゴールを全て確認
-	//for (auto ite = mgr.GetBegin(); ite != mgr.GetEnd(); ite++)
-	//{
-	//	savedata.push_back(*ite->second->GetInfo());
-	//}
-
 	int size = savedata.size();
 
 	// ベクトルのサイズをセーブ
@@ -445,7 +451,6 @@ void CEdit_Robot::Create()
 	rot = VECTOR3_ZERO;
 
 	CRobot* pRobot = CRobot::Create(pos, rot, DEFAULT_DISTANCE);
-	pRobot->Update();
 }
 
 //==========================================================
