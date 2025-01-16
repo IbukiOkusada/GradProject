@@ -101,7 +101,6 @@ private:
 	std::vector<CShaderLight::SLight*> m_Light;
 	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ
 	CTimer* m_pGameTimer;		// タイマーのポインタ
-	char m_aAddress[30];		// 接続先サーバーのアドレス
 	int m_nSledCnt;				// 現在動作しているスレッド数
 	static int m_nNumPlayer;	// プレイ人数
 	CPause *m_pPause;			// ポーズ画面

@@ -277,8 +277,10 @@ CPostprocess* CPostprocess::GetInstance(void)
 void CPostprocess::Release(void)
 {
 	// トゥーンシェーダーの終了
-	assert(m_pShader != nullptr);
-	m_pShader->Uninit();
+	if (m_pShader != nullptr)
+	{
+		m_pShader->Uninit();
+	}
 
 	// メモリ開放
 	SAFE_DELETE(m_pShader);
