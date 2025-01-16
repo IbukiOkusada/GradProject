@@ -576,6 +576,9 @@
     <ClCompile Include="code\effect_effekseer.cpp">
       <Filter>effect\effekseer</Filter>
     </ClCompile>
+    <ClCompile Include="code\edit_robot.cpp">
+      <Filter>edit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -988,6 +991,9 @@
     </ClInclude>
     <ClInclude Include="code\effect_effekseer.h">
       <Filter>effect\effekseer</Filter>
+    </ClInclude>
+    <ClInclude Include="code\edit_robot.h">
+      <Filter>edit</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

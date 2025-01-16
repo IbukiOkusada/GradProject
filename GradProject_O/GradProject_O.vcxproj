@@ -184,6 +184,7 @@
     <ClCompile Include="code\edit_manager.cpp" />
     <ClCompile Include="code\edit_object.cpp" />
     <ClCompile Include="code\edit_road.cpp" />
+    <ClCompile Include="code\edit_robot.cpp" />
     <ClCompile Include="code\edit_rotate.cpp" />
     <ClCompile Include="code\edit_scale.cpp" />
     <ClCompile Include="code\effect2D.cpp" />
@@ -307,6 +308,7 @@
     <ClInclude Include="code\deltatime.h" />
     <ClInclude Include="code\edit_gimmick.h" />
     <ClInclude Include="code\edit_goal.h" />
+    <ClInclude Include="code\edit_robot.h" />
     <ClInclude Include="code\edit_rotate.h" />
     <ClInclude Include="code\edit_scale.h" />
     <ClInclude Include="code\effect2D.h" />

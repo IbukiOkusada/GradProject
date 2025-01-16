@@ -9,9 +9,12 @@
 
 #include "task.h"
 #include "objectX.h"
+#include "player.h"
+#include <list>
+#include "task.h"
 
 // 前方宣言
-class CObjectX;
+class CCharacter;
 
 //==========================================================
 // ロボットのクラス定義
@@ -20,6 +23,21 @@ class CRobot : public CTask
 {
 
 public:	// 誰でもアクセス可能
+		// 状態列挙型
+	enum STATE
+	{
+		STATE_WALK = 0,	// 歩き状態
+		STATE_AVOID,	// 回避状態
+		STATE_MAX
+	};
+
+	// モーション列挙型
+	enum MOTION
+	{
+		MOTION_WALK = 0,	// 歩きモーション
+		MOTION_AVOID,		// 回避モーション
+		MOTION_MAX
+	};
 
 	CRobot();	// コンストラクタ(オーバーロード)
 	~CRobot();	// デストラクタ
@@ -49,14 +67,16 @@ protected:	// 派生クラスからもアクセス可能
 	void Set();
 
 	// メンバ変数
-	CObjectX* m_pObj;
+	CCharacter* m_pCharacter;	// キャラクター
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	void MoveControl();
 	void SetPosTerget(const float& Distance);
 	bool TergetReach();
+
+	void Walk();
+	void Collision(D3DXVECTOR3 pos);
 
 	// 情報構造体
 	struct SInfo
@@ -66,6 +86,8 @@ private:	// 自分だけがアクセス可能
 		D3DXVECTOR3 rotDest;	// 目標向き
 		D3DXVECTOR3 move;		// 移動量
 		D3DXVECTOR3 posOld;		// 設定位置
+		STATE state;			// 状態
+		CPlayer* pPlayer;
 		int nTargetID;
 		int nId;
 
