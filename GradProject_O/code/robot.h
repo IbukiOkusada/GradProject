@@ -52,6 +52,8 @@ public:	// 誰でもアクセス可能
 	// メンバ関数(取得)
 	CRobot* GetNext(void) { return m_pNext; }
 	CRobot* GetPrev(void) { return m_pPrev; }
+	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
+	D3DXVECTOR3 GetRotation(void) { return m_Info.rot; }
 
 	// メンバ関数(設定)
 	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }

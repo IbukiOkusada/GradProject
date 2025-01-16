@@ -1,0 +1,184 @@
+SCRIPT			# この行は絶対消さないこと！
+
+#==============================================================================
+#
+# 『モーションビューワ』スクリプトファイル [motion.txt]
+# Author : AKIRA TANAKA
+#
+#==============================================================================
+
+
+#------------------------------------------------------------------------------
+# モデル数
+#------------------------------------------------------------------------------
+NUM_MODEL = 15
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MODEL_FILENAME = data/MODEL/kurohuku/00_waist.x		# [0]腰
+MODEL_FILENAME = data/MODEL/kurohuku/01_body.x		# [1]体
+MODEL_FILENAME = data/MODEL/kurohuku/02_hed.x		# [2]帽子
+MODEL_FILENAME = data/MODEL/kurohuku/06_uparmL.x 	# [3]左上腕
+MODEL_FILENAME = data/MODEL/kurohuku/07_downarmL.x	# [4]左前腕
+MODEL_FILENAME = data/MODEL/kurohuku/08_handL.x		# [5]左手
+MODEL_FILENAME = data/MODEL/kurohuku/03_uparmR.x	# [6]右上腕
+MODEL_FILENAME = data/MODEL/kurohuku/04_downarmR.x	# [7]右前腕
+MODEL_FILENAME = data/MODEL/kurohuku/05_handR.x		# [8]右手
+MODEL_FILENAME = data/MODEL/kurohuku/09_thighR.x		# [9]左太もも
+MODEL_FILENAME = data/MODEL/kurohuku/10_shinR.x		# [10]左脛
+MODEL_FILENAME = data/MODEL/kurohuku/11_footR.x		# [11]左足
+MODEL_FILENAME = data/MODEL/kurohuku/12_thighL.x		# [12]右太もも
+MODEL_FILENAME = data/MODEL/kurohuku/13_shinL.x		# [13]右脛
+MODEL_FILENAME = data/MODEL/kurohuku/14_footL.x		# [14]右足
+
+
+#------------------------------------------------------------------------------
+# キャラクター情報
+#------------------------------------------------------------------------------
+CHARACTERSET
+	NUM_PARTS = 15					# パーツ数
+	
+	PARTSSET
+		INDEX = 0
+		PARENT = -1
+		POS = 0.00 46.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 1
+		PARENT = 0
+		POS = 0.00 3.50 0.50
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 2
+		PARENT = 1
+		POS = 0.00 32.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 3
+		PARENT = 1
+		POS = -10.00 25.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 4
+		PARENT = 3
+		POS = -12.50 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 5
+		PARENT = 4
+		POS = -11.00 0.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 6
+		PARENT = 1
+		POS = 12.00 25.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 7
+		PARENT = 6
+		POS = 13.00 0.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 8
+		PARENT = 7
+		POS = 10.50 0.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 9
+		PARENT = 0
+		POS = -5.80 -1.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 10
+		PARENT = 9
+		POS = 0.00 -17.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 11
+		PARENT = 10
+		POS = 0.00 -24.00 -1.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 12
+		PARENT = 0
+		POS = 5.80 -1.50 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 13
+		PARENT = 12
+		POS = 0.00 -17.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+
+	PARTSSET
+		INDEX = 14
+		PARENT = 13
+		POS = 0.00 -24.00 0.00
+		ROT = 0.00 0.00 0.00
+		START = 1
+	END_PARTSSET
+	
+END_CHARACTERSET
+
+#==============================================================================
+#
+# モーション情報
+#
+#==============================================================================
+#------------------------------------------------------------------------------
+# モーション数
+#------------------------------------------------------------------------------
+NUM_MOTION = 6
+
+#------------------------------------------------------------------------------
+# モデルファイル名
+#------------------------------------------------------------------------------
+MOTION_FILENAME = data/TEXT/character/kurohuku/neutral.txt		# [0]デフォルト
+MOTION_FILENAME = data/TEXT/character/kurohuku/left.txt			# [1]デフォルト
+MOTION_FILENAME = data/TEXT/character/kurohuku/right.txt			# [2]デフォルト
+MOTION_FILENAME = data/TEXT/character/kurohuku/win.txt			# [3]デフォルト
+MOTION_FILENAME = data/TEXT/character/kurohuku/clear.txt			# [4]デフォルト
+MOTION_FILENAME = data/TEXT/character/kurohuku/failed.txt			# [5]デフォルト
+
+END_SCRIPT		# この行は絶対消さないこと！
