@@ -41,7 +41,7 @@ public:
 	static CPostprocess* Create(void);		// 生成
 	static CPostprocess* GetInstance(void);	// 取得
 	static void Release(void);				// 破棄
-
+	HRESULT Loadshader(char* path, LPD3DXEFFECT* pEffect);
 private:
 	// 静的メンバ変数
 	static CPostprocess* m_pShader;	// シェーダー情報
@@ -49,6 +49,7 @@ private:
 	// メンバ変数
 	LPD3DXEFFECT m_pBright;						// エフェクト
 	LPD3DXEFFECT m_pGauss;						// エフェクト
+	LPD3DXEFFECT m_pAberration;						// エフェクト
 	D3DXHANDLE m_pBrightTechnique;					// テクニック
 	D3DXHANDLE m_pGaussTechnique;					// テクニック
 
