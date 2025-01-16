@@ -626,7 +626,7 @@ void CGame::CreateSinglePlayer(void)
     CPlayer* pPlayer = CPlayer::Create(SET_PLAYER_POS,
         VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());
     pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
-    pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
+    //pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
 }
 
 //===================================================
