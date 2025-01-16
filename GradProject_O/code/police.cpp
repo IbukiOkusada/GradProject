@@ -373,6 +373,20 @@ void CPolice::MoveRoad()
 				SetSpeedDest(SECURE_SPEEDDEST);
 				SetSpeed(GetSpeed() * SECURE_SPEED);
 			}
+			else if (m_pPoliceAI->GetState() == CPoliceAI::STATE_FINISH)
+			{
+				SetRotMulti(ROT_MULTI_ATTACK);
+
+				// プレイヤーの座標を目指す
+				SetPosTarget(m_Info.pPlayer->GetPosition());
+
+				// 一定距離まで近づいたら減速させる
+				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+
+				// 速度を設定
+				SetSpeedDest(SECURE_SPEEDDEST);
+				SetSpeed(GetSpeed() * SECURE_SPEED);
+			}
 			else
 			{
 				SetRotMulti(ROT_MULTI_CHASE);

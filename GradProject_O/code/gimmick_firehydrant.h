@@ -8,6 +8,7 @@
 #define _FIREHYDRANT_H_		// 二重インクルード防止用マクロを定義
 
 #include "gimmick.h"
+#include "effekseerControl.h"
 
 // 前方宣言
 class CObjectX;
@@ -44,6 +45,7 @@ private:	// 自分だけがアクセス可能
 	void Away();
 
 	// メンバ変数
+	CEffekseer::CEffectData* m_pEffect;
 	D3DXVECTOR3 m_TargetRot;	// 吹っ飛び後向き
 	D3DXVECTOR3 m_TargetPos;	// 吹っ飛び後座標
 	CObjectX* m_pObj;			// 描画オブジェクト

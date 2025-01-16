@@ -40,6 +40,7 @@ public:	// 誰でもアクセス可能
 		STATE_NORMAL = 0,		// 通常状態
 		STATE_PREP,				// 攻撃準備状態
 		STATE_ATTACK,			// 攻撃状態
+		STATE_FINISH,			// 攻撃終了状態
 		STATE_MAX
 	};
 

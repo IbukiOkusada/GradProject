@@ -219,10 +219,10 @@ HRESULT CGame::Init(void)
     if (myid == net->GetIdx())
     {
         // 車の生成
-        CreateCar();
+        //CreateCar();
 
         // 警察の生成
-        CreatePolice();
+       // CreatePolice();
     }
 
     if (m_pGoalManager == nullptr)
@@ -351,7 +351,7 @@ void CGame::Update(void)
     StartIntro();
 
     // エディター関連
-#if NDEBUG
+#if 1
 
     CEditManager* pMgr = CEditManager::GetInstance();
     // エディター生成

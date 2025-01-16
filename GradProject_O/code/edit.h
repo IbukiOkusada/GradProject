@@ -29,6 +29,7 @@ public:	// 誰でもアクセス可能な定義
 		TYPE_ROAD,		// 道
 		TYPE_GIMMICK,	// ギミック
 		TYPE_GOAL,		// ゴール
+		TYPE_ROBOT,     // ロボット
 		TYPE_MAX
 	};
 
