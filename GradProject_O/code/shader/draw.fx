@@ -12,7 +12,7 @@ float4  m_Emissive = 0.0f;//オブジェクトのマテリアル発光色
 float4  m_specula = 0.0f;//オブジェクトのマテリアル反射色
 float m_power=0.0f;//反射強度
 
-float4 s_FogColor = float4(0.5f, 0.6f, 0.7f, 0.6f);		// フォグ色
+float4 s_FogColor = float4(0.25f, 0.3f, 0.37f, 0.6f);		// フォグ色
 float  s_FogNear = 500.0f;								// フォグの開始位置
 float  s_FogFar = 30000.0f;								// フォグの終了位置
 
