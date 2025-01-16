@@ -175,6 +175,7 @@ HRESULT CGame::Init(void)
 {
     m_pInstance = this;
 
+
     // 外部ファイル読み込みの生成
     if (nullptr == m_pFileLoad)
     {// 使用していない場合
@@ -193,6 +194,7 @@ HRESULT CGame::Init(void)
     // 空生成
     m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
+
     //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f));
     //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(20900.0f, 5000.0f, -1700.0f), D3DXVECTOR3(1.0f, 0.0f, 1.0f), 1.0f, 10000.0f));
     //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f));
@@ -203,6 +205,7 @@ HRESULT CGame::Init(void)
 
     // プレイヤー生成
     (this->*(m_CreatePlayerFunc[net->GetState()]))();
+
 
     CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
@@ -247,6 +250,7 @@ HRESULT CGame::Init(void)
     {
         m_pGameTimer = CTimer::Create();
     }
+
 
     //CRobot* pRobot = CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
 
@@ -315,7 +319,7 @@ void CGame::Uninit(void)
     CPoliceManager::Release();
     CPoliceAIManager::Release();
     CInspectionManager::Release();
-    //CPlayerManager::Release();
+
 }
 
 //===============================================
@@ -440,10 +444,10 @@ void CGame::Update(void)
     }
 
     // 各マネージャー更新
-    /*CPoliceManager::GetInstance()->Update();
+
     CPoliceAIManager::GetInstance()->Update();
     CInspectionManager::GetInstance()->Update();
-    CCarManager::GetInstance()->Update();*/
+
 
 #if NDEBUG
     CScene::Update();

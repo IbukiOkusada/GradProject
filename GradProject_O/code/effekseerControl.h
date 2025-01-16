@@ -59,6 +59,7 @@ public:
 	}
 	Effekseer::ManagerRef GetManager() { return m_EfkManager; }
 	std::vector<CEffectData*> GetList() { return m_vEffect; }
+	std::map<std::string, Effekseer::EffectRef> GetMap(){ return mapEffekseer; }
 protected:
 	std::function<void()> onLostDevice;
 	std::function<void()> onResetDevice;
