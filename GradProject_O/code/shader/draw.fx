@@ -176,7 +176,6 @@ float4 PS(VS_OUTPUT In) : COLOR0
    float p = dot(In.Normal, -m_LightDir.xyz);
    p = p * 0.5f + 0.5f;
    p = p * p;
-   //テクスチャの使用可否確認
   
  
    Out = m_diffus * p * m_LightCol;
@@ -201,6 +200,7 @@ float4 PS(VS_OUTPUT In) : COLOR0
    float4 refCol = PS_EnvironmentMap(reflect(m_LightDir.xyz, In.Normal.xyz)) * m_specula;
    Out.xyz += refCol.xyz;
    Out.w += (refCol.x + refCol.y + refCol.z) * 0.333;
+
     //===============================
     //			フォグ
     //===============================

@@ -132,17 +132,6 @@ void CEdit_Effect::Update(void)
 
 	CDebugProc::GetInstance()->Print("]\n\n");
 
-	Clist<CEffectEffekseer*>* pList = CEffectEffekseer::GetList();
-
-	if (pList == nullptr) { return; }
-
-	for (int i = 0; i < pList->GetNum(); i++)
-	{
-		CEffectEffekseer* pEffect = pList->Get(i);
-
-		pEffect->Update();
-	}
-
 	// 障害物情報
 	if (m_pSelect == nullptr) { return; }
 	CDebugProc::GetInstance()->Print("[ 情報 : ");
@@ -216,22 +205,22 @@ void CEdit_Effect::ClickCheck()
 //==========================================================
 // 選択したものとの衝突判定
 //==========================================================
-bool CEdit_Effect::CursorCollision(CEffectEffekseer* pGimmick)
+bool CEdit_Effect::CursorCollision(CEffectEffekseer* pEffect)
 {
 	// マウス情報
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 	CInputMouse::SRayInfo info = pMouse->GetRayInfo();
 
 	// 床情報
-	D3DXVECTOR3 pos = pGimmick->GetPosition();
-	D3DXVECTOR3 rot = pGimmick->GetRotation();
+	D3DXVECTOR3 pos = pEffect->GetPosition();
+	D3DXVECTOR3 rot = pEffect->GetRotation();
 	D3DXVECTOR3 vtxmax, vtxmin;
-	vtxmax.x = pGimmick->GetScale() * 2.0f;
-	vtxmax.y = pGimmick->GetScale() * 2.0f;
-	vtxmax.z = pGimmick->GetScale() * 2.0f;
-	vtxmin.x = pGimmick->GetScale() * 2.0f;
-	vtxmin.y = pGimmick->GetScale() * 2.0f;
-	vtxmin.z = pGimmick->GetScale() * 2.0f;
+	vtxmax.x = pEffect->GetScale() * 2.0f;
+	vtxmax.y = pEffect->GetScale() * 2.0f;
+	vtxmax.z = pEffect->GetScale() * 2.0f;
+	vtxmin.x = pEffect->GetScale() * 2.0f;
+	vtxmin.y = pEffect->GetScale() * 2.0f;
+	vtxmin.z = pEffect->GetScale() * 2.0f;
 	D3DXVECTOR3 touchpos = VECTOR3_ZERO;
 	D3DXVECTOR3 origin = pMouse->GetRayInfo().origin;
 	D3DXVECTOR3 vec = pMouse->GetRayInfo().vec;

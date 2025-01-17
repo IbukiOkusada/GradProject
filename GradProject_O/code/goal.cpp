@@ -248,8 +248,6 @@ bool CGoal::CheckSpeed(int nId)
 
 	float fDis = GetDistance(VECTOR3_ZERO, pPlayer->GetMove());
 	return (m_Info.fLimit >= fDis);
-
-	return false;
 }
 //==========================================================
 // ¶¬
@@ -280,7 +278,6 @@ void CGoal::ScreenEffect()
 	if (m_bEnd) { return; }
 	if (CDeltaTime::GetInstance()->GetSlow() < 1.0f) { return; }
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
-	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	D3DXMATRIX mtxProjection, mtxView, mtxWorld;
 	D3DVIEWPORT9 Viewport;
 	D3DXVECTOR3 pos = VECTOR3_ZERO;
