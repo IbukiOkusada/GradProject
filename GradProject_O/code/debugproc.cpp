@@ -17,6 +17,8 @@
 #include "camera_manager.h"
 #include "input_gamepad.h"
 #include "input_keyboard.h"
+#include "task_manager.h"
+#include "object_manager.h"
 
 // 静的メンバ変数宣言
 LPD3DXFONT CDebugProc::m_pFont = nullptr;	// デバッグフォントへのポインタ
@@ -116,7 +118,7 @@ void CDebugProc::Update(void)
 	}
 
 	Print("FPS : %d\n", GetFPS());
-	Print("現在のモード [ %s ] : [Enter]で遷移\n", m_apMode[CManager::GetInstance()->GetMode()]);
+	//Print("現在のモード [ %s ] : [Enter]で遷移\n", m_apMode[CManager::GetInstance()->GetMode()]);
 	Print("優先順位別(%d個分) ↓\n", NUM_PRIORITY);
 	for (int nCntPri = 0; nCntPri < NUM_PRIORITY; nCntPri++)
 	{
@@ -129,6 +131,8 @@ void CDebugProc::Update(void)
 	Print("\n");
 	Print("テクスチャの読み込み総数(%d) \n", CManager::GetInstance()->GetTexture()->GetNumAll());
 	Print("モデルの読み込み総数    (%d) \n", CManager::GetInstance()->GetModelFile()->GetNumAll());
+	Print("タスクの総数            (%d) \n", CTaskManager::GetInstance()->GetList()->GetNum());
+	Print("オブジェクトの総数      (%d) \n", CObjectManager::GetInstance()->GetNumAll());
 
 	{
 		D3DXVECTOR3 CamPosV = CManager::GetInstance()->GetCamera()->GetPositionV();

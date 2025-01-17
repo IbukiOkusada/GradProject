@@ -581,10 +581,10 @@ void CManager::SetMode(CScene::MODE mode)
 
 	// V‚µ‚¢ƒ‚[ƒh‚Ì¶¬
 	m_pScene = CScene::Create(mode);
-	m_pScene->SetMode(mode);
 
 	if (m_pScene != nullptr)
 	{
+		m_pScene->SetMode(mode);
 		m_pScene->Init();
 	}
 

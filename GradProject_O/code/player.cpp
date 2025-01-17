@@ -67,8 +67,8 @@ namespace
 	const float CAMROT_INER = (0.2f);			// カメラ慣性
 	const float KICK_LENGTH = (1000.0f);	// 攻撃範囲
 	const float LIFE = (100.0f);
-	const float CAMERA_NORMAL = (2600.0f);
-	const float ENGINE_ADDCAMERA = (800.0f);
+	const float CAMERA_NORMAL = (2800.0f);	// デフォルトカメラ距離
+	const float ENGINE_ADDCAMERA = (800.0f);	// 速度によって変わる距離
 	const float CAMERA_DETAH = (6000.0f);
 	const float MOVE = (6.2f * 0.7f);		// 移動量
 	const float BRAKE = (0.7f);		// ブレーキ
@@ -223,6 +223,8 @@ CPlayer::CPlayer(int nId)
 	m_pRadio = nullptr;
 	m_pNavi = nullptr;
 	m_pShaderLight = nullptr;
+	m_pambient = nullptr;
+	m_pDust = nullptr;
 	m_type = TYPE::TYPE_RECV;
 
 	for (int i = 0; i < NUM_TXT; i++)
@@ -271,8 +273,6 @@ HRESULT CPlayer::Init(const char *pBodyName, const char *pLegName)
 	SetCol();
 
 	SetMatrix();
-	m_pambient = CMasterSound::CObjectSound::Create("data\\SE\\ambient_city.wav", -1);
-	m_pambient->SetVolume(0.5f);
 	m_pAfterburner = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\afterburner.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
 	m_pTailLamp = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\trail.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 10.0f, false, false);
 	m_pBackdust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 45.0f, false, false);
@@ -1486,6 +1486,12 @@ void CPlayer::SetStateActive()
 		if (m_pShaderLight == nullptr)
 		{
 			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(0.8f,0.9f,1.0f), 2.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f),D3DXToRadian(35));
+		}
+
+		if (m_pambient == nullptr)
+		{
+			m_pambient = CMasterSound::CObjectSound::Create("data\\SE\\ambient_city.wav", -1);
+			m_pambient->SetVolume(0.5f);
 		}
 
 //#if NDEBUG

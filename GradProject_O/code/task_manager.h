@@ -32,11 +32,11 @@ public:
 	// シングルトン
 	static CTaskManager* GetInstance(void);
 	static void Release(void);
+	Clist<CTask*>* GetList() { if (m_plist == nullptr) { m_plist = m_plist->Create(); }return m_plist; }	// リスト取得
 
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	Clist<CTask*>* GetList() { if (m_plist == nullptr) { m_plist = m_plist->Create(); }return m_plist; }	// リスト取得
 	void ListRelease() { if (m_plist != nullptr) { delete m_plist; m_plist = nullptr; } }			// リスト解放
 	void ReleaseAll(void);
 	void UpdateAll(void);
