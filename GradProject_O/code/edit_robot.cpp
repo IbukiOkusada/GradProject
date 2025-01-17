@@ -34,6 +34,8 @@ CEdit_Robot::CEdit_Robot()
 	// 値のクリア
 	m_pSelect = nullptr;
 	m_pHandle = nullptr;
+	m_pStartPosEff = nullptr;
+	m_pEndPosEff = nullptr;
 	m_fMouseWheel = 0.0f;
 	m_startRotate = VECTOR3_ZERO;
 	m_fStartDistance = 0.0f;
@@ -55,31 +57,15 @@ HRESULT CEdit_Robot::Init(void)
 	m_fMoveLength = MIN_LENGTH;
 	m_fStartDistance = DEFAULT_DISTANCE;
 
-	auto mgr = CGoalManager::GetInstance();
-	auto list = mgr->GetList();
-	auto infolist = mgr->GetInfoList();
-	int num = list.GetNum();
+	CRobot* pTop = CRobotManager::GetInstance()->GetTop();
 
-	std::vector<int> id;
-	id.clear();
-
-	for (const auto& ite : *list.GetList())
+	while (pTop != nullptr)
 	{
-		id.push_back(ite.first);
-	}
+		CRobot* pNext = pTop->GetNext();
 
-	for (int i = 0; i < num; i++)
-	{
-		CGoal* pGoal = list.Get(id[i]);
-		if (pGoal == nullptr) { continue; }
-		pGoal->Uninit();
-	}
+		//pTop->SetState(CRobot::STATE_NONE);
 
-	// ゴールをすべて削除して改めて生成する
-	for (int i = 0; i < infolist->size(); i++)
-	{
-		auto it = (*infolist)[i];
-		CGoal::Create(it.pos, it.fRange, it.fLimit, i);
+		pTop = pNext;
 	}
 
 	return S_OK;
@@ -443,14 +429,43 @@ void CEdit_Robot::ChangeDistance()
 
 	m_pSelect->SetDistance(distance);
 
+	//m_pSelect->SetPosTerget(distance);
+
 	D3DXVECTOR3 RobotPos = m_pSelect->GetPosition();
 	D3DXVECTOR3 RobotRot = m_pSelect->GetRotation();
-	D3DXVECTOR3 EffPos1 = D3DXVECTOR3(RobotPos.x + (sinf(RobotRot.y) * distance), 0.0f, RobotPos.z + (cosf(RobotRot.y) * distance));
-	D3DXVECTOR3 EffPos2 = D3DXVECTOR3(RobotPos.x + (sinf(RobotRot.y) * -distance), 0.0f, RobotPos.z + (cosf(RobotRot.y) * -distance));
+	D3DXVECTOR3 StartPosEff = D3DXVECTOR3(RobotPos.x + (sinf(RobotRot.y) * distance), 0.0f, RobotPos.z + (cosf(RobotRot.y) * distance));
+	D3DXVECTOR3 EndPosEff = D3DXVECTOR3(RobotPos.x + (sinf(RobotRot.y) * -distance), 0.0f, RobotPos.z + (cosf(RobotRot.y) * -distance));
 
 	// 折り返し地点にエフェクト
-	CEffect3D::Create(EffPos1, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 20.0f, 0.1f, CEffect3D::TYPE::TYPE_NONE);
-	CEffect3D::Create(EffPos2, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 20.0f, 0.1f, CEffect3D::TYPE::TYPE_NONE);
+	if (m_pStartPosEff == nullptr)
+	{
+		m_pStartPosEff = CEffect3D::Create(StartPosEff, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40.0f, 5.0f, CEffect3D::TYPE::TYPE_NONE);
+	}
+
+	if (m_pEndPosEff == nullptr)
+	{
+		m_pEndPosEff = CEffect3D::Create(EndPosEff, VECTOR3_ZERO, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f), 40.0f, 5.0f, CEffect3D::TYPE::TYPE_NONE);
+	}
+
+	if (m_pStartPosEff != nullptr)
+	{
+		m_pStartPosEff->Update();
+
+		if (m_pStartPosEff->GetLife() < 0.0f)
+		{
+			m_pStartPosEff = nullptr;
+		}
+	}
+
+	if (m_pEndPosEff != nullptr)
+	{
+		m_pEndPosEff->Update();
+
+		if (m_pEndPosEff->GetLife() < 0.0f)
+		{
+			m_pEndPosEff = nullptr;
+		}
+	}
 
 	CDebugProc::GetInstance()->Print("ハンドルの移動量：%f, %f, %f", handlescale.x, handlescale.y, handlescale.z);
 	CDebugProc::GetInstance()->Print("距離：%f", distance);
@@ -542,6 +557,7 @@ void CEdit_Robot::Create()
 
 	CRobot* pRobot = CRobot::Create(pos, rot, DEFAULT_DISTANCE);
 	//pRobot->SetState(CRobot::STATE::STATE_NONE);
+	//pRobot->Update();
 }
 
 //==========================================================
