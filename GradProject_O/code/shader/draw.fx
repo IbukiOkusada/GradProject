@@ -200,16 +200,7 @@ float4 PS(VS_OUTPUT In) : COLOR0
    float4 refCol = PS_EnvironmentMap(reflect(m_LightDir.xyz, In.Normal.xyz)) * m_specula;
    Out.xyz += refCol.xyz;
    Out.w += (refCol.x + refCol.y + refCol.z) * 0.333;
-   if (p > 0.7f&& p < 0.8f)
-   {
-       Out.x = 1.0f;
-       Out.z = 1.0f;
-   }
-   if (p > 0.3f && p < 0.4f)
-   {
-       Out.y = 1.0f;
-       Out.z = 1.0f;
-   }
+
     //===============================
     //			ƒtƒHƒO
     //===============================
