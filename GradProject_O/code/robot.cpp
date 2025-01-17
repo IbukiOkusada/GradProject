@@ -293,7 +293,7 @@ bool CRobot::TergetReach()
 }
 
 //==========================================================
-// 目標位置に到達したかどうか
+// 歩き処理
 //==========================================================
 void CRobot::Walk()
 {
@@ -324,13 +324,13 @@ void CRobot::Walk()
 }
 
 //==========================================================
-// 目標位置に到達したかどうか
+// 回避コリジョン
 //==========================================================
 void CRobot::Collision(D3DXVECTOR3 pos)
 {
 	if (sqrtf((m_Info.pos.x - pos.x) * (m_Info.pos.x - pos.x)
 		+ (m_Info.pos.z - pos.z) * (m_Info.pos.z - pos.z)) <= AVOID_COLLISION)
 	{
-		m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_AVOID);
+		m_pCharacter->GetMotion()->Set(MOTION::MOTION_AVOID);
 	}
 }
