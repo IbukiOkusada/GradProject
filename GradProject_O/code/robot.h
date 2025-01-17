@@ -107,7 +107,8 @@ private:	// 自分だけがアクセス可能
 	bool TergetReach();
 
 	void Walk();
-	void Collision(D3DXVECTOR3 pos);
+	void Collision(D3DXVECTOR3 pos, const float CollisionDistance);
+	void SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 
 	// メンバ変数
 	SInfo m_Info;				// 自分自身の情報
