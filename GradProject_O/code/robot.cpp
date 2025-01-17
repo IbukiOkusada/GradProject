@@ -18,9 +18,11 @@
 //==========================================================
 namespace
 {
-	const float MOVE_MAG = 10.0f;
+	const float WALK_MOVE_MAG = 10.0f;
+	const float AVOID_MOVE_MAG = 80.0f;
 	const float ROT_INERTIA = 10.0f;
 	const float AVOID_COLLISION = 800.0f;
+	//const float AVOID_COLLISION_EMERGENCY = 800.0f;
 	const char* MODEL_PATH = "data\\TXT\\character\\robot\\motion_robot.txt";
 }
 
@@ -70,8 +72,8 @@ HRESULT CRobot::Init(const D3DXVECTOR3& rot)
 	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_WALK);
 	m_pCharacter->SetScale(D3DXVECTOR3(4.0f, 4.0f, 4.0f));
 
-	m_Info.move.x = -sinf(D3DX_PI * 0.0f + rot.y) * MOVE_MAG;
-	m_Info.move.z = -cosf(D3DX_PI * 0.0f + rot.y) * MOVE_MAG;
+	m_Info.move.x = -sinf(rot.y) * WALK_MOVE_MAG;
+	m_Info.move.z = -cosf(rot.y) * WALK_MOVE_MAG;
 
 	m_Info.state = STATE_WALK;
 
@@ -101,13 +103,36 @@ void CRobot::Update(void)
 	case STATE_WALK:
 		Walk();
 
-		Collision(pPlayer->GetPosition());
+		Collision(pPlayer->GetPosition(), AVOID_COLLISION);
 		break;
 
 	case STATE_AVOID:
 
+		m_Info.pos += m_Info.move;
+		m_Info.rot.y += (m_Info.rotDest.y - m_Info.rot.y) / 4.0f;
+
+		m_Info.move.x = m_Info.move.x - m_Info.move.x / 12.0f;
+		m_Info.move.z = m_Info.move.z - m_Info.move.z / 12.0f;
+
+		Collision(pPlayer->GetPosition(), AVOID_COLLISION);
+
+		if (m_Info.move.x <= 3.0f && m_Info.move.z <= 3.0f &&
+			m_Info.move.x >= -3.0f && m_Info.move.z >= -3.0f)
+		{
+			m_pCharacter->GetMotion()->Set(MOTION::MOTION_WALK);
+			m_Info.state = STATE_WALK;
+		
+			m_Info.rotDest.y = atan2f(m_Info.pos.x - m_PosTarget[m_Info.nTargetID].x,
+				m_Info.pos.z - m_PosTarget[m_Info.nTargetID].z);
+		
+			m_Info.move.x = -sinf(m_Info.rotDest.y) * WALK_MOVE_MAG;
+			m_Info.move.z = -cosf(m_Info.rotDest.y) * WALK_MOVE_MAG;
+		}
+
 		break;
 	}
+
+	Set();
 
 	if (m_pCharacter != nullptr)
 	{
@@ -316,21 +341,62 @@ void CRobot::Walk()
 		m_Info.rotDest.y = atan2f(m_Info.pos.x - m_PosTarget[m_Info.nTargetID].x,
 			m_Info.pos.z - m_PosTarget[m_Info.nTargetID].z);
 
-		m_Info.move.x = -sinf(D3DX_PI * 0.0f + m_Info.rotDest.y) * MOVE_MAG;
-		m_Info.move.z = -cosf(D3DX_PI * 0.0f + m_Info.rotDest.y) * MOVE_MAG;
+		m_Info.move.x = -sinf(m_Info.rotDest.y) * WALK_MOVE_MAG;
+		m_Info.move.z = -cosf(m_Info.rotDest.y) * WALK_MOVE_MAG;
 	}
-
-	Set();
 }
 
 //==========================================================
 // ‰ñ”ðƒRƒŠƒWƒ‡ƒ“
 //==========================================================
-void CRobot::Collision(D3DXVECTOR3 pos)
+void CRobot::Collision(D3DXVECTOR3 pos, const float CollisionDistance)
 {
 	if (sqrtf((m_Info.pos.x - pos.x) * (m_Info.pos.x - pos.x)
-		+ (m_Info.pos.z - pos.z) * (m_Info.pos.z - pos.z)) <= AVOID_COLLISION)
+		+ (m_Info.pos.z - pos.z) * (m_Info.pos.z - pos.z)) <= CollisionDistance)
 	{
 		m_pCharacter->GetMotion()->Set(MOTION::MOTION_AVOID);
+		m_Info.state = STATE_AVOID;
+
+		CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+
+		SetAvoid(pos, pPlayer->GetRotation());
+	}
+}
+
+//==========================================================
+// ‰ñ”ð‚ÌÝ’è
+//==========================================================
+void CRobot::SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
+{
+	// ‘ÎŠpü‚ÌŠp“x‚ðŽZo	
+	m_Info.rotDest.y = atan2f(m_Info.pos.x - pos.x, m_Info.pos.z - pos.z);
+	D3DXVECTOR3 rotCal = VECTOR3_ZERO;
+
+	rot.y = rot.y - D3DX_PI / 2;
+
+	if (rot.y > 0.0f)
+	{
+		rot.y -= D3DX_PI;
+	}
+	else if (rot.y < 0.0f)
+	{
+		rot.y += D3DX_PI;
+	}
+
+	rotCal.y = m_Info.rotDest.y - rot.y;
+
+	if (rotCal.y < 0)
+	{
+		m_Info.rotDest.y += D3DX_PI * -0.25f;
+
+		m_Info.move.x = sinf(m_Info.rotDest.y) * AVOID_MOVE_MAG;
+		m_Info.move.z = cosf(m_Info.rotDest.y) * AVOID_MOVE_MAG;
+	}
+	else if(rotCal.y > 0)
+	{
+		m_Info.rotDest.y += D3DX_PI * 0.25f;
+		
+		m_Info.move.x = sinf(m_Info.rotDest.y) * AVOID_MOVE_MAG;
+		m_Info.move.z = cosf(m_Info.rotDest.y) * AVOID_MOVE_MAG;
 	}
 }
