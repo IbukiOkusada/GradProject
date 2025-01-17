@@ -16,6 +16,21 @@
 // 無名名前空間を定義
 namespace
 {
+	const float COLORTIMER_INI = (-1.0f);
+	const float COLORTIMER_ADD = (0.1f);
+
+	const float WIDTH_FRAME = (400.0f);		// フレームの横幅
+	const float HEIGHT_FRAME = (600.0f);	// フレームの縦幅
+	const D3DXVECTOR3 POS_FRAME = D3DXVECTOR3(640.0f, 360.0f, 0.0f);	// フレームの位置
+
+	const float WIDTH_BUTTON = (300.0f);	// ボタンの横幅
+	const float HEIGHT_BUTTON = (100.0f);	// ボタンの縦幅
+	const D3DXVECTOR3 POS_BUTTON[CPause::TYPE_MAX] = {	// ボタンの位置
+		D3DXVECTOR3(640.0f, 210.0f, 0.0f),
+		D3DXVECTOR3(640.0f, 360.0f, 0.0f),
+		D3DXVECTOR3(640.0f, 510.0f, 0.0f),
+	};
+
 	const char* TEXTURENAMEFRAME = "data\\TEXTURE\\totan000.jpg";
 	const char* TEXTURENAMEBUTTON[CPause::TYPE_MAX] = {	// テクスチャ名
 			"data\\TEXTURE\\GameOver-Yes.png",
@@ -48,16 +63,16 @@ HRESULT CPause::Init(void)
 {
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();
 	
-	m_pPauseFrame = CObject2D::Create(D3DXVECTOR3(640.0f, 360.0f, 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0);
+	m_pPauseFrame = CObject2D::Create(POS_FRAME, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0);
 	m_pPauseFrame->BindTexture(pTexture->Regist(TEXTURENAMEFRAME));
-	m_pPauseFrame->SetSize(400.0f, 600.0f);
+	m_pPauseFrame->SetSize(WIDTH_FRAME, HEIGHT_FRAME);
 	m_pPauseFrame->SetVtx();
 
 	for (int i = 0; i < CPause::TYPE_MAX; i++)
 	{
-		m_pPauseButton[i] = CObject2D::Create(D3DXVECTOR3(640.0f, 210.0f + (150.0f * i), 0.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0);
+		m_pPauseButton[i] = CObject2D::Create(POS_BUTTON[i], D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0);
 		m_pPauseButton[i]->BindTexture(pTexture->Regist(TEXTURENAMEBUTTON[i]));
-		m_pPauseButton[i]->SetSize(300.0f, 100.0f);
+		m_pPauseButton[i]->SetSize(WIDTH_BUTTON, HEIGHT_BUTTON);
 		m_pPauseButton[i]->SetVtx();
 	}
 
@@ -88,16 +103,16 @@ void CPause::Update(void)
 
 	if (!m_bPause) { return; }
 
-	if (pInputKey->GetTrigger(DIK_UPARROW) == true || pInputPad->GetTrigger(CInputPad::BUTTON_UP, 0))
+	if (pInputKey->GetTrigger(DIK_UPARROW) == true || pInputKey->GetTrigger(DIK_W) == true || pInputPad->GetTrigger(CInputPad::BUTTON_UP, 0))
 	{//上キー(↑キー)が押された
 		m_nNumSelect += TYPE_MAX - 1;
-		m_fTimerColor = -1.0f;
+		m_fTimerColor = COLORTIMER_INI;
 	}
 
-	if (pInputKey->GetTrigger(DIK_DOWNARROW) == true || pInputPad->GetTrigger(CInputPad::BUTTON_DOWN, 0))
+	if (pInputKey->GetTrigger(DIK_DOWNARROW) == true || pInputKey->GetTrigger(DIK_S) == true || pInputPad->GetTrigger(CInputPad::BUTTON_DOWN, 0))
 	{//下キー(↓キー)が押された
 		m_nNumSelect++;
-		m_fTimerColor = -1.0f;
+		m_fTimerColor = COLORTIMER_INI;
 	}
 
 	m_pPauseFrame->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
@@ -116,7 +131,7 @@ void CPause::Update(void)
 		m_pPauseButton[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, alpha));
 	}
 
-	m_fTimerColor += 0.1f;
+	m_fTimerColor += COLORTIMER_ADD;
 
 	if (pInputKey->GetTrigger(DIK_RETURN) == true || pInputPad->GetTrigger(CInputPad::BUTTON_A, 0))
 	{//決定キー(エンターキー)が押された
@@ -170,6 +185,6 @@ void CPause::ChangePause(void)
 	{//ポーズキー(Pキー)が押された
 		m_bPause = m_bPause ? false : true;
 		m_nNumSelect = 0;
-		m_fTimerColor = -1.0f;
+		m_fTimerColor = COLORTIMER_INI;
 	}
 }
