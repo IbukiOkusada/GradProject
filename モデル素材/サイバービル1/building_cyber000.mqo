@@ -2,13 +2,13 @@ Metasequoia Document
 Format Text Ver 1.0
 
 Scene {
-	pos -732.2605 -5750.4243 62500.0000
+	pos -1275.0452 -7410.7080 100000.0000
 	lookat 0.0000 0.0000 0.0000
-	head -58.3735
-	pich 0.5008
+	head -56.8134
+	pich 0.2608
 	bank 0.0000
 	ortho 0
-	zoom2 0.1200
+	zoom2 0.0750
 	amb 0.250 0.250 0.250
 	dirlights 1 {
 		light {
@@ -20,9 +20,9 @@ Scene {
 Material 6 {
 	"mat1" col(0.757 0.757 0.757 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 	"mat2" col(0.886 0.831 0.816 0.980) dif(0.800) amb(0.690) emi(0.000) spc(0.320) power(10.00)
-	"mat3" col(0.941 0.435 0.220 1.000) dif(0.800) amb(0.600) emi(0.580) spc(0.000) power(5.00)
+	"mat3" col(0.008 0.839 0.941 1.000) dif(0.800) amb(0.600) emi(0.580) spc(0.000) power(5.00)
 	"mat4" col(0.141 0.325 0.776 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
-	"mat5" col(1.000 0.043 0.000 0.260) dif(0.800) amb(0.680) emi(1.000) spc(0.480) power(5.00)
+	"mat5" col(0.020 0.525 1.000 0.260) dif(0.800) amb(0.680) emi(1.000) spc(0.480) power(5.00)
 	"mat6" col(1.000 1.000 1.000 1.000) dif(0.800) amb(0.600) emi(1.000) spc(0.810) power(5.00) tex("C:\Users\student\Desktop\ë≤ã∆êßçÏ\GradProject\GradProject_O\data\TEXTURE\ad000.png")
 }
 Object "å≥" {
