@@ -65,9 +65,8 @@ public:
 	static void SetNumPlayer(int nNum) { m_nNumPlayer = nNum; }
 	static int GetNumPlayer(void) { return m_nNumPlayer; }
 	void SetGameState(STATE state) { m_GameState = state; }
+	STATE GetState() { return m_GameState; }
 	// メンバ関数(ポインタ)
-	CPlayer *GetPlayer(void);
-	CFileLoad *GetFileLoad(void);
 	int GetTotalDeliveryStatus() { return m_nTotalDeliveryStatus; }
 	int GetRestDeliveryStatus();
 
@@ -93,20 +92,13 @@ private:
 	void CreatePolice();
 	void CreateCar();
 
-	CFileLoad *m_pFileLoad;		// ファイル読み込みのポインタ
-	CPlayer** m_ppPlayer;		// プレイヤーのポインタ
-	CMultiCamera **m_ppCamera;	// カメラのポインタ
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
 	CGoalManager *m_pGoalManager;  // ゴールマネージャーのポインタ
-	std::vector<CShaderLight::SLight*> m_Light;
 	CDeliveryStatus* m_pDeliveryStatus;  // 配達状況のUIのポインタ
 	CTimer* m_pGameTimer;		// タイマーのポインタ
-	char m_aAddress[30];		// 接続先サーバーのアドレス
 	int m_nSledCnt;				// 現在動作しているスレッド数
 	static int m_nNumPlayer;	// プレイ人数
 	CPause *m_pPause;			// ポーズ画面
-	WSADATA m_wsaData;
-	std::mutex m_mutex;
 	bool m_bEnd;
 	float m_fOpenDoorUISin;
 	bool m_bPause;              // ポーズ
@@ -116,8 +108,6 @@ private:
 	STATE m_GameState;
 	CScrollText2D* m_pEndText;
 	CMasterSound::CObjectSound* m_pEndSound;
-	CFog * pFog;
-
 	static CGame* m_pInstance;
 };
 

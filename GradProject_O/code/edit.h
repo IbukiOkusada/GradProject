@@ -14,6 +14,7 @@ namespace EDITFILENAME
 	const std::string ROAD =		"data\\FILE\\map\\road.bin";
 	const std::string GIMMICK =		"data\\FILE\\map\\gimmick.bin";
 	const std::string GOAL =		"data\\FILE\\map\\goal.bin";
+	const std::string ROBOT =       "data\\FILE\\map\\robot.bin";
 	const std::string EFFECT =		"data\\FILE\\map\\effect.bin";
 }
 

@@ -47,8 +47,8 @@ public:	// 誰でもアクセス可能
 
 		// コンストラクタ
 		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), rotDest(VECTOR3_ZERO),
-			move(VECTOR3_ZERO), posOld(VECTOR3_ZERO),
-			nTargetID(0), nId(-1) {}
+			move(VECTOR3_ZERO), posOld(VECTOR3_ZERO), pPlayer(nullptr),
+			nTargetID(0), nId(-1), fDistance(0.0f) {}
 	};
 
 private:

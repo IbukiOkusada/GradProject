@@ -11,6 +11,7 @@
 #include "motion.h"
 #include "player.h"
 #include "player_manager.h"
+#include "debugproc.h"
 
 //==========================================================
 // 定数定義
@@ -112,7 +113,6 @@ void CRobot::Update(void)
 	{
 		m_pCharacter->Update();
 	}
-
 }
 
 //==========================================================
@@ -187,10 +187,10 @@ void CRobot::SetPosTerget(const float& Distance)
 {
 	m_Info.fDistance = Distance;
 
-	m_PosTarget[0].x = m_Info.pos.x + sinf(m_Info.rot.y) * m_Info.fDistance;
-	m_PosTarget[0].z = m_Info.pos.z + cosf(m_Info.rot.y) * m_Info.fDistance;
-	m_PosTarget[1].x = m_Info.pos.x + sinf(m_Info.rot.y) * -m_Info.fDistance;
-	m_PosTarget[1].z = m_Info.pos.z + cosf(m_Info.rot.y) * -m_Info.fDistance;
+	m_PosTarget[0].x = m_Info.pos.x + sinf(m_Info.rot.y) * Distance;
+	m_PosTarget[0].z = m_Info.pos.z + cosf(m_Info.rot.y) * Distance;
+	m_PosTarget[1].x = m_Info.pos.x + sinf(m_Info.rot.y) * -Distance;
+	m_PosTarget[1].z = m_Info.pos.z + cosf(m_Info.rot.y) * -Distance;
 }
 
 //==========================================================
@@ -293,7 +293,7 @@ bool CRobot::TergetReach()
 }
 
 //==========================================================
-// 目標位置に到達したかどうか
+// 歩き処理
 //==========================================================
 void CRobot::Walk()
 {
@@ -324,13 +324,13 @@ void CRobot::Walk()
 }
 
 //==========================================================
-// 目標位置に到達したかどうか
+// 回避コリジョン
 //==========================================================
 void CRobot::Collision(D3DXVECTOR3 pos)
 {
 	if (sqrtf((m_Info.pos.x - pos.x) * (m_Info.pos.x - pos.x)
 		+ (m_Info.pos.z - pos.z) * (m_Info.pos.z - pos.z)) <= AVOID_COLLISION)
 	{
-		m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_AVOID);
+		m_pCharacter->GetMotion()->Set(MOTION::MOTION_AVOID);
 	}
 }
