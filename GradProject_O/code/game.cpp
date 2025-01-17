@@ -114,12 +114,8 @@ CGame::CREATE_PL_FUNC CGame::m_CreatePlayerFunc[] =
 CGame::CGame()
 {
     // 値のクリア
-    m_ppCamera = nullptr;
-    m_ppPlayer = nullptr;
-    m_pFileLoad = nullptr;
     m_pMeshDome = nullptr;
     m_pGoalManager = nullptr;
-    m_Light.clear();
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
     m_nSledCnt = 0;
@@ -129,7 +125,9 @@ CGame::CGame()
     m_pPause = nullptr;
     m_nTotalDeliveryStatus = 0;
     m_nStartCameraCount = 0;
-    pFog = nullptr;
+    m_pEndSound = nullptr;
+    m_pEndText = nullptr;
+    m_GameState = STATE::STATE_NONE;
 }
 
 //===============================================
@@ -138,12 +136,8 @@ CGame::CGame()
 CGame::CGame(int nNumPlayer)
 {
     // 値のクリア
-    m_ppCamera = nullptr;
-    m_ppPlayer = nullptr;
-    m_pFileLoad = nullptr;
     m_pMeshDome = nullptr;
     m_pGoalManager = nullptr;
-    m_Light.clear();
     m_pDeliveryStatus = nullptr;
     m_pGameTimer = nullptr;
     m_nSledCnt = 0;
@@ -156,6 +150,7 @@ CGame::CGame(int nNumPlayer)
     m_GameState = STATE::STATE_NONE;
     m_pEndSound = nullptr;
     m_pEndText = nullptr;
+ 
     // 人数設定
     m_nNumPlayer = nNumPlayer;
 }
@@ -175,13 +170,6 @@ HRESULT CGame::Init(void)
 {
     m_pInstance = this;
 
-
-    // 外部ファイル読み込みの生成
-    if (nullptr == m_pFileLoad)
-    {// 使用していない場合
-
-    }
-
     // 配達する総数
     m_nTotalDeliveryStatus = TOTAL_POINT;
 
@@ -194,9 +182,6 @@ HRESULT CGame::Init(void)
     // 空生成
     m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
-    //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(-3900.0f, 5000.0f, 7900.0f), D3DXVECTOR3(1.0f, 0.5f, 0.2f), 1.0f, 10000.0f));
-    //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(20900.0f, 5000.0f, -1700.0f), D3DXVECTOR3(1.0f, 0.0f, 1.0f), 1.0f, 10000.0f));
-    //m_Light.push_back(CShaderLight::Create(D3DXVECTOR3(32500.0f, 5000.0f, 9600.0f), D3DXVECTOR3(0.0f, 1.0f, 1.0f), 1.0f, 10000.0f));
     auto net = CNetWork::GetInstance();
 
     // マップ読み込み
@@ -253,8 +238,6 @@ HRESULT CGame::Init(void)
 
     //CRobot* pRobot = CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
 
-  /*  pFog = DEBUG_NEW CFog;
-    pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
     return S_OK;
 }
 
@@ -281,13 +264,6 @@ void CGame::Uninit(void)
 
     }
 
-    // ライト
-    for (auto& it : m_Light)
-    {
-        CShaderLight::Delete(it);
-        SAFE_DELETE(it);
-    }
-
     // 終了
     SAFE_UNINIT(m_pMeshDome);
     SAFE_UNINIT(m_pDeliveryStatus);
@@ -296,9 +272,7 @@ void CGame::Uninit(void)
     // 解放
     SAFE_RELEASE(m_pGoalManager);
 
-    // 廃棄
-    SAFE_UNINIT_DELETE(pFog);
-
+  
     // ネットワーク切断
     auto net = CNetWork::GetInstance();
     net->DisConnect();
@@ -492,7 +466,6 @@ void CGame::Update(void)
     default:
         break;
     }
-  
 }
 
 //===============================================
@@ -501,22 +474,6 @@ void CGame::Update(void)
 void CGame::Draw(void)
 {
     CScene::Draw();
-}
-
-//===================================================
-// プレイヤーの取得
-//===================================================
-CPlayer *CGame::GetPlayer(void)
-{
-    return *m_ppPlayer;
-}
-
-//===================================================
-// ファイル読み込みの取得
-//===================================================
-CFileLoad *CGame::GetFileLoad(void)
-{
-    return m_pFileLoad;
 }
 
 //===================================================
