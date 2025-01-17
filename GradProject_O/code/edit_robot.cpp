@@ -63,7 +63,7 @@ HRESULT CEdit_Robot::Init(void)
 	{
 		CRobot* pNext = pTop->GetNext();
 
-		//pTop->SetState(CRobot::STATE_NONE);
+		pTop->SetState(CRobot::STATE_NONE);
 
 		pTop = pNext;
 	}
@@ -95,6 +95,7 @@ void CEdit_Robot::Update(void)
 {
 	CDebugProc::GetInstance()->Print(" [ ロボット配置モード ]\n");
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CInputMouse* pMouse = CInputMouse::GetInstance();
 	auto* pOld = m_pSelect;
 
 	// 選択
@@ -117,10 +118,23 @@ void CEdit_Robot::Update(void)
 		return;
 	}
 
+	// 選択解除
+	if (pMouse->GetTrigger(CInputMouse::BUTTON_RBUTTON))
+	{
+		m_pSelect = nullptr;
+
+		// 矢印終了
+		if (m_pHandle != nullptr)
+		{
+			m_pHandle->Uninit();
+			m_pHandle = nullptr;
+		}
+	}
+
 	 // 選択されたものを色変える
 
 	// 矢印の更新
-	if (m_pHandle != nullptr)
+	if (m_pHandle != nullptr && m_pSelect != nullptr)
 	{
 		m_pHandle->Update();
 		m_startRotate = m_pSelect->GetRotation();
@@ -429,7 +443,7 @@ void CEdit_Robot::ChangeDistance()
 
 	m_pSelect->SetDistance(distance);
 
-	//m_pSelect->SetPosTerget(distance);
+	m_pSelect->SetPosTerget(distance);
 
 	D3DXVECTOR3 RobotPos = m_pSelect->GetPosition();
 	D3DXVECTOR3 RobotRot = m_pSelect->GetRotation();
@@ -483,7 +497,7 @@ void CEdit_Robot::Save()
 	if (!pKey->GetTrigger(DIK_F7)) { return; }
 
 	// ファイルを開く
-	std::ofstream File(EDITFILENAME::GOAL, std::ios::binary);
+	std::ofstream File(EDITFILENAME::ROBOT, std::ios::binary);
 	if (!File.is_open()) {
 		return;
 	}
@@ -507,7 +521,7 @@ void CEdit_Robot::Save()
 	File.write(reinterpret_cast<const char*>(&size), sizeof(size));
 
 	// データをバイナリファイルに書き出す
-	File.write(reinterpret_cast<char*>(savedata.data()), size * sizeof(CGoal::SInfo));
+	File.write(reinterpret_cast<char*>(savedata.data()), size * sizeof(CRobot::SInfo));
 
 	// ファイルを閉じる
 	File.close();
@@ -556,8 +570,8 @@ void CEdit_Robot::Create()
 	rot = VECTOR3_ZERO;
 
 	CRobot* pRobot = CRobot::Create(pos, rot, DEFAULT_DISTANCE);
-	//pRobot->SetState(CRobot::STATE::STATE_NONE);
-	//pRobot->Update();
+	pRobot->SetState(CRobot::STATE::STATE_NONE);
+	pRobot->Update();
 }
 
 //==========================================================
