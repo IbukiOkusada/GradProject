@@ -43,7 +43,7 @@ private:	// 自分だけがアクセス可能
 	void Save();		// 保存
 	void Create();		// 生成
 	void ModeChange();	// 変更
-	bool CursorCollision(CEffectEffekseer* pGimmick);
+	bool CursorCollision(CEffectEffekseer* pEffect);
 	void ModelChange();	// モデル変更
 
 	// メンバ変数

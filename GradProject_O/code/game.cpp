@@ -62,6 +62,7 @@
 #include "meshdome.h"
 #include "robot.h"
 #include "robot_manager.h"
+#include "pause.h"
 #include "magic_enum/magic_enum.hpp"
 // ネットワーク
 #include "network.h"
@@ -251,6 +252,8 @@ HRESULT CGame::Init(void)
 
     CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
 
+    m_pPause = CPause::Create();
+
   /*  pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
     return S_OK;
@@ -290,6 +293,7 @@ void CGame::Uninit(void)
     SAFE_UNINIT(m_pMeshDome);
     SAFE_UNINIT(m_pDeliveryStatus);
     SAFE_UNINIT(m_pGameTimer);
+    SAFE_UNINIT(m_pPause);
 
     // 解放
     SAFE_RELEASE(m_pGoalManager);
@@ -327,10 +331,13 @@ void CGame::Update(void)
 	CInputPad *pInputPad = CInputPad::GetInstance();
 	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();
 
-	if (pInputKey->GetTrigger(DIK_P) == true || pInputPad->GetTrigger(CInputPad::BUTTON_START, 0))
-	{//ポーズキー(Pキー)が押された
-		m_bPause = m_bPause ? false : true;
-	}
+    m_pPause->ChangePause();
+
+    if (m_pPause->GetPause()) 
+    { 
+        m_pPause->Update();
+        return; 
+    }
 
     // タイマーの更新
     if (m_pGameTimer != nullptr && CEditManager::GetInstance() == nullptr)
