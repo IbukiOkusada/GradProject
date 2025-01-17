@@ -12,6 +12,7 @@
 #include "player.h"
 #include "player_manager.h"
 #include "debugproc.h"
+#include "edit_manager.h"
 
 //==========================================================
 // 定数定義
@@ -100,6 +101,17 @@ void CRobot::Update(void)
 
 	switch (m_Info.state)
 	{
+	case STATE_NONE:
+		
+		if (CEditManager::GetInstance() == nullptr)
+		{// エディットマネージャがnullの時
+
+			// 移動状態にする
+			m_Info.state = STATE_WALK;
+		}
+
+		break;
+
 	case STATE_WALK:
 		Walk();
 
