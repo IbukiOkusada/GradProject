@@ -541,7 +541,7 @@ void CEdit_Robot::Create()
 	rot = VECTOR3_ZERO;
 
 	CRobot* pRobot = CRobot::Create(pos, rot, DEFAULT_DISTANCE);
-	pRobot->SetState(CRobot::STATE::STATE_NONE);
+	//pRobot->SetState(CRobot::STATE::STATE_NONE);
 }
 
 //==========================================================
