@@ -91,11 +91,13 @@ void CPause::Update(void)
 	if (pInputKey->GetTrigger(DIK_UPARROW) == true || pInputPad->GetTrigger(CInputPad::BUTTON_UP, 0))
 	{//上キー(↑キー)が押された
 		m_nNumSelect += TYPE_MAX - 1;
+		m_fTimerColor = -1.0f;
 	}
 
 	if (pInputKey->GetTrigger(DIK_DOWNARROW) == true || pInputPad->GetTrigger(CInputPad::BUTTON_DOWN, 0))
 	{//下キー(↓キー)が押された
 		m_nNumSelect++;
+		m_fTimerColor = -1.0f;
 	}
 
 	m_pPauseFrame->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
