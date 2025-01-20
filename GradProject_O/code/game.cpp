@@ -237,7 +237,7 @@ HRESULT CGame::Init(void)
     }
 
 
-    //CRobot* pRobot = CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
+    CRobot* pRobot = CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
 
     m_pPause = CPause::Create();
 

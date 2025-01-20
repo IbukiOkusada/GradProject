@@ -29,5 +29,7 @@ EFFECT_FILENAME = data\EFFEKSEER\taillamp.efkefc	# [18]
 EFFECT_FILENAME = data\EFFEKSEER\trail.efkefc	# [19]
 EFFECT_FILENAME = data\EFFEKSEER\turn_left.efkefc	# [20]
 EFFECT_FILENAME = data\EFFEKSEER\turn_right.efkefc	# [21]
+EFFECT_FILENAME = data\EFFEKSEER\0_signage.efkefc	# [22]
+EFFECT_FILENAME = data\EFFEKSEER\0_stop.efkefc	# [23]
 
 END_SCRIPT

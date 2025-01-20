@@ -19,23 +19,23 @@ namespace
 	const float COLORTIMER_INI = (-1.0f);
 	const float COLORTIMER_ADD = (0.1f);
 
-	const float WIDTH_FRAME = (400.0f);		// フレームの横幅
-	const float HEIGHT_FRAME = (600.0f);	// フレームの縦幅
-	const D3DXVECTOR3 POS_FRAME = D3DXVECTOR3(640.0f, 360.0f, 0.0f);	// フレームの位置
+	const float WIDTH_FRAME = (1080.0f*0.5);		// フレームの横幅
+	const float HEIGHT_FRAME = (600.0f*0.5);	// フレームの縦幅
+	const D3DXVECTOR3 POS_FRAME = D3DXVECTOR3(1050.0f, 200.0f, 0.0f);	// フレームの位置
 
-	const float WIDTH_BUTTON = (300.0f);	// ボタンの横幅
-	const float HEIGHT_BUTTON = (100.0f);	// ボタンの縦幅
+	const float WIDTH_BUTTON = (220.0f*0.5);	// ボタンの横幅
+	const float HEIGHT_BUTTON = (70.0f*0.5);	// ボタンの縦幅
 	const D3DXVECTOR3 POS_BUTTON[CPause::TYPE_MAX] = {	// ボタンの位置
-		D3DXVECTOR3(640.0f, 210.0f, 0.0f),
-		D3DXVECTOR3(640.0f, 360.0f, 0.0f),
-		D3DXVECTOR3(640.0f, 510.0f, 0.0f),
+		D3DXVECTOR3(985.0f, 160.0f, 0.0f),
+		D3DXVECTOR3(985.0f, 215.0f, 0.0f),
+		D3DXVECTOR3(985.0f, 270.0f, 0.0f),
 	};
 
-	const char* TEXTURENAMEFRAME = "data\\TEXTURE\\totan000.jpg";
+	const char* TEXTURENAMEFRAME = "data\\TEXTURE\\pause\\pause_0.png";
 	const char* TEXTURENAMEBUTTON[CPause::TYPE_MAX] = {	// テクスチャ名
-			"data\\TEXTURE\\GameOver-Yes.png",
-			"data\\TEXTURE\\T_PressEnter003.png",
-			"data\\TEXTURE\\title.png",
+			"data\\TEXTURE\\pause\\pause_1.png",
+			"data\\TEXTURE\\pause\\pause_2.png",
+			"data\\TEXTURE\\pause\\pause_3.png",
 	};
 }
 
@@ -63,14 +63,14 @@ HRESULT CPause::Init(void)
 {
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();
 	
-	m_pPauseFrame = CObject2D::Create(POS_FRAME, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0);
+	m_pPauseFrame = CObject2D::Create(POS_FRAME, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 7);
 	m_pPauseFrame->BindTexture(pTexture->Regist(TEXTURENAMEFRAME));
 	m_pPauseFrame->SetSize(WIDTH_FRAME, HEIGHT_FRAME);
 	m_pPauseFrame->SetVtx();
 
 	for (int i = 0; i < CPause::TYPE_MAX; i++)
 	{
-		m_pPauseButton[i] = CObject2D::Create(POS_BUTTON[i], D3DXVECTOR3(0.0f, 0.0f, 0.0f), 0);
+		m_pPauseButton[i] = CObject2D::Create(POS_BUTTON[i], D3DXVECTOR3(0.0f, 0.0f, 0.0f), 7);
 		m_pPauseButton[i]->BindTexture(pTexture->Regist(TEXTURENAMEBUTTON[i]));
 		m_pPauseButton[i]->SetSize(WIDTH_BUTTON, HEIGHT_BUTTON);
 		m_pPauseButton[i]->SetVtx();
@@ -125,7 +125,7 @@ void CPause::Update(void)
 		}
 		else
 		{
-			alpha = 1.0f;
+			alpha = 0.2f;
 		}
 
 		m_pPauseButton[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, alpha));
@@ -137,10 +137,6 @@ void CPause::Update(void)
 	{//決定キー(エンターキー)が押された
 		switch (m_nNumSelect % TYPE_MAX)
 		{
-		case CPause::TYPE_CONTINUE:
-			m_bPause = m_bPause ? false : true;
-			break;
-
 		case CPause::TYPE_RETRY:
 			CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
 			break;
@@ -148,7 +144,9 @@ void CPause::Update(void)
 		case CPause::TYPE_QUIT:
 			CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
 			break;
-
+		case CPause::TYPE_CANCEL:
+			m_bPause = m_bPause ? false : true;
+			break;
 		default:
 			break;
 		}
