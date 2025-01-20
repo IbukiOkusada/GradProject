@@ -26,7 +26,8 @@ public:	// 誰でもアクセス可能
 	// 状態列挙型
 	enum STATE
 	{
-		STATE_WALK = 0,	// 歩き状態
+		STATE_NONE = 0, // 何もない
+		STATE_WALK, 	// 歩き状態
 		STATE_AVOID,	// 回避状態
 		STATE_MAX
 	};
@@ -88,6 +89,8 @@ public:	// 誰でもアクセス可能
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetRotation(const D3DXVECTOR3& rot);
 	void SetDistance(const float distance) { m_Info.fDistance = distance; }
+	void SetState(STATE state) { m_Info.state = state; }
+	void SetPosTerget(const float& Distance);
 
 	void SetNext(CRobot* pNext) { m_pNext = pNext; }
 	void SetPrev(CRobot* pPrev) { m_pPrev = pPrev; }
@@ -103,11 +106,11 @@ protected:	// 派生クラスからもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	void SetPosTerget(const float& Distance);
 	bool TergetReach();
 
 	void Walk();
-	void Collision(D3DXVECTOR3 pos);
+	void Collision(D3DXVECTOR3 pos, const float CollisionDistance);
+	void SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
 
 	// メンバ変数
 	SInfo m_Info;				// 自分自身の情報

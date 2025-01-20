@@ -12,6 +12,7 @@
 #include "gimmick.h"
 #include "goal_manager.h"
 #include "goal.h"
+#include "robot.h"
 #include "effect_effekseer.h"
 
 namespace
@@ -54,6 +55,13 @@ namespace
 		"data\\TXT\\model_info.txt",
 		"data\\TXT\\model_info.txt",
 		"data\\TXT\\model_info.txt",
+	};
+
+	const std::string ROBOTFILENAME[CScene::MODE_MAX] = {  // ロボットファイル
+		"",
+		"",
+		"data\\FILE\\map\\robot.bin",
+		"",
 	};
 
 	const std::string EFFECTNAMEFILE[CScene::MODE_MAX] = {	// モデル名ファイル
@@ -154,6 +162,9 @@ void CMapManager::Load(void)
 	// ゴール読み込み
 	LoadGoal(GOALFILENAME[mode]);
 
+	// ロボット読み込み
+	LoadRobot(ROBOTFILENAME[mode]);
+
 	// ゴール読み込み
 	LoadEffect(EFFECTNAMEFILE[mode]);
 
@@ -247,6 +258,35 @@ void CMapManager::LoadGoal(const std::string& filename)
 	// ゴールマネージャーで管理
 	CGoalManager::Create();
 	CGoalManager::GetInstance()->SetInfoList(roaddata);
+}
+
+//===============================================
+// モデル名ファイル読み込み
+//===============================================
+void CMapManager::LoadRobot(const std::string& filename)
+{
+	// ファイルを開く
+	std::ifstream File(filename, std::ios::binary);
+	if (!File.is_open()) {
+		// 例外処理
+		return;
+	}
+
+	// サイズ読み込み
+	int size = 0;
+	File.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+	// データ読み込み
+	std::vector<CRobot::SInfo> roaddata(size);
+	File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CRobot::SInfo));
+
+	for (const auto& it : roaddata)
+	{
+		CRobot::Create(it.pos, it.rot, it.fDistance);
+	}
+
+	// ファイルを閉じる
+	File.close();
 }
 
 //===============================================

@@ -13,6 +13,7 @@
 class CGoal;
 class CEdit_Handle;
 class CRobot;
+class CEffect3D;
 
 //==========================================================
 // ロボット配置エディタのクラス定義
@@ -53,6 +54,8 @@ private:	// 自分だけがアクセス可能
 	CRobot* m_pSelect;  // 選択したロボット
 	CEdit_Handle* m_pHandle;	// 矢印
 	D3DXVECTOR3 m_startRotate;
+	CEffect3D* m_pStartPosEff;
+	CEffect3D* m_pEndPosEff;
 	float m_fStartDistance;  // 基準の距離
 	float m_fMouseWheel;	// マウスホイールの移動量
 	float m_fMoveLength;	// 移動距離

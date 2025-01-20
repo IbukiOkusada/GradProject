@@ -25,10 +25,26 @@ MODEL_FILENAME = data/MODEL/map/slum_house002.x	# [0]スラムハウス
 MODEL_FILENAME = data/MODEL/map/slum_shop000.x	# [0]スラムショップ
 
 #追加サイバーパンクモデル
-MODEL_FILENAME = data/MODEL/map/beer.x		# [0]ビール
-MODEL_FILENAME = data/MODEL/map/bill_02.x	# [0]ビル
-MODEL_FILENAME = data/MODEL/map/cycle.x		# [0]ビル
-MODEL_FILENAME = data/MODEL/map/bar_01.x	# [0]ビル
-MODEL_FILENAME = data/MODEL/map/hotel_01.x	# [0]ビル
+MODEL_FILENAME = data/MODEL/map/beer.x			# [0]ビール
+MODEL_FILENAME = data/MODEL/map/bill_02.x		# [0]ビル
+MODEL_FILENAME = data/MODEL/map/cycle.x			# [0]サイクル
+MODEL_FILENAME = data/MODEL/map/bar_01.x		# [0]バー
+MODEL_FILENAME = data/MODEL/map/hotel_01.x		# [0]ホテル
+MODEL_FILENAME = data/MODEL/map/cycle_02.x		# [0]サイクル
+MODEL_FILENAME = data/MODEL/map/bar_02.x		# [0]バー
+MODEL_FILENAME = data/MODEL/map/hotel_02.x		# [0]ホテル
+MODEL_FILENAME = data/MODEL/map/bill_03.x		# [0]ビル
+MODEL_FILENAME = data/MODEL/map/bill_04.x		# [0]ビル
+MODEL_FILENAME = data/MODEL/map/building_cyber001.x	# [0]サイバービル
+MODEL_FILENAME = data/MODEL/map/bus_00.x		# [0]バス停
+MODEL_FILENAME = data/MODEL/map/bus_01.x		# [0]バス停
+MODEL_FILENAME = data/MODEL/map/bill_05.x		# [0]ビル
+MODEL_FILENAME = data/MODEL/map/bill_06.x		# [0]ビル
+MODEL_FILENAME = data/MODEL/map/mix_bill_01.x	# [0]和風洋風ビル
+MODEL_FILENAME = data/MODEL/map/mix_bill_02.x	# [0]和風洋風ビル
+MODEL_FILENAME = data/MODEL/map/mix_bill_03.x	# [0]和風洋風ビル
+MODEL_FILENAME = data/MODEL/map/hotel_03.x		# [0]ホテル
+MODEL_FILENAME = data/MODEL/map/cycle_03.x		# [0]サイクル
+MODEL_FILENAME = data/MODEL/map/building_cyber002.x	# [0]サイバービル
 
 END_SCRIPT
