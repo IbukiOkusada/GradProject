@@ -106,11 +106,14 @@ protected:	// 派生クラスからもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
-	bool TergetReach();
+	bool TergetReach();	// 目標位置に到達したかどうか
 
-	void Walk();
-	void Collision(D3DXVECTOR3 pos, const float CollisionDistance);
-	void SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot);
+	void Walk();		// 歩き処理
+	void Avoid();		// 回避処理
+	void AvoidCollision(D3DXVECTOR3 pos, const float CollisionDistance);	// 回避コリジョン
+	bool CollisionObjX();													// オブジェクトとの当たり判定処理
+	void SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot);	// 回避の設定
+	void SetWalk();										// 歩きを設定
 
 	// メンバ変数
 	SInfo m_Info;				// 自分自身の情報

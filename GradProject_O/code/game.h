@@ -30,7 +30,7 @@ class CScrollText2D;
 
 namespace Game
 {
-	const float DOME_LENGTH = 20000.0f;
+	const float DOME_LENGTH = 15000.0f;
 }
 
 //===============================================

@@ -485,8 +485,11 @@ bool CCar::Collision()
 	bool bCollision = false;
 
 	// オブジェクトとの当たり判定
-	if (CollisionObjX())
-		bCollision = true;
+	if (m_type != CAR_TYPE::CAR_TYPE_CAR)
+	{
+		if (CollisionObjX())
+			bCollision = true;
+	}
 
 	// 道との当たり判定
 	if (CollisionRoad())
@@ -497,8 +500,11 @@ bool CCar::Collision()
 		bCollision = true;
 
 	// ギミックとの当たり判定
-	if (CollisionGimick())
-		bCollision = true;
+	if (m_type != CAR_TYPE::CAR_TYPE_CAR)
+	{
+		if (CollisionGimick())
+			bCollision = true;
+	}
 
 	return bCollision;
 }
@@ -731,6 +737,7 @@ void CCar::Set()
 {
 	if (m_pObj != nullptr)
 	{
+		m_pObj->DrawCheck();
 		m_Info.rot.y += D3DX_PI;
 		m_pObj->SetPosition(m_Info.pos);
 		m_pObj->SetRotation(m_Info.rot);

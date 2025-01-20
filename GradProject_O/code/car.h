@@ -36,7 +36,7 @@ public:
 	};
 
 	// Ží—Þ
-	enum CAR_TYPE
+	enum class CAR_TYPE
 	{
 		CAR_TYPE_CAR = 0,
 		CAR_TYPE_POLICE,
