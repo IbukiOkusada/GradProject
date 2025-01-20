@@ -25,6 +25,8 @@ public:	// 誰でもアクセス可能な定義
 	{
 		TYPE_SIGNAGE = 0,		// 看板
 		TYPE_STOP,				// 停止表示
+		TYPE_CURVE,				// カーブ表示
+		TYPE_NOMORE,			// 
 		TYPE_MAX
 	}TYPE;
 
