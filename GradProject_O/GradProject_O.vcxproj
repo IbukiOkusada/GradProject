@@ -261,6 +261,7 @@
     <ClCompile Include="code\ranking.cpp" />
     <ClCompile Include="code\renderer.cpp" />
     <ClCompile Include="code\result.cpp" />
+    <ClCompile Include="code\river.cpp" />
     <ClCompile Include="code\road_manager.cpp" />
     <ClCompile Include="code\sample\sample.cpp" />
     <ClCompile Include="code\sample\sample_manager.cpp" />
@@ -399,6 +400,7 @@
     <ClInclude Include="code\ranking.h" />
     <ClInclude Include="code\renderer.h" />
     <ClInclude Include="code\result.h" />
+    <ClInclude Include="code\river.h" />
     <ClInclude Include="code\road_manager.h" />
     <ClInclude Include="code\sample\sample.h" />
     <ClInclude Include="code\sample\sample_manager.h" />
