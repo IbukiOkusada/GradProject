@@ -12,6 +12,11 @@
 #include "Xfile.h"
 #include "fxmanager.h"
 #include "edit_manager.h"
+#include "game.h"
+#include "camera.h"
+#include "camera_manager.h"
+#include "camera_action.h"
+
 // 静的メンバ変数宣言
 Clist<CObjectX*> CObjectX::m_List = {};
 
@@ -85,7 +90,9 @@ void CObjectX::Update(void)
 //==========================================================
 void CObjectX::Draw(void)
 {
-	//Update();
+	
+		Update();
+	
 
 	m_bHitOld = m_bHit;
 	m_bHit = false;
@@ -111,7 +118,7 @@ void CObjectX::Draw(void)
 //==========================================================
 void CObjectX::DrawOnShader(void)
 {
-	//Update();
+		//Update();
 
 	m_bHitOld = m_bHit;
 	m_bHit = false;
@@ -668,4 +675,108 @@ D3DXVECTOR3& CObjectX::GetVtxMin(void)
 	min.z = pFileData->vtxMin.z * m_scale.z;
 
 	return min;
+}
+
+//==========================================================
+// 描画確認
+//==========================================================
+void CObjectX::DrawCheck()
+{
+	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+	float maxlen = Game::DOME_LENGTH * 0.5f;
+
+	if (!pCamera->GetAction()->IsFinish())
+	{
+		maxlen = Game::DOME_LENGTH;
+	}
+
+	if (CEditManager::GetInstance() != nullptr)
+	{
+		SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		SetDraw();
+
+		return;
+	}
+
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+	D3DXMATRIX mtxProjection, mtxView, mtxWorld;
+	D3DVIEWPORT9 Viewport;
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	D3DXVECTOR3 mypos = GetPosition();
+
+	// 必要な情報取得
+	pDevice->GetTransform(D3DTS_PROJECTION, &mtxProjection);
+	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
+	pDevice->GetViewport(&Viewport);
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+
+	// スクリーン座標取得
+	D3DXVec3Project(&pos, &mypos, &Viewport, &mtxProjection, &mtxView, &mtxWorld);
+
+	float f = 0.5f * (m_scale.x + m_scale.z);
+
+	// 画面外なら出さない
+	if (pos.x < 0.0f - (SCREEN_WIDTH * 0.025f * f) || pos.x > SCREEN_WIDTH + (SCREEN_WIDTH * 0.025f * f) ||
+		pos.y < 0.0f - (SCREEN_HEIGHT * 0.025f * m_scale.y) || pos.y > SCREEN_HEIGHT + (SCREEN_HEIGHT * 0.025f * m_scale.y) ||
+		pos.z >= 1.0f) {
+
+		// 色を透明に近づける
+		D3DXCOLOR col = GetColMulti();
+		if (col.a > 0.0f)
+		{
+			col.a -= 0.2f;
+
+			if (col.a <= 0.0f)
+			{
+				col.a = 0.0f;
+				SetDraw(false);
+			}
+		}
+
+		SetColMulti(col);
+
+		return;
+	}
+
+	// 距離を取る
+	{
+		D3DXVECTOR3 lenpos = pCamera->GetPositionR() - m_pos;
+		if (D3DXVec3Length(&lenpos) >= maxlen)
+		{
+			// 色を透明に近づける
+			D3DXCOLOR col = GetColMulti();
+
+			if (col.a > 0.0f)
+			{
+				col.a -= 0.2f;
+
+				if (col.a <= 0.0f)
+				{
+					col.a = 0.0f;
+					SetDraw(false);
+				}
+			}
+
+			SetColMulti(col);
+
+			return;
+		}
+	}
+
+	// 色を元に近づける
+	D3DXCOLOR col = GetColMulti();
+	if (col.a < 1.0f)
+	{
+		col.a += 0.2f;
+
+		if (col.a >= 1.0f)
+		{
+			col.a = 1.0f;
+		}
+	}
+
+	SetColMulti(col);
+	SetDraw();
 }

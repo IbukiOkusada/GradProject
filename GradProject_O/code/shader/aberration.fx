@@ -1,6 +1,6 @@
 sampler2D SceneTexture : register(s0);
 
-float2 ChromaticOffset = float2(0.0025, 0.0025);  // 色収差の強さ（調整可能）
+float2 ChromaticOffset = float2(0.002, 0.002);  // 色収差の強さ（調整可能）
 
 float4 PS_ChromaticAberration(float2 texCoord : TEXCOORD0) : COLOR
 {

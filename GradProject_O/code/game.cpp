@@ -181,7 +181,7 @@ HRESULT CGame::Init(void)
     CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
 
     // 空生成
-    //m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
+    m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
     auto net = CNetWork::GetInstance();
 
@@ -190,7 +190,6 @@ HRESULT CGame::Init(void)
 
     // プレイヤー生成
     (this->*(m_CreatePlayerFunc[net->GetState()]))();
-
 
     CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
@@ -208,10 +207,10 @@ HRESULT CGame::Init(void)
     if (myid == net->GetIdx())
     {
         // 車の生成
-        //CreateCar();
+        CreateCar();
 
         // 警察の生成
-        //CreatePolice();
+        CreatePolice();
     }
 
     if (m_pGoalManager == nullptr)
@@ -425,7 +424,7 @@ void CGame::Update(void)
     }
 
     // 各マネージャー更新
-
+    CPoliceManager::GetInstance()->Update();
     CPoliceAIManager::GetInstance()->Update();
     CInspectionManager::GetInstance()->Update();
 
@@ -597,7 +596,7 @@ void CGame::CreateSinglePlayer(void)
     CPlayer* pPlayer = CPlayer::Create(SET_PLAYER_POS,
         VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());
     pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
-    //pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
+    pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
 }
 
 //===================================================

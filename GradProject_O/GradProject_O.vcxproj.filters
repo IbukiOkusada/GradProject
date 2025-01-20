@@ -199,6 +199,9 @@
     <Filter Include="UI\pause">
       <UniqueIdentifier>{b0fa8825-0e48-47e8-a671-f386537f6527}</UniqueIdentifier>
     </Filter>
+    <Filter Include="map\river">
+      <UniqueIdentifier>{700b079e-6f19-47ce-b713-c6fdcb7a9ab5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="gimmick\trashcan">
       <UniqueIdentifier>{017c0b7b-b378-4e81-a3c3-5b0b1517c155}</UniqueIdentifier>
     </Filter>
@@ -593,6 +596,9 @@
     </ClCompile>
     <ClCompile Include="code\pause.cpp">
       <Filter>UI\pause</Filter>
+    </ClCompile>
+    <ClCompile Include="code\river.cpp">
+      <Filter>map\river</Filter>
     </ClCompile>
     <ClCompile Include="code\trashcan.cpp">
       <Filter>gimmick\trashcan</Filter>
@@ -1021,6 +1027,9 @@
     </ClInclude>
     <ClInclude Include="code\pause.h">
       <Filter>UI\pause</Filter>
+    </ClInclude>
+    <ClInclude Include="code\river.h">
+      <Filter>map\river</Filter>
     </ClInclude>
     <ClInclude Include="code\trashcan.h">
       <Filter>gimmick\trashcan</Filter>
