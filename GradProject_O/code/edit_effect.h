@@ -45,6 +45,7 @@ private:	// 自分だけがアクセス可能
 	void ModeChange();	// 変更
 	bool CursorCollision(CEffectEffekseer* pEffect);
 	void ModelChange();	// モデル変更
+	void ModelSelect();	// モデル変更
 
 	// メンバ変数
 	D3DXVECTOR3 m_startScale;
@@ -52,6 +53,7 @@ private:	// 自分だけがアクセス可能
 	CEdit_Handle* m_pHandle;	// 矢印
 	float m_fMouseWheel;	// マウスホイールの移動量
 	CEffectEffekseer* m_pSelect;	// 選択中オブジェクト
+	int m_nIdxType;
 };
 
 #endif
