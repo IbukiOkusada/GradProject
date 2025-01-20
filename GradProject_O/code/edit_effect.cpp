@@ -130,6 +130,14 @@ void CEdit_Effect::Update(void)
 	// 削除
 	Delete();
 
+	Clist<CEffectEffekseer*>* pList = CEffectEffekseer::GetList();
+	for (int i = 0; i < pList->GetNum(); i++)
+	{
+		CEffectEffekseer* pGimmick = pList->Get(i);
+
+		pGimmick->Update();
+	}
+
 	CDebugProc::GetInstance()->Print("]\n\n");
 
 	// 障害物情報
@@ -396,7 +404,7 @@ void CEdit_Effect::Save()
 	if (!pKey->GetTrigger(DIK_F7)) { return; }
 
 	// ファイルを開く
-	std::ofstream File(EDITFILENAME::GIMMICK, std::ios::binary);
+	std::ofstream File(EDITFILENAME::EFFECT, std::ios::binary);
 	if (!File.is_open()) {
 		return;
 	}
@@ -428,6 +436,8 @@ void CEdit_Effect::Create()
 	CDebugProc::GetInstance()->Print(" 生成 : マウスホイールクリック, ");
 	CInputMouse* pMouse = CInputMouse::GetInstance();
 
+	ModelSelect();
+
 	// 入力確認
 	if (!pMouse->GetTrigger(CInputMouse::BUTTON_WHEEL)) { return; }
 	
@@ -457,7 +467,34 @@ void CEdit_Effect::Create()
 	info.move = VECTOR3_ZERO;
 	info.fScale = 45.0f;
 
-	CEffectEffekseer::Create(info.pos, info.rot, info.move, info.fScale, CEffectEffekseer::TYPE::TYPE_LAMP);
+	CEffectEffekseer::Create(info.pos, info.rot, info.move, info.fScale, static_cast<CEffectEffekseer::TYPE>(m_nIdxType));
+}
+
+//==========================================================
+// 配置モデル変更
+//==========================================================
+void CEdit_Effect::ModelSelect()
+{
+	CInputMouse* pMouse = CInputMouse::GetInstance();
+
+	float old = m_fMouseWheel;
+	m_fMouseWheel += pMouse->GetCousorMove().z;
+
+	CDebugProc::GetInstance()->Print(" タイプ [ %d ], ", m_nIdxType);
+
+	// マウスホイール
+	if (m_fMouseWheel == old) { return; }
+
+	if (static_cast<int>(m_fMouseWheel) % 20 != 0) { return; }
+
+	if (m_fMouseWheel >= old)
+	{
+		m_nIdxType = (m_nIdxType + 1) % CEffectEffekseer::TYPE::TYPE_MAX;
+	}
+	else
+	{
+		m_nIdxType = (m_nIdxType + CEffectEffekseer::TYPE::TYPE_MAX - 1) % CEffectEffekseer::TYPE::TYPE_MAX;
+	}
 }
 
 //==========================================================

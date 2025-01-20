@@ -23,10 +23,8 @@ public:	// 誰でもアクセス可能な定義
 	// 種類の列挙型定義
 	typedef enum
 	{
-		TYPE_LAMP = 0,			// 通常
-		TYPE_EXPLOSION,			// 通常
-		TYPE_SPLASH,			// 通常
-		TYPE_TRAIL,				// 通常
+		TYPE_SIGNAGE = 0,		// 看板
+		TYPE_STOP,				// 停止表示
 		TYPE_MAX
 	}TYPE;
 
@@ -40,7 +38,7 @@ public:	// 誰でもアクセス可能な定義
 		TYPE Type;	// 種類
 
 		// コンストラクタ
-		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), move(VECTOR3_ZERO), fScale(1.0f), Type(TYPE_LAMP) {}
+		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO), move(VECTOR3_ZERO), fScale(1.0f), Type(TYPE_SIGNAGE) {}
 	};
 
 private:	// 自分だけアクセス可能な定義

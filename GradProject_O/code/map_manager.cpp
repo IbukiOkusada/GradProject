@@ -13,6 +13,7 @@
 #include "goal_manager.h"
 #include "goal.h"
 #include "robot.h"
+#include "effect_effekseer.h"
 
 namespace
 {
@@ -61,6 +62,14 @@ namespace
 		"",
 		"data\\FILE\\map\\robot.bin",
 		"",
+	};
+
+	const std::string EFFECTNAMEFILE[CScene::MODE_MAX] = {	// モデル名ファイル
+		"data\\FILE\\map\\effect.bin",
+		"data\\FILE\\map\\effect.bin",
+		"data\\FILE\\map\\effect.bin",
+		"data\\FILE\\map\\effect.bin",
+		"data\\FILE\\map\\effect.bin",
 	};
 }
 
@@ -155,6 +164,9 @@ void CMapManager::Load(void)
 
 	// ロボット読み込み
 	LoadRobot(ROBOTFILENAME[mode]);
+
+	// ゴール読み込み
+	LoadEffect(EFFECTNAMEFILE[mode]);
 
 	// 道連結
 	CRoadManager::GetInstance()->AllConnect();
@@ -359,6 +371,35 @@ void CMapManager::LoadGimmick(const std::string& filename)
 	for (const auto& it : roaddata)
 	{
 		CGimmick::Create(it.pos, it.rot, it.scale, it.type);
+	}
+
+	// ファイルを閉じる
+	File.close();
+}
+
+//===============================================
+// ギミック読み込み
+//===============================================
+void CMapManager::LoadEffect(const std::string& filename)
+{
+	// ファイルを開く
+	std::ifstream File(filename, std::ios::binary);
+	if (!File.is_open()) {
+		// 例外処理
+		return;
+	}
+
+	// サイズ読み込み
+	int size = 0;
+	File.read(reinterpret_cast<char*>(&size), sizeof(size));
+
+	// データ読み込み
+	std::vector<CEffectEffekseer::SInfo> roaddata(size);
+	File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CEffectEffekseer::SInfo));
+
+	for (const auto& it : roaddata)
+	{
+		CEffectEffekseer::Create(it.pos, it.rot, it.move, it.fScale, it.Type);
 	}
 
 	// ファイルを閉じる
