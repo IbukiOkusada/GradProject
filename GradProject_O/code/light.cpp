@@ -51,10 +51,10 @@ HRESULT CLight::Init(void)
 			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.6f, 0.6f, 0.7f, 1.0f);
 			break;
 		case 1:
-			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.32f, 0.32f, 0.32f, 1.0f);
+			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.52f, 0.52f, 0.52f, 1.0f);
 			break;
 		case 2:
-			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.32f, 0.32f, 0.32f, 1.0f);
+			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.52f, 0.52f, 0.52f, 1.0f);
 			break;
 		case 3:
 			m_aLight[nCntLight].Diffuse = D3DXCOLOR(0.6f, 0.6f, 0.7f, 1.0f);

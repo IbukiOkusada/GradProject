@@ -21,9 +21,9 @@ public:	// 誰でもアクセス可能
 	// AIタイプ列挙型
 	enum TYPE
 	{
-		TYPE_CONTINUE = 0,	// 再開
+		TYPE_QUIT = 0,	// 終了
 		TYPE_RETRY,			// やり直し
-		TYPE_QUIT,			// タイトル
+		TYPE_CANCEL,			// 再開
 		TYPE_MAX
 	};
 

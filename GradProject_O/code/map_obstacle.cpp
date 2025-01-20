@@ -88,11 +88,11 @@ void CMapObstacle::Uninit(void)
 //==========================================================
 void CMapObstacle::Update(void)
 {
-	DrawCheck();
 
 	// オブジェクトの更新
 	if (m_pObj != nullptr)
 	{
+		m_pObj->DrawCheck();
 		m_pObj->SetPosition(m_Info.pos);
 		m_pObj->SetRotation(m_Info.rot);
 		m_pObj->SetScale(m_Info.scale);
@@ -174,88 +174,4 @@ void CMapObstacle::BindModel(const int& idx)
 	std::vector<std::string> str = CMapManager::GetInstance()->GetFileNameList();
 
 	m_pObj->BindFile(str[idx].c_str());
-}
-
-//==========================================================
-// 描画確認
-//==========================================================
-void CMapObstacle::DrawCheck()
-{
-	if (m_pObj == nullptr) { return; }
-
-	if (CEditManager::GetInstance() != nullptr)
-	{
-		m_pObj->SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		m_pObj->SetDraw();
-
-		return;
-	}
-
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
-	D3DXMATRIX mtxProjection, mtxView, mtxWorld;
-	D3DVIEWPORT9 Viewport;
-	D3DXVECTOR3 pos = VECTOR3_ZERO;
-	D3DXVECTOR3 mypos = m_pObj->GetPosition();
-
-	// 必要な情報取得
-	pDevice->GetTransform(D3DTS_PROJECTION, &mtxProjection);
-	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
-	pDevice->GetViewport(&Viewport);
-
-	//ワールドマトリックスの初期化
-	D3DXMatrixIdentity(&mtxWorld);
-
-	// スクリーン座標取得
-	D3DXVec3Project(&pos, &mypos, &Viewport, &mtxProjection, &mtxView, &mtxWorld);
-
-	float f = 0.5f * (m_Info.scale.x + m_Info.scale.z);
-
-	// 画面外なら出さない
-	if (pos.x < 0.0f - (SCREEN_WIDTH * 0.3f * f) || pos.x > SCREEN_WIDTH + (SCREEN_WIDTH * 0.3f * f) ||
-		pos.y < 0.0f - (SCREEN_HEIGHT * 0.3f * m_Info.scale.y) || pos.y > SCREEN_HEIGHT + (SCREEN_HEIGHT * 0.3f * m_Info.scale.y) ||
-		pos.z >= 1.0f) {
-
-		// 色を透明に近づける
-		D3DXCOLOR col = m_pObj->GetColMulti();
-		if (col.a > 0.0f)
-		{
-			col.a -= 0.1f;
-			
-			if (col.a <= 0.0f)
-			{
-				col.a = 0.0f;
-				m_pObj->SetDraw(false);
-			}
-		}
-
-		m_pObj->SetColMulti(col);
-
-		return;
-	}
-
-	// 距離を取る
-	{
-		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
-		D3DXVECTOR3 lenpos = pCamera->GetPositionR() - m_Info.pos;
-		if (D3DXVec3Length(&lenpos) >= Game::DOME_LENGTH)
-		{
-			m_pObj->SetDraw(false);
-			return;
-		}
-	}
-
-	// 色を元に近づける
-	D3DXCOLOR col = m_pObj->GetColMulti();
-	if (col.a < 1.0f)
-	{
-		col.a += 0.1f;
-
-		if (col.a >= 1.0f)
-		{
-			col.a = 1.0f;
-		}
-	}
-
-	m_pObj->SetColMulti(col);
-	m_pObj->SetDraw();
 }
