@@ -14,10 +14,8 @@ Clist<CEffectEffekseer*> CEffectEffekseer::m_List = {};
 //===============================================
 namespace {
 	const std::string EFFECTNAMEPATH[CEffectEffekseer::TYPE_MAX] = {	// エフェクトのパス
-		"data\\EFFEKSEER\\patrollamp.efkefc",
-		"data\\EFFEKSEER\\explosion.efkefc",
-		"data\\EFFEKSEER\\splash.efkefc",
-		"data\\EFFEKSEER\\trail.efkefc",
+		"data\\EFFEKSEER\\0_signage.efkefc",
+		"data\\EFFEKSEER\\0_stop.efkefc",
 	};
 }
 
@@ -72,8 +70,6 @@ void CEffectEffekseer::Update(void)
 	m_pEffekseer->m_Scale.X = m_Info.fScale;
 	m_pEffekseer->m_Scale.Y = m_Info.fScale;
 	m_pEffekseer->m_Scale.Z = m_Info.fScale;
-
-	CDebugProc::GetInstance()->Print(" エフェクト総数 : %d", m_List.GetNum());
 }
 
 //===============================================

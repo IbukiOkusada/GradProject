@@ -41,6 +41,7 @@ private:	// 自分だけがアクセス可能
 	void LoadGimmick(const std::string& filename);
 	void LoadGoal(const std::string& filename);
 	void LoadRobot(const std::string& filename);
+	void LoadEffect(const std::string& filename);
 
 	// メンバ変数
 	std::vector<std::string> m_LoadFileName;
