@@ -208,10 +208,10 @@ HRESULT CGame::Init(void)
     if (myid == net->GetIdx())
     {
         // 車の生成
-        //CreateCar();
+        CreateCar();
 
         // 警察の生成
-        //CreatePolice();
+        CreatePolice();
     }
 
     if (m_pGoalManager == nullptr)
@@ -425,7 +425,7 @@ void CGame::Update(void)
     }
 
     // 各マネージャー更新
-
+    CPoliceManager::GetInstance()->Update();
     CPoliceAIManager::GetInstance()->Update();
     CInspectionManager::GetInstance()->Update();
 
@@ -597,7 +597,7 @@ void CGame::CreateSinglePlayer(void)
     CPlayer* pPlayer = CPlayer::Create(SET_PLAYER_POS,
         VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());
     pPlayer->SetType(CPlayer::TYPE::TYPE_ACTIVE);
-    //pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
+    pPlayer->SetType(CPlayer::TYPE::TYPE_GAMESTARTOK);
 }
 
 //===================================================

@@ -77,6 +77,7 @@ public:	// 誰でもアクセス可能
 
 	void CalWorldMtx();
 	void Quaternion();
+	void DrawCheck();
 
 protected:
 	void DrawOnry();
