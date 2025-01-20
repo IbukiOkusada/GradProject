@@ -291,6 +291,8 @@
     <ClCompile Include="code\player_result.cpp" />
     <ClCompile Include="code\robot.cpp" />
     <ClCompile Include="code\robot_manager.cpp" />
+    <ClCompile Include="code\signboard.cpp" />
+    <ClCompile Include="code\trashcan.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\add_police.h" />
@@ -433,6 +435,8 @@
     <ClInclude Include="code\player_result.h" />
     <ClInclude Include="code\robot.h" />
     <ClInclude Include="code\robot_manager.h" />
+    <ClInclude Include="code\signboard.h" />
+    <ClInclude Include="code\trashcan.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="code\shader\aberration.fx">

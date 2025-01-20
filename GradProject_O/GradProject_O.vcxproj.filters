@@ -199,6 +199,12 @@
     <Filter Include="UI\pause">
       <UniqueIdentifier>{b0fa8825-0e48-47e8-a671-f386537f6527}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gimmick\trashcan">
+      <UniqueIdentifier>{017c0b7b-b378-4e81-a3c3-5b0b1517c155}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="gimmick\signboard">
+      <UniqueIdentifier>{b26118c8-43aa-43a3-9587-f5f06d0fa87a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -587,6 +593,12 @@
     </ClCompile>
     <ClCompile Include="code\pause.cpp">
       <Filter>UI\pause</Filter>
+    </ClCompile>
+    <ClCompile Include="code\trashcan.cpp">
+      <Filter>gimmick\trashcan</Filter>
+    </ClCompile>
+    <ClCompile Include="code\signboard.cpp">
+      <Filter>gimmick\signboard</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1009,6 +1021,12 @@
     </ClInclude>
     <ClInclude Include="code\pause.h">
       <Filter>UI\pause</Filter>
+    </ClInclude>
+    <ClInclude Include="code\trashcan.h">
+      <Filter>gimmick\trashcan</Filter>
+    </ClInclude>
+    <ClInclude Include="code\signboard.h">
+      <Filter>gimmick\signboard</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,6 +9,8 @@
 #include "gimmick_guardrail.h"
 #include "gimmick_policestation.h"
 #include "bridge.h"
+#include "signboard.h"
+#include "trashcan.h"
 
 Clist<CGimmick*> CGimmick::m_List = {};
 
@@ -91,6 +93,14 @@ CGimmick* CGimmick::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const
 
 	case TYPE::TYPE_BRIDGE:
 		pGimmick = CBridge::Create(pos, rot, scale, 600.0f, 600.0f);
+		break;
+	
+	case TYPE::TYPE_SIGNBOARD:
+		pGimmick = CGimmickSignBoard::Create(pos, rot, scale);
+		break;
+	
+	case TYPE::TYPE_TEASHCAN:
+		pGimmick = CGimmickTrashCan::Create(pos, rot, scale);
 		break;
 	}
 
