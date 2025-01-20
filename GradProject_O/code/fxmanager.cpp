@@ -16,7 +16,7 @@
 namespace
 {
 	const char* EFFECT_FX = "code\\shader\\draw.fx";	// シェーダーのエフェクトファイル
-	const D3DXCOLOR LIGHT_COLOR = D3DXVECTOR4(0.5f, 0.5f, 0.6f, 1.0f);
+	const D3DXCOLOR LIGHT_COLOR = D3DXVECTOR4(0.6f, 0.6f, 0.7f, 1.0f);
 	const D3DXVECTOR4 LIGHT_VEC = D3DXVECTOR4(-0.5f, -0.87f, 0.05f, 0.0f);
 }
 //************************************************************
