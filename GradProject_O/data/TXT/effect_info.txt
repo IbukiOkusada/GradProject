@@ -32,6 +32,7 @@ EFFECT_FILENAME = data\EFFEKSEER\turn_right.efkefc	# [21]
 EFFECT_FILENAME = data\EFFEKSEER\0_signage.efkefc	# [22]
 EFFECT_FILENAME = data\EFFEKSEER\0_stop.efkefc	# [23]
 EFFECT_FILENAME = data\EFFEKSEER\0_curve.efkefc	# [24]
-EFFECT_FILENAME = data\EFFEKSEER\0_no_more_sweet.efkefc	# [25]
+EFFECT_FILENAME = data\EFFEKSEER\0_curve_turnleft.efkefc	# [25]
+EFFECT_FILENAME = data\EFFEKSEER\0_no_more_sweet.efkefc	# [26]
 
 END_SCRIPT
