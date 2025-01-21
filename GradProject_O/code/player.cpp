@@ -969,6 +969,7 @@ bool CPlayer::CollisionField(void)
 		// “¹Šm”F
 		CMeshField* pRoad = listRoad->Get(i);	// æ“ª‚ðŽæ“¾
 		if (pRoad == nullptr) { continue; }
+		if (!pRoad->IsCollision()) { continue; }
 
 		D3DXVECTOR3 pVtx[4] = {};
 		D3DXVECTOR3 pos = pRoad->GetPosition();

@@ -24,7 +24,7 @@ CMeshField::CMeshField()
 	}
 
 	m_List->Regist(this);
-	m_bHot = false;
+	m_bCollision = true;
 	m_tex = D3DXVECTOR2(0.0f, 0.0f);
 	m_texmove = D3DXVECTOR2(0.0f, 0.0f);
 }
