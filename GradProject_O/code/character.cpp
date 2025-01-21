@@ -22,9 +22,9 @@ CCharacter::CCharacter()
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_scale = VECTOR3_ONE;
-	m_ParentMtx = NULL;
-	m_pMotion = NULL;
-	m_ppParts = NULL;
+	m_ParentMtx = nullptr;
+	m_pMotion = nullptr;
+	m_ppParts = nullptr;
 
 	//ワールドマトリックスの初期化
 	/*D3DXMatrixIdentity(&m_mtxWorld);*/
@@ -71,25 +71,25 @@ HRESULT CCharacter::Init(const char* pFileName)
 void CCharacter::Uninit(void)
 {
 	// モーション情報の終了
-	if (m_pMotion != NULL)
+	if (m_pMotion != nullptr)
 	{
 		m_pMotion->Uninit();
 		delete m_pMotion;
-		m_pMotion = NULL;
+		m_pMotion = nullptr;
 	}
 
 	// パーツの終了
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
 			// 終了処理
 			m_ppParts[nCnt]->Uninit();
-			m_ppParts[nCnt] = NULL;	// 使用していない状態にする
+			m_ppParts[nCnt] = nullptr;	// 使用していない状態にする
 		}
 
 		delete[] m_ppParts;	// ポインタの開放
-		m_ppParts = NULL;	// 使用していない状態にする
+		m_ppParts = nullptr;	// 使用していない状態にする
 	}
 
 	delete this;
@@ -103,7 +103,7 @@ void CCharacter::Update(void)
 	// マトリックス設定
 	SetMtx();
 
-	if (m_pMotion != NULL)
+	if (m_pMotion != nullptr)
 	{// モーションを使用している場合
 		m_pMotion->Update();
 	}
@@ -126,7 +126,7 @@ void CCharacter::OpenFile(const char *pFileData)
 
 	pFile = fopen(pFileData, "r");
 
-	if (pFile != NULL)
+	if (pFile != nullptr)
 	{//ファイルが開けた場合
 		char aStr[256];
 
@@ -180,7 +180,7 @@ void CCharacter::LoadFile(FILE *pFile)
 
 			for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 			{
-				m_ppParts[nCnt] = NULL;
+				m_ppParts[nCnt] = nullptr;
 			}
 
 			//ファイル名取得
@@ -193,13 +193,13 @@ void CCharacter::LoadFile(FILE *pFile)
 		else if (strcmp(&aStr[0], "MOTIONSET") == 0)
 		{//モーション情報の場合
 
-			if (m_pMotion == NULL)
+			if (m_pMotion == nullptr)
 			{// モーションが確保されていない場合
 				m_pMotion = DEBUG_NEW CMotion;
 				m_pMotion->SetModel(m_ppParts, m_nNumParts);
 			}
 
-			if (m_pMotion != NULL)
+			if (m_pMotion != nullptr)
 			{// 使用されている場合
 				m_pMotion->LoadMotionData(pFile);
 			}
@@ -290,7 +290,7 @@ void CCharacter::LoadSetData(FILE *pFile)
 					fscanf(pFile, "%f", &Key.fPosZ);	//z座標読み込み
 
 					// 初期情報を設定
-					if (m_ppParts[nCntParts] != NULL)
+					if (m_ppParts[nCntParts] != nullptr)
 					{// 使用されている場合
 						m_ppParts[nCntParts]->SetPosOrigin(D3DXVECTOR3(Key.fPosX, Key.fPosY, Key.fPosZ));
 					}
@@ -303,7 +303,7 @@ void CCharacter::LoadSetData(FILE *pFile)
 					fscanf(pFile, "%f", &Key.fRotZ);	//z座標読み込み
 
 					// 初期情報を設定
-					if (m_ppParts[nCntParts] != NULL)
+					if (m_ppParts[nCntParts] != nullptr)
 					{// 使用されている場合
 						m_ppParts[nCntParts]->SetRotation(D3DXVECTOR3(Key.fRotX, Key.fRotY, Key.fRotZ));
 					}
@@ -322,7 +322,7 @@ void CCharacter::LoadSetData(FILE *pFile)
 
 					if (nIdxParent >= 0 && nIdxParent <= m_nNumParts)
 					{// パーツ総数の範囲内の場合
-						if (m_ppParts[nIdxParent] != NULL && m_ppParts[nCntParts] != NULL)
+						if (m_ppParts[nIdxParent] != nullptr && m_ppParts[nCntParts] != nullptr)
 						{// 親も自分自身も使用している場合
 							m_ppParts[nCntParts]->SetParent(m_ppParts[nIdxParent]->GetMtx());
 						}
@@ -353,19 +353,19 @@ void CCharacter::LoadSetData(FILE *pFile)
 //==========================================================
 CCharacter *CCharacter::Create(const char* pFileName)
 {
-	CCharacter *pCharacter = NULL;
+	CCharacter *pCharacter = nullptr;
 
 	// キャラクターの生成
 	pCharacter = DEBUG_NEW CCharacter;
 
-	if (pCharacter != NULL)
+	if (pCharacter != nullptr)
 	{// 生成できた場合
 		// 初期化処理
 		pCharacter->Init(pFileName);
 	}
 	else
 	{// 生成に失敗した場合
-		return NULL;
+		return nullptr;
 	}
 
 	return pCharacter;
@@ -376,12 +376,12 @@ CCharacter *CCharacter::Create(const char* pFileName)
 //==========================================================
 CCharacter *CCharacter::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char* pFileName)
 {
-	CCharacter *pCharacter = NULL;
+	CCharacter *pCharacter = nullptr;
 
 	// オブジェクト2Dの生成
 	pCharacter = DEBUG_NEW CCharacter;
 
-	if (pCharacter != NULL)
+	if (pCharacter != nullptr)
 	{// 生成できた場合
 		// 初期化処理
 		pCharacter->Init(pFileName);
@@ -394,7 +394,7 @@ CCharacter *CCharacter::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, const char* pFi
 	}
 	else
 	{// 生成に失敗した場合
-		return NULL;
+		return nullptr;
 	}
 
 	return pCharacter;
@@ -444,7 +444,7 @@ CModel *CCharacter::GetParts(int nIdx)
 	{// 範囲内
 		return m_ppParts[nIdx];
 	}
-	return NULL;
+	return nullptr;
 }
 
 //==========================================================
@@ -452,7 +452,7 @@ CModel *CCharacter::GetParts(int nIdx)
 //==========================================================
 void CCharacter::SetDraw(bool bDraw)
 {
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
@@ -467,7 +467,7 @@ void CCharacter::SetDraw(bool bDraw)
 //==========================================================
 void CCharacter::SetDrawshader(bool bUse)
 {
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
@@ -482,7 +482,7 @@ void CCharacter::SetDrawshader(bool bUse)
 //==========================================================
 void CCharacter::SetShadow(bool bShadow)
 {
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
@@ -498,7 +498,7 @@ void CCharacter::SetShadow(bool bShadow)
 //==========================================================
 void CCharacter::SetCharaMtx(void)
 {
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
@@ -520,7 +520,7 @@ void CCharacter::SetChangeMatCol(const D3DXCOLOR& col)
 	mat.Power = (float)col;
 	mat.Specular = col;
 
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
@@ -535,7 +535,7 @@ void CCharacter::SetChangeMatCol(const D3DXCOLOR& col)
 //==========================================================
 void CCharacter::SetChangeMat(const bool bChange)
 {
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
@@ -552,7 +552,7 @@ void CCharacter::SetScale(const D3DXVECTOR3& scale)
 {
 	m_scale = scale;
 	
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
@@ -574,7 +574,7 @@ void CCharacter::SetScale(const D3DXVECTOR3& scale)
 
 void CCharacter::SetColMulti(const D3DXCOLOR& col)
 {
-	if (m_ppParts != NULL)
+	if (m_ppParts != nullptr)
 	{// 使用していた場合
 		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
 		{
@@ -608,7 +608,7 @@ void CCharacter::SetMtx()
 	D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);
 	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);
 
-	if (m_ParentMtx != NULL)
+	if (m_ParentMtx != nullptr)
 	{// 覚えている場合
 		mtxParent = *m_ParentMtx;
 
