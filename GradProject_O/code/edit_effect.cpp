@@ -181,7 +181,8 @@ void CEdit_Effect::ClickCheck()
 	}
 
 	m_pSelect = nullptr;
-
+	/*D3DXVECTOR3 vecRay = 
+	float length;*/
 	for (int i = 0; i < pList->GetNum(); i++)
 	{
 		CEffectEffekseer* pGimmick = pList->Get(i);
@@ -223,12 +224,12 @@ bool CEdit_Effect::CursorCollision(CEffectEffekseer* pEffect)
 	D3DXVECTOR3 pos = pEffect->GetPosition();
 	D3DXVECTOR3 rot = pEffect->GetRotation();
 	D3DXVECTOR3 vtxmax, vtxmin;
-	vtxmax.x = pEffect->GetScale() * 2.0f;
-	vtxmax.y = pEffect->GetScale() * 2.0f;
-	vtxmax.z = pEffect->GetScale() * 2.0f;
-	vtxmin.x = pEffect->GetScale() * 2.0f;
-	vtxmin.y = pEffect->GetScale() * 2.0f;
-	vtxmin.z = pEffect->GetScale() * 2.0f;
+	vtxmax.x = pEffect->GetScale() * 1.0f;
+	vtxmax.y = pEffect->GetScale() * 1.0f;
+	vtxmax.z = pEffect->GetScale() * 1.0f;
+	vtxmin.x = pEffect->GetScale() * 1.0f;
+	vtxmin.y = pEffect->GetScale() * 1.0f;
+	vtxmin.z = pEffect->GetScale() * 1.0f;
 	D3DXVECTOR3 touchpos = VECTOR3_ZERO;
 	D3DXVECTOR3 origin = pMouse->GetRayInfo().origin;
 	D3DXVECTOR3 vec = pMouse->GetRayInfo().vec;

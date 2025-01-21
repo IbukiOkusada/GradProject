@@ -29,7 +29,10 @@ public:	// 誰でもアクセス可能な定義
 		TYPE_CURVE_LEFT,		// 左カーブ表示
 		TYPE_NOMORE,			// 甘味禁止
 		TYPE_CROSS,				// 交差点
-		TYPE_LINE,			// 横断歩道
+		TYPE_LINE,				// 横断歩道
+		TYPE_ELECT,				// 電気
+		TYPE_GRAfFFITI,			// グラフィティ
+		TYPE_SPARK,				// 火花
 		TYPE_MAX
 	}TYPE;
 
