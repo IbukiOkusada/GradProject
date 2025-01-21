@@ -27,6 +27,8 @@ public:
 		TYPE_GUARDRAIL,			// ガードレール
 		TYPE_POLICESTATION,		// 警察署
 		TYPE_BRIDGE,			// はね橋
+		TYPE_SIGNBOARD,			// 看板
+		TYPE_TEASHCAN,			// ゴミ箱
 		TYPE_MAX
 	};
 

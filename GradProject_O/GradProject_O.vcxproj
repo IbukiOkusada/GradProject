@@ -261,6 +261,7 @@
     <ClCompile Include="code\ranking.cpp" />
     <ClCompile Include="code\renderer.cpp" />
     <ClCompile Include="code\result.cpp" />
+    <ClCompile Include="code\river.cpp" />
     <ClCompile Include="code\road_manager.cpp" />
     <ClCompile Include="code\sample\sample.cpp" />
     <ClCompile Include="code\sample\sample_manager.cpp" />
@@ -291,6 +292,8 @@
     <ClCompile Include="code\player_result.cpp" />
     <ClCompile Include="code\robot.cpp" />
     <ClCompile Include="code\robot_manager.cpp" />
+    <ClCompile Include="code\signboard.cpp" />
+    <ClCompile Include="code\trashcan.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\add_police.h" />
@@ -399,6 +402,7 @@
     <ClInclude Include="code\ranking.h" />
     <ClInclude Include="code\renderer.h" />
     <ClInclude Include="code\result.h" />
+    <ClInclude Include="code\river.h" />
     <ClInclude Include="code\road_manager.h" />
     <ClInclude Include="code\sample\sample.h" />
     <ClInclude Include="code\sample\sample_manager.h" />
@@ -433,6 +437,8 @@
     <ClInclude Include="code\player_result.h" />
     <ClInclude Include="code\robot.h" />
     <ClInclude Include="code\robot_manager.h" />
+    <ClInclude Include="code\signboard.h" />
+    <ClInclude Include="code\trashcan.h" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="code\shader\aberration.fx">

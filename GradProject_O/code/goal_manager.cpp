@@ -37,7 +37,7 @@ CGoalManager::CGoalManager()
 	m_pInstance = this;
 	m_InfoList.clear();
 	m_List.Clear();
-	m_nOldIdx = 0;
+	m_nOldIdx = 9;
 	m_nNumCreate = 0;
 	m_nNextIdx = 0;
 	m_nNowIdx = 0;
