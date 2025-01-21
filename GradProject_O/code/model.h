@@ -64,6 +64,7 @@ public:	// 誰でもアクセス可能
 	float GetShadowHeight() { return m_fShadowHeight; }
 	void SetColAdd(const D3DXCOLOR& col) { m_AddCol = col; }
 	void SetColMulti(const D3DXCOLOR& col) { m_ColMulti = col; }
+	void SetEdit(bool bUse = false) { m_bEdit = bUse; }
 
 private:	// 自分だけがアクセス可能
 
@@ -71,6 +72,7 @@ private:	// 自分だけがアクセス可能
 	int m_nIdxModel;			// モデル番号
 	bool m_bChangeCol;			// 色変更をするかどうか
 	bool m_bDraw;
+	bool m_bEdit;				// エディット扱い
 	D3DMATERIAL9 m_ChangeMat;
 	D3DXVECTOR3 m_pos;			// 位置
 	D3DXVECTOR3 m_posOrigin;	// 初期位置

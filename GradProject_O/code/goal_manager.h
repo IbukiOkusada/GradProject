@@ -44,6 +44,7 @@ public:
 
 	// ê›íËån
 	void SetNetId(int nIdx) { m_nNetId = nIdx; }
+	void ResetGoal() { m_pGoal = nullptr; }
 
 private:
 

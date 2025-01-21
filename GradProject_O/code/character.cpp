@@ -463,6 +463,21 @@ void CCharacter::SetDraw(bool bDraw)
 }
 
 //==========================================================
+// shaderï`âÊÇ©î€Ç©
+//==========================================================
+void CCharacter::SetDrawshader(bool bUse)
+{
+	if (m_ppParts != NULL)
+	{// égópÇµÇƒÇ¢ÇΩèÍçá
+		for (int nCnt = 0; nCnt < m_nNumParts; nCnt++)
+		{
+			// èIóπèàóù
+			m_ppParts[nCnt]->SetEdit(bUse);
+		}
+	}
+}
+
+//==========================================================
 // âeê›íË
 //==========================================================
 void CCharacter::SetShadow(bool bShadow)
