@@ -5,65 +5,80 @@
 //
 //===============================================
 #include "game.h"
+
+// system
 #include "manager.h"
 #include "renderer.h"
-#include "sound.h"
-#include "camera.h"
-#include "light.h"
-#include "texture.h"
-#include "Xfile.h"
-#include "input.h"
-#include "fade.h"
-#include "result.h"
+#include "magic_enum/magic_enum.hpp"
 #include "debugproc.h"
-#include "time.h"
-#include "tcp_client.h"
-#include <thread>
-#include "protocol_online.h"
-#include "object2D.h"
-#include <assert.h>
-#include "ranking.h"
-#include "input_gamepad.h"
-#include "input_keyboard.h"
-#include "player.h"
-#include "meshfield.h"
-#include "road.h"
-#include "road_manager.h"
-#include "car.h"
-#include "police.h"
-#include "car_manager.h"
-#include "goal.h"
-#include "edit_manager.h"
-#include "map_obstacle.h"
-#include "map_manager.h"
-#include "speedmeter.h"
-#include "meter.h"
-#include "camera_manager.h"
-#include "deliverystatus.h"
-#include "player_manager.h"
-#include "camera_action.h"
-#include "camera_manager.h"
-#include "timer.h"
-#include "gimmick_firehydrant.h"
-#include "navi.h"
-#include "bridge.h"
-#include "gimmick_policestation.h"
-#include "gimmick_guardrail.h"
-#include "goal_manager.h"
-#include "police_manager.h"
-#include "police_AI_manager.h"
+#include "deltatime.h"
 #include "objectsound.h"
 #include "scrollText2D.h"
-#include "radio.h"
 #include "fog.h"
-#include "inspection_manager.h"
-#include "deltatime.h"
-#include "multi_result_manager.h"
-#include "meshdome.h"
-#include "robot.h"
+
+// input
+#include "input.h"
+#include "input_keyboard.h"
+#include "input_gamepad.h"
+
+// edit
+#include "edit_manager.h"
+
+// camera
+#include "camera.h"
+#include "camera_action.h"
+#include "camera_manager.h"
+
+// map
 #include "robot_manager.h"
+#include "robot.h"
+#include "road_manager.h"
+#include "road.h"
+#include "goal_manager.h"
+#include "river.h"
+
+// enemy
+#include "car_manager.h"
+#include "car.h"
+#include "police_manager.h"
+#include "police_AI_manager.h"
+#include "police.h"
+
+// scene
+#include "result.h"
+#include "multi_result_manager.h"
+
+// ui
 #include "pause.h"
-#include "magic_enum/magic_enum.hpp"
+#include "timer.h"
+#include "navi.h"
+#include "meter.h"
+#include "speedmeter.h"
+#include "deliverystatus.h"
+
+// object
+#include "fade.h"
+#include "time.h"
+#include "meshfield.h"
+#include "meshdome.h"
+#include "meshwall.h"
+
+// player
+#include "player.h"
+#include "radio.h"
+
+#include "goal.h"
+#include "map_obstacle.h"
+#include "map_manager.h"
+#include "player_manager.h"
+
+// gimmick
+#include "inspection_manager.h"
+#include "gimmick_firehydrant.h"
+#include "gimmick_policestation.h"
+#include "gimmick_guardrail.h"
+#include "bridge.h"
+
 // ネットワーク
 #include "network.h"
 
@@ -180,8 +195,15 @@ HRESULT CGame::Init(void)
     // 左側
     CMeshField::Create(D3DXVECTOR3(-750.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 500.0f, 500.0f, "data\\TEXTURE\\field001.jpg", 26, 32);
 
+    // 川
+    CRiver::Create(D3DXVECTOR3(13250.0f, -600.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), D3DXVECTOR2(500.0f, 1000.0f), D3DXVECTOR2(-0.0001f, -0.00125f), 2, 16);
+
+    // 川淵の壁
+    CMeshWall::Create(D3DXVECTOR3(12250.0f, -600.0f, 3000.0f), D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f), 1000.0f, 300.0f, "data\\TEXTURE\\field001.jpg", 16, 1);
+    CMeshWall::Create(D3DXVECTOR3(14250.0f, -600.0f, 3000.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f), 1000.0f, 300.0f, "data\\TEXTURE\\field001.jpg", 16, 1);
+
     // 空生成
-    //m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
+    m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
     auto net = CNetWork::GetInstance();
 
@@ -190,7 +212,6 @@ HRESULT CGame::Init(void)
 
     // プレイヤー生成
     (this->*(m_CreatePlayerFunc[net->GetState()]))();
-
 
     CMeter::Create();
     //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);

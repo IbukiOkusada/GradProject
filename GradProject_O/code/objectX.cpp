@@ -683,10 +683,11 @@ D3DXVECTOR3& CObjectX::GetVtxMin(void)
 void CObjectX::DrawCheck()
 {
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
+	float maxlen = Game::DOME_LENGTH * 0.5f;
 
 	if (!pCamera->GetAction()->IsFinish())
 	{
-		return;
+		maxlen = Game::DOME_LENGTH;
 	}
 
 	if (CEditManager::GetInstance() != nullptr)
@@ -717,8 +718,8 @@ void CObjectX::DrawCheck()
 	float f = 0.5f * (m_scale.x + m_scale.z);
 
 	// 画面外なら出さない
-	if (pos.x < 0.0f - (SCREEN_WIDTH * 0.3f * f) || pos.x > SCREEN_WIDTH + (SCREEN_WIDTH * 0.3f * f) ||
-		pos.y < 0.0f - (SCREEN_HEIGHT * 0.3f * m_scale.y) || pos.y > SCREEN_HEIGHT + (SCREEN_HEIGHT * 0.3f * m_scale.y) ||
+	if (pos.x < 0.0f - (SCREEN_WIDTH * 0.025f * f) || pos.x > SCREEN_WIDTH + (SCREEN_WIDTH * 0.025f * f) ||
+		pos.y < 0.0f - (SCREEN_HEIGHT * 0.025f * m_scale.y) || pos.y > SCREEN_HEIGHT + (SCREEN_HEIGHT * 0.025f * m_scale.y) ||
 		pos.z >= 1.0f) {
 
 		// 色を透明に近づける
@@ -742,9 +743,24 @@ void CObjectX::DrawCheck()
 	// 距離を取る
 	{
 		D3DXVECTOR3 lenpos = pCamera->GetPositionR() - m_pos;
-		if (D3DXVec3Length(&lenpos) >= Game::DOME_LENGTH * 0.5f)
+		if (D3DXVec3Length(&lenpos) >= maxlen)
 		{
-			SetDraw(false);
+			// 色を透明に近づける
+			D3DXCOLOR col = GetColMulti();
+
+			if (col.a > 0.0f)
+			{
+				col.a -= 0.2f;
+
+				if (col.a <= 0.0f)
+				{
+					col.a = 0.0f;
+					SetDraw(false);
+				}
+			}
+
+			SetColMulti(col);
+
 			return;
 		}
 	}
