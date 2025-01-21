@@ -17,7 +17,7 @@
 namespace
 {
 	const float ROTATE = (D3DX_PI * 2.0f) * 5.0f;	// ‰ñ“]—Ê
-	const D3DXVECTOR3 THROW_SCALE = D3DXVECTOR3(3.0f, 3.0f, 3.0f);
+	const D3DXVECTOR3 THROW_SCALE = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 	const float HEIGHT = 1200.0f;
 }
 

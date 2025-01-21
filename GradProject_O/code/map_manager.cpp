@@ -82,6 +82,7 @@ CMapManager* CMapManager::m_pInstance = nullptr;
 CMapManager::CMapManager()
 {
 	m_LoadFileName.clear();
+	m_robotInfo.clear();
 }
 
 //==========================================================
@@ -261,7 +262,7 @@ void CMapManager::LoadGoal(const std::string& filename)
 }
 
 //===============================================
-// モデル名ファイル読み込み
+// ロボット読み込み
 //===============================================
 void CMapManager::LoadRobot(const std::string& filename)
 {
@@ -287,6 +288,8 @@ void CMapManager::LoadRobot(const std::string& filename)
 
 	// ファイルを閉じる
 	File.close();
+
+	m_robotInfo = roaddata;
 }
 
 //===============================================
@@ -378,7 +381,7 @@ void CMapManager::LoadGimmick(const std::string& filename)
 }
 
 //===============================================
-// ギミック読み込み
+// エフェクト読み込み
 //===============================================
 void CMapManager::LoadEffect(const std::string& filename)
 {

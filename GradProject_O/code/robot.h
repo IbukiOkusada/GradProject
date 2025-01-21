@@ -12,6 +12,7 @@
 #include "player.h"
 #include <list>
 #include "task.h"
+#include "effekseerControl.h"
 
 // 前方宣言
 class CCharacter;
@@ -119,6 +120,7 @@ private:	// 自分だけがアクセス可能
 	SInfo m_Info;				// 自分自身の情報
 	CRobot* m_pPrev;			// 前のオブジェクトへのポインタ
 	CRobot* m_pNext;			// 次のオブジェクトへのポインタ
+	CEffekseer::CEffectData* m_pDust;
 
 	D3DXVECTOR3 m_PosTarget[2];
 

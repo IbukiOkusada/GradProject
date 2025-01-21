@@ -46,9 +46,6 @@
     <Filter Include="system">
       <UniqueIdentifier>{b2e2dcab-1893-4564-9453-368a540129a8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="object\manager">
-      <UniqueIdentifier>{53843a85-f005-4601-926a-6a1333a5eeb2}</UniqueIdentifier>
-    </Filter>
     <Filter Include="object\2D">
       <UniqueIdentifier>{9350c904-eb90-4f51-bc9a-d4ea7e5eca4d}</UniqueIdentifier>
     </Filter>
@@ -207,6 +204,9 @@
     </Filter>
     <Filter Include="gimmick\signboard">
       <UniqueIdentifier>{b26118c8-43aa-43a3-9587-f5f06d0fa87a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="object\manager">
+      <UniqueIdentifier>{53843a85-f005-4601-926a-6a1333a5eeb2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

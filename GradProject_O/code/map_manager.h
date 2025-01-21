@@ -8,6 +8,7 @@
 #define _MAP_MANAGER_H_	// 二重インクルード防止用マクロを定義
 
 #include "list_manager.h"
+#include "robot.h"
 
 // 前方宣言
 class CMap;
@@ -31,6 +32,7 @@ public:
 	static CMapManager* GetInstance(void);
 	static void Release(void);
 	std::vector<std::string>& GetFileNameList() { return m_LoadFileName; }
+	std::vector<CRobot::SInfo>& GetRobotInfo() { return m_robotInfo; }
 
 private:	// 自分だけがアクセス可能
 
@@ -45,6 +47,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	std::vector<std::string> m_LoadFileName;
+	std::vector<CRobot::SInfo> m_robotInfo;
 	static CMapManager* m_pInstance;
 };
 

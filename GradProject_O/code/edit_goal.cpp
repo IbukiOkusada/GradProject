@@ -74,6 +74,8 @@ HRESULT CEdit_Goal::Init(void)
 		CGoal::Create(it.pos, it.fRange, it.fLimit, i);
 	}
 
+	mgr->ResetGoal();
+
 	return S_OK;
 }
 

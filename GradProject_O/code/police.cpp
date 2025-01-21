@@ -203,9 +203,9 @@ void CPolice::Update(void)
 
 			if (m_pShaderLight != nullptr)
 			{
-				if (m_pShaderLight->intensity < 3.0f)
+				if (m_pShaderLight->intensity < 1.0f)
 				{
-					m_pShaderLight->intensity += 3.0f * 0.1f;
+					m_pShaderLight->intensity += 1.0f * 0.1f;
 				}
 			}
 
@@ -220,7 +220,7 @@ void CPolice::Update(void)
 
 			if (m_pShaderLight != nullptr)
 			{
-				m_pShaderLight->intensity -= 3.0f * 0.1f;
+				m_pShaderLight->intensity -= 1.0f * 0.1f;
 				if (m_pShaderLight->intensity <= 0.0f)
 				{
 					CShaderLight::Delete(m_pShaderLight);
@@ -235,7 +235,7 @@ void CPolice::Update(void)
 
 		if (m_pShaderLight != nullptr)
 		{
-			m_pShaderLight->intensity -= 3.0f * 0.1f;
+			m_pShaderLight->intensity -= 2.0f * 0.1f;
 			if (m_pShaderLight->intensity <= 0.0f)
 			{
 				CShaderLight::Delete(m_pShaderLight);
