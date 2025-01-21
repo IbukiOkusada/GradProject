@@ -35,10 +35,12 @@ public:		// 誰でもアクセス可能
 	float GetWidth(void) { return m_fWidth; }
 	float GetHeight(void) { return m_fHeight; }
 	static Clist<CMeshField*>* GetList() { return m_List; }
+	bool IsCollision() { return m_bCollision; }
 
 	// メンバ関数(設定)
 	void SetSize(float fWidth, float fHeight);
 	void SetTexMove(D3DXVECTOR2 texmove) { m_texmove = texmove; }
+	void SetCollision(bool bHit = true) { m_bCollision = bHit; }
 
 private:	// 自分だけがアクセス可能
 
@@ -50,7 +52,7 @@ private:	// 自分だけがアクセス可能
 	D3DXVECTOR2 m_tex;	// テクスチャ座標
 	float m_fWidth;			// 幅
 	float m_fHeight;		// 高さ
-	bool m_bHot;			// 暑い状態か否か
+	bool m_bCollision;			// 暑い状態か否か
 	static Clist<CMeshField*>* m_List;
 };
 
