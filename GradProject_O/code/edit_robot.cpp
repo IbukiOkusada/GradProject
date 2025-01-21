@@ -15,6 +15,7 @@
 #include "robot_manager.h"
 #include "effect3D.h"
 #include "convenience.h"
+#include "map_manager.h"
 
 namespace
 {
@@ -23,7 +24,7 @@ namespace
 	const float CHANGESIZE = 50.0f;
 	const float MAX_SIZE = 1500.0f;
 	const float MIN_SIZE = 250.0f;
-	const float DEFAULT_DISTANCE = 1000;  // デフォルトの長さ
+	const float DEFAULT_DISTANCE = 500.0f;  // デフォルトの長さ
 }
 
 //==========================================================
@@ -63,9 +64,18 @@ HRESULT CEdit_Robot::Init(void)
 	{
 		CRobot* pNext = pTop->GetNext();
 
-		pTop->SetState(CRobot::STATE_NONE);
+		pTop->Uninit();
 
 		pTop = pNext;
+	}
+
+	auto info = CMapManager::GetInstance()->GetRobotInfo();
+
+	for (const auto& it : info)
+	{
+		CRobot* pRobot = CRobot::Create(it.pos, it.rot, it.fDistance);
+		pRobot->SetState(CRobot::STATE::STATE_NONE);
+		pRobot->Update();
 	}
 
 	return S_OK;

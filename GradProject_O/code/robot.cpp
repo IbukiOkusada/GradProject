@@ -21,7 +21,7 @@
 namespace
 {
 	const float WALK_MOVE_MAG = 10.0f;
-	const float AVOID_MOVE_MAG = 70.0f;
+	const float AVOID_MOVE_MAG = 40.0f;
 	const float AVOID_ROT = 0.25f;
 	const float ROT_INERTIA = 10.0f;
 	const float AVOID_COLLISION = 800.0f;
@@ -38,8 +38,10 @@ CRobot::CRobot()
 	m_pNext = nullptr;
 	m_pPrev = nullptr;
 	m_pCharacter = nullptr;
+	m_pDust = nullptr;
 	m_PosTarget[0] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_PosTarget[1] = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Info = SInfo();
 
 	CRobotManager::GetInstance()->ListIn(this);
 }
@@ -79,6 +81,7 @@ HRESULT CRobot::Init(const D3DXVECTOR3& rot)
 	m_Info.move.x = -sinf(rot.y) * WALK_MOVE_MAG;
 	m_Info.move.z = -cosf(rot.y) * WALK_MOVE_MAG;
 
+	m_pDust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 100.0f, true, false);
 	m_Info.state = STATE_WALK;
 
 	return S_OK;
@@ -90,6 +93,7 @@ HRESULT CRobot::Init(const D3DXVECTOR3& rot)
 void CRobot::Uninit(void)
 {
 	SAFE_UNINIT(m_pCharacter)
+	SAFE_DELETE(m_pDust)
 	CRobotManager::GetInstance()->ListOut(this);
 
 	Release();
@@ -143,6 +147,11 @@ void CRobot::Update(void)
 	{
 		m_pCharacter->Update();
 	}
+
+	if (m_pDust != nullptr)
+	{
+		m_pDust->m_pos = m_Info.pos;
+	}
 }
 
 //==========================================================
@@ -191,6 +200,7 @@ void CRobot::SetPosition(const D3DXVECTOR3& pos)
 void CRobot::SetRotation(const D3DXVECTOR3& rot)
 {
 	m_Info.rot = rot;
+	Adjust(&m_Info.rot);
 
 	if (m_pCharacter != nullptr)
 	{
@@ -330,6 +340,7 @@ void CRobot::Walk()
 	m_Info.pos += m_Info.move;
 
 	m_Info.rot.y += (m_Info.rotDest.y - m_Info.rot.y) / ROT_INERTIA;
+	Adjust(&m_Info.rot.y);
 
 	if (TergetReach() == true)
 	{
@@ -345,6 +356,7 @@ void CRobot::Walk()
 		// 対角線の角度を算出
 		m_Info.rotDest.y = atan2f(m_Info.pos.x - m_PosTarget[m_Info.nTargetID].x,
 			m_Info.pos.z - m_PosTarget[m_Info.nTargetID].z);
+		Adjust(&m_Info.rotDest.y);
 
 		m_Info.move.x = -sinf(m_Info.rotDest.y) * WALK_MOVE_MAG;
 		m_Info.move.z = -cosf(m_Info.rotDest.y) * WALK_MOVE_MAG;
@@ -358,6 +370,7 @@ void CRobot::Avoid()
 {
 	m_Info.pos += m_Info.move;
 	m_Info.rot.y += (m_Info.rotDest.y - m_Info.rot.y) / 4.0f;
+	Adjust(&m_Info.rot.y);
 
 	m_Info.move.x = m_Info.move.x - m_Info.move.x / 12.0f;
 	m_Info.move.z = m_Info.move.z - m_Info.move.z / 12.0f;
@@ -385,6 +398,8 @@ void CRobot::AvoidCollision(D3DXVECTOR3 pos, const float CollisionDistance)
 //===============================================
 bool CRobot::CollisionObjX()
 {
+	/*if (CEditManager::GetInstance() != nullptr)*/ { return false; }
+
 	auto mgr = CObjectX::GetList();
 	for (int i = 0; i < mgr->GetNum(); i++)
 	{// 使用されていない状態まで
@@ -414,6 +429,7 @@ void CRobot::SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// 対象物との角度を算出	
 	m_Info.rotDest.y = atan2f(m_Info.pos.x - pos.x, m_Info.pos.z - pos.z);
+	Adjust(&m_Info.rotDest.y);
 	D3DXVECTOR3 rotCal = VECTOR3_ZERO;
 
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
@@ -433,6 +449,7 @@ void CRobot::SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	}
 
 	rotCal.y = m_Info.rotDest.y - rot.y;
+	Adjust(&rotCal.y);
 
 	// プレイヤーの向いている方向によって回避方向を変える
 	if (rotCal.y < 0.0f)
@@ -461,6 +478,7 @@ void CRobot::SetWalk()
 
 	m_Info.rotDest.y = atan2f(m_Info.pos.x - m_PosTarget[m_Info.nTargetID].x,
 		m_Info.pos.z - m_PosTarget[m_Info.nTargetID].z);
+	Adjust(&m_Info.rotDest.y);
 
 	m_Info.move.x = -sinf(m_Info.rotDest.y) * WALK_MOVE_MAG;
 	m_Info.move.z = -cosf(m_Info.rotDest.y) * WALK_MOVE_MAG;
