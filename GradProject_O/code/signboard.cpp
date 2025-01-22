@@ -23,7 +23,7 @@ namespace
 	// ƒtƒ@ƒCƒ‹–¼
 	const float RANGE_WIDTH = SCREEN_WIDTH * 0.1f;
 	const float RANGE_HEIGHT = SCREEN_HEIGHT * 0.1f;
-	const char* FILENAME = "data\\MODEL\\map\\sample_trash.x";
+	const char* FILENAME = "data\\MODEL\\map\\sign_no_parking.x";
 }
 
 //==========================================================

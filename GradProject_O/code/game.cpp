@@ -257,9 +257,6 @@ HRESULT CGame::Init(void)
         m_pGameTimer = CTimer::Create();
     }
 
-
-    //CRobot* pRobot = CRobot::Create(D3DXVECTOR3(-5000.0f, 0.0f, 0.0f), D3DXVECTOR3(0.0f, D3DX_PI / 2, 0.0f), 1000.0f);
-
     m_pPause = CPause::Create();
 
   /*  pFog = DEBUG_NEW CFog;
@@ -572,6 +569,8 @@ bool CGame::StartDirection(void)
 //===================================================
 void CGame::End_Success()
 {
+    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+    
     if (m_GameState != STATE_SUCCESS)
     {
         SetGameState(STATE::STATE_SUCCESS);
@@ -579,11 +578,15 @@ void CGame::End_Success()
         m_pEndText->PushBackString("配達完了");
         m_pEndText->SetEnableScroll(true);
         m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\OPED35.wav", 0);
+        CManager::GetInstance()->SetDeliveryStatus(pPlayer->GetNumDeliverStatus());
+        CManager::GetInstance()->SetLife(pPlayer->GetLife());
     }
  
 }
 void CGame::End_Fail()
 {
+    CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+    
     if (m_GameState != STATE_FAIL)
     {
         SetGameState(STATE::STATE_FAIL);
@@ -591,6 +594,8 @@ void CGame::End_Fail()
         m_pEndText->PushBackString("配達失敗");
         m_pEndText->SetEnableScroll(true);
         m_pEndSound = CMasterSound::CObjectSound::Create("data\\SE\\f_jingle.wav", 0);
+        CManager::GetInstance()->SetDeliveryStatus(pPlayer->GetNumDeliverStatus());
+        CManager::GetInstance()->SetLife(pPlayer->GetLife());
     }
 }
 
