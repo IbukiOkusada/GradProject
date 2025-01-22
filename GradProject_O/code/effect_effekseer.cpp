@@ -24,6 +24,8 @@ namespace {
 		"data\\EFFEKSEER\\0_electric.efkefc",
 		"data\\EFFEKSEER\\0_graffiti.efkefc",
 		"data\\EFFEKSEER\\0_spark.efkefc",
+		"data\\EFFEKSEER\\0_caution.efkefc",
+		"data\\EFFEKSEER\\0_fire.efkefc",
 	};
 }
 
