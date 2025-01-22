@@ -68,6 +68,7 @@ HRESULT CPause::Init(void)
 	m_pPauseFrame->SetSize(WIDTH_FRAME, HEIGHT_FRAME);
 	m_pPauseFrame->SetVtx();
 	m_pSE = CMasterSound::CObjectSound::Create("data\\SE\\pi.wav", 0);
+	m_pSE->Stop();
 	for (int i = 0; i < CPause::TYPE_MAX; i++)
 	{
 		m_pPauseButton[i] = CObject2D::Create(POS_BUTTON[i], D3DXVECTOR3(0.0f, 0.0f, 0.0f), 7);
