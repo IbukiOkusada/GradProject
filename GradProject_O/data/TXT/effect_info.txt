@@ -31,5 +31,13 @@ EFFECT_FILENAME = data\EFFEKSEER\turn_left.efkefc	# [20]
 EFFECT_FILENAME = data\EFFEKSEER\turn_right.efkefc	# [21]
 EFFECT_FILENAME = data\EFFEKSEER\0_signage.efkefc	# [22]
 EFFECT_FILENAME = data\EFFEKSEER\0_stop.efkefc	# [23]
+EFFECT_FILENAME = data\EFFEKSEER\0_curve.efkefc	# [24]
+EFFECT_FILENAME = data\EFFEKSEER\0_curve_turnleft.efkefc	# [25]
+EFFECT_FILENAME = data\EFFEKSEER\0_no_more_sweet.efkefc	# [26]
+EFFECT_FILENAME = data\EFFEKSEER\0_crossing.efkefc	# [27]
+EFFECT_FILENAME = data\EFFEKSEER\0_line.efkefc	# [28]
+EFFECT_FILENAME = data\EFFEKSEER\0_electric.efkefc	# [29]
+EFFECT_FILENAME = data\EFFEKSEER\0_graffiti.efkefc	# [30]
+EFFECT_FILENAME = data\EFFEKSEER\0_spark.efkefc	# [31]
 
 END_SCRIPT

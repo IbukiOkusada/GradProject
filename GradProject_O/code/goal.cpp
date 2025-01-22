@@ -29,7 +29,10 @@
 
 namespace
 {
-	const D3DXVECTOR3 SCALE = D3DXVECTOR3(2.0f, 2.0f, 2.0f);
+	const D3DXVECTOR3 SCALE = D3DXVECTOR3(3.0f, 3.0f, 3.0f);
+
+	const int SET_COL_MAX = (50);				// 設定する色の最大値（100 = 1.0）
+	const float SET_FLOAT_COL = (100.0f);		// 色のintの値をfloatに直す用
 }
 
 //==========================================================
@@ -84,9 +87,21 @@ HRESULT CGoal::Init(void)
 	m_People.setpos;
 	m_People.setpos.x += sinf(range) * 800.0f;
 	m_People.setpos.z += cosf(range) * 800.0f;
-	m_People.pChara = CCharacter::Create(m_People.setpos + m_Info.pos, VECTOR3_ZERO, "data\\TXT\\motion_kidsboy.txt");
+	m_People.pChara = CCharacter::Create(m_People.setpos + m_Info.pos, VECTOR3_ZERO, "data\\TXT\\motion_mob.txt");
 	m_People.pChara->SetScale(SCALE);
 	m_People.pChara->SetMtx();
+	// 車体の色をランダムに
+	float fColR = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
+	float fColG = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
+	float fColB = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
+
+	for (int i = 0; i < m_People.pChara->GetNumParts() - 1; i++)
+	{
+		m_People.pChara->GetParts(i)->SetColMulti(D3DXCOLOR(fColR, fColR, fColR, 1.0f));
+	}
+
+	m_People.pChara->SetDrawshader(false);
+
 	D3DXVECTOR3 rot = VECTOR3_ZERO;
 	rot.y = atan2f(m_People.pChara->GetPosition().x - m_Info.pos.x, m_People.pChara->GetPosition().z - m_Info.pos.z);
 	m_People.pChara->SetRotation(rot);
@@ -216,8 +231,8 @@ void CGoal::Update(void)
 	// 到着
 	if (m_pBaggage == nullptr) { return; }
 	if (m_pBaggage->GetState() == CBaggage::STATE::STATE_THROW) { return; }
-	m_pBaggage->GetObj()->SetParent(m_People.pChara->GetParts(6)->GetMtx());
-	m_People.pChara->GetMotion()->BlendSet(4);
+	m_pBaggage->GetObj()->SetParent(m_People.pChara->GetParts(8)->GetMtx());
+	m_People.pChara->GetMotion()->BlendSet(2);
 	m_pBaggage->SetThrowScale(m_People.pChara->GetScale());
 	m_pFont->SetEnableScroll(false);
 	m_pFont->DeleteStringAll();
@@ -320,9 +335,9 @@ void CGoal::SetEnd(int nId)
 	// カメラアクション入れる
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
 	m_bEnd = true;
-	m_pBaggage = pPlayer->ThrowBaggage(m_People.pChara->GetParts(6)->GetMtxPos());
+	m_pBaggage = pPlayer->ThrowBaggage(m_People.pChara->GetParts(8)->GetMtxPos());
 	pPlayer->AddDeliveryCount();
-	m_People.pChara->GetMotion()->BlendSet(3);
+	m_People.pChara->GetMotion()->BlendSet(1);
 
 	if (pPlayer->GetType() == CPlayer::TYPE::TYPE_RECV)
 	{

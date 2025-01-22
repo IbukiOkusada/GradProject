@@ -16,6 +16,14 @@ namespace {
 	const std::string EFFECTNAMEPATH[CEffectEffekseer::TYPE_MAX] = {	// エフェクトのパス
 		"data\\EFFEKSEER\\0_signage.efkefc",
 		"data\\EFFEKSEER\\0_stop.efkefc",
+		"data\\EFFEKSEER\\0_curve.efkefc",
+		"data\\EFFEKSEER\\0_curve_turnleft.efkefc",
+		"data\\EFFEKSEER\\0_no_more_sweet.efkefc",
+		"data\\EFFEKSEER\\0_crossing.efkefc",
+		"data\\EFFEKSEER\\0_line.efkefc",
+		"data\\EFFEKSEER\\0_electric.efkefc",
+		"data\\EFFEKSEER\\0_graffiti.efkefc",
+		"data\\EFFEKSEER\\0_spark.efkefc",
 	};
 }
 
