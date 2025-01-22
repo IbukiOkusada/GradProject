@@ -39,5 +39,7 @@ EFFECT_FILENAME = data\EFFEKSEER\0_line.efkefc	# [28]
 EFFECT_FILENAME = data\EFFEKSEER\0_electric.efkefc	# [29]
 EFFECT_FILENAME = data\EFFEKSEER\0_graffiti.efkefc	# [30]
 EFFECT_FILENAME = data\EFFEKSEER\0_spark.efkefc	# [31]
+EFFECT_FILENAME = data\EFFEKSEER\0_caution.efkefc	# [32]
+EFFECT_FILENAME = data\EFFEKSEER\0_fire.efkefc	# [33]
 
 END_SCRIPT
