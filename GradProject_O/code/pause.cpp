@@ -30,7 +30,7 @@ namespace
 		D3DXVECTOR3(985.0f, 215.0f, 0.0f),
 		D3DXVECTOR3(985.0f, 270.0f, 0.0f),
 	};
-
+	const D3DXVECTOR3 OFFSET_OUT = D3DXVECTOR3(+600.0f, 0.0f, 0.0f);//アニメーションの待機位置
 	const char* TEXTURENAMEFRAME = "data\\TEXTURE\\pause\\pause_0.png";
 	const char* TEXTURENAMEBUTTON[CPause::TYPE_MAX] = {	// テクスチャ名
 			"data\\TEXTURE\\pause\\pause_1.png",
@@ -62,12 +62,12 @@ CPause::~CPause()
 HRESULT CPause::Init(void)
 {
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();
-	
+	m_Offset = VECTOR3_ZERO;
 	m_pPauseFrame = CObject2D::Create(POS_FRAME, D3DXVECTOR3(0.0f, 0.0f, 0.0f), 7);
 	m_pPauseFrame->BindTexture(pTexture->Regist(TEXTURENAMEFRAME));
 	m_pPauseFrame->SetSize(WIDTH_FRAME, HEIGHT_FRAME);
 	m_pPauseFrame->SetVtx();
-
+	m_pSE = CMasterSound::CObjectSound::Create("data\\SE\\pi.wav", 0);
 	for (int i = 0; i < CPause::TYPE_MAX; i++)
 	{
 		m_pPauseButton[i] = CObject2D::Create(POS_BUTTON[i], D3DXVECTOR3(0.0f, 0.0f, 0.0f), 7);
@@ -84,6 +84,7 @@ HRESULT CPause::Init(void)
 //==========================================================
 void CPause::Uninit(void)
 {
+	SAFE_UNINIT_DELETE(m_pSE);
 	Release();
 }
 
@@ -95,24 +96,37 @@ void CPause::Update(void)
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();
 
-	m_pPauseFrame->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+	//m_pPauseFrame->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+	m_pPauseFrame->SetPosition(POS_FRAME + m_Offset);
+	m_pPauseFrame->SetVtx();
 	for (int i = 0; i < CPause::TYPE_MAX; i++)
 	{
-		m_pPauseButton[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		//m_pPauseButton[i]->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		m_pPauseButton[i]->SetPosition(POS_BUTTON[i] + m_Offset);
+		m_pPauseButton[i]->SetVtx();
 	}
-
+	if (m_bPause)
+	{
+		m_Offset *= 0.85f;
+	}
+	else
+	{
+		m_Offset += (OFFSET_OUT-m_Offset)*0.15f;
+	}
 	if (!m_bPause) { return; }
 
 	if (pInputKey->GetTrigger(DIK_UPARROW) == true || pInputKey->GetTrigger(DIK_W) == true || pInputPad->GetTrigger(CInputPad::BUTTON_UP, 0))
 	{//上キー(↑キー)が押された
 		m_nNumSelect += TYPE_MAX - 1;
 		m_fTimerColor = COLORTIMER_INI;
+		m_pSE->Play();
 	}
 
 	if (pInputKey->GetTrigger(DIK_DOWNARROW) == true || pInputKey->GetTrigger(DIK_S) == true || pInputPad->GetTrigger(CInputPad::BUTTON_DOWN, 0))
 	{//下キー(↓キー)が押された
 		m_nNumSelect++;
 		m_fTimerColor = COLORTIMER_INI;
+		m_pSE->Play();
 	}
 
 	m_pPauseFrame->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));

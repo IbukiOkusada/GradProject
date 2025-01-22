@@ -9,7 +9,7 @@
 
 #include "task.h"
 #include "object2D.h"
-
+#include "objectsound.h"
 //==========================================================
 // サンプルのクラス定義
 //==========================================================
@@ -55,6 +55,8 @@ private:	// 自分だけがアクセス可能
 	int m_nNumSelect;
 	float m_fTimerColor;
 	bool m_bPause;
+	D3DXVECTOR3 m_Offset;
+	CMasterSound::CObjectSound* m_pSE;
 };
 
 #endif
