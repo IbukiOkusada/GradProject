@@ -76,7 +76,7 @@ std::string WideToMultiByte(const std::wstring& rSrcStr)
 //=============================================
 // Œü‚«•â³(‘S‘Ì)
 //=============================================
-void Adjust(D3DXVECTOR3* rot)
+void correction::Adjust(D3DXVECTOR3* rot)
 {
 	// ˆê‚Â‚¸‚Â•â³
 	Adjust(&rot->x);
@@ -87,7 +87,7 @@ void Adjust(D3DXVECTOR3* rot)
 //=============================================
 // Œü‚«•â³(’P‘Ì)
 //=============================================
-void Adjust(float* rot)
+void correction::Adjust(float* rot)
 {
 	// -3.14‚©‚ç3.14‚ÌŠÔ‚É•â³
 	while (1)

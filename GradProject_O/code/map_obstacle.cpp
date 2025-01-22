@@ -138,6 +138,7 @@ void CMapObstacle::SetPosition(const D3DXVECTOR3& pos)
 void CMapObstacle::SetRotation(const D3DXVECTOR3& rot)
 {
 	m_Info.rot = rot;
+	correction::Adjust(&m_Info.rot);
 
 	// オブジェクトの更新
 	if (m_pObj != nullptr)

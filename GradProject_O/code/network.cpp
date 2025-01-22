@@ -574,7 +574,7 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 	}
 
 	// À•WÝ’è
-	Adjust(&rot);
+	correction::Adjust(&rot);
 	pPlayer->SetRecvPosition(pos);
 	pPlayer->SetRecvRotation(rot);
 }
@@ -880,7 +880,7 @@ void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
-	Adjust(&rot);
+	correction::Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
@@ -935,7 +935,7 @@ void CNetWork::RecvPdPos(int* pByte, const int nId, const char* pRecvData)
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
-	Adjust(&rot);
+	correction::Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
@@ -992,7 +992,7 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 	if (pCar->GetType() == CCar::TYPE::TYPE_ACTIVE) { return; }
 
 	pCar->SetRecvPosition(pos);
-	Adjust(&rot);
+	correction::Adjust(&rot);
 	pCar->SetRecvRotation(rot);
 }
 
