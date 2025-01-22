@@ -27,23 +27,23 @@ namespace
 {
 	const float CHASE_SECURE = (400.0f);			// 追跡確保距離
 	const float CHASE_CROSS = (750.0f);				// すれ違い判定距離
-	const float CHASE_NEAR = (4000.0f);				// 近距離判定
-	const float CHASE_FAR = (6000.0f);				// 遠距離判定
+	const float CHASE_NEAR = (3000.0f);				// 近距離判定
+	const float CHASE_FAR = (5000.0f);				// 遠距離判定
 
 	const float	LIFE_DAMAGE = (80.0f);				// 傷判定のダメージ
 	const float	LIFE_SMOKE = (50.0f);				// 煙判定のダメージ
 
-	const float	LEVEL_MAX = (30.0f);				// 警戒度の最大値
+	const float	LEVEL_MAX = (50.0f);				// 警戒度の最大値
 	const float	LEVEL_MIN = (0.0f);					// 警戒度の最小値
 	const float	LEVEL_NORMAL = (-0.1f);				// 通常時の警戒度減少量
 	const float	LEVEL_NEAR = (0.3f);				// 近距離時の警戒度増加量
 	const float	LEVEL_FAR = (0.2f);					// 遠距離時の警戒度増加量
-	const float	LEVEL_NITRO = (1.0f);				// ニトロ時の警戒度増加量
+	const float	LEVEL_NITRO = (1.5f);				// ニトロ時の警戒度増加量
 	const float	LEVEL_DAMAGE = (0.3f);				// 傷状態時の警戒度増加量
 	const float	LEVEL_SMOKE = (0.5f);				// 煙状態時の警戒度増加量
 
 	const int CHASE_TIME = (300);					// 追跡時間
-	const int NUM_BACKUP = (2);						// 追跡時間
+	const int NUM_BACKUP = (2);						// 増援の数
 
 	const float CHASE_SPEED[CPoliceAI::TYPE_MAX] =
 	{
@@ -55,10 +55,10 @@ namespace
 
 	const float ATTACK_SPEED[CPoliceAI::TYPE_MAX] =
 	{
-		(2.0f),		// デフォルトの攻撃時の加速
-		(2.0f),		// 通常タイプの攻撃時の加速
-		(3.0f),		// 回り込みタイプの攻撃時の加速
-		(4.0f),		// 緩やかタイプの攻撃時の加速
+		(1.5f),		// デフォルトの攻撃時の加速
+		(1.5f),		// 通常タイプの攻撃時の加速
+		(2.5f),		// 回り込みタイプの攻撃時の加速
+		(3.0f),		// 緩やかタイプの攻撃時の加速
 	};
 
 	const float SEARCH_TIME[CPoliceAI::TYPE_MAX] =
@@ -71,10 +71,10 @@ namespace
 
 	const int CALL_TIME[CPoliceAI::TYPE_MAX] =
 	{
-		(300),		// デフォルトの応援呼び出し時間
-		(300),		// 通常タイプの応援呼び出し時間
-		(210),		// 回り込みタイプの応援呼び出し時間
-		(360),		// 緩やかタイプの応援呼び出し時間
+		(450),		// デフォルトの応援呼び出し時間
+		(450),		// 通常タイプの応援呼び出し時間
+		(420),		// 回り込みタイプの応援呼び出し時間
+		(480),		// 緩やかタイプの応援呼び出し時間
 	};
 }
 
@@ -333,7 +333,11 @@ void CPoliceAI::EndChase(void)
 
 	// 応援要請をリセット
 	m_nCntCall = 0;
-	m_bCall = false;
+	if (m_bCall)
+	{
+		m_bCall = false;
+		CPoliceAIManager::GetInstance()->SetCall(false);
+	}
 
 	// 警戒状態に
 	m_pPolice->SetState(CPolice::STATE::STATE_SEARCH);
@@ -437,10 +441,11 @@ void CPoliceAI::CallBackup(void)
 	}
 
 	// 応援要請をしているなら抜ける
-	if (m_bCall) { return; }
+	if (m_bCall || CPoliceAIManager::GetInstance()->GetCall()) { return; }
 
 	// 応援要請の判定をtrueにする
 	m_bCall = true;
+	CPoliceAIManager::GetInstance()->SetCall(true);
 
 	// ギミックのリスト
 	auto listGimmick = CGimmick::GetList();
