@@ -33,6 +33,8 @@ public:	// 誰でもアクセス可能な定義
 		TYPE_ELECT,				// 電気
 		TYPE_GRAfFFITI,			// グラフィティ
 		TYPE_SPARK,				// 火花
+		TYPE_CAUTION,			// 火花
+		TYPE_FIRE,				// 火花
 		TYPE_MAX
 	}TYPE;
 

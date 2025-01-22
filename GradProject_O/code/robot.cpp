@@ -200,7 +200,7 @@ void CRobot::SetPosition(const D3DXVECTOR3& pos)
 void CRobot::SetRotation(const D3DXVECTOR3& rot)
 {
 	m_Info.rot = rot;
-	Adjust(&m_Info.rot);
+	correction::Adjust(&m_Info.rot);
 
 	if (m_pCharacter != nullptr)
 	{
@@ -340,7 +340,7 @@ void CRobot::Walk()
 	m_Info.pos += m_Info.move;
 
 	m_Info.rot.y += (m_Info.rotDest.y - m_Info.rot.y) / ROT_INERTIA;
-	Adjust(&m_Info.rot.y);
+	correction::Adjust(&m_Info.rot.y);
 
 	if (TergetReach() == true)
 	{
@@ -356,7 +356,7 @@ void CRobot::Walk()
 		// 対角線の角度を算出
 		m_Info.rotDest.y = atan2f(m_Info.pos.x - m_PosTarget[m_Info.nTargetID].x,
 			m_Info.pos.z - m_PosTarget[m_Info.nTargetID].z);
-		Adjust(&m_Info.rotDest.y);
+		correction::Adjust(&m_Info.rotDest.y);
 
 		m_Info.move.x = -sinf(m_Info.rotDest.y) * WALK_MOVE_MAG;
 		m_Info.move.z = -cosf(m_Info.rotDest.y) * WALK_MOVE_MAG;
@@ -370,7 +370,7 @@ void CRobot::Avoid()
 {
 	m_Info.pos += m_Info.move;
 	m_Info.rot.y += (m_Info.rotDest.y - m_Info.rot.y) / 4.0f;
-	Adjust(&m_Info.rot.y);
+	correction::Adjust(&m_Info.rot.y);
 
 	m_Info.move.x = m_Info.move.x - m_Info.move.x / 12.0f;
 	m_Info.move.z = m_Info.move.z - m_Info.move.z / 12.0f;
@@ -429,7 +429,7 @@ void CRobot::SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 {
 	// 対象物との角度を算出	
 	m_Info.rotDest.y = atan2f(m_Info.pos.x - pos.x, m_Info.pos.z - pos.z);
-	Adjust(&m_Info.rotDest.y);
+	correction::Adjust(&m_Info.rotDest.y);
 	D3DXVECTOR3 rotCal = VECTOR3_ZERO;
 
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
@@ -449,7 +449,7 @@ void CRobot::SetAvoid(D3DXVECTOR3 pos, D3DXVECTOR3 rot)
 	}
 
 	rotCal.y = m_Info.rotDest.y - rot.y;
-	Adjust(&rotCal.y);
+	correction::Adjust(&rotCal.y);
 
 	// プレイヤーの向いている方向によって回避方向を変える
 	if (rotCal.y < 0.0f)
@@ -478,7 +478,7 @@ void CRobot::SetWalk()
 
 	m_Info.rotDest.y = atan2f(m_Info.pos.x - m_PosTarget[m_Info.nTargetID].x,
 		m_Info.pos.z - m_PosTarget[m_Info.nTargetID].z);
-	Adjust(&m_Info.rotDest.y);
+	correction::Adjust(&m_Info.rotDest.y);
 
 	m_Info.move.x = -sinf(m_Info.rotDest.y) * WALK_MOVE_MAG;
 	m_Info.move.z = -cosf(m_Info.rotDest.y) * WALK_MOVE_MAG;

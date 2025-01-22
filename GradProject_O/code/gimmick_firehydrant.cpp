@@ -140,9 +140,9 @@ void CGimmickFireHydrant::Away()
 
 	// Œü‚«XV
 	D3DXVECTOR3 rotdiff = m_TargetRot - m_pObj->GetRotation();
-	Adjust(rotdiff);
+	correction::Adjust(rotdiff);
 	D3DXVECTOR3 setrot = m_pObj->GetRotation() + rotdiff * 0.1f;
-	Adjust(setrot);
+	correction::Adjust(setrot);
 	m_pObj->SetRotation(setrot);
 }
 

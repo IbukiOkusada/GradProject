@@ -59,7 +59,7 @@ void CMeshDome::Update(void)
 void CMeshDome::Draw(void)
 {
 	D3DXVECTOR3 rot = GetRotation();
-	rot.y += 0.0001f;
+	rot.y += 0.001f;
 
 	SetRotation(rot);
 
@@ -76,7 +76,31 @@ void CMeshDome::Draw(void)
 
 	//ライティングをオンにする
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+}
 
+//==========================================================
+// 描画処理
+//==========================================================
+void CMeshDome::DrawOnShader(void)
+{
+	D3DXVECTOR3 rot = GetRotation();
+	rot.y += 0.0025f;
+
+	SetRotation(rot);
+
+	LPDIRECT3DDEVICE9 pDevice;		//デバイスへのポインタ
+
+	//デバイスの取得
+	pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+
+	//ライティングをオフにする
+	//pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+
+	// 描画
+	CObjectMesh::DrawOnShader();
+
+	//ライティングをオンにする
+	//pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
 }
 
 //==========================================================
@@ -136,7 +160,7 @@ void CMeshDome::SetVtxInfo(void)
 		m_pVtx[nCntVtx].nor = vecDir;
 
 		//色
-		m_pVtx[nCntVtx].col = D3DXCOLOR(0.5f, 0.5f, 0.5f, 1.0f);
+		m_pVtx[nCntVtx].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
 		m_pVtx[nCntVtx].tex = D3DXVECTOR2((1.0f / nNumWidth) * (nCntVtx % (nNumWidth + 1)), 1.0f -((1.0f / nNumHeight) * (nCntVtx / (nNumWidth + 1))));
 	}

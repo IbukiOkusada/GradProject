@@ -569,7 +569,7 @@ void CObjectX::SetRotation(const D3DXVECTOR3& rot)
 { 
 	m_rot = rot;
 
-	Adjust(&m_rot);
+	correction::Adjust(&m_rot);
 }
 
 //==========================================================
@@ -688,6 +688,11 @@ void CObjectX::DrawCheck()
 	if (!pCamera->GetAction()->IsFinish())
 	{
 		maxlen = Game::DOME_LENGTH;
+	}
+
+	if (CManager::GetInstance()->GetMode() != CScene::MODE::MODE_GAME)
+	{
+		maxlen *= 3.0f;
 	}
 
 	if (CEditManager::GetInstance() != nullptr)

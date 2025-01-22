@@ -98,7 +98,6 @@ void CObjectMesh::Draw(void)
 	if (m_pVtxBuff != NULL)
 	{
 		// 色設定
-		//SetSlowCol();
 
 		//ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&m_mtxWorld);
@@ -366,32 +365,7 @@ void CObjectMesh::SetRotation(const D3DXVECTOR3 rot)
 {
 	m_rot = rot;
 
-	if (m_rot.x < -D3DX_PI)
-	{// z座標角度限界
-		m_rot.x += D3DX_PI * 2;
-	}
-	else if (m_rot.x > D3DX_PI)
-	{// z座標角度限界
-		m_rot.x += -D3DX_PI * 2;
-	}
-
-	if (m_rot.y < -D3DX_PI)
-	{// z座標角度限界
-		m_rot.y += D3DX_PI * 2;
-	}
-	else if (m_rot.y > D3DX_PI)
-	{// z座標角度限界
-		m_rot.y += -D3DX_PI * 2;
-	}
-
-	if (m_rot.z < -D3DX_PI)
-	{// z座標角度限界
-		m_rot.z += D3DX_PI * 2;
-	}
-	else if (m_rot.z > D3DX_PI)
-	{// z座標角度限界
-		m_rot.z += -D3DX_PI * 2;
-	}
+	correction::Adjust(&m_rot);
 }
 
 //==========================================================

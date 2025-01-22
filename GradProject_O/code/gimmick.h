@@ -62,7 +62,7 @@ public:	// 誰でもアクセス可能
 	D3DXVECTOR3 GetVtxMax();
 	D3DXVECTOR3 GetVtxMin();
 	void SetPos(D3DXVECTOR3 pos) { m_Info.pos = pos; SetObjPos(pos); }
-	void SetRot(D3DXVECTOR3 rot) { m_Info.rot = rot; SetObjRot(rot); }
+	void SetRot(D3DXVECTOR3 rot) { m_Info.rot = rot; correction::Adjust(&m_Info.rot); SetObjRot(rot); }
 	void SetScale(D3DXVECTOR3 scale) { m_Info.scale = scale; SetObjScale(scale); }
 	static Clist<CGimmick*>* GetList() { return &m_List; }
 	SInfo& GetInfo() { return m_Info; }

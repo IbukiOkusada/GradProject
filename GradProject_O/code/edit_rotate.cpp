@@ -184,7 +184,7 @@ void CEdit_Rotate::Rotation()
 	}
 
 	m_rot = (newpos - m_Info.startpos);
-	Adjust(m_rot);
+	correction::Adjust(m_rot);
 
 	CDebugProc::GetInstance()->Print("Œü‚« [ %f, %f, %f ]\n", m_rot.x, m_rot.y, m_rot.z);
 }

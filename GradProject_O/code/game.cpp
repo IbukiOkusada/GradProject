@@ -295,7 +295,6 @@ void CGame::Uninit(void)
 
     // 解放
     SAFE_RELEASE(m_pGoalManager);
-
   
     // ネットワーク切断
     auto net = CNetWork::GetInstance();
@@ -303,6 +302,8 @@ void CGame::Uninit(void)
 
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
+    CManager::GetInstance()->GetCamera()->GetAction()->SetFinish(true);
+    CManager::GetInstance()->GetCamera()->GetAction()->SetPause(true);
 
     // エディット廃棄
     CEditManager::Release();

@@ -398,7 +398,7 @@ void CPlayer::Update(void)
 
 		rot.z += m_fTurnSpeed * 20.0f;
 		m_pObj->SetPosition(pos);
-		Adjust(&rot);
+		correction::Adjust(&rot);
 		m_pObj->SetRotation(rot);
 		m_pObj->SetShadowHeight(GetPosition().y);
 		// エフェクト
@@ -542,7 +542,7 @@ void CPlayer::Controller(void)
 	// 向き補正
 	m_Info.rot.y += m_fTurnSpeed;
 	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
-	Adjust(&m_Info.rot.y);
+	correction::Adjust(&m_Info.rot.y);
 }
 
 //===============================================
@@ -1390,10 +1390,10 @@ void CPlayer::RecvInerSet()
 	// 向き
 	{
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
-		Adjust(&diff);
+		correction::Adjust(&diff);
 		D3DXVECTOR3 rot = m_Info.rot + (diff * RECV_INER);
 		m_Info.rot = rot;
-		Adjust(&m_Info.rot);
+		correction::Adjust(&m_Info.rot);
 	}
 }
 
