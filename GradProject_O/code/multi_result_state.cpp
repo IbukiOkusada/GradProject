@@ -443,12 +443,12 @@ void CMultiResultStateEnd::Controll(CMultiResult* pResult)
 		rotdiff.x = End::ADD_ROTX - rot.x;
 		rotdiff.z = End::ADD_ROTZ - rot.z;
 		rotdiff.y = 0.0f;
-		Adjust(rotdiff);
+		correction::Adjust(&rotdiff);
 
 		rot += rotdiff * End::ROT_INER;
 
 		rot.y += End::ADD_ROTY;
-		Adjust(rot);
+		correction::Adjust(&rot);
 		pInfo[pMgr->GetNumPlayer() - 1].pPlayer->SetRotation(rot);
 	}
 }

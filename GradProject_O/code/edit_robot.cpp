@@ -410,7 +410,7 @@ void CEdit_Robot::Rotate()
 	rotate.z += (handlerotate.z * 0.1f);
 
 	// ’l•â³
-	Adjust(rotate);
+	correction::Adjust(rotate);
 
 	// ‘I‘ð‚µ‚½áŠQ•¨‚ÌŒü‚«Ý’è
 	m_pSelect->SetRotation(rotate);

@@ -21,10 +21,11 @@ public:		// 誰でもアクセス可能
 	~CMeshDome();	// デストラクタ
 
 	// メンバ関数
-	HRESULT Init(void);
-	void Uninit(void);
-	void Update(void);
-	void Draw(void);
+	HRESULT Init(void) override;
+	void Uninit(void) override;
+	void Update(void) override;
+	void Draw(void) override;
+	void DrawOnShader(void) override;
 	void SetVtxInfo(void);
 	void SetColor(float fDiff);
 	static CMeshDome *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, float fLength, float fHeight, const int nPriority = 3, const int nWidth = 1, const int nHeight = 1);

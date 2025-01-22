@@ -23,7 +23,7 @@ namespace
 	// ファイル名
 	const float RANGE_WIDTH = SCREEN_WIDTH * 0.1f;
 	const float RANGE_HEIGHT = SCREEN_HEIGHT * 0.1f;
-	const char* FILENAME = "data\\MODEL\\map\\sign_speed_limit.x";
+	const char* FILENAME = "data\\MODEL\\map\\trassh_can.x";
 }
 
 //==========================================================
@@ -141,9 +141,9 @@ void CGimmickTrashCan::Away()
 
 	// 向き更新
 	D3DXVECTOR3 rotdiff = m_TargetRot - m_pObj->GetRotation();
-	Adjust(rotdiff);
+	correction::Adjust(&rotdiff);
 	D3DXVECTOR3 setrot = m_pObj->GetRotation() + rotdiff * 0.1f;
-	Adjust(setrot);
+	correction::Adjust(&setrot);
 	m_pObj->SetRotation(setrot);
 }
 

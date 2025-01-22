@@ -22,6 +22,8 @@
 #include "camera_manager.h"
 #include "TitleBaggage.h"
 #include "debugproc.h"
+#include "game.h"
+#include "meshdome.h"
 
 //静的メンバ変数
 CPlayerTitle* CTitle::m_pPlayer = nullptr;
@@ -465,7 +467,7 @@ void CTitle::PreMove(void)
 		float fIner = 0.05f;						//慣性の動き
 
 		//調整
-		Adjust(&fDiff);
+		correction::Adjust(&fDiff);
 
 		//回転させる
 		PlayerRot += fDiff * fIner;
@@ -554,6 +556,8 @@ void CTitle::InitingP_E(void)
 	//必要なオブジェクトの生成
 	CMapManager::GetInstance()->Load();
 	m_pPlayer = CPlayerTitle::Create(PLAYER_POS, DEST_ROT, VECTOR3_ZERO, nullptr, nullptr);
+
+	CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
 	// 右側
 	CMeshField::Create(D3DXVECTOR3(27250.0f, -10.0f, 3000.0f), D3DXVECTOR3(0.0f, 0.0f, 0.0f), 1000.0f, 1000.0f, "data\\TEXTURE\\field000.jpg", 13, 16);

@@ -74,9 +74,9 @@ void CCameraAction::Update(CCamera* pCamera)
 
 		// 向き
 		D3DXVECTOR3 rotDiff = m_targetInfo.rot - rot;
-		Adjust(&rotDiff);
+		correction::Adjust(&rotDiff);
 		rot += rotDiff * multi;
-		Adjust(&rot);
+		correction::Adjust(&rot);
 
 		// 長さ
 		float lenDiff = m_targetInfo.fLength - length;
@@ -169,13 +169,13 @@ void CCameraAction::Set(CCamera* pCamera, const D3DXVECTOR3& pos, const D3DXVECT
 	m_startInfo.fLength = pCamera->GetLength();
 	m_startInfo.rot = pCamera->GetRotation();
 
-	Adjust(&m_startInfo.rot);
+	correction::Adjust(&m_startInfo.rot);
 	
 	// 目標地点の値の設定
 	m_targetInfo.pos = pos;
 	m_targetInfo.rot = rot;
 	m_targetInfo.fLength = fLength;
-	Adjust(&m_targetInfo.rot);
+	correction::Adjust(&m_targetInfo.rot);
 
 	// 時間の設定
 	m_time.fEnd = fTime;

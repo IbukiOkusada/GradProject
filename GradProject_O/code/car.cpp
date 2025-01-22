@@ -792,12 +792,12 @@ void CCar::RecvInerSet()
 	// Œü‚«
 	{
 		D3DXVECTOR3 diff = m_RecvInfo.rot - m_Info.rot;
-		Adjust(&diff);
+		correction::Adjust(&diff);
 
 		D3DXVECTOR3 rot = m_Info.rot + diff * RECV_INER;
-		Adjust(&rot);
+		correction::Adjust(&rot);
 		m_Info.rot = rot;
-		Adjust(&m_Info.rot);
+		correction::Adjust(&m_Info.rot);
 	}
 
 	CDebugProc::GetInstance()->Print(" ŽóM‚µ‚Ä‚¢‚Ü‚· %d À•W : [%f, %f, %f]\n", m_Info.nId,

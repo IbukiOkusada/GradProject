@@ -164,7 +164,7 @@ void CPlayerTitle::Update(void)
 		CPlayer::Update();
 	}
 
-	Adjust(&m_Info.rot);
+	correction::Adjust(&m_Info.rot);
 
 	//デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー座標: [ %f, %f, %f ]\n", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
@@ -270,7 +270,7 @@ void CPlayerTitle::PlayerRotSet(void)
 	float fDiff = rDestRot.y - rRot.y;	//差分
 	float fIner = 0.3f;							//慣性
 
-	Adjust(&fDiff);
+	correction::Adjust(&fDiff);
 
 	rRot.y += fDiff * fIner;
 
