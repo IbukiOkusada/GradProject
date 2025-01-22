@@ -306,6 +306,7 @@ void CGame::Uninit(void)
     // defaultカメラオン
     CManager::GetInstance()->GetCamera()->SetDraw(true);
     CManager::GetInstance()->GetCamera()->GetAction()->SetFinish(true);
+    CManager::GetInstance()->GetCamera()->GetAction()->SetPause(true);
 
     // エディット廃棄
     CEditManager::Release();

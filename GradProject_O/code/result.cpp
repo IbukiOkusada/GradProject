@@ -111,6 +111,7 @@ int CResult::m_nDeli = 0;
 float CResult::m_fTime = 0.0f;
 float CResult::m_fLife = 0.0f;
 float CResult::m_nScore = 0.0f;
+bool CResult::m_bAuto = false;
 
 //===============================================
 // コンストラクタ
@@ -382,6 +383,7 @@ void CResult::Uninit(void)
 	CRanking::SetScore(m_nScore);
 	CManager::GetInstance()->GetCamera()->SetActive(true);
 	CManager::GetInstance()->GetSound()->Stop();
+	m_bAuto = false;
 }
 
 //===============================================

@@ -97,6 +97,7 @@ private:
 	static float m_fTime;		// 残り時間
 	static float m_fLife;		// 残り体力
 	static float m_nScore;		// 総合スコア
+	static bool m_bAuto;
 	float m_RankingScore[5];	// ランキングスコア
 
 	int m_TimeObj[3];			// タイムのオブジェクトに必要な変数
