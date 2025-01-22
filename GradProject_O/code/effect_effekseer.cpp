@@ -21,6 +21,9 @@ namespace {
 		"data\\EFFEKSEER\\0_no_more_sweet.efkefc",
 		"data\\EFFEKSEER\\0_crossing.efkefc",
 		"data\\EFFEKSEER\\0_line.efkefc",
+		"data\\EFFEKSEER\\0_electric.efkefc",
+		"data\\EFFEKSEER\\0_graffiti.efkefc",
+		"data\\EFFEKSEER\\0_spark.efkefc",
 	};
 }
 
