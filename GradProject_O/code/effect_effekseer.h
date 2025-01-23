@@ -70,7 +70,7 @@ public:	// 誰でもアクセス可能
 	void SetPosition(const D3DXVECTOR3& pos) { m_Info.pos = pos; }
 
 	D3DXVECTOR3& GetRotation(void) { return m_Info.rot; }
-	void SetRotation(const D3DXVECTOR3& rot) { m_Info.rot = rot; }
+	void SetRotation(const D3DXVECTOR3& rot) { m_Info.rot = rot; correction::Adjust(&m_Info.rot); }
 
 	D3DXVECTOR3& GetMove(void) { return m_Info.move; }
 	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }
