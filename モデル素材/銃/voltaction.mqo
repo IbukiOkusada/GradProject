@@ -4,8 +4,8 @@ Format Text Ver 1.0
 Scene {
 	pos 0.0000 0.0000 6144.0000
 	lookat 0.0000 0.0000 0.0000
-	head 23.4763
-	pich -0.2008
+	head 24.7163
+	pich 0.1192
 	bank 0.0000
 	ortho 0
 	zoom2 1.2207
@@ -18,7 +18,7 @@ Scene {
 	}
 }
 Material 3 {
-	"mat1" col(0.576 0.337 0.118 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
+	"mat1" col(0.576 0.337 0.118 1.000) dif(0.800) amb(0.600) emi(0.760) spc(0.700) power(5.00)
 	"mat2" col(0.208 0.208 0.208 1.000) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 	"mat3" col(0.537 1.000 0.969 0.300) dif(0.800) amb(0.600) emi(0.000) spc(0.000) power(5.00)
 }
