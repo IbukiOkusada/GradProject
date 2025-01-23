@@ -12,6 +12,7 @@
 #include "object2D.h"
 #include "edit_manager.h"
 #include "fade.h"
+#include "game.h"
 
 //==========================================================
 // ’è”’è‹`
@@ -139,8 +140,10 @@ void CTimer::Update(void)
 #if _DEBUG
 	if (CEditManager::GetInstance() != nullptr) { return; }
 #endif // _DEBUG
-
-	CalTime();
+	if (CGame::GetInstance()->GetState() == CGame::STATE::STATE_NONE)
+	{
+		CalTime();
+	}
 
 	if (m_LimitTime < BLINKING::START)
 	{

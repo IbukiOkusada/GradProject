@@ -70,6 +70,7 @@ void CEdit_Effect::Update(void)
 {
 	CDebugProc::GetInstance()->Print(" [ エフェクト配置モード ]\n");
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
+	CInputMouse* pMouse = CInputMouse::GetInstance();
 	CEffectEffekseer* pOld = m_pSelect;
 
 	// 選択
@@ -89,6 +90,21 @@ void CEdit_Effect::Update(void)
 		Create();
 
 		CDebugProc::GetInstance()->Print("]\n");
+		return;
+	}
+
+	// 選択解除
+	if (pMouse->GetTrigger(CInputMouse::BUTTON_RBUTTON) && (!pKey->GetPress(DIK_LALT) && !pKey->GetPress(DIK_RALT)))
+	{
+		m_pSelect = nullptr;
+
+		// 矢印終了
+		if (m_pHandle != nullptr)
+		{
+			m_pHandle->Uninit();
+			m_pHandle = nullptr;
+		}
+
 		return;
 	}
 
