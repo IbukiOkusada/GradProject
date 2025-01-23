@@ -39,6 +39,9 @@ public:	// 誰でもアクセス可能
 	bool GetCall() { return m_bCall; }
 	void SetCall(bool bCall) { m_bCall = bCall; }
 
+	bool GetChase() { return m_bChase; }
+	void SetChase(bool bChase) { m_bChase = bChase; }
+
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
@@ -47,6 +50,7 @@ private:	// 自分だけがアクセス可能
 	// メンバ変数
 	bool m_bFlag;
 	bool m_bCall;
+	bool m_bChase;
 	Cmaplist<CPoliceAI*> m_maplist;
 	static CPoliceAIManager* m_pInstance;	// インスタンス
 };
