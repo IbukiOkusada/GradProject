@@ -46,5 +46,8 @@ MODEL_FILENAME = data/MODEL/map/mix_bill_03.x	# [0]和風洋風ビル
 MODEL_FILENAME = data/MODEL/map/hotel_03.x		# [0]ホテル
 MODEL_FILENAME = data/MODEL/map/cycle_03.x		# [0]サイクル
 MODEL_FILENAME = data/MODEL/map/building_cyber002.x	# [0]サイバービル
+MODEL_FILENAME = data/MODEL/map/huton.x	# [0]布団
+MODEL_FILENAME = data/MODEL/map/sword.x	# [0]剣
+MODEL_FILENAME = data/MODEL/map/voltaction.x	# [0]銃
 
 END_SCRIPT
