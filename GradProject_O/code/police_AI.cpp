@@ -25,10 +25,10 @@
 // 無名名前空間を定義
 namespace
 {
-	const float CHASE_SECURE = (400.0f);			// 追跡確保距離
+	const float CHASE_SECURE = (250.0f);			// 追跡確保距離
 	const float CHASE_CROSS = (750.0f);				// すれ違い判定距離
-	const float CHASE_NEAR = (3000.0f);				// 近距離判定
-	const float CHASE_FAR = (5000.0f);				// 遠距離判定
+	const float CHASE_NEAR = (2000.0f);				// 近距離判定
+	const float CHASE_FAR = (3500.0f);				// 遠距離判定
 
 	const float	LIFE_DAMAGE = (80.0f);				// 傷判定のダメージ
 	const float	LIFE_SMOKE = (50.0f);				// 煙判定のダメージ
@@ -47,10 +47,10 @@ namespace
 
 	const float CHASE_SPEED[CPoliceAI::TYPE_MAX] =
 	{
-		(28.0f),		// デフォルトの追跡時の加速
-		(28.0f),		// 通常タイプの追跡時の加速
-		(30.0f),		// 回り込みタイプの追跡時の加速
-		(25.0f),		// 緩やかタイプの追跡時の加速
+		(26.0f),		// デフォルトの追跡時の加速
+		(26.0f),		// 通常タイプの追跡時の加速
+		(25.0f),		// 回り込みタイプの追跡時の加速
+		(22.0f),		// 緩やかタイプの追跡時の加速
 	};
 
 	const float ATTACK_SPEED[CPoliceAI::TYPE_MAX] =
@@ -502,6 +502,16 @@ void CPoliceAI::Attack(void)
 {
 	// 攻撃インターバルを減少させる
 	nAttackTime--;
+	auto mgr = CPlayerManager::GetInstance();
+	auto list = mgr->GetList();
+	float length;
+	for (const auto& pair : *list->GetList())
+	{
+		// プレイヤー情報取得
+		CPlayer* pPlayer = pair.second;
+		D3DXVECTOR3 vecPlayer = pPlayer->GetPosition() - m_pPolice->GetPosition();		// プレイヤーと警察間のベクトル計算
+		length = D3DXVec3Length(&vecPlayer);										// 距離計算
+	}
 
 	if (m_state == STATE_ATTACK)
 	{
@@ -509,23 +519,23 @@ void CPoliceAI::Attack(void)
 		m_fChaseSpeed += ATTACK_SPEED[m_type];
 		m_pSearchTarget = nullptr;
 
-		CDebugProc::GetInstance()->Print(" 攻撃中 %d インターバル : [%d]\n", (int)m_state, nAttackTime);
+		CDebugProc::GetInstance()->Print(" 攻撃中 %d インターバル : [%d] 距離 : [%f]\n", (int)m_state, nAttackTime, length);
 	}
 	else if (m_state == STATE_PREP)
 	{
 		m_fChaseSpeed = 0.0f;
-		CDebugProc::GetInstance()->Print(" 準備中 %d インターバル : [%d]\n", (int)m_state, nAttackTime);
+		CDebugProc::GetInstance()->Print(" 準備中 %d インターバル : [%d] 距離 : [%f]\n", (int)m_state, nAttackTime, length);
 	}
 	else if (m_state == STATE_FINISH)
 	{
 		m_fChaseSpeed -= 5.0f;
-		CDebugProc::GetInstance()->Print(" 減速中 %d インターバル : [%d]\n", (int)m_state, nAttackTime);
+		CDebugProc::GetInstance()->Print(" 減速中 %d インターバル : [%d] 距離 : [%f]\n", (int)m_state, nAttackTime, length);
 	}
 	else
 	{
 		m_fChaseSpeed = CHASE_SPEED[m_type];
 
-		CDebugProc::GetInstance()->Print(" 追跡中 %d インターバル : [%d]\n", (int)m_state, nAttackTime);
+		CDebugProc::GetInstance()->Print(" 追跡中 %d インターバル : [%d] 距離 : [%f]\n", (int)m_state, nAttackTime, length);
 	}
 
 	if (nAttackTime < 0)
@@ -544,7 +554,7 @@ void CPoliceAI::Attack(void)
 			
 			if (fabs(rotView) < D3DX_PI * 0.3f)
 			{// 近距離
-				nAttackTime = 90;
+				nAttackTime = 120;
 				m_state = STATE_ATTACK;
 			}
 		}

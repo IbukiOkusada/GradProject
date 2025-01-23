@@ -317,7 +317,7 @@ void CPolice::MoveRoad()
 		}
 
 		// カーブ時の速度を設定
-		SetSpeedCurve(5.0f);
+		SetSpeedCurve(10.0f);
 
 		float length = D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition()));
 

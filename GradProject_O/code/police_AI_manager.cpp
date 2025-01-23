@@ -76,6 +76,16 @@ void CPoliceAIManager::Update(void)
 		std::thread th(&CPoliceAIManager::Search, this);
 		th.detach();
 	}
+
+	m_bChase = false;
+
+	for (const auto& pair : *m_maplist.GetList())
+	{
+		if (pair.second->GetPolice()->GetChase())
+		{
+			m_bChase = true;
+		}
+	}
 }
 
 //==========================================================
