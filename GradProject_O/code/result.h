@@ -67,6 +67,7 @@ private:
 	void RankAlphaJudge(float Alpha);	// アルファ値の判定
 	void Display();						// 表示処理
 	void DisplayRanking();				// ランキングの表示処理
+	void AllDisplay();					// 全て表示処理
 	void RoadScore();					// ランキングのスコアをロード
 	void SaveScore();					// ランキングのスコアをセーブ
 	void SortScore();					// ランキングのスコアをソート
@@ -109,6 +110,7 @@ private:
 	int m_Timehid;
 	int m_Lifehid;
 	bool m_bSuccess;			// クリアしたかどうか
+	bool m_bAllDisp;			// すべて表示したかどうか
 };
 
 #endif

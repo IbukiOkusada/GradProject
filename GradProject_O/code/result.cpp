@@ -105,6 +105,7 @@ namespace
 	const int EVAL_STAR_OBJ_NUM = 5;// 星のオブジェクトの個数
 	const float ALPHA_ADD = 0.025f;
 	const D3DXCOLOR INIT_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f);
+	const D3DXCOLOR DISPLAY_COL = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 }
 // 静的メンバ変数
 int CResult::m_nDeli = 0;
@@ -125,6 +126,7 @@ CResult::CResult()
 	m_DisplayRank = 0;
 	m_Timehid = 0;
 	m_Lifehid = 0;
+	m_bAllDisp = false;
 
 	for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ; Cnt++)
 	{
@@ -216,7 +218,6 @@ HRESULT CResult::Init(void)
 
 		CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT_FAI);
 	}
-
 
 	// 今回のスコアのオブジェクトを生成
 	ScoreObjCreat();
@@ -398,12 +399,24 @@ void CResult::Update(void)
 		pPad->GetTrigger(CInputPad::BUTTON_START, 0) ||
 		pKey->GetTrigger(DIK_RETURN))
 	{
-		CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
+		if (m_bAllDisp == true)
+		{
+			CManager::GetInstance()->GetFade()->Set(CScene::MODE_TITLE);
+		}
+
+		else if (m_bAllDisp == false)
+		{
+			AllDisplay();
+			m_bAllDisp = true;
+		}
 	}
 
 	if (CManager::GetInstance()->GetFade()->GetState() == CFade::STATE_NONE)
 	{
-		Display();
+		if (m_bAllDisp == false)
+		{
+			Display();
+		}
 	}
 
 	// エディター関連
@@ -956,6 +969,8 @@ void CResult::Display()
 		break;
 
 	default:
+		m_bAllDisp = true;
+
 		break;
 	}
 
@@ -988,6 +1003,67 @@ void CResult::DisplayRanking()
 	m_pDecPointRank[m_DisplayRank]->SetCol(col);
 
 	RankAlphaJudge(col.a);
+}
+
+//===============================================
+// ランキングの表示処理
+//===============================================
+void CResult::AllDisplay()
+{
+	// スコアオブジェクト
+	for (int Cnt = 0; Cnt < SCORE_OBJ_NUM; Cnt++)
+	{
+		m_pScoreObj[Cnt]->SetCol(DISPLAY_COL);
+	}
+
+	// 配達の数字
+	m_pDeliNumber->GetObject2D()->SetCol(DISPLAY_COL);
+
+	// タイマーの数字
+	for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ - m_Timehid; Cnt++)
+	{
+		m_pTimeNumber[Cnt]->GetObject2D()->SetCol(DISPLAY_COL);
+	}
+
+	// 体力の数字
+	for (int Cnt = 0; Cnt < NUMBER::LIFE_OBJ - m_Lifehid; Cnt++)
+	{
+		m_pLifeNumber[Cnt]->GetObject2D()->SetCol(DISPLAY_COL);
+	}
+
+	// タイマーの数字
+	for (int Cnt = 0; Cnt < EVAL_STAR_OBJ_NUM; Cnt++)
+	{
+		m_pEvalStarObj[Cnt]->GetObject2D()->SetCol(DISPLAY_COL);
+		m_pEvalStarFreamObj[Cnt]->GetObject2D()->SetCol(DISPLAY_COL);
+	}
+
+	// 総合スコアの数字
+	for (int Cnt = 0; Cnt < NUMBER::EVAL_OBJ; Cnt++)
+	{
+		m_pEvalNumber[Cnt]->GetObject2D()->SetCol(DISPLAY_COL);
+	}
+	// 小数点
+	m_pDecPointEval->SetCol(DISPLAY_COL);
+
+	for (int Cnt = 0; Cnt < NUMBER::RANKING_OBJ * RANKING_OBJ_NUM; Cnt++)
+	{
+		// ランキングスコアの表示
+		m_pRankingNumber[Cnt]->GetObject2D()->SetCol(DISPLAY_COL);
+	}
+
+	for (int Cnt = 0; Cnt < STAR_OBJ_NUM * RANKING_OBJ_NUM; Cnt++)
+	{
+		// 星の表示
+		m_pStarObj[Cnt]->SetCol(DISPLAY_COL);
+		m_pStarFreamObj[Cnt]->SetCol(DISPLAY_COL);
+	}
+
+	for (int Cnt = 0; Cnt < RANKING_OBJ_NUM; Cnt++)
+	{
+		// ランキングの小数点
+		m_pDecPointRank[Cnt]->SetCol(DISPLAY_COL);
+	}
 }
 
 //===============================================
