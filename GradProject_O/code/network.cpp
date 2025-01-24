@@ -376,7 +376,6 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 	m_nSledCnt++;
 	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXCOLOR col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
-	CFade* pFade = CManager::GetInstance()->GetFade();
 
 	if (*pRecvByte <= 0)
 	{
@@ -671,9 +670,11 @@ void CNetWork::RecvNextGoal(int* pByte, const int nId, const char* pRecvData)
 	memcpy(&goalid, &pRecvData[byte], sizeof(int));
 	*pByte += sizeof(int);
 
-	if (goalid >= 0 && goalid <= CGoalManager::GetInstance()->GetInfoList()->size())
+	CGoalManager* pMgr = CGoalManager::GetInstance();
+
+	if (goalid >= 0 && goalid <= static_cast<int>(pMgr->GetInfoList()->size()))
 	{
-		CGoalManager::GetInstance()->SetNetId(goalid);
+		pMgr->SetNetId(goalid);
 	}
 }
 
@@ -1054,61 +1055,61 @@ void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 {
 	return;
-	int byte = 0;
+	//int byte = 0;
 
-	// 車のIDを得る
-	int carid = -1;
-	memcpy(&carid, &pRecvData[byte], sizeof(int));
-	*pByte += sizeof(int);
-	byte += sizeof(int);
+	//// 車のIDを得る
+	//int carid = -1;
+	//memcpy(&carid, &pRecvData[byte], sizeof(int));
+	//*pByte += sizeof(int);
+	//byte += sizeof(int);
 
-	// プレイヤーIDを取得
-	int plyid = -1;
-	memcpy(&plyid, &pRecvData[byte], sizeof(int));
-	*pByte += sizeof(int);
-	byte += sizeof(int);
+	//// プレイヤーIDを取得
+	//int plyid = -1;
+	//memcpy(&plyid, &pRecvData[byte], sizeof(int));
+	//*pByte += sizeof(int);
+	//byte += sizeof(int);
 
-	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
-	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(plyid);
+	//CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+	//CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(plyid);
 
-	// プレイヤーがいない
-	if (pPlayer == nullptr)
-	{
-		RecvJoin(pByte, nId, pRecvData);
-		return;
-	}
+	//// プレイヤーがいない
+	//if (pPlayer == nullptr)
+	//{
+	//	RecvJoin(pByte, nId, pRecvData);
+	//	return;
+	//}
 
-	// 車が存在していない
-	if (pCar == nullptr)
-	{
-		CAddPolice* pPolice = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+	//// 車が存在していない
+	//if (pCar == nullptr)
+	//{
+	//	CAddPolice* pPolice = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
 
-		if (pPolice != nullptr)
-		{
-			pPolice->SetType(CCar::TYPE::TYPE_RECV);
+	//	if (pPolice != nullptr)
+	//	{
+	//		pPolice->SetType(CCar::TYPE::TYPE_RECV);
 
-			// 応援の警察は応援を呼ばないようにする
-			pPolice->GetAi()->SetCall(true);
-		}
-			pCar = pPolice;
-	}
+	//		// 応援の警察は応援を呼ばないようにする
+	//		pPolice->GetAi()->SetCall(true);
+	//	}
+	//		pCar = pPolice;
+	//}
 
-	if (pCar == nullptr) { return; }
-	// 追跡状態にする
-	pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
+	//if (pCar == nullptr) { return; }
+	//// 追跡状態にする
+	//pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
 
-	// 自分自身
-	if (plyid == m_nMyIdx)
-	{
-		pCar->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
-		pCar->SetNextPlayer(pPlayer);
-	}
-	// それ以外
-	else
-	{
-		pCar->SetTypeNext(CCar::TYPE::TYPE_RECV);
-		pCar->SetNextPlayer(pPlayer);
-	}
+	//// 自分自身
+	//if (plyid == m_nMyIdx)
+	//{
+	//	pCar->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
+	//	pCar->SetNextPlayer(pPlayer);
+	//}
+	//// それ以外
+	//else
+	//{
+	//	pCar->SetTypeNext(CCar::TYPE::TYPE_RECV);
+	//	pCar->SetNextPlayer(pPlayer);
+	//}
 }
 
 //===================================================

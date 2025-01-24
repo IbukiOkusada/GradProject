@@ -146,8 +146,8 @@ void CObjectMesh::DrawOnShader(void)
 {
 	if (CEditManager::GetInstance() != nullptr)
 	{
-		Draw();
-		return;
+		//Draw();
+		//return;
 	}
 
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
@@ -269,19 +269,19 @@ void CObjectMesh::SetIndex(void)
 
 	for (int nCntIdx = 0; nCntIdx < m_nIndex / 2; nCntIdx++)
 	{
-		pIdx[nCntIdx * 2] = (nCntIdx + m_nNumWidth + 1)
+		pIdx[nCntIdx * 2] = static_cast<WORD>((nCntIdx + m_nNumWidth + 1)
 			- (nCntIdx % (m_nNumWidth + 2) / (m_nNumWidth + 1) * (m_nNumWidth + 2))
-			- (nCntIdx / (m_nNumWidth + 2));
-		pIdx[nCntIdx * 2 + 1] = nCntIdx
+			- (nCntIdx / (m_nNumWidth + 2)));
+		pIdx[nCntIdx * 2 + 1] = static_cast<WORD>(nCntIdx
 			+ (nCntIdx % (m_nNumWidth + 2) / (m_nNumWidth + 1) * (m_nNumWidth + 1))
-			- (nCntIdx / (m_nNumWidth + 2));
+			- (nCntIdx / (m_nNumWidth + 2)));
 
-		pIdx[nCntIdx * 2] = (nCntIdx + m_nNumWidth + 1)
+		pIdx[nCntIdx * 2] = static_cast<WORD>((nCntIdx + m_nNumWidth + 1)
 			- (nCntIdx % (m_nNumWidth + 2) / (m_nNumWidth + 1) * (m_nNumWidth + 2))
-			- (nCntIdx / (m_nNumWidth + 2));
-		pIdx[nCntIdx * 2 + 1] = nCntIdx
+			- (nCntIdx / (m_nNumWidth + 2)));
+		pIdx[nCntIdx * 2 + 1] = static_cast<WORD>(nCntIdx
 			+ (nCntIdx % (m_nNumWidth + 2) / (m_nNumWidth + 1) * (m_nNumWidth + 1))
-			- (nCntIdx / (m_nNumWidth + 2));
+			- (nCntIdx / (m_nNumWidth + 2)));
 	}
 
 	//インデックスバッファをアンロックする

@@ -207,10 +207,6 @@ void CMotion::Update(void)
 	if (m_fNowFrame >= nFrame)
 	{//現在のフレーム数が到達した場合
 
-		if (nNextkey == 3) {
-			int a = 0;
-		}
-
 		for (int nCntParts = 0; nCntParts < m_FileData.nNumParts; nCntParts++)
 		{
 			// 前回の値を取得

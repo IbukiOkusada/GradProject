@@ -34,7 +34,7 @@ int CXFile::Regist(const char* pFileName)
 	int nIdx = -1;
 
 	// 読み込まれているか確認
-	for (int i = 0; i < m_List.size(); i++)
+	for (int i = 0; i < static_cast<int>(m_List.size()); i++)
 	{
 		// 同じファイルか確認
 		if (strstr(pFileName, m_List[i]->name.c_str()) != nullptr)
@@ -176,7 +176,7 @@ HRESULT CXFile::FileLoad(int nIdx)
 //==========================================================
 void CXFile::Unload(void)
 {
-	for (int i = 0; i < m_List.size(); i++)
+	for (int i = 0; i < static_cast<int>(m_List.size()); i++)
 	{
 		auto texture = m_List[i];
 
@@ -210,7 +210,7 @@ void CXFile::Unload(void)
 //==========================================================
 CXFile::SFileData *CXFile::SetAddress(int nIdx)
 {
-	if (nIdx > m_List.size() || nIdx < 0)
+	if (nIdx > static_cast<int>(m_List.size()) || nIdx < 0)
 	{// 読み込み範囲外の場合
 		return nullptr;
 	}

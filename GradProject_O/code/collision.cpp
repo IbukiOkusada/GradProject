@@ -126,7 +126,8 @@ bool LineCrossProduct(D3DXVECTOR3 vtx1, D3DXVECTOR3 vtx2, D3DXVECTOR3* pos, D3DX
 		posCross.y = 0.0f;
 
 		//水平方向大きさ
-		fDot = D3DXVec3Dot(&-vecMove, &vecNor);
+		D3DXVECTOR3 v1 = -vecMove;
+		fDot = D3DXVec3Dot(&v1, &vecNor);
 
 		*pos = posCross + (vecMove + (vecNor * fDot));
 
@@ -148,7 +149,8 @@ bool CollidePointToOBBTrigger(D3DXVECTOR3 posO, D3DXVECTOR3 posOldO, D3DXVECTOR3
 	D3DXPLANE plane = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	int nCheckCollision = 0;
 
-	if (D3DXVec3Length(&(posO - posV)) > D3DXVec3Length(&sizeV) * 2.0f)
+	D3DXVECTOR3 v = (posO - posV);
+	if (D3DXVec3Length(&v) > D3DXVec3Length(&sizeV) * 2.0f)
 	{
 		return false;
 	}
@@ -311,7 +313,8 @@ D3DXVECTOR3 CollideOBBToPlane(D3DXVECTOR3* posOBB, D3DXVECTOR3 vecOBBAxial, D3DX
 	float lenProjection = lengthAxis(vecNorPlane, axis1, axis2, axis3);
 
 	// 線分とターゲットの位置関係を計算
-	float lenPos = D3DXVec3Dot(&(*posOBB - posPlane), &vecNorPlane);
+	D3DXVECTOR3 v1 = (*posOBB - posPlane);
+	float lenPos = D3DXVec3Dot(&v1, &vecNorPlane);
 
 	// めり込んでいる
 	if (lenProjection < fabs(lenPos))
@@ -355,7 +358,8 @@ bool CollideRayToOBB(D3DXVECTOR3* pOut, D3DXVECTOR3 posO, D3DXVECTOR3 vecO, D3DX
 		D3DXPlaneFromPointNormal(&plane, &posPlaneCenter[nCnt], &vecNorPlaneCenter);
 
 		// 衝突地点を計算
-		if (D3DXPlaneIntersectLine(&vecIntersect, &plane, &posO, &(posO + vecO)) == nullptr)
+		D3DXVECTOR3 temp = (posO + vecO);
+		if (D3DXPlaneIntersectLine(&vecIntersect, &plane, &posO, &temp) == nullptr)
 		{
 			continue;
 		}

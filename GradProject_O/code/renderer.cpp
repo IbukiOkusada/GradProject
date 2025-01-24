@@ -392,8 +392,8 @@ void CRenderer::InitMTRender()
 	LPDIRECT3DSURFACE9 pRenderDef, pZBuffDef;
 
 	// 現在の画面幅取得
-	float screen_width = SCREEN_WIDTH;
-	float screen_height = SCREEN_HEIGHT;
+	DWORD screen_width = SCREEN_WIDTH;
+	DWORD screen_height = SCREEN_HEIGHT;
 
 	// レンダリングターゲット用テクスチャの生成
 	for (int i = 0; i < 2; i++)

@@ -47,7 +47,7 @@ public:
 	void Uninit(void);
 	void Update(void);
 	void Draw(void);
-	static void SetScore(const int nScore) { m_nScore = nScore; }
+	static void SetScore(const int nScore) { m_nScore = static_cast<float>(nScore); }
 
 private:
 

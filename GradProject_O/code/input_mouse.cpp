@@ -150,11 +150,11 @@ void CInputMouse::Update(void)
 		ScreenToClient(FindWindowA(CLASS_NAME, nullptr), &m_Point);
 
 		// 座標
-		D3DXVECTOR3 vnear = D3DXVECTOR3(m_Point.x, m_Point.y, 0.0f);
-		D3DXVECTOR3 vfar = D3DXVECTOR3(m_Point.x, m_Point.y, 1.0f);
+		D3DXVECTOR3 vnear = D3DXVECTOR3(static_cast<float>(m_Point.x), static_cast<float>(m_Point.y), 0.0f);
+		D3DXVECTOR3 vfar = D3DXVECTOR3(static_cast<float>(m_Point.x), static_cast<float>(m_Point.y), 1.0f);
 
-		D3DXVec3Unproject(&m_RayInfo.origin, &vnear, &viewport, &pCam->GetMtxProjection(), &pCam->GetMtxView(), nullptr);
-		D3DXVec3Unproject(&m_RayInfo.end, &vfar, &viewport, &pCam->GetMtxProjection(), &pCam->GetMtxView(), nullptr);
+		D3DXVec3Unproject(&m_RayInfo.origin, &vnear, &viewport, pCam->GetProjectionMtx(), pCam->GetViewMtx(), nullptr);
+		D3DXVec3Unproject(&m_RayInfo.end, &vfar, &viewport, pCam->GetProjectionMtx(), pCam->GetViewMtx(), nullptr);
 
 		// 4. レイの方向を計算
 		D3DXVECTOR3 rayDir = m_RayInfo.end - m_RayInfo.origin;
@@ -162,8 +162,6 @@ void CInputMouse::Update(void)
 
 		m_RayInfo.vecold = m_RayInfo.vec;
 		m_RayInfo.vec = rayDir;
-
-		float length = LENGTH;
 
 		// ワールド座標を計算
 		m_WorldInfo.posold = m_WorldInfo.pos;

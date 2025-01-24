@@ -147,11 +147,9 @@ void CGoalManager::Uninit(void)
 //==========================================================
 void CGoalManager::Update(void)
 {
-	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer == nullptr) { return; }
-	int nNum = pPlayer->GetNumDeliverStatus();
 
 	CDebugProc::GetInstance()->Print("ゴールの生成数 [ %d ] : 現在の配置数 [ %d ], 配置の番号[ %d ]\n",m_nNumCreate, m_List.GetNum(), m_nNowIdx);
 

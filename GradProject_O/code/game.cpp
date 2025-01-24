@@ -205,7 +205,7 @@ HRESULT CGame::Init(void)
     CMeshWall::Create(D3DXVECTOR3(14250.0f, -600.0f, 3000.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f), 1000.0f, 300.0f, "data\\TEXTURE\\field001.jpg", 16, 1);
 
     // 空生成
-    m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
+    //m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
     auto net = CNetWork::GetInstance();
 
@@ -329,7 +329,6 @@ void CGame::Uninit(void)
 //===============================================
 void CGame::Update(void)
 {
-	CInputPad *pInputPad = CInputPad::GetInstance();
 	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();
 
     m_pPause->ChangePause();
@@ -516,8 +515,6 @@ void CGame::StartIntro(void)
 {
     CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
     if (pPlayer == nullptr) { return; }
-    auto& it = magic_enum::enum_name(pPlayer->GetType());
-    CDebugProc::GetInstance()->Print("プレイヤーの今の状態 %s : カメラの開始番号 [ %d ]\n", it.data(), m_nStartCameraCount);
     if (pPlayer->GetType() != CPlayer::TYPE::TYPE_GAMESTARTOK) { return; }
 
     CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
@@ -624,7 +621,6 @@ void CGame::End_MultiEnd()
 //===================================================
 void CGame::CreateSinglePlayer(void)
 {
-    auto net = CNetWork::GetInstance();
 
     CPlayer* pPlayer = CPlayer::Create(SET_PLAYER_POS,
         VECTOR3_ZERO, VECTOR3_ZERO, CNetWork::GetInstance()->GetIdx());

@@ -68,7 +68,7 @@ HRESULT CEdit_Goal::Init(void)
 	}
 
 	// ƒS[ƒ‹‚ğ‚·‚×‚Äíœ‚µ‚Ä‰ü‚ß‚Ä¶¬‚·‚é
-	for (int i = 0; i < infolist->size(); i++)
+	for (int i = 0; i < static_cast<int>(infolist->size()); i++)
 	{
 		auto it = (*infolist)[i];
 		CGoal::Create(it.pos, it.fRange, it.fLimit, i);

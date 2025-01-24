@@ -86,6 +86,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ関数
 	void SetType(TYPE type) { m_Info.Type = type; }
+	void SetEffect();
 
 	// メンバ変数
 	SInfo m_Info;	// 情報の構造体

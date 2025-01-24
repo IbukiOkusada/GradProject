@@ -38,7 +38,7 @@ namespace
 	const float LENGTH_POINT = (900.0f);		// 到達判定距離
 	const float LENGTH_LANE = (-400.0f);		// 車線の幅
 	const float FRAME_RATE_SCALER = 60.0f;		// フレームレートを考慮した速度の調整
-	const float RECV_INER = (10.0f / NetWork::SEND_MS);			// 受信したデータの慣性
+	const float RECV_INER = (10.0f / static_cast<float>(NetWork::SEND_MS));			// 受信したデータの慣性
 	const float GRAVITY = (-24.0f);				//プレイヤー重力
 
 	const int SET_COL_MAX = (100);				// 設定する色の最大値（100 = 1.0）
@@ -348,7 +348,8 @@ void CCar::MoveRoad()
 	if (m_Info.pRoadTarget == nullptr) { return; }
 
 	// 目的地への到着判定処理
-	float length = D3DXVec3Length(&(m_Info.pRoadTarget->GetPosition() - m_Info.pos));
+	D3DXVECTOR3 len = m_Info.pRoadTarget->GetPosition() - m_Info.pos;
+	float length = D3DXVec3Length(&len);
 	if (length < LENGTH_POINT)
 		ReachRoad();
 
@@ -374,7 +375,8 @@ void CCar::SearchRoad()
 	if (pRoad == nullptr) { return; }
 
 	// 距離計算用変数
-	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
+	D3DXVECTOR3 len = pRoadClose->GetPosition() - m_Info.pos;
+	float length = D3DXVec3Length(&len);
 	float lengthClose = 0.0f;
 
 	// 最寄りの道を見つける
@@ -383,7 +385,8 @@ void CCar::SearchRoad()
 		pRoad = list->Get(i);
 
 		// 距離判定処理
-		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
+		D3DXVECTOR3 lenclose = (pRoad->GetPosition() - m_Info.pos);
+		lengthClose = D3DXVec3Length(&lenclose);
 
 		if (length > lengthClose)
 		{

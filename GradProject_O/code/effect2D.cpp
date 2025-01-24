@@ -135,7 +135,6 @@ void CEffect2D::Update(void)
 CEffect2D* CEffect2D::Create(D3DXVECTOR3 pos, TYPE type)
 {
 	CEffect2D* pEffect2D = NULL;
-	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// エフェクトの生成
 	pEffect2D = DEBUG_NEW CEffect2D;
@@ -176,7 +175,6 @@ CEffect2D* CEffect2D::Create(D3DXVECTOR3 pos, TYPE type)
 CEffect2D* CEffect2D::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, float fLife, TYPE type)
 {
 	CEffect2D* pEffect2D = NULL;
-	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// エフェクトの生成
 	pEffect2D = DEBUG_NEW CEffect2D();

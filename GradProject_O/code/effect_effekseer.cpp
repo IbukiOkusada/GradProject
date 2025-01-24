@@ -6,6 +6,8 @@
 //===============================================
 #include "effect_effekseer.h"
 #include "debugproc.h"
+#include "manager.h"
+#include "renderer.h"
 
 Clist<CEffectEffekseer*> CEffectEffekseer::m_List = {};
 
@@ -27,6 +29,9 @@ namespace {
 		"data\\EFFEKSEER\\0_caution.efkefc",
 		"data\\EFFEKSEER\\0_fire.efkefc",
 	};
+
+	const float RANGE_WIDTH = SCREEN_WIDTH * 0.7f;
+	const float RANGE_HEIGHT = SCREEN_HEIGHT * 0.7f;
 }
 
 //===============================================
@@ -74,12 +79,17 @@ void CEffectEffekseer::Uninit(void)
 //===============================================
 void CEffectEffekseer::Update(void)
 {
-	m_pEffekseer->m_pos = m_Info.pos;
-	m_pEffekseer->m_rot = m_Info.rot;
-	m_pEffekseer->m_move = m_Info.move;
-	m_pEffekseer->m_Scale.X = m_Info.fScale;
-	m_pEffekseer->m_Scale.Y = m_Info.fScale;
-	m_pEffekseer->m_Scale.Z = m_Info.fScale;
+	SetEffect();
+
+	if (m_pEffekseer != nullptr)
+	{
+		m_pEffekseer->m_pos = m_Info.pos;
+		m_pEffekseer->m_rot = m_Info.rot;
+		m_pEffekseer->m_move = m_Info.move;
+		m_pEffekseer->m_Scale.X = m_Info.fScale;
+		m_pEffekseer->m_Scale.Y = m_Info.fScale;
+		m_pEffekseer->m_Scale.Z = m_Info.fScale;
+	}
 }
 
 //===============================================
@@ -88,7 +98,6 @@ void CEffectEffekseer::Update(void)
 CEffectEffekseer *CEffectEffekseer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale, TYPE type)
 {
 	CEffectEffekseer *pEffectEffekseer = nullptr;
-	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// エフェクトの生成
 	pEffectEffekseer = DEBUG_NEW CEffectEffekseer;
@@ -120,4 +129,42 @@ CEffectEffekseer *CEffectEffekseer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3D
 	}
 
 	return pEffectEffekseer;
+}
+
+//==========================================================
+// エフェクト生成
+//==========================================================
+void CEffectEffekseer::SetEffect()
+{
+
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+	D3DXMATRIX mtxProjection, mtxView, mtxWorld;
+	D3DVIEWPORT9 Viewport;
+	D3DXVECTOR3 pos = VECTOR3_ZERO;
+	D3DXVECTOR3 mypos = m_Info.pos;
+
+	// 必要な情報取得
+	pDevice->GetTransform(D3DTS_PROJECTION, &mtxProjection);
+	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
+	pDevice->GetViewport(&Viewport);
+
+	//ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&mtxWorld);
+
+	// スクリーン座標取得
+	D3DXVec3Project(&pos, &mypos, &Viewport, &mtxProjection, &mtxView, &mtxWorld);
+
+	// 画面外なら出さない
+	if (pos.x < 0.0f - RANGE_WIDTH || pos.x > SCREEN_WIDTH + RANGE_WIDTH ||
+		pos.y < 0.0f - RANGE_HEIGHT || pos.y > SCREEN_HEIGHT + RANGE_HEIGHT) {
+		SAFE_DELETE(m_pEffekseer);
+		return;
+	}
+
+	if (m_pEffekseer == nullptr)
+	{
+		m_pEffekseer = CEffekseer::GetInstance()->Create(EFFECTNAMEPATH[m_Info.Type],
+			m_Info.pos, m_Info.rot, m_Info.move, m_Info.fScale, false, false);
+
+	}
 }
