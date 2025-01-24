@@ -59,11 +59,9 @@ void CParticle2D::Set(const D3DXVECTOR3& Defpos, const D3DXVECTOR3& Defmove, CEf
 	D3DXVECTOR3 pos = {};
 	D3DXVECTOR3 move = {};	// 移動量
 	D3DXCOLOR col = {};	// 色
-	CEffect2D::TYPE ParType = type;
 	float fRadius = 0.0f;
 	float fLife = 0;
 	D3DXVECTOR3 nor;
-	float fCol = (float)(rand() % 3) / 10.0f + 0.3f;
 
 	// 移動ベクトルを求める
 	D3DXVec3Normalize(&nor, &Defmove);	// ベクトルを正規化する

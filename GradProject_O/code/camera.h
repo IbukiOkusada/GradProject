@@ -71,7 +71,9 @@ public:	// 誰でもアクセス可能
 
 	// メンバ関数(取得)
 	D3DXMATRIX GetMtxView(void) { return m_mtxView; }
+	D3DXMATRIX* GetViewMtx(void) { return &m_mtxView; }
 	D3DXMATRIX GetMtxProjection(void) { return m_mtxProjection; }
+	D3DXMATRIX* GetProjectionMtx(void) { return &m_mtxProjection; }
 	D3DXVECTOR3 GetRotation(void) { return m_rot; }
 	D3DXVECTOR3 GetPositionV(void) { return m_posV; }
 	D3DXVECTOR3 GetPositionR(void) { return m_posR; }
@@ -131,6 +133,7 @@ private:	// 自分だけがアクセス可能
 	int m_nZoomCount;           // スタートドアを見ている時間
 	bool m_bDraw;				// 描画
 	bool m_bActive;			// 操作可能かどうか
+	bool m_bDebug;
 };
 
 //**********************************************************

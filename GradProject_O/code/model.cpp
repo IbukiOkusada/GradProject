@@ -108,7 +108,6 @@ void CModel::Draw(void)
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
 	CXFile *pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	D3DMATERIAL9 matDef;	// 現在のマテリアル保存用
-	D3DMATERIAL9 changemat;
 	D3DXMATERIAL *pMat;	// マテリアルデータへのポインタ
 	D3DXMATRIX mtxParent;	// 親のマトリックス情報
 
@@ -279,8 +278,8 @@ void CModel::DrawOnShader(void)
 {
 	if (CEditManager::GetInstance() != nullptr || m_bEdit)
 	{
-		Draw();
-		return;
+		//Draw();
+		//return;
 	}
 
 	if (m_bDraw == false)
@@ -294,7 +293,6 @@ void CModel::DrawOnShader(void)
 	D3DXMATRIX mtxRot, mtxTrans;	// 計算用マトリックス
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	D3DMATERIAL9 matDef;	// 現在のマテリアル保存用
-	D3DMATERIAL9 changemat;
 	D3DXMATERIAL* pMat;	// マテリアルデータへのポインタ
 	D3DXMATRIX mtxParent;	// 親のマトリックス情報
 

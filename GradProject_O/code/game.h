@@ -27,6 +27,7 @@ class CMultiCamera;
 class CGoalManager;
 class CFog;
 class CScrollText2D;
+class CDoll;
 
 namespace Game
 {
@@ -104,6 +105,7 @@ private:
 	bool m_bPause;              // ポーズ
 	int m_nTotalDeliveryStatus;  // プレイヤーが配達する数
 	int m_nStartCameraCount;
+	CDoll* m_pDoll;
 
 	STATE m_GameState;
 	CScrollText2D* m_pEndText;

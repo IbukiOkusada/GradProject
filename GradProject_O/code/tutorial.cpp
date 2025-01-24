@@ -104,7 +104,6 @@ void CTutorial::Update(void)
 		CManager::GetInstance()->GetFade()->Set(CScene::MODE_GAME);
 	}
 
-	bool bCreate = false;
 
 	// XVˆ—
 	CScene::Update();

@@ -48,7 +48,6 @@ CObject3D::~CObject3D()
 HRESULT CObject3D::Init(void)
 {
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
-	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// テクスチャの割り当て
 	m_nIdxTexture = -1;
@@ -228,8 +227,8 @@ void CObject3D::DrawOnShader(void)
 {
 	if (CEditManager::GetInstance() != nullptr)
 	{
-		Draw();
-		return;
+		//Draw();
+		//return;
 	}
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ

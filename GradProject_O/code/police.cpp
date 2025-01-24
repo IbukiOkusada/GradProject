@@ -165,7 +165,6 @@ void CPolice::Update(void)
 		m_pSpotLight->Update();
 	}
 
-	CPoliceManager* pMgr = CPoliceManager::GetInstance();
 	auto list = CPoliceManager::GetInstance()->GetNearList();
 	auto it = find(list->begin(), list->end(), this);
 
@@ -319,7 +318,6 @@ void CPolice::MoveRoad()
 		// カーブ時の速度を設定
 		SetSpeedCurve(10.0f);
 
-		float length = D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition()));
 
 		// 目的地が存在するかどうか
 		if (pRoadTarget != nullptr)
@@ -335,7 +333,8 @@ void CPolice::MoveRoad()
 			if (m_Info.pPlayer == nullptr) { return; }
 
 			// 一定距離まで近づいたら減速させる
-			if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+			D3DXVECTOR3 len = m_Info.pPlayer->GetPosition() - GetPosition();
+			if (D3DXVec3Length(&len) > LENGTH_POINT_CHASE) { return; }
 
 			// プレイヤーの座標を目指す
 			SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
@@ -367,7 +366,8 @@ void CPolice::MoveRoad()
 				SetPosTarget(m_Info.pPlayer->GetPosition());
 
 				// 一定距離まで近づいたら減速させる
-				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+				D3DXVECTOR3 len = m_Info.pPlayer->GetPosition() - GetPosition();
+				if (D3DXVec3Length(&len) > LENGTH_POINT_CHASE) { return; }
 
 				// 速度を設定
 				SetSpeedDest(SECURE_SPEEDDEST);
@@ -381,7 +381,8 @@ void CPolice::MoveRoad()
 				SetPosTarget(m_Info.pPlayer->GetPosition());
 
 				// 一定距離まで近づいたら減速させる
-				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+				D3DXVECTOR3 len = m_Info.pPlayer->GetPosition() - GetPosition();
+				if (D3DXVec3Length(&len) > LENGTH_POINT_CHASE) { return; }
 
 				// 速度を設定
 				SetSpeedDest(SECURE_SPEEDDEST);
@@ -395,7 +396,8 @@ void CPolice::MoveRoad()
 				SetPosTarget(m_Info.pPlayer->GetPosition() + GetOffsetLane());
 
 				// 一定距離まで近づいたら減速させる
-				if (D3DXVec3Length(&(m_Info.pPlayer->GetPosition() - GetPosition())) > LENGTH_POINT_CHASE) { return; }
+				D3DXVECTOR3 len = m_Info.pPlayer->GetPosition() - GetPosition();
+				if (D3DXVec3Length(&len) > LENGTH_POINT_CHASE) { return; }
 
 				// 速度を設定
 				SetSpeedDest(SECURE_SPEEDDEST);
@@ -413,7 +415,8 @@ void CPolice::MoveRoad()
 
 			// 一定距離まで近づいたら到達判定処理を行う
 			if (pRoadTarget == nullptr) { return; }
-			float length = D3DXVec3Length(&(pRoadTarget->GetPosition() - GetPosition()));
+			D3DXVECTOR3 len = (pRoadTarget->GetPosition() - GetPosition());
+			float length = D3DXVec3Length(&len);
 			if (length < LENGTH_POINT)
 				ReachRoad();
 
@@ -476,8 +479,8 @@ void CPolice::LanePlayer()
 	if (m_Info.nLaneCount > m_Info.nLaneTime)
 	{
 		// 移動の幅取得
-		float length1 = ((rand() % 6001) + 2000);
-		float length2 = (-(rand() % 6001) - 2000);
+		float length1 = static_cast<float>(((rand() % 6001) + 2000));
+		float length2 = static_cast<float>((-(rand() % 6001) - 2000));
 
 		float length = ((rand() % 2 == 0) ? length1 : length2) * 0.1f;
 

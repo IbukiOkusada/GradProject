@@ -13,8 +13,8 @@
 namespace NetWork
 {
 	const int MAX_CONNECT = 4;	// 最大接続数
-	const int MAX_COMMAND_DATA = ((sizeof(int) + sizeof(int) + 1300));	// データのマックスサイズ
-	const int MAX_SEND_DATA = ((sizeof(int) + sizeof(int) + 1300));	// 最大データ量
+	const int MAX_COMMAND_DATA = ((sizeof(int) + sizeof(int) + 1000));	// データのマックスサイズ
+	const int MAX_SEND_DATA = ((sizeof(int) + sizeof(int) + 1000));	// 最大データ量
 	const double SEND_MS = 50.0f;	// 常に送るデータの送信フレーム
 
 	// コマンド列挙

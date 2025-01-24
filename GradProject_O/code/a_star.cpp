@@ -19,7 +19,8 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* Start, CRoad::SSearch* Goal)
 	std::vector<CRoad::SSearch*> CloseList;//探索終了リスト
 	
 	Start->fGCost = 0.0f;
-	Start->fHCost = D3DXVec3Length(&(Start->pos - Goal->pos));
+	D3DXVECTOR3 v = (Start->pos - Goal->pos);
+	Start->fHCost = D3DXVec3Length(&v);
 	Start->fFCost = Start->fGCost + Start->fHCost;
 	OpenList.push_back(Start);
 
@@ -57,8 +58,10 @@ std::vector<CRoad::SSearch*> AStar(CRoad::SSearch* Start, CRoad::SSearch* Goal)
 			if (std::find(CloseList.begin(), CloseList.end(), neighbor) != CloseList.end() || !neighbor->bActive) { continue; }
 			
 			// コスト計算
-			neighbor->fGCost = D3DXVec3Length(&(neighbor->pos - Current->pos));
-			neighbor->fHCost = D3DXVec3Length(&(neighbor->pos - Goal->pos));
+			v = (neighbor->pos - Current->pos);
+			neighbor->fGCost = D3DXVec3Length(&v);
+			v = (neighbor->pos - Goal->pos);
+			neighbor->fHCost = D3DXVec3Length(&v);
 			neighbor->fFCost = neighbor->fGCost + neighbor->fHCost;
 			neighbor->pParent = Current;
 			
@@ -83,7 +86,8 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 	std::vector<CRoad::SInfoSearch*> CloseList;			//探索終了リスト
 
 	Start->GetInfoSearch()->fGCost = 0.0f;
-	Start->GetInfoSearch()->fHCost = D3DXVec3Length(&(Start->GetPosition() - Goal->GetPosition()));
+	D3DXVECTOR3 v = (Start->GetPosition() - Goal->GetPosition());
+	Start->GetInfoSearch()->fHCost = D3DXVec3Length(&v);
 	Start->GetInfoSearch()->fFCost = Start->GetInfoSearch()->fGCost + Start->GetInfoSearch()->fHCost;
 	OpenList.push_back(Start->GetInfoSearch());
 
@@ -140,11 +144,11 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 				}
 			);
 			if (it != CloseList.end()) { continue; }
-			//if (std::find(CloseList.begin(), CloseList.end(), neighborInfo) != CloseList.end()) { continue; }
 
 			// コスト計算
 			neighborInfo->fGCost = Current->pConnectRoad->GetConnectLength((CRoad::DIRECTION)i);
-			neighborInfo->fHCost = D3DXVec3Length(&(neighborInfo->pConnectRoad->GetPosition() - Goal->GetPosition()));
+			v = (neighborInfo->pConnectRoad->GetPosition() - Goal->GetPosition());
+			neighborInfo->fHCost = D3DXVec3Length(&v);
 			neighborInfo->fFCost = neighborInfo->fGCost + neighborInfo->fHCost;
 
 			// 親に設定
@@ -172,7 +176,8 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Goal, CR
 	std::vector<CRoad::SInfoSearch*> CloseList;			//探索終了リスト
 
 	Start->GetInfoSearch()->fGCost = 0.0f;
-	Start->GetInfoSearch()->fHCost = D3DXVec3Length(&(Start->GetPosition() - Goal->GetPosition()));
+	D3DXVECTOR3 v = (Start->GetPosition() - Goal->GetPosition());
+	Start->GetInfoSearch()->fHCost = D3DXVec3Length(&v);
 	Start->GetInfoSearch()->fFCost = Start->GetInfoSearch()->fGCost + Start->GetInfoSearch()->fHCost;
 	OpenList.push_back(Start->GetInfoSearch());
 
@@ -243,7 +248,8 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceDetour(CRoad* Start, CRoad* Goal, CR
 				neighborInfo->fGCost = FLT_MAX * 0.1f;
 			}
 
-			neighborInfo->fHCost = D3DXVec3Length(&(neighborInfo->pConnectRoad->GetPosition() - Goal->GetPosition()));
+			v = (neighborInfo->pConnectRoad->GetPosition() - Goal->GetPosition());
+			neighborInfo->fHCost = D3DXVec3Length(&v);
 			neighborInfo->fFCost = neighborInfo->fGCost + neighborInfo->fHCost;
 
 			// 親に設定
@@ -270,7 +276,8 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceLimit(CRoad* Start, CRoad* Goal, int
 	int nCntSearch = 0;								// 探索回数
 
 	Start->GetInfoSearch()->fGCost = 0.0f;
-	Start->GetInfoSearch()->fHCost = D3DXVec3Length(&(Start->GetPosition() - Goal->GetPosition()));
+	D3DXVECTOR3 v = (Start->GetPosition() - Goal->GetPosition());
+	Start->GetInfoSearch()->fHCost = D3DXVec3Length(&v);
 	Start->GetInfoSearch()->fFCost = Start->GetInfoSearch()->fGCost + Start->GetInfoSearch()->fHCost;
 	OpenList.push_back(Start->GetInfoSearch());
 
@@ -316,7 +323,8 @@ std::vector<CRoad::SInfoSearch*> AStarPoliceLimit(CRoad* Start, CRoad* Goal, int
 
 			// コスト計算
 			neighborInfo->fGCost = Current->pConnectRoad->GetConnectLength((CRoad::DIRECTION)i);
-			neighborInfo->fHCost = D3DXVec3Length(&(neighborInfo->pConnectRoad->GetPosition() - Goal->GetPosition()));
+			v = (neighborInfo->pConnectRoad->GetPosition() - Goal->GetPosition());
+			neighborInfo->fHCost = D3DXVec3Length(&v);
 			neighborInfo->fFCost = neighborInfo->fGCost + neighborInfo->fHCost;
 			neighborInfo->pParent = Current;
 

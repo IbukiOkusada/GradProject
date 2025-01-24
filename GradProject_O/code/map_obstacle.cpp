@@ -166,13 +166,14 @@ void CMapObstacle::SetScale(const D3DXVECTOR3& scale)
 //==========================================================
 void CMapObstacle::BindModel(const int& idx)
 {
-	if (idx < 0 || idx >= CMapManager::GetInstance()->GetFileNameList().size()) { m_Info.fileidx = 0;}
+	CMapManager* pMgr = CMapManager::GetInstance();
+	if (idx < 0 || idx >= static_cast<int>(pMgr->GetFileNameList().size())) { m_Info.fileidx = 0;}
 
 	m_Info.fileidx = idx;
 
 	if (m_pObj == nullptr) { return; }
 
-	std::vector<std::string> str = CMapManager::GetInstance()->GetFileNameList();
+	std::vector<std::string> str = pMgr->GetFileNameList();
 
 	m_pObj->BindFile(str[idx].c_str());
 }

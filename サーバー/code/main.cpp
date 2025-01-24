@@ -20,9 +20,9 @@
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")		// システム時刻取得に必要
 
-void SetMemCpy();
-void SetStr();
-void SetStrCpy();
+namespace {
+	const int IF = 0;
+}
 
 // タイマーの情報
 struct Timer
@@ -32,6 +32,12 @@ struct Timer
 	std::chrono::duration<float> DeltaTime;                      // 差分
 };
 
+#if IF
+void SetMemCpy();
+void SetStr();
+void SetStrCpy();
+#endif
+
 Timer m_Timer;  // タイマーの情報
 
 //==========================================================
@@ -39,7 +45,15 @@ Timer m_Timer;  // タイマーの情報
 //==========================================================
 int main(void)
 {
-#if 1
+#if IF
+	
+	SetMemCpy();
+
+	SetStr();
+
+	SetStrCpy();
+
+#else
 	CDeltaTime::Create();
 	auto net = CNetWork::Create();
 
@@ -51,13 +65,6 @@ int main(void)
 	net->Release();
 
 	CDeltaTime::GetInstance()->Uninit();
-
-#else
-	SetMemCpy();
-
-	SetStr();
-
-	SetStrCpy();
 #endif
 
 	printf("*** Enterキーを押して終了してください ***\n");
@@ -69,6 +76,7 @@ int main(void)
 	return S_OK;
 }
 
+#if IF
 //==========================================================
 // memcpy
 //==========================================================
@@ -86,7 +94,9 @@ void SetMemCpy()
 	m_Timer.DeltaTime = m_Timer.CurrentTime - m_Timer.LastTime;       // 現在の時間と前回の時間の差分を計算
 	printf("time %f\n", m_Timer.DeltaTime.count());
 }
+#endif // !IF
 
+#if IF
 //==========================================================
 // str
 //==========================================================
@@ -105,7 +115,9 @@ void SetStr()
 
 	printf("time %f\n", m_Timer.DeltaTime.count());
 }
+#endif
 
+#if IF
 //==========================================================
 // strcpy
 //==========================================================
@@ -124,3 +136,4 @@ void SetStrCpy()
 
 	printf("time %f\n", m_Timer.DeltaTime.count());
 }
+#endif

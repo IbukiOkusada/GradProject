@@ -91,13 +91,13 @@ HRESULT CGoal::Init(void)
 	m_People.pChara->SetScale(SCALE);
 	m_People.pChara->SetMtx();
 	// Ô‘Ì‚ÌF‚ğƒ‰ƒ“ƒ_ƒ€‚É
-	float fColR = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
 	float fColG = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
+	float fColR = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
 	float fColB = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
 
 	for (int i = 0; i < m_People.pChara->GetNumParts() - 1; i++)
 	{
-		m_People.pChara->GetParts(i)->SetColMulti(D3DXCOLOR(fColR, fColR, fColR, 1.0f));
+		m_People.pChara->GetParts(i)->SetColMulti(D3DXCOLOR(fColR, fColG, fColB, 1.0f));
 	}
 
 	m_People.pChara->SetDrawshader(false);

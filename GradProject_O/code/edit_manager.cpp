@@ -73,8 +73,6 @@ void CEditManager::Update(void)
 {
 	CInputKeyboard* pKey = CInputKeyboard::GetInstance();
 	CDebugProc* pProc = CManager::GetInstance()->GetDebugProc();
-	CInputMouse* pMouse = CInputMouse::GetInstance();
-
 
 	// デバッグ表示
 	pProc->Print("+---------------------------------------------------------------\n");

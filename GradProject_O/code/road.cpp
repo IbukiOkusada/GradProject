@@ -141,7 +141,8 @@ void CRoad::Connect(CRoad* pRoad, const DIRECTION dic)
 
 	if (pRoad != nullptr)
 	{
-		m_aInfoSearch[dic].pConnectLength = D3DXVec3Length(&(m_Info.pos - pRoad->GetPosition()));
+		D3DXVECTOR3 pos = (m_Info.pos - pRoad->GetPosition());
+		m_aInfoSearch[dic].pConnectLength = D3DXVec3Length(&pos);
 	}
 	else
 	{
@@ -351,9 +352,6 @@ bool CRoad::GetJunctionRoad(float fRot, CRoad** pGoalOut, CRoad** pGoalPrevOut)
 	if (!m_aSearchRoad[dic].bActive) { return false; }
 
 	// ˜AŒ‹ŒÂŠ‚©‚çŒğ·“_‚ğ“±‚«o‚·
-	{
-		CRoad* pThis = this;
-	}
 	CRoad* pRoad = m_aSearchRoad[dic].pRoad;
 	CRoad* pOld = this;
 

@@ -166,7 +166,6 @@ void CEffect3D::Update(void)
 CEffect3D *CEffect3D::Create(D3DXVECTOR3 pos, TYPE type)
 {
 	CEffect3D *pEffect3D = NULL;
-	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// エフェクトの生成
 	pEffect3D = DEBUG_NEW CEffect3D;
@@ -207,7 +206,6 @@ CEffect3D *CEffect3D::Create(D3DXVECTOR3 pos, TYPE type)
 CEffect3D *CEffect3D::Create(D3DXVECTOR3 pos, D3DXVECTOR3 move, D3DXCOLOR col, float fRadius, float fLife, TYPE type)
 {
 	CEffect3D *pEffect3D = NULL;
-	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// エフェクトの生成
 	pEffect3D = DEBUG_NEW CEffect3D();

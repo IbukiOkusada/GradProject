@@ -504,7 +504,7 @@ void CPoliceAI::Attack(void)
 	nAttackTime--;
 	auto mgr = CPlayerManager::GetInstance();
 	auto list = mgr->GetList();
-	float length;
+	float length = 0.0f;
 	for (const auto& pair : *list->GetList())
 	{
 		// プレイヤー情報取得
@@ -565,9 +565,9 @@ void CPoliceAI::Attack(void)
 		}
 		else
 		{
-			float length = D3DXVec3Length(&vecPlayer);										// 距離計算
+			float callength = D3DXVec3Length(&vecPlayer);										// 距離計算
 			
-			if (length < CHASE_NEAR)
+			if (callength < CHASE_NEAR)
 			{// 近距離
 				nAttackTime = 20;
 				m_state = STATE_PREP;
@@ -710,7 +710,8 @@ void CPoliceAI::ReachRoad(void)
 	// 次の目的地を設定
 	D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
 	D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
-	float length = D3DXVec3Length(&(posRoad - posPolice));
+	D3DXVECTOR3 poslen = (posRoad - posPolice);
+	float length = D3DXVec3Length(&poslen);
 	if (length < 1500.0f)
 	{
 		m_pSearchTarget = m_pSearchTarget->pChild;
@@ -847,7 +848,8 @@ void CPoliceAIElite::ReachRoad(void)
 	// 次の目的地を設定
 	D3DXVECTOR3 posRoad = m_pSearchTarget->pConnectRoad->GetPosition();
 	D3DXVECTOR3 posPolice = m_pPolice->GetPosition();
-	float length = D3DXVec3Length(&(posRoad - posPolice));
+	D3DXVECTOR3 poslen = (posRoad - posPolice);
+	float length = D3DXVec3Length(&poslen);
 	if (length < 1500.0f)
 	{
 		if (m_pSearchTarget->pConnectRoad == m_pRoadRelay && !m_bRelay && !m_bCross)

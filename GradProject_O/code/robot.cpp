@@ -81,7 +81,7 @@ HRESULT CRobot::Init(const D3DXVECTOR3& rot)
 	m_Info.move.x = -sinf(rot.y) * WALK_MOVE_MAG;
 	m_Info.move.z = -cosf(rot.y) * WALK_MOVE_MAG;
 
-	m_pDust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 100.0f, true, false);
+	m_pDust = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\backdust.efkefc", VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, 100.0f, false, false);
 	m_Info.state = STATE_WALK;
 
 	return S_OK;
@@ -400,26 +400,26 @@ bool CRobot::CollisionObjX()
 {
 	/*if (CEditManager::GetInstance() != nullptr)*/ { return false; }
 
-	auto mgr = CObjectX::GetList();
-	for (int i = 0; i < mgr->GetNum(); i++)
-	{// 使用されていない状態まで
+	//auto mgr = CObjectX::GetList();
+	//for (int i = 0; i < mgr->GetNum(); i++)
+	//{// 使用されていない状態まで
 
-		CObjectX* pObjectX = mgr->Get(i);	// 先頭を取得
+	//	CObjectX* pObjectX = mgr->Get(i);	// 先頭を取得
 
-		D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
-		D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
-		D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
-		D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
-		D3DXVECTOR3 pVecCollision;
+	//	D3DXVECTOR3 posObjectX = pObjectX->GetPosition();
+	//	D3DXVECTOR3 rotObjectX = pObjectX->GetRotation();
+	//	D3DXVECTOR3 sizeMax = pObjectX->GetVtxMax();
+	//	D3DXVECTOR3 sizeMin = pObjectX->GetVtxMin();
+	//	D3DXVECTOR3 pVecCollision;
 
-		bool bCollision = collision::CollidePointToOBB(&pVecCollision, &m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
-		if (bCollision)
-		{
-			return true;
-		}
-	}
+	//	bool bCollision = collision::CollidePointToOBB(&pVecCollision, &m_Info.pos, m_Info.posOld, posObjectX, rotObjectX, (sizeMax - sizeMin) * 0.5f);
+	//	if (bCollision)
+	//	{
+	//		return true;
+	//	}
+	//}
 
-	return false;
+	//return false;
 }
 
 //==========================================================

@@ -310,7 +310,6 @@ void CEntry::Uninit(void)
 void CEntry::Update(void)
 {
     CInputKeyboard* pKey = CInputKeyboard::GetInstance();
-    CInputPad* pPad = CInputPad::GetInstance();
 
     CEditManager* pMgr = CEditManager::GetInstance();
     // エディター生成
@@ -420,7 +419,6 @@ void CEntry::EndTutorial(void)
 //===============================================
 void CEntry::ReadyUp(const int id)
 {
-    auto mgr = CPlayerManager::GetInstance();
 
     // 使用されていなかったら処理を抜ける
     if (m_pReady[id] == nullptr) { return; }
@@ -453,7 +451,6 @@ void CEntry::AddPlayer(void)
     CInputPad* pPad = CInputPad::GetInstance();
     auto net = CNetWork::GetInstance();
     auto mgr = CPlayerManager::GetInstance();
-    int id = mgr->GetNum();
 
     // 人数確認
     if (net->GetState() == CNetWork::STATE::STATE_ONLINE)
@@ -608,7 +605,6 @@ void CEntry::ControlsUI(void)
 //===============================================
 void CEntry::ReadyUp(void)
 {
-    auto mgr = CPlayerManager::GetInstance();
 
     // 使用されていなかったら処理を抜ける
     if (m_pPPP == nullptr || m_nID == -1) { return; }

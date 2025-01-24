@@ -366,7 +366,6 @@ void CFXManager::SetParamToEffect()
 HRESULT CFXManager::Begin()
 {
 	// ポインタを宣言
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイス情報
 	
 	// プログラマブルシェーダのテクニックを設定
 	m_pEffect->SetTechnique(m_pTechnique);

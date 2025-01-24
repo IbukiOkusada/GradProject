@@ -123,11 +123,6 @@ void CSpotLight::Update()
 	// ライトを設定する
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		// デバイスへのポインタを取得
 	pDevice->SetLight(m_nId, &m_Light);
-
-	CDebugProc* pProc = CDebugProc::GetInstance();
-	/*pProc->Print("ライトの座標 : [ %f, %f, %f ]\n", m_Light.Position.x, m_Light.Position.y, m_Light.Position.z);
-	pProc->Print("ライトの方向 : [ %f, %f, %f ]\n", m_Light.Direction.x, m_Light.Direction.y, m_Light.Direction.z);
-	pProc->Print("ライトの色 : [ %f, %f, %f, %f ]\n", m_Light.Diffuse.r, m_Light.Diffuse.g, m_Light.Diffuse.b, m_Light.Diffuse.a);*/
 }
 
 //==========================================================
