@@ -64,7 +64,7 @@ HRESULT CDoll::Init(const D3DXVECTOR3& rot)
 {
 	m_pCharacter = CCharacter::Create(MODEL_PATH);
 	m_pCharacter->SetParent(NULL);
-	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_NightofFire);
+	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_NIGHTOFFIRE);
 	m_pCharacter->SetScale(D3DXVECTOR3(7.0f, 7.0f, 7.0f));
 
 	m_Info.state = STATE_WALK;

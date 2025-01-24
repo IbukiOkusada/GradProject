@@ -56,7 +56,8 @@ public:	// 誰でもアクセス可能
 	// モーション列挙型
 	enum MOTION
 	{
-		MOTION_NightofFire = 0,	// night of fireモーション
+		MOTION_NIGHTOFFIRE = 0,	// night of fireモーション
+		MOTION_ENOCH,	// enochモーション
 		MOTION_MAX
 	};
 
