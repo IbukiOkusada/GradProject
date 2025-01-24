@@ -8,6 +8,8 @@
 #include "debugproc.h"
 #include "manager.h"
 #include "renderer.h"
+#include "game.h"
+#include "camera.h"
 
 Clist<CEffectEffekseer*> CEffectEffekseer::m_List = {};
 
@@ -109,6 +111,7 @@ CEffectEffekseer *CEffectEffekseer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3D
 		pEffectEffekseer->SetPosition(pos);
 
 		// Šp“xÝ’è
+		correction::Adjust(&rot);
 		pEffectEffekseer->SetRotation(rot);
 
 		// Šp“xÝ’è
@@ -138,10 +141,22 @@ void CEffectEffekseer::SetEffect()
 {
 
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
+	CCamera* pCamera = CManager::GetInstance()->GetCamera();
 	D3DXMATRIX mtxProjection, mtxView, mtxWorld;
 	D3DVIEWPORT9 Viewport;
 	D3DXVECTOR3 pos = VECTOR3_ZERO;
 	D3DXVECTOR3 mypos = m_Info.pos;
+	float maxlen = Game::DOME_LENGTH;
+
+	// ‹——£‚ðŽæ‚é
+	{
+		D3DXVECTOR3 lenpos = pCamera->GetPositionR() - m_Info.pos;
+		if (D3DXVec3Length(&lenpos) >= maxlen)
+		{
+			SAFE_DELETE(m_pEffekseer);
+			return;
+		}
+	}
 
 	// •K—v‚Èî•ñŽæ“¾
 	pDevice->GetTransform(D3DTS_PROJECTION, &mtxProjection);
@@ -165,6 +180,5 @@ void CEffectEffekseer::SetEffect()
 	{
 		m_pEffekseer = CEffekseer::GetInstance()->Create(EFFECTNAMEPATH[m_Info.Type],
 			m_Info.pos, m_Info.rot, m_Info.move, m_Info.fScale, false, false);
-
 	}
 }

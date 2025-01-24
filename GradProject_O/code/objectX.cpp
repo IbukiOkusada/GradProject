@@ -692,15 +692,17 @@ void CObjectX::DrawCheck()
 {
 	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	float maxlen = Game::DOME_LENGTH * 0.5f;
+	float size = 0.0045f;
 
 	if (!pCamera->GetAction()->IsFinish())
 	{
-		maxlen = Game::DOME_LENGTH;
+		maxlen = Game::DOME_LENGTH * 0.75f;
 	}
 
 	if (CManager::GetInstance()->GetMode() != CScene::MODE::MODE_GAME)
 	{
 		maxlen *= 3.0f;
+		size *= 30.0f;
 	}
 
 	if (CEditManager::GetInstance() != nullptr)
@@ -731,15 +733,15 @@ void CObjectX::DrawCheck()
 	float f = 0.5f * (m_scale.x + m_scale.z);
 
 	// âÊñ äOÇ»ÇÁèoÇ≥Ç»Ç¢
-	if (pos.x < 0.0f - (SCREEN_WIDTH * 0.025f * f) || pos.x > SCREEN_WIDTH + (SCREEN_WIDTH * 0.025f * f) ||
-		pos.y < 0.0f - (SCREEN_HEIGHT * 0.025f * m_scale.y) || pos.y > SCREEN_HEIGHT + (SCREEN_HEIGHT * 0.025f * m_scale.y) ||
+	if (pos.x < 0.0f - (SCREEN_WIDTH * size * f) || pos.x > SCREEN_WIDTH + (SCREEN_WIDTH * size * f) ||
+		pos.y < 0.0f - (SCREEN_HEIGHT * size * m_scale.y) || pos.y > SCREEN_HEIGHT + (SCREEN_HEIGHT * size * m_scale.y) ||
 		pos.z >= 1.0f) {
 
 		// êFÇìßñæÇ…ãﬂÇ√ÇØÇÈ
 		D3DXCOLOR col = GetColMulti();
 		if (col.a > 0.0f)
 		{
-			col.a -= 0.2f;
+			col.a -= 0.1f;
 
 			if (col.a <= 0.0f)
 			{
@@ -763,7 +765,7 @@ void CObjectX::DrawCheck()
 
 			if (col.a > 0.0f)
 			{
-				col.a -= 0.2f;
+				col.a -= 0.1f;
 
 				if (col.a <= 0.0f)
 				{
@@ -782,7 +784,7 @@ void CObjectX::DrawCheck()
 	D3DXCOLOR col = GetColMulti();
 	if (col.a < 1.0f)
 	{
-		col.a += 0.2f;
+		col.a += 0.1f;
 
 		if (col.a >= 1.0f)
 		{

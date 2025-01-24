@@ -53,6 +53,7 @@ CMapObstacle::~CMapObstacle()
 HRESULT CMapObstacle::Init(void)
 {
 	std::vector<std::string> str = CMapManager::GetInstance()->GetFileNameList();
+	correction::Adjust(&m_Info.rot);
 	m_pObj = CObjectX::Create(m_Info.pos, m_Info.rot, str[m_Info.fileidx].c_str());
 	m_pObj->SetScale(m_Info.scale);
 

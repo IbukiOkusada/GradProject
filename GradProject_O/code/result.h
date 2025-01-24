@@ -81,6 +81,7 @@ private:
 	CPlayerResult* m_pPlayer;		// リザルトプレイヤーのポインタ
 
 	CObject2D* m_pObj;					// 失敗or成功のオブジェクト
+	CObject2D* m_pRankingObj;			// ランキングのオブジェクト
 	CObject2D* m_pScoreObj[4];			// 各スコアの文字のオブジェクト
 	CObject2D* m_pEvalStarObj[5];		// 総合スコアの星のオブジェクト
 	CObject2D* m_pEvalStarFreamObj[5];	// 総合スコアの星の枠のオブジェクト

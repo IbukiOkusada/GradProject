@@ -74,7 +74,7 @@ namespace
 	const float BRAKE = (0.7f);		// ブレーキ
 	const float DRIFT = (+0.3f);		// ドリフト時の補正力
 	const float TURN = (0.006f);		// 旋回量
-	const float GRAVITY = (-24.0f);		//プレイヤー重力
+	const float GRAVITY = (-64.0f);		//プレイヤー重力
 	const float ROT_MULTI = (1.0f);	// 向き補正倍率
 	const float WIDTH = (20.0f);	// 幅
 	const float HEIGHT = (80.0f);	// 高さ
@@ -435,8 +435,7 @@ void CPlayer::Update(void)
 	if (m_pBaggage != nullptr && (m_type == TYPE_ACTIVE || m_type == TYPE_TUTOLERIAL_ACTIVE))
 	{
 
-		D3DXVECTOR3 rot = GetRotation();
-		rot.y -= D3DX_PI * 0.5f;
+		D3DXVECTOR3 rot = m_pObj->GetRotation();
 		CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 		if (pCamera->GetAction()->IsFinish())
 		{
@@ -485,7 +484,7 @@ void CPlayer::Update(void)
 	// デバッグ表示
 	CDebugProc::GetInstance()->Print("プレイヤー : 種類 [ %d ] : ", m_type);
 	CDebugProc::GetInstance()->Print("座標: [ %f, %f, %f ]", m_Info.pos.x, m_Info.pos.y, m_Info.pos.z);
-	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_Info.rot.x, m_Info.rot.y, m_Info.rot.z);
+	CDebugProc::GetInstance()->Print(" : 向き: [ %f, %f, %f ]\n", m_pObj->GetRotation().x, m_pObj->GetRotation().y, m_pObj->GetRotation().z);
 }
 
 //===============================================

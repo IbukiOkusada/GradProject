@@ -58,6 +58,7 @@ CCamera::CCamera()
 	m_bDraw = true;
 	m_nId = 0;
 	m_bActive = true;
+	m_bDebug = false;
 	m_fZoom = 1.0f;
 	m_pAction = nullptr;
 	m_fDestZoom = m_fZoom;
@@ -151,6 +152,11 @@ void CCamera::Update(void)
 	if (pKey->GetTrigger(DIK_F8))
 	{
 		m_mode = static_cast<MODE>((m_mode + 1) % MODE_MAX);
+	}
+
+	if (pKey->GetTrigger(DIK_F6))
+	{
+		m_bDebug ^= true;
 	}
 
 #endif
@@ -600,6 +606,12 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 	// アクション中
 	if (m_pAction->IsFinish())
 	{
+		if (m_bDebug)
+		{
+			FstPerson(pos, rot, fLength);
+			return;
+		}
+
 		float dest = -D3DX_PI * 0.5f;
 		float diff = dest - m_rot.y;
 
@@ -654,31 +666,75 @@ void CCamera::Pursue(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const float f
 
 		fRotDiff = fRotDest - m_rot.z;
 
-		if (fRotDiff > D3DX_PI || fRotDiff < -D3DX_PI)
-		{//-3.14～3.14の範囲外の場合
-			if (fRotDiff > D3DX_PI)
-			{
-				fRotDiff += (-D3DX_PI * 2);
-			}
-			else if (fRotDiff < -D3DX_PI)
-			{
-				fRotDiff += (D3DX_PI * 2);
-			}
-		}
+		correction::Adjust(&fRotDiff);
 
 		m_rot.z += fRotDiff * 0.06f;
 
-		if (m_rot.z > D3DX_PI || m_rot.z < -D3DX_PI)
-		{//-3.14～3.14の範囲外の場合
-			if (m_rot.z > D3DX_PI)
-			{
-				m_rot.z += (-D3DX_PI * 2);
-			}
-			else if (m_rot.z < -D3DX_PI)
-			{
-				m_rot.z += (D3DX_PI * 2);
-			}
-		}
+		correction::Adjust(&m_rot.z);
+	}
+}
+
+//==========================================================
+// カメラを一人称に
+//==========================================================
+void CCamera::FstPerson(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const float fLength)
+{
+	D3DXVECTOR3 posRDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 目標の注視点
+	D3DXVECTOR3 posVDest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);	// 目標の視点
+	D3DXVECTOR3 RDiff = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 注視点の差分
+	D3DXVECTOR3 VDiff = D3DXVECTOR3(0.0f, 0.0f, 0.0f);		// 視点の差分
+	float fMulti = 0.5f;
+	float rottemp = rot.y;
+
+	//目的の注視点の座標を取得
+	posVDest = D3DXVECTOR3(pos.x - sinf(rottemp) * 100.0f, pos.y + 200.0f, pos.z - cosf(rottemp) * 100.0f);
+
+	//目的の視点の座標を獲得
+	posRDest = D3DXVECTOR3(
+		posVDest.x - (sinf(m_rot.z) * cosf(m_rot.y)) * (m_fLength * m_fZoom),
+		posVDest.y - cosf(m_rot.z) * (m_fLength * m_fZoom),
+		posVDest.z - (sinf(m_rot.z) * sinf(m_rot.y)) * (m_fLength * m_fZoom));
+
+	//注視点の補正
+	RDiff = D3DXVECTOR3(posRDest.x - m_posR.x, posRDest.y - m_posR.y, posRDest.z - m_posR.z);
+	m_posR.x += RDiff.x * fMulti;
+	m_posR.y += RDiff.y * fMulti;
+	m_posR.z += RDiff.z * fMulti;
+
+	//視点の補正
+	VDiff = D3DXVECTOR3(posVDest.x - m_posV.x, posVDest.y - m_posV.y, posVDest.z - m_posV.z);
+	m_posV.x += VDiff.x * fMulti;
+	m_posV.y += VDiff.y * fMulti;
+	m_posV.z += VDiff.z * fMulti;	
+
+	{
+		float fRotDiff;
+		float fRotDest;
+
+		fRotDest = D3DX_PI * 0.45f;	//目的の向きを取得
+		fRotDiff = fRotDest - m_rot.z;
+
+		correction::Adjust(&fRotDiff);
+
+		m_rot.z += fRotDiff * 0.06f;
+
+		correction::Adjust(&m_rot.z);
+	}
+
+	{
+		float fRotDiff;
+		float fRotDest;
+
+		fRotDest = (rot.y - D3DX_PI * 0.5f) * -1.0f;	//目的の向きを取得
+		correction::Adjust(&fRotDest);
+
+		fRotDiff = fRotDest - m_rot.y;
+
+		correction::Adjust(&fRotDiff);
+
+		m_rot.y += fRotDiff * 0.5f;
+
+		correction::Adjust(&m_rot.y);
 	}
 }
 
