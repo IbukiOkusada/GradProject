@@ -63,19 +63,24 @@ namespace OBJ
 	const D3DXVECTOR3 EVAL_POS = D3DXVECTOR3(110.0f, 600.0f, 0.0f);
 	const float EVAL_STAR_POS_ADJUST = 130.0f;	// 位置の調整
 
-	const float HEIGHT = 40.0f;			// 高さ
-	const float INTERVAL_Y = 100.0f;	// 縦の間隔
-	const D3DXVECTOR3 POS = D3DXVECTOR3(250.0f, 240.0f, 0.0f);	// 初期位置
-
 	const char* STAR_TEX_PATH = "data\\TEXTURE\\result\\star_dot.png";
 	const char* STAR_FREAM_TEX_PATH = "data\\TEXTURE\\result\\star_fream_dot.png";
 	const float STAR_INTERVAL_X = 75.0f;							// 星の間隔
 	const float STAR_INTERVAL_Y = 105.0f;							// 星の間隔
 	const D3DXVECTOR3 STAR_POS = D3DXVECTOR3(800.0f, 660.0f, 0.0f);	// 初期位置
 
+	const char* RANKING_TEX_PATH = "data\\TEXTURE\\result\\result_ranking.png";
+	const float RANKING_WIDTH = 250.0f;		// 横幅
+	const float RANKING_HEIGHT = 70.0f;		// 高さ
+	const D3DXVECTOR3 RANKING_POS = D3DXVECTOR3(1000.0f, 100.0f, 0.0f);	// 初期位置
+
 	const float HEIGHT_DECPOINT = 4.0f;  // 高さ
 	const float WIDTH_DECPOINT = 4.0f;   // 横幅
 	const char* TEX_PATH_DECPOINT = "data\\TEXTURE\\result\\Point_dot.png";
+
+	const float HEIGHT = 40.0f;			// 高さ
+	const float INTERVAL_Y = 100.0f;	// 縦の間隔
+	const D3DXVECTOR3 POS = D3DXVECTOR3(250.0f, 240.0f, 0.0f);	// 初期位置
 }
 
 namespace NUMBER
@@ -183,7 +188,7 @@ HRESULT CResult::Init(void)
 	}
 
 	// 総合スコアの計算
-	m_nScore = ((float)m_nDeli + m_fTime / 100.0f + m_fLife / 100.0f) * 10.0f;
+	m_nScore = ((float)m_nDeli + m_fTime / 50.0f + m_fLife / 100.0f) * 10.0f;
 
 	if (m_nScore >= 50.0f)
 	{
@@ -218,6 +223,14 @@ HRESULT CResult::Init(void)
 
 		CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_RESULT_FAI);
 	}
+
+	// ランキングのオブジェクト生成
+	m_pRankingObj = CObject2D::Create(D3DXVECTOR3(OBJ::RANKING_POS.x, OBJ::RANKING_POS.y, 0.0f),
+		D3DXVECTOR3(0.0f, 0.0f, 0.0f),
+		7);
+	m_pRankingObj->SetSize(OBJ::RANKING_WIDTH, OBJ::RANKING_HEIGHT);
+	m_pRankingObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist(OBJ::RANKING_TEX_PATH));
+	m_pRankingObj->SetCol(INIT_COL);
 
 	// 今回のスコアのオブジェクトを生成
 	ScoreObjCreat();
@@ -912,7 +925,7 @@ void CResult::Display()
 
 	switch (m_Display)
 	{
-	case 0:
+	case 0:		// 配達の数
 		col = m_pScoreObj[m_Display]->GetCol();
 		col.a += ALPHA_ADD;
 
@@ -921,7 +934,7 @@ void CResult::Display()
 
 		break;
 
-	case 1:
+	case 1:		// 残りタイム
 		col = m_pScoreObj[m_Display]->GetCol();
 		col.a += ALPHA_ADD;
 
@@ -933,7 +946,7 @@ void CResult::Display()
 
 		break;
 
-	case 2:
+	case 2:		// 残り体力
 		col = m_pScoreObj[m_Display]->GetCol();
 		col.a += ALPHA_ADD;
 
@@ -945,7 +958,7 @@ void CResult::Display()
 
 		break;
 
-	case 3:
+	case 3:		// 総合スコア
 		col = m_pScoreObj[m_Display]->GetCol();
 		col.a += ALPHA_ADD;
 
@@ -963,7 +976,15 @@ void CResult::Display()
 
 		break;
 
-	case 4:
+	case 4:		// ランキング
+		col = m_pRankingObj->GetCol();
+		col.a += ALPHA_ADD;
+
+		m_pRankingObj->SetCol(col);
+
+		break;
+
+	case 5:		// ランキングの数字等の評価
 		DisplayRanking();
 
 		break;
@@ -1045,6 +1066,9 @@ void CResult::AllDisplay()
 	}
 	// 小数点
 	m_pDecPointEval->SetCol(DISPLAY_COL);
+
+	// ランキング
+	m_pRankingObj->SetCol(DISPLAY_COL);
 
 	for (int Cnt = 0; Cnt < NUMBER::RANKING_OBJ * RANKING_OBJ_NUM; Cnt++)
 	{
