@@ -71,6 +71,7 @@ private:
 	void RoadScore();					// ランキングのスコアをロード
 	void SaveScore();					// ランキングのスコアをセーブ
 	void SortScore();					// ランキングのスコアをソート
+	void Blinking();					// 点滅処理
 
 
 	// メンバ変数
@@ -110,6 +111,10 @@ private:
 	int m_DisplayRank;			// ランキングの表示させるオブジェクトの変数
 	int m_Timehid;
 	int m_Lifehid;
+	int m_NewRecId;				// ニューレコードの番号
+	float m_Alpha;
+	bool m_bBlinking;			// 点滅していいかどうか
+	bool m_bRabkIn;				// ランクインしたかどうか
 	bool m_bSuccess;			// クリアしたかどうか
 	bool m_bAllDisp;			// すべて表示したかどうか
 };

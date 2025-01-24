@@ -131,6 +131,10 @@ CResult::CResult()
 	m_DisplayRank = 0;
 	m_Timehid = 0;
 	m_Lifehid = 0;
+	m_NewRecId = 0;
+	m_Alpha = 0.0f;
+	m_bBlinking = false;
+	m_bRabkIn = false;
 	m_bAllDisp = false;
 
 	for (int Cnt = 0; Cnt < NUMBER::TIME_OBJ; Cnt++)
@@ -170,7 +174,6 @@ CResult::~CResult()
 //===============================================
 HRESULT CResult::Init(void)
 {
-
 	// マップ読み込み
 	CMapManager::GetInstance()->Load();
 
@@ -239,6 +242,20 @@ HRESULT CResult::Init(void)
 	RoadScore();
 	SortScore();
 	SaveScore();
+
+	m_NewRecId = -1;
+	m_Alpha = ALPHA_ADD;
+
+	if (m_bRabkIn == true)
+	{
+		for (int Cnt = RANKING_OBJ_NUM - 1; Cnt >= 0; Cnt--)
+		{
+			if (m_RankingScore[Cnt] == m_nScore)
+			{
+				m_NewRecId = Cnt;
+			}
+		}
+	}
 
 	// ランキングのオブジェクトを生成
 	RankObjCreat();
@@ -429,6 +446,19 @@ void CResult::Update(void)
 		if (m_bAllDisp == false)
 		{
 			Display();
+		}
+	}	
+	
+	if (m_NewRecId != -1)
+	{
+		if (m_pDecPointRank[m_NewRecId]->GetCol().a >= 1.0f || m_bBlinking == true)
+		{
+			Blinking();
+
+			if (m_bBlinking == false)
+			{
+				m_bBlinking = true;
+			}
 		}
 	}
 
@@ -1027,7 +1057,7 @@ void CResult::DisplayRanking()
 }
 
 //===============================================
-// ランキングの表示処理
+// 全て表示処理
 //===============================================
 void CResult::AllDisplay()
 {
@@ -1160,6 +1190,7 @@ void CResult::SortScore()
 	if (nTemp != -1)
 	{// 変更する場合
 		m_RankingScore[nTemp] = m_nScore;
+		m_bRabkIn = true;
 	}
 
 	// 降順ソート
@@ -1182,4 +1213,45 @@ void CResult::SortScore()
 			m_RankingScore[nTempNum] = fTemp;
 		}
 	}
+}
+
+//========================================================
+// 点滅処理
+//========================================================
+void CResult::Blinking(void)
+{
+	D3DXCOLOR col = INIT_COL;
+	col = m_pDecPointRank[m_NewRecId]->GetCol();
+
+	if (col.a > 1.0f)
+	{
+		col.a = 1.0f;
+
+		m_Alpha = -ALPHA_ADD;
+	}
+
+	else if (col.a < 0.2f)
+	{
+		col.a = 0.2f;
+
+		m_Alpha = ALPHA_ADD;
+	}
+
+	col.a += m_Alpha;
+
+	for (int Cnt = 0; Cnt < NUMBER::RANKING_OBJ; Cnt++)
+	{
+		// ランキングスコアの表示
+		m_pRankingNumber[Cnt + m_NewRecId * NUMBER::RANKING_OBJ]->GetObject2D()->SetCol(col);
+	}
+
+
+	for (int Cnt = 0; Cnt < STAR_OBJ_NUM; Cnt++)
+	{
+		// ランキングスコアの表示
+		m_pStarObj[Cnt + m_NewRecId * RANKING_OBJ_NUM]->GetObject2D()->SetCol(col);
+		m_pStarFreamObj[Cnt + m_NewRecId * RANKING_OBJ_NUM]->GetObject2D()->SetCol(col);
+	}
+
+	m_pDecPointRank[m_NewRecId]->GetObject2D()->SetCol(col);
 }
