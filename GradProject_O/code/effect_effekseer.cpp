@@ -30,8 +30,8 @@ namespace {
 		"data\\EFFEKSEER\\0_fire.efkefc",
 	};
 
-	const float RANGE_WIDTH = SCREEN_WIDTH * 0.75f;
-	const float RANGE_HEIGHT = SCREEN_HEIGHT * 0.75f;
+	const float RANGE_WIDTH = SCREEN_WIDTH * 0.7f;
+	const float RANGE_HEIGHT = SCREEN_HEIGHT * 0.7f;
 }
 
 //===============================================
@@ -98,7 +98,6 @@ void CEffectEffekseer::Update(void)
 CEffectEffekseer *CEffectEffekseer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 move, float fScale, TYPE type)
 {
 	CEffectEffekseer *pEffectEffekseer = nullptr;
-	CTexture *pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ
 
 	// エフェクトの生成
 	pEffectEffekseer = DEBUG_NEW CEffectEffekseer;

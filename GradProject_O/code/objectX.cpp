@@ -177,14 +177,21 @@ void CObjectX::Quaternion()
 {
 	D3DXMATRIX mtxRot, mtxTrans;			//計算用マトリックス
 	D3DXQUATERNION qYaw, qPitch, qRoll;
+	D3DXVECTOR3 quaternion = VECTOR3_ZERO;
+	quaternion.y = 1.0f;
+
 	// ヨー: Y軸回転
-	D3DXQuaternionRotationAxis(&qYaw, &D3DXVECTOR3(0.0f, 1.0f, 0.0f), m_rot.y);
+	D3DXQuaternionRotationAxis(&qYaw, &quaternion, m_rot.y);
 
+	quaternion.y = 0.0f;
+	quaternion.x = 1.0f;
 	// ピッチ: X軸回転
-	D3DXQuaternionRotationAxis(&qPitch, &D3DXVECTOR3(1.0f, 0.0f, 0.0f), m_rot.x);
+	D3DXQuaternionRotationAxis(&qPitch, &quaternion, m_rot.x);
 
+	quaternion.x = 0.0f;
+	quaternion.z = 1.0f;
 	// ロール: Z軸回転
-	D3DXQuaternionRotationAxis(&qRoll, &D3DXVECTOR3(0.0f, 0.0f, 1.0f), m_rot.z);
+	D3DXQuaternionRotationAxis(&qRoll, &quaternion, m_rot.z);
 	D3DXQUATERNION qResult;
 	D3DXQuaternionMultiply(&qResult, &qRoll, &qPitch);  // ロールとピッチを掛け合わせ
 	D3DXQuaternionMultiply(&qResult, &qResult, &qYaw);  // さらにヨーを掛け合わせ
@@ -643,7 +650,7 @@ void CObjectX::ListOut(void)
 //==========================================================
 // 最大値取得
 //==========================================================
-D3DXVECTOR3& CObjectX::GetVtxMax(void)
+D3DXVECTOR3 CObjectX::GetVtxMax(void)
 {
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);
@@ -661,7 +668,7 @@ D3DXVECTOR3& CObjectX::GetVtxMax(void)
 //==========================================================
 // 最小値取得
 //==========================================================
-D3DXVECTOR3& CObjectX::GetVtxMin(void)
+D3DXVECTOR3 CObjectX::GetVtxMin(void)
 {
 	CXFile* pModelFile = CManager::GetInstance()->GetModelFile();	// Xファイル情報のポインタ
 	CXFile::SFileData* pFileData = pModelFile->SetAddress(m_nIdxModel);

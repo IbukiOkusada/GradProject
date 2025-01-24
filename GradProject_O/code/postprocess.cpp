@@ -47,15 +47,11 @@ CPostprocess::~CPostprocess()
 //============================================================
 HRESULT CPostprocess::Init(void)
 {
-	
 	// 変数を宣言
 	D3DCAPS9 caps;	// ハードウェア機能
-	HRESULT hr;		// 異常終了の確認用
 
 	// ポインタを宣言
-	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイス情報
-	LPD3DXBUFFER pError = nullptr;	// コンパイルエラー情報
-	
+	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイス情報	
 
 	// メンバ変数を初期化
 

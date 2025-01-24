@@ -225,7 +225,6 @@ void CMapManager::LoadObstacle(const std::string& filename)
 	
 	for (const auto& it : roaddata)
 	{
-		if (it.fileidx >= m_LoadFileName.size()) { return; }
 		CMapObstacle::Create(it);
 	}
 

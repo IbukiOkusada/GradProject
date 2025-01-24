@@ -97,7 +97,6 @@ void CCarManager::Update(void)
 		{
 			// ‰ž‰‡‚ÌŒxŽ@‚ð¶¬
 			CPolice* pP = CPolice::Create(info->pos, info->rot, info->move, it.first);
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(info->nChaseId);
 
 			pP->SetType(CCar::TYPE::TYPE_RECV);
 			//pP->SetChaseNext(info->chase);
@@ -122,7 +121,6 @@ void CCarManager::Update(void)
 		{
 			// ‰ž‰‡‚ÌŒxŽ@‚ð¶¬
 			CAddPolice* pP = CAddPolice::Create(info->pos, info->rot, info->move, it.first);
-			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(info->nChaseId);
 
 			if (pP == nullptr) { continue; }
 

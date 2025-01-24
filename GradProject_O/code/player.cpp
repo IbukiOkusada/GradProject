@@ -60,7 +60,7 @@
 
 namespace
 {
-	const float RECV_INER = (10.0f / NetWork::SEND_MS);		// 受信したデータの慣性
+	const float RECV_INER = (10.0f / static_cast<float>(NetWork::SEND_MS));		// 受信したデータの慣性
 	const float DAMAGE_APPEAR = (110.0f);	// 無敵時間インターバル
 	const float DEATH_INTERVAL = (180.0f);	// 死亡インターバル
 	const float SPAWN_INTERVAL = (60.0f);	// 生成インターバル
@@ -554,7 +554,6 @@ void CPlayer::Move(void)
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	float fThrottle = 0.0f;
 	m_fBrake = 0.0f;
-	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
 	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
@@ -663,7 +662,6 @@ void CPlayer::Rotate(void)
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad* pInputPad = CInputPad::GetInstance();
 	float diff = 0.0f;
-	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 	
 	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{
@@ -730,7 +728,8 @@ void CPlayer::SearchRoad()
 		return;
 	}
 
-	float length = D3DXVec3Length(&(pRoadClose->GetPosition() - m_Info.pos));
+	D3DXVECTOR3 len = (pRoadClose->GetPosition() - m_Info.pos);
+	float length = D3DXVec3Length(&len);
 	float lengthClose = 0.0f;
 
 	for (int i = 0; i < list->GetNum() - 1; i++)
@@ -738,7 +737,8 @@ void CPlayer::SearchRoad()
 		pRoad = list->Get(i);
 
 		// 距離判定処理
-		lengthClose = D3DXVec3Length(&(pRoad->GetPosition() - m_Info.pos));
+		D3DXVECTOR3 lenclose = (pRoad->GetPosition() - m_Info.pos);
+		lengthClose = D3DXVec3Length(&lenclose);
 
 		if (length > lengthClose)
 		{
@@ -1071,7 +1071,7 @@ bool CPlayer::CollisionGimick(void)
 //===============================================
 void CPlayer::Damage(float fDamage)
 {
-	if (m_Info.state == STATE::STATE_DEATH | m_Info.state == STATE::STATE_APPEAR) {
+	if (m_Info.state == STATE::STATE_DEATH || m_Info.state == STATE::STATE_APPEAR) {
 		return;
 	}
 
@@ -1122,7 +1122,6 @@ void CPlayer::Nitro()
 {
 	CInputKeyboard* pInputKey = CInputKeyboard::GetInstance();	// キーボードのポインタ
 	CInputPad* pInputPad = CInputPad::GetInstance();
-	CCamera* pCamera = CCameraManager::GetInstance()->GetTop();
 
 	//if (CDeltaTime::GetInstance()->GetSlow() == 1.0f && (pCamera->GetAction()->IsFinish()))
 	{

@@ -174,12 +174,12 @@ void CNavi::CreateEffect(void)
 {
 	if (!m_Path.empty())
 	{
-		for (int i = 0; i < m_Path.size(); i++)
+		for (int i = 0; i < static_cast<int>(m_Path.size()); i++)
 		{
 			SEffect* pEffect = DEBUG_NEW SEffect;
 
 		
-			if (i == m_Path.size() - 1)
+			if (i == static_cast<int>(m_Path.size()) - 1)
 			{
 				pEffect->pLine = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\guide_player.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f, true, false);
 			}
@@ -189,7 +189,7 @@ void CNavi::CreateEffect(void)
 				CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\check.efkefc", m_Path[i]->pos, VECTOR3_ZERO, VECTOR3_ZERO, 200.0f);
 			}
 		
-			if (i < m_Path.size() - 1)
+			if (i < static_cast<int>(m_Path.size()) - 1)
 			{
 				D3DXVECTOR3 vec = m_Path[i]->pos - m_Path[i + 1]->pos;
 
@@ -210,7 +210,7 @@ void CNavi::UpdateNavigation(void)
 	if (pPlayer == nullptr) { return; }
 	float fDis = FLT_MAX;
 	int nID = 0;
-	for (int i = 0; i < m_Path.size(); i++)
+	for (int i = 0; i < static_cast<int>(m_Path.size()); i++)
 	{
 		float F = GetDistance(m_Path[i]->pos, pPlayer->GetPosition());
 		if (F < fDis)

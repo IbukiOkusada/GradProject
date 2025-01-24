@@ -182,7 +182,7 @@ void CAddPolice::SearchRoad()
 		return;
 	}
 
-	if (m_nNowRoad >= m_Path.size() - 1) {
+	if (m_nNowRoad >= static_cast<int>(m_Path.size()) - 1) {
 
 		//if (GetState() == STATE::STATE_NORMAL)
 		{
@@ -200,13 +200,13 @@ void CAddPolice::SearchRoad()
 //==========================================================
 void CAddPolice::ReachRoad()
 {
-	if (m_Path.size() == 0)
+	if (static_cast<int>(m_Path.size()) == 0)
 	{
 		CCar::ReachRoad();
 		return;
 	}
 
-	if (m_nNowRoad >= m_Path.size() - 1)
+	if (m_nNowRoad >= static_cast<int>(m_Path.size()) - 1)
 	{ 
 			SetState(STATE::STATE_STOP);
 			m_Path.clear();

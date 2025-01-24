@@ -85,7 +85,7 @@ void CPoliceManager::Uninit(void)
 
 	
 	{
-		for (int i = 0; i < m_Siren.size(); i++)
+		for (int i = 0; i < static_cast<int>(m_Siren.size()); i++)
 		{
 			m_Siren[i]->SetVolume(0.0f);
 			m_Siren[i]->Stop();
@@ -163,7 +163,7 @@ void CPoliceManager::Update(void)
 
 	// 今回使われない場合消す
 	std::vector<int> activesoundid = {};
-	for (int i = 0; i < old.size(); i++)
+	for (int i = 0; i < static_cast<int>(old.size()); i++)
 	{
 		auto it = find(m_NearPoliceList.begin(), m_NearPoliceList.end(), old[i]);
 
@@ -183,14 +183,13 @@ void CPoliceManager::Update(void)
 
 	// 音を設定
 	{
-		int soundcnt = 0;
-		for (int i = 0; i < m_NearPoliceList.size(); i++)
+		for (int i = 0; i < static_cast<int>(m_NearPoliceList.size()); i++)
 		{
 			CPolice* pPolice = m_NearPoliceList[i];
 			// 曲をすでに使用している
 			if (pPolice->GetSound() != nullptr) { continue; }
 
-			for (int j = 0; j < m_Siren.size(); j++)
+			for (int j = 0; j < static_cast<int>(m_Siren.size()); j++)
 			{
 				// 使われている
 				if (activesoundid.end() != find(activesoundid.begin(), activesoundid.end(), j)) { continue; }

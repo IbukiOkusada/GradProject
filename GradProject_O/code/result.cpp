@@ -381,7 +381,7 @@ void CResult::Uninit(void)
 
 	// マップ情報廃棄
 	CMapManager::Release();
-	CRanking::SetScore(m_nScore);
+	CRanking::SetScore(static_cast<int>(m_nScore));
 	CManager::GetInstance()->GetCamera()->SetActive(true);
 	CManager::GetInstance()->GetSound()->Stop();
 	m_bAuto = false;
@@ -1153,9 +1153,9 @@ void CResult::SortScore()
 
 		if (nTempNum != nCntFst)
 		{// 変更する場合
-			int nTemp = m_RankingScore[nCntFst];
+			float fTemp = m_RankingScore[nCntFst];
 			m_RankingScore[nCntFst] = m_RankingScore[nTempNum];
-			m_RankingScore[nTempNum] = nTemp;
+			m_RankingScore[nTempNum] = fTemp;
 		}
 	}
 }

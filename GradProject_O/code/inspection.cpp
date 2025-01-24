@@ -94,7 +94,8 @@ HRESULT CInspection::Init(void)
 			// Œo˜H‚ðÝ’è
 			if (m_pRoad != nullptr)
 			{
-				m_aPoliceInfo[i].pPolice->SetNavi(AStar::AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf()));
+				auto it = AStar::AStar(m_pNearStation->GetRoad()->GetSearchSelf(), m_pRoad->GetSearchSelf());
+				m_aPoliceInfo[i].pPolice->SetNavi(it);
 				m_aPoliceInfo[i].pPolice->SetState(CPolice::STATE::STATE_NORMAL);
 			}
 		}

@@ -236,7 +236,7 @@ void CPredRoute::Interp()
 	// Å’ZŒo˜H‚Å•âŠÔ‚·‚é
 	if (path.size() <= MIN_PRED_NUM)
 	{
-		for (int i = 1; i < path.size(); i++)
+		for (int i = 1; i < static_cast<int>(path.size()); i++)
 		{
 			m_PassRoad.push_back(path[i]->pRoad);
 		}

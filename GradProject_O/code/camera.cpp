@@ -272,7 +272,6 @@ void CCamera::MoveVR(void)
 //==========================================================
 void CCamera::MoveV(void)
 {
-	CInputKeyboard *pKey = CInputKeyboard::GetInstance();
 	CInputPad *pInputPad = CInputPad::GetInstance();	// キーボードのポインタ
 	float fMultiSlow = 1.0f;
 	int nId = m_nId;

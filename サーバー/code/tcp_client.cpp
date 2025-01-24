@@ -108,7 +108,7 @@ void CClient::SetData(char *pChar, int nByte)
 //==========================================================
 void CClient::ResetData(void)
 {
-	memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
+	std::fill(std::begin(m_aSendData), std::end(m_aSendData), '\0');
 	m_nSendByte = 0;
 
 	if (m_nTempSendByte > 0)
@@ -118,6 +118,6 @@ void CClient::ResetData(void)
 		m_nSendByte += m_nTempSendByte;
 	}
 
-	memset(&m_aTempSendData[0], '\0', sizeof(m_aTempSendData));
+	std::fill(std::begin(m_aTempSendData), std::end(m_aTempSendData), '\0');
 	m_nTempSendByte = 0;
 }

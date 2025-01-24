@@ -337,8 +337,6 @@ void CMultiResultStateResult::PoliceUpdate(CMultiResult* pResult)
 			// Ÿ‚ª‚È‚¢
 			if ((j + 1) % Result::NUM_POLICE == 0) { continue; }
 
-			CPolice* pNext = m_ppPolice[cnt + (j + 1)];
-
 			// æ“ªÔ—¼‚Ìê‡
 			if (j == 0)
 			{
