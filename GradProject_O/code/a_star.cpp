@@ -144,7 +144,6 @@ std::vector<CRoad::SInfoSearch*> AStarPolice(CRoad* Start, CRoad* Goal)
 				}
 			);
 			if (it != CloseList.end()) { continue; }
-			//if (std::find(CloseList.begin(), CloseList.end(), neighborInfo) != CloseList.end()) { continue; }
 
 			// コスト計算
 			neighborInfo->fGCost = Current->pConnectRoad->GetConnectLength((CRoad::DIRECTION)i);

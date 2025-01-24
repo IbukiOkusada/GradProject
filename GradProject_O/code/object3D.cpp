@@ -227,8 +227,8 @@ void CObject3D::DrawOnShader(void)
 {
 	if (CEditManager::GetInstance() != nullptr)
 	{
-		Draw();
-		return;
+		//Draw();
+		//return;
 	}
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();		//デバイスへのポインタを取得
 	CTexture* pTexture = CManager::GetInstance()->GetTexture();	// テクスチャへのポインタ

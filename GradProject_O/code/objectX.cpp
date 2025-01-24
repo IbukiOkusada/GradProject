@@ -141,7 +141,8 @@ void CObjectX::DrawOnShader(void)
 	}
 	else
 	{
-		DrawOnry();
+		//DrawOnry();
+		DrawOnryShader();
 	}
 
 	// ‰e‚Ì•`‰æ

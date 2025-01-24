@@ -278,8 +278,8 @@ void CModel::DrawOnShader(void)
 {
 	if (CEditManager::GetInstance() != nullptr || m_bEdit)
 	{
-		Draw();
-		return;
+		//Draw();
+		//return;
 	}
 
 	if (m_bDraw == false)
