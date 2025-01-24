@@ -215,8 +215,8 @@ void CPlayerTitle::BaggageMove(void)
 		m_pTitleGoal = CTitleGoal::Create(GoalPos, D3DXVECTOR3(0.0f, -1.56f, 0.0f));
 
 		//lŠÔ‚Æ‰×•¨‚ÌÝ’è
-		m_pTitleBaggage->GetObj()->SetParent(m_pTitleGoal->GetCHR()->GetParts(6)->GetMtx());
-		m_pTitleGoal->GetCHR()->GetMotion()->BlendSet(4);
+		m_pTitleBaggage->GetObj()->SetParent(m_pTitleGoal->GetCHR()->GetParts(8)->GetMtx());
+		m_pTitleGoal->GetCHR()->GetMotion()->BlendSet(2);
 	}
 }
 //<================================================
