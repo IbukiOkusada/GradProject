@@ -606,6 +606,9 @@
     <ClCompile Include="code\signboard.cpp">
       <Filter>gimmick\signboard</Filter>
     </ClCompile>
+    <ClCompile Include="code\doll.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="code\fade.h">
@@ -1036,6 +1039,9 @@
     </ClInclude>
     <ClInclude Include="code\signboard.h">
       <Filter>gimmick\signboard</Filter>
+    </ClInclude>
+    <ClInclude Include="code\doll.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

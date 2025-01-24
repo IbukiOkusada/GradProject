@@ -177,6 +177,7 @@
     <ClCompile Include="code\debugproc.cpp" />
     <ClCompile Include="code\deliverystatus.cpp" />
     <ClCompile Include="code\deltatime.cpp" />
+    <ClCompile Include="code\doll.cpp" />
     <ClCompile Include="code\edit.cpp" />
     <ClCompile Include="code\edit_effect.cpp" />
     <ClCompile Include="code\edit_gimmick.cpp" />
@@ -311,6 +312,7 @@
     <ClInclude Include="code\container.h" />
     <ClInclude Include="code\deliverystatus.h" />
     <ClInclude Include="code\deltatime.h" />
+    <ClInclude Include="code\doll.h" />
     <ClInclude Include="code\edit_effect.h" />
     <ClInclude Include="code\edit_gimmick.h" />
     <ClInclude Include="code\edit_goal.h" />
