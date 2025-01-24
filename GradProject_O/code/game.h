@@ -105,7 +105,7 @@ private:
 	bool m_bPause;              // ポーズ
 	int m_nTotalDeliveryStatus;  // プレイヤーが配達する数
 	int m_nStartCameraCount;
-	CDoll* m_pDoll;
+	CDoll* m_pDoll[7];
 
 	STATE m_GameState;
 	CScrollText2D* m_pEndText;

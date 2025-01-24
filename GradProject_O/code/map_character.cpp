@@ -1,42 +1,27 @@
 //==========================================================
 //
-// 人形の処理 [doll.cpp]
-// Author : Kenta Hashimoto
+// マップ配置のキャラクター処理 [map_character.cpp]
+// Author : Ibuki Okusada
 //
 //==========================================================
-#include "doll.h"
-#include "robot_manager.h"
-#include "manager.h"
+#include "map_character.h"
 #include "character.h"
 #include "motion.h"
-#include "player.h"
-#include "player_manager.h"
-#include "debugproc.h"
-#include "edit_manager.h"
-#include "bridge.h"
 
 //==========================================================
 // 定数定義
 //==========================================================
 namespace
 {
-	const float WALK_MOVE_MAG = 10.0f;
-	const float AVOID_MOVE_MAG = 40.0f;
-	const float AVOID_ROT = 0.25f;
-	const float ROT_INERTIA = 10.0f;
-	const float AVOID_COLLISION = 800.0f;
-	//const float AVOID_COLLISION_EMERGENCY = 800.0f;
-	const char* MODEL_PATH = "data\\TXT\\character\\doll\\motion_doll.txt";
+	
 }
 
 //==========================================================
 // コンストラクタ
 //==========================================================
-CDoll::CDoll()
+CMapCharacter::CMapCharacter()
 {
 	// 値のクリア
-	m_pNext = nullptr;
-	m_pPrev = nullptr;
 	m_pCharacter = nullptr;
 	m_Info = SInfo();
 }
@@ -44,7 +29,7 @@ CDoll::CDoll()
 //==========================================================
 // デストラクタ
 //==========================================================
-CDoll::~CDoll()
+CMapCharacter::~CMapCharacter()
 {
 
 }
@@ -52,7 +37,7 @@ CDoll::~CDoll()
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CDoll::Init()
+HRESULT CMapCharacter::Init()
 {
 	return S_OK;
 }
@@ -60,14 +45,12 @@ HRESULT CDoll::Init()
 //==========================================================
 // 初期化処理
 //==========================================================
-HRESULT CDoll::Init(const D3DXVECTOR3& rot)
+HRESULT CMapCharacter::Init(const D3DXVECTOR3& rot, const char* pPath, int nPlayMotion)
 {
-	m_pCharacter = CCharacter::Create(MODEL_PATH);
+	m_pCharacter = CCharacter::Create(pPath);
 	m_pCharacter->SetParent(NULL);
-	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_NIGHTOFFIRE);
+	m_pCharacter->GetMotion()->InitSet(nPlayMotion);
 	m_pCharacter->SetScale(D3DXVECTOR3(7.0f, 7.0f, 7.0f));
-
-	m_Info.state = STATE_WALK;
 
 	return S_OK;
 }
@@ -75,7 +58,7 @@ HRESULT CDoll::Init(const D3DXVECTOR3& rot)
 //==========================================================
 // 終了処理
 //==========================================================
-void CDoll::Uninit(void)
+void CMapCharacter::Uninit(void)
 {
 	SAFE_UNINIT(m_pCharacter)
 
@@ -85,7 +68,7 @@ void CDoll::Uninit(void)
 //==========================================================
 // 更新処理
 //==========================================================
-void CDoll::Update(void)
+void CMapCharacter::Update(void)
 {
 	Set();
 
@@ -93,38 +76,39 @@ void CDoll::Update(void)
 	{
 		m_pCharacter->Update();
 	}
-
-	CDebugProc::GetInstance()->Print(" いるよ[%f %f %f]\n");
 }
 
 //==========================================================
 // 生成
 //==========================================================
-CDoll* CDoll::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+CMapCharacter* CMapCharacter::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const D3DXVECTOR3& scale, const char* pPath, int nPlayMotion)
 {
-	CDoll* pRobot = nullptr;
+	CMapCharacter* pMapCharacter = nullptr;
 
-	pRobot = DEBUG_NEW CDoll;
+	pMapCharacter = DEBUG_NEW CMapCharacter;
 
-	if (pRobot != nullptr)
+	if (pMapCharacter != nullptr)
 	{
 		// 初期化処理
-		pRobot->Init(rot);
+		pMapCharacter->Init(rot, pPath, nPlayMotion);
 
 		// 座標設定
-		pRobot->SetPosition(pos);
+		pMapCharacter->SetPosition(pos);
 
 		// 向き設定
-		pRobot->SetRotation(rot);
+		pMapCharacter->SetRotation(rot);
+
+		// 大きさ設定
+		pMapCharacter->SetScale(scale);
 	}
 
-	return pRobot;
+	return pMapCharacter;
 }
 
 //==========================================================
 // 座標設定
 //==========================================================
-void CDoll::SetPosition(const D3DXVECTOR3& pos)
+void CMapCharacter::SetPosition(const D3DXVECTOR3& pos)
 {
 	m_Info.pos = pos;
 
@@ -137,7 +121,7 @@ void CDoll::SetPosition(const D3DXVECTOR3& pos)
 //==========================================================
 // 向き設定
 //==========================================================
-void CDoll::SetRotation(const D3DXVECTOR3& rot)
+void CMapCharacter::SetRotation(const D3DXVECTOR3& rot)
 {
 	m_Info.rot = rot;
 	correction::Adjust(&m_Info.rot);
@@ -149,9 +133,22 @@ void CDoll::SetRotation(const D3DXVECTOR3& rot)
 }
 
 //==========================================================
+// 大きさ設定
+//==========================================================
+void CMapCharacter::SetScale(const D3DXVECTOR3& scale)
+{
+	m_Info.scale = scale;
+
+	if (m_pCharacter != nullptr)
+	{
+		m_pCharacter->SetScale(m_Info.scale);
+	}
+}
+
+//==========================================================
 // 設定
 //==========================================================
-void CDoll::Set()
+void CMapCharacter::Set()
 {
 	if (m_pCharacter != nullptr)
 	{

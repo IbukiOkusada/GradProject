@@ -145,7 +145,11 @@ CGame::CGame()
     m_pEndSound = nullptr;
     m_pEndText = nullptr;
     m_GameState = STATE::STATE_NONE;
-    m_pDoll = nullptr;
+
+    for (int i = 0; i < 7; i++)
+    {
+        m_pDoll[i] = nullptr;
+    }
 }
 
 //===============================================
@@ -261,7 +265,13 @@ HRESULT CGame::Init(void)
 
     m_pPause = CPause::Create();
 
-    m_pDoll = CDoll::Create(D3DXVECTOR3(33600.0f, 0.0f, -2550.0f), VECTOR3_ZERO);
+    m_pDoll[0] = CDoll::Create(D3DXVECTOR3(31900.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
+    m_pDoll[1] = CDoll::Create(D3DXVECTOR3(32100.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
+    m_pDoll[2] = CDoll::Create(D3DXVECTOR3(32300.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
+    m_pDoll[3] = CDoll::Create(D3DXVECTOR3(32400.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
+    m_pDoll[4] = CDoll::Create(D3DXVECTOR3(32200.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
+    m_pDoll[5] = CDoll::Create(D3DXVECTOR3(32000.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
+    m_pDoll[6] = CDoll::Create(D3DXVECTOR3(31800.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
 
   /*  pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
@@ -296,8 +306,12 @@ void CGame::Uninit(void)
     SAFE_UNINIT(m_pDeliveryStatus);
     SAFE_UNINIT(m_pGameTimer);
     SAFE_UNINIT(m_pPause);
-    SAFE_UNINIT(m_pDoll);
 
+    for (int i = 0; i < 7; i++)
+    {
+        SAFE_UNINIT(m_pDoll[i]);
+    }
+    
     // ‰ð•ú
     SAFE_RELEASE(m_pGoalManager);
   

@@ -741,7 +741,7 @@ void CObjectX::DrawCheck()
 		D3DXCOLOR col = GetColMulti();
 		if (col.a > 0.0f)
 		{
-			col.a -= 0.1f;
+			col.a -= 0.2f;
 
 			if (col.a <= 0.0f)
 			{
@@ -765,7 +765,7 @@ void CObjectX::DrawCheck()
 
 			if (col.a > 0.0f)
 			{
-				col.a -= 0.1f;
+				col.a -= 0.2f;
 
 				if (col.a <= 0.0f)
 				{
