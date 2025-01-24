@@ -208,6 +208,9 @@
     <Filter Include="object\manager">
       <UniqueIdentifier>{53843a85-f005-4601-926a-6a1333a5eeb2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="map\character">
+      <UniqueIdentifier>{201fed3d-8fb6-47f2-b23b-97b01ddbda25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="code\fade.cpp">
@@ -608,6 +611,9 @@
     </ClCompile>
     <ClCompile Include="code\doll.cpp">
       <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="code\map_character.cpp">
+      <Filter>map\character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1042,6 +1048,9 @@
     </ClInclude>
     <ClInclude Include="code\doll.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="code\map_character.h">
+      <Filter>map\character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

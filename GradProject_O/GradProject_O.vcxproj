@@ -217,6 +217,7 @@
     <ClCompile Include="code\list_manager.cpp" />
     <ClCompile Include="code\main.cpp" />
     <ClCompile Include="code\manager.cpp" />
+    <ClCompile Include="code\map_character.cpp" />
     <ClCompile Include="code\map_list.cpp" />
     <ClCompile Include="code\mesh.cpp" />
     <ClCompile Include="code\meshballoon.cpp" />
@@ -362,6 +363,7 @@
     <ClInclude Include="code\magic_enum\magic_enum_utility.hpp" />
     <ClInclude Include="code\main.h" />
     <ClInclude Include="code\manager.h" />
+    <ClInclude Include="code\map_character.h" />
     <ClInclude Include="code\map_list.h" />
     <ClInclude Include="code\mesh.h" />
     <ClInclude Include="code\meshballoon.h" />
