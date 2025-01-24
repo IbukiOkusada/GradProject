@@ -36,6 +36,7 @@
 #include "road.h"
 #include "goal_manager.h"
 #include "river.h"
+#include "doll.h"
 
 // enemy
 #include "car_manager.h"
@@ -144,6 +145,7 @@ CGame::CGame()
     m_pEndSound = nullptr;
     m_pEndText = nullptr;
     m_GameState = STATE::STATE_NONE;
+    m_pDoll = nullptr;
 }
 
 //===============================================
@@ -259,6 +261,8 @@ HRESULT CGame::Init(void)
 
     m_pPause = CPause::Create();
 
+    m_pDoll = CDoll::Create(D3DXVECTOR3(33600.0f, 0.0f, -2550.0f), VECTOR3_ZERO);
+
   /*  pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
     return S_OK;
@@ -292,6 +296,7 @@ void CGame::Uninit(void)
     SAFE_UNINIT(m_pDeliveryStatus);
     SAFE_UNINIT(m_pGameTimer);
     SAFE_UNINIT(m_pPause);
+    SAFE_UNINIT(m_pDoll);
 
     // ‰ð•ú
     SAFE_RELEASE(m_pGoalManager);
