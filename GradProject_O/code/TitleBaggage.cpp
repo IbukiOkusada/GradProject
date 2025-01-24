@@ -37,7 +37,7 @@ CTitleBaggage* CTitleBaggage::Create(const D3DXVECTOR3& pos)
 //<=========================================================
 HRESULT CTitleGoal::Init(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 {
-	constexpr char* MOTION_HUMAN = "data\\TXT\\motion_kidsboy.txt";	//ゴールとなる人間のモーション
+	constexpr char* MOTION_HUMAN = "data\\TXT\\motion_mob.txt";	//ゴールとなる人間のモーション
 	const D3DXVECTOR3 SCALE = D3DXVECTOR3(2.0f, 2.0f, 2.0f);		//スケール
 
 	//初期化
