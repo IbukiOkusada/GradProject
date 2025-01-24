@@ -87,6 +87,7 @@ public:	// 誰でもアクセス可能
 	CCamera *GetPrev(void) { return m_pPrev; }
 	MODE GetMode(void) { return m_mode; }
 	DRAWSTATE GetDrawState(void) { return m_DrawState; }
+	bool IsDebug() { return m_bDebug; }
 	bool GetDraw(void) const { return m_bDraw; }
 	float GetLength(void) { return m_fLength; }
 	CCameraAction* GetAction() { return m_pAction; }
@@ -106,6 +107,7 @@ private:	// 自分だけがアクセス可能
 	void MoveR(void);
 	void Slow(void);
 	void Zoom(void);
+	void FstPerson(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, const float fLength);
 
 	// メンバ変数
 	D3DXMATRIX m_mtxView;		// ビューマトリックス

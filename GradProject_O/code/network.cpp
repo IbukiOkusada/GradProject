@@ -341,7 +341,7 @@ void CNetWork::Online(void)
 			break;
 		}
 
-		char* pData = DEBUG_NEW char[NetWork::MAX_SEND_DATA];	// 受信用
+		char* pData = DEBUG_NEW char[NetWork::MAX_SEND_DATA * 2];	// 受信用
 
 		// 受信
 		int* pRecvByte = DEBUG_NEW int;
