@@ -524,7 +524,7 @@ void CNetWork::CommandDelete(const int nId, const char* pRecvData, CClient* pCli
 void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用まとめデータ
 	int byte = 0;
 
 	nProt = NetWork::COMMAND_PL_POS;
