@@ -265,6 +265,9 @@ void CMultiResult::Uninit(void)
 
 	// カメラ操作可能に
 	CManager::GetInstance()->GetCamera()->SetActive(true);
+	CManager::GetInstance()->GetCamera()->SetDraw(true);
+	CManager::GetInstance()->GetCamera()->GetAction()->SetFinish(true);
+	CManager::GetInstance()->GetCamera()->GetAction()->SetPause(true);
 
 	// サウンド停止
 	CManager::GetInstance()->GetSound()->Stop();
