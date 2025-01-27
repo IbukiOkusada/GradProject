@@ -35,8 +35,6 @@ namespace
 CDoll::CDoll()
 {
 	// ’l‚ÌƒNƒŠƒA
-	m_pNext = nullptr;
-	m_pPrev = nullptr;
 	m_pCharacter = nullptr;
 	m_Info = SInfo();
 }
@@ -94,7 +92,7 @@ void CDoll::Update(void)
 		m_pCharacter->Update();
 	}
 
-	CDebugProc::GetInstance()->Print(" ‚¢‚é‚æ[%f %f %f]\n");
+	CDebugProc::GetInstance()->Print(" ‚¢‚é‚æ[%f %f %f]\n", GetPosition().x, GetPosition().y, GetPosition().z);
 }
 
 //==========================================================

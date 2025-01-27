@@ -72,8 +72,6 @@ public:	// 誰でもアクセス可能
 	static CDoll* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
 
 	// メンバ関数(取得)
-	CDoll* GetNext(void) { return m_pNext; }
-	CDoll* GetPrev(void) { return m_pPrev; }
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
 	D3DXVECTOR3 GetRotation(void) { return m_Info.rot; }
 	CDoll::SInfo GetInfo(void) { return m_Info; }
@@ -83,9 +81,6 @@ public:	// 誰でもアクセス可能
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetRotation(const D3DXVECTOR3& rot);
 	void SetState(STATE state) { m_Info.state = state; }
-
-	void SetNext(CDoll* pNext) { m_pNext = pNext; }
-	void SetPrev(CDoll* pPrev) { m_pPrev = pPrev; }
 
 protected:	// 派生クラスからもアクセス可能
 
@@ -101,8 +96,6 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	SInfo m_Info;				// 自分自身の情報
-	CDoll* m_pPrev;			// 前のオブジェクトへのポインタ
-	CDoll* m_pNext;			// 次のオブジェクトへのポインタ
 };
 
 #endif

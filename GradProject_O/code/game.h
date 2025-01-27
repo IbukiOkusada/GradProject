@@ -92,6 +92,7 @@ private:
 	bool StartDirection();
 	void CreatePolice();
 	void CreateCar();
+	void CreateCharacter();
 
 	CMeshDome *m_pMeshDome;		// メッシュドームのポインタ
 	CGoalManager *m_pGoalManager;  // ゴールマネージャーのポインタ

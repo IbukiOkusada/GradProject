@@ -37,6 +37,7 @@
 #include "goal_manager.h"
 #include "river.h"
 #include "doll.h"
+#include "map_character.h"
 
 // enemy
 #include "car_manager.h"
@@ -220,7 +221,6 @@ HRESULT CGame::Init(void)
     (this->*(m_CreatePlayerFunc[net->GetState()]))();
 
     CMeter::Create();
-    //CManager::GetInstance()->GetSound()->Play(CSound::LABEL_BGM_GAME);
 
     int myid = net->GetIdx();
 
@@ -235,11 +235,14 @@ HRESULT CGame::Init(void)
     if (myid == net->GetIdx())
     {
         // 車の生成
-        CreateCar();
+        //CreateCar();
 
         // 警察の生成
-        CreatePolice();
+        //CreatePolice();
     }
+
+    // キャラクターの生成
+    //CreateCharacter();
 
     if (m_pGoalManager == nullptr)
     {
@@ -264,14 +267,6 @@ HRESULT CGame::Init(void)
     }
 
     m_pPause = CPause::Create();
-
-    m_pDoll[0] = CDoll::Create(D3DXVECTOR3(31900.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
-    m_pDoll[1] = CDoll::Create(D3DXVECTOR3(32100.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
-    m_pDoll[2] = CDoll::Create(D3DXVECTOR3(32300.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
-    m_pDoll[3] = CDoll::Create(D3DXVECTOR3(32400.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
-    m_pDoll[4] = CDoll::Create(D3DXVECTOR3(32200.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
-    m_pDoll[5] = CDoll::Create(D3DXVECTOR3(32000.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
-    m_pDoll[6] = CDoll::Create(D3DXVECTOR3(31800.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
 
   /*  pFog = DEBUG_NEW CFog;
     pFog->Set(D3DFOG_LINEAR, D3DXCOLOR(0.2f, 0.2f, 0.3f, 0.5f), 100.0f, 15000.0f, 1.0f);*/
@@ -697,6 +692,9 @@ void CGame::CreateCar()
     }
 }
 
+//===================================================
+// 車の生成
+//===================================================
 int CGame::GetRestDeliveryStatus()
 {
     int num = m_nTotalDeliveryStatus;
@@ -707,4 +705,24 @@ int CGame::GetRestDeliveryStatus()
     }
 
     return num;
+}
+
+//===================================================
+// キャラクターの生成
+//===================================================
+void CGame::CreateCharacter()
+{
+    // 人形の生成
+    m_pDoll[0] = CDoll::Create(D3DXVECTOR3(31900.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
+    m_pDoll[1] = CDoll::Create(D3DXVECTOR3(32100.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
+    m_pDoll[2] = CDoll::Create(D3DXVECTOR3(32300.0f, 0.0f, -2200.0f), VECTOR3_ZERO);
+    m_pDoll[3] = CDoll::Create(D3DXVECTOR3(32400.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
+    m_pDoll[4] = CDoll::Create(D3DXVECTOR3(32200.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
+    m_pDoll[5] = CDoll::Create(D3DXVECTOR3(32000.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
+    m_pDoll[6] = CDoll::Create(D3DXVECTOR3(31800.0f, 0.0f, -2500.0f), VECTOR3_ZERO);
+
+    // 魚生成
+    CMapCharacter::Create(D3DXVECTOR3(13250.0f, -600.0f, 3000.0f), VECTOR3_ZERO, VECTOR3_ONE, "data\\TXT\\character\\fish\\motion_fish.txt", 0);
+    CMapCharacter::Create(D3DXVECTOR3(13250.0f, -600.0f, 5000.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f), VECTOR3_ONE, "data\\TXT\\character\\fish\\motion_fish.txt", 1);
+    CMapCharacter::Create(D3DXVECTOR3(13250.0f, -600.0f, 1000.0f), D3DXVECTOR3(0.0f, D3DX_PI * 1.0f, 0.0f), VECTOR3_ONE, "data\\TXT\\character\\fish\\motion_fish.txt", 2);
 }

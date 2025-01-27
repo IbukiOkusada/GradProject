@@ -46,6 +46,9 @@ CPause::CPause()
 {
 	// ’l‚ÌƒNƒŠƒA
 	m_nNumSelect = 0;
+	m_bPause = false;
+	m_Offset = VECTOR3_ZERO;
+	m_pSE = nullptr;
 }
 
 //==========================================================

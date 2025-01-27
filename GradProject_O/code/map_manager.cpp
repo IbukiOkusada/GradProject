@@ -221,7 +221,6 @@ void CMapManager::LoadObstacle(const std::string& filename)
 	// ÉfÅ[É^ì«Ç›çûÇ›
 	std::vector<CMapObstacle::SInfo> roaddata(size);
 	File.read(reinterpret_cast<char*>(roaddata.data()), size * sizeof(CMapObstacle::SInfo));
-
 	
 	for (const auto& it : roaddata)
 	{

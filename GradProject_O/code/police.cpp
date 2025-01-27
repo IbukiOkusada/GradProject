@@ -211,11 +211,11 @@ void CPolice::Update(void)
 		}
 		else
 		{
-			if (m_pSpotLight == nullptr)
+			/*if (m_pSpotLight == nullptr)
 			{
 				m_pSpotLight = CSpotLight::Create();
 				m_pSpotLight->SetDiffuse(D3DXCOLOR(3.0f, 2.7f, 2.4f, 1.0f));
-			}
+			}*/
 
 			if (m_pShaderLight != nullptr)
 			{
