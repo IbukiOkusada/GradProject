@@ -98,7 +98,7 @@ void CModel::Update(void)
 //==========================================================
 void CModel::Draw(void)
 {
-	if (m_bDraw == false)
+	if (!m_bDraw)
 	{
 		return;
 	}

@@ -27,6 +27,9 @@ namespace
 	const float AVOID_COLLISION = 800.0f;
 	//const float AVOID_COLLISION_EMERGENCY = 800.0f;
 	const char* MODEL_PATH = "data\\TXT\\character\\robot\\motion_robot.txt";
+
+	const int SET_COL_MAX = (90);				// 設定する色の最大値（100 = 1.0）
+	const float SET_FLOAT_COL = (0.01f);		// 色のintの値をfloatに直す用
 }
 
 //==========================================================
@@ -76,6 +79,12 @@ HRESULT CRobot::Init(const D3DXVECTOR3& rot)
 	m_pCharacter->SetParent(NULL);
 	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_WALK);
 	m_pCharacter->SetScale(D3DXVECTOR3(5.0f, 5.0f, 5.0f));
+
+	// 車体の色をランダムに
+	float fColR = (float)(rand() % SET_COL_MAX) * SET_FLOAT_COL;
+	float fColG = (float)(rand() % SET_COL_MAX) * SET_FLOAT_COL;
+	float fColB = (float)(rand() % SET_COL_MAX) * SET_FLOAT_COL;
+	m_pCharacter->SetColMulti(D3DXCOLOR(fColR, fColG, fColB, 1.0f));
 
 	// 移動量の初期値設定
 	m_Info.move.x = -sinf(rot.y) * WALK_MOVE_MAG;

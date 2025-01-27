@@ -31,8 +31,9 @@ namespace
 {
 	const D3DXVECTOR3 SCALE = D3DXVECTOR3(3.0f, 3.0f, 3.0f);
 
-	const int SET_COL_MAX = (50);				// 設定する色の最大値（100 = 1.0）
-	const float SET_FLOAT_COL = (100.0f);		// 色のintの値をfloatに直す用
+	const int SET_COL_MAX = (70);				// 設定する色の最大値（100 = 1.0）
+	const float SET_FLOAT_COL = (0.01f);		// 色のintの値をfloatに直す用
+	const float SET_DEFCOL = 1.0f - (SET_COL_MAX * SET_FLOAT_COL);
 }
 
 //==========================================================
@@ -91,9 +92,9 @@ HRESULT CGoal::Init(void)
 	m_People.pChara->SetScale(SCALE);
 	m_People.pChara->SetMtx();
 	// 車体の色をランダムに
-	float fColG = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
-	float fColR = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
-	float fColB = (float)(rand() % SET_COL_MAX) / SET_FLOAT_COL + 0.5f;
+	float fColG = (float)(rand() % SET_COL_MAX) * SET_FLOAT_COL + SET_DEFCOL;
+	float fColR = (float)(rand() % SET_COL_MAX) * SET_FLOAT_COL + SET_DEFCOL;
+	float fColB = (float)(rand() % SET_COL_MAX) * SET_FLOAT_COL + SET_DEFCOL;
 
 	for (int i = 0; i < m_People.pChara->GetNumParts() - 1; i++)
 	{
