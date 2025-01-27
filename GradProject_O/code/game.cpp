@@ -235,14 +235,14 @@ HRESULT CGame::Init(void)
     if (myid == net->GetIdx())
     {
         // 車の生成
-        //CreateCar();
+        CreateCar();
 
         // 警察の生成
-        //CreatePolice();
+        CreatePolice();
     }
 
     // キャラクターの生成
-    //CreateCharacter();
+    CreateCharacter();
 
     if (m_pGoalManager == nullptr)
     {
