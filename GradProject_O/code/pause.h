@@ -35,6 +35,7 @@ public:	// 誰でもアクセス可能
 	void Uninit(void);
 	void Update(void);
 	static CPause* Create(void);
+	static CPause* GetInstance() { return m_pInstance; }
 
 	bool GetPause(void) { return m_bPause; }
 
@@ -57,6 +58,7 @@ private:	// 自分だけがアクセス可能
 	bool m_bPause;
 	D3DXVECTOR3 m_Offset;
 	CMasterSound::CObjectSound* m_pSE;
+	static CPause* m_pInstance;
 };
 
 #endif
