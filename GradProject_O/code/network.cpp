@@ -557,10 +557,10 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 
 	// 座標に変換
 	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	memcpy(&rot, &pRecvData[sizeof(D3DXVECTOR3)], sizeof(D3DXVECTOR3));
+	memcpy(&rot.y, &pRecvData[sizeof(D3DXVECTOR3)], sizeof(float));
 
 	// 確認バイト数を加算
-	*pByte += sizeof(D3DXVECTOR3);
+	*pByte += sizeof(float);
 
 	// プレイヤーの存在確認
 	if (nId < 0 || nId >= NetWork::MAX_CONNECT || nId == m_nMyIdx) { return; }
@@ -851,9 +851,9 @@ void CNetWork::RecvCarPos(int* pByte, const int nId, const char* pRecvData)
 
 	// 向きを取得
 	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
-	*pByte += sizeof(D3DXVECTOR3);
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&rot.y, &pRecvData[byte], sizeof(float));
+	*pByte += sizeof(float);
+	byte += sizeof(float);
 
 	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
 
@@ -906,9 +906,9 @@ void CNetWork::RecvPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	// 向きを取得
 	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
-	*pByte += sizeof(D3DXVECTOR3);
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&rot.y, &pRecvData[byte], sizeof(float));
+	*pByte += sizeof(float);
+	byte += sizeof(float);
 
 	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
 
@@ -961,9 +961,9 @@ void CNetWork::RecvAddPdPos(int* pByte, const int nId, const char* pRecvData)
 
 	// 向きを取得
 	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
-	*pByte += sizeof(D3DXVECTOR3);
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&rot.y, &pRecvData[byte], sizeof(float));
+	*pByte += sizeof(float);
+	byte += sizeof(float);
 
 	CCar* pCar = CCarManager::GetInstance()->GetMapList()->Get(carid);
 
@@ -1054,62 +1054,61 @@ void CNetWork::RecvPdChase(int* pByte, const int nId, const char* pRecvData)
 //===================================================
 void CNetWork::RecvAddPdChase(int* pByte, const int nId, const char* pRecvData)
 {
-	return;
-	//int byte = 0;
+	int byte = 0;
 
-	//// 車のIDを得る
-	//int carid = -1;
-	//memcpy(&carid, &pRecvData[byte], sizeof(int));
-	//*pByte += sizeof(int);
-	//byte += sizeof(int);
+	// 車のIDを得る
+	int carid = -1;
+	memcpy(&carid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
 
-	//// プレイヤーIDを取得
-	//int plyid = -1;
-	//memcpy(&plyid, &pRecvData[byte], sizeof(int));
-	//*pByte += sizeof(int);
-	//byte += sizeof(int);
+	// プレイヤーIDを取得
+	int plyid = -1;
+	memcpy(&plyid, &pRecvData[byte], sizeof(int));
+	*pByte += sizeof(int);
+	byte += sizeof(int);
 
-	//CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
-	//CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(plyid);
+	CPolice* pCar = CPoliceManager::GetInstance()->GetMapList()->Get(carid);
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(plyid);
 
-	//// プレイヤーがいない
-	//if (pPlayer == nullptr)
-	//{
-	//	RecvJoin(pByte, nId, pRecvData);
-	//	return;
-	//}
+	// プレイヤーがいない
+	if (pPlayer == nullptr)
+	{
+		RecvJoin(pByte, nId, pRecvData);
+		return;
+	}
 
-	//// 車が存在していない
-	//if (pCar == nullptr)
-	//{
-	//	CAddPolice* pPolice = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
+	// 車が存在していない
+	if (pCar == nullptr)
+	{
+		CAddPolice* pPolice = CAddPolice::Create(VECTOR3_ZERO, VECTOR3_ZERO, VECTOR3_ZERO, carid);
 
-	//	if (pPolice != nullptr)
-	//	{
-	//		pPolice->SetType(CCar::TYPE::TYPE_RECV);
+		if (pPolice != nullptr)
+		{
+			pPolice->SetType(CCar::TYPE::TYPE_RECV);
 
-	//		// 応援の警察は応援を呼ばないようにする
-	//		pPolice->GetAi()->SetCall(true);
-	//	}
-	//		pCar = pPolice;
-	//}
+			// 応援の警察は応援を呼ばないようにする
+			pPolice->GetAi()->SetCall(true);
+		}
+			pCar = pPolice;
+	}
 
-	//if (pCar == nullptr) { return; }
-	//// 追跡状態にする
-	//pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
+	if (pCar == nullptr) { return; }
+	// 追跡状態にする
+	pCar->SetChaseNext(CPolice::CHASE::CHASE_BEGIN);
 
-	//// 自分自身
-	//if (plyid == m_nMyIdx)
-	//{
-	//	pCar->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
-	//	pCar->SetNextPlayer(pPlayer);
-	//}
-	//// それ以外
-	//else
-	//{
-	//	pCar->SetTypeNext(CCar::TYPE::TYPE_RECV);
-	//	pCar->SetNextPlayer(pPlayer);
-	//}
+	// 自分自身
+	if (plyid == m_nMyIdx)
+	{
+		pCar->SetTypeNext(CCar::TYPE::TYPE_ACTIVE);
+		pCar->SetNextPlayer(pPlayer);
+	}
+	// それ以外
+	else
+	{
+		pCar->SetTypeNext(CCar::TYPE::TYPE_RECV);
+		pCar->SetNextPlayer(pPlayer);
+	}
 }
 
 //===================================================
@@ -1246,8 +1245,8 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向きを挿入
-	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&aSendData[byte], &rot.y, sizeof(float));
+	byte += sizeof(float);
 
 	// 送信
 	m_pClient->SetData(&aSendData[0], byte);
@@ -1479,7 +1478,7 @@ void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& ro
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_CAR_POS;
 	int byte = 0;
 
@@ -1496,8 +1495,8 @@ void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& ro
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向きを挿入
-	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&aSendData[byte], &rot.y, sizeof(float));
+	byte += sizeof(float);
 
 	// 送信
 	m_pClient->SetData(&aSendData[0], byte);
@@ -1510,7 +1509,7 @@ void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PD_POS;
 	int byte = 0;
 
@@ -1527,8 +1526,8 @@ void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向きを挿入
-	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&aSendData[byte], &rot.y, sizeof(float));
+	byte += sizeof(float);
 
 	// 送信
 	m_pClient->SetData(&aSendData[0], byte);
@@ -1541,7 +1540,7 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_ADDPD_POS;
 	int byte = 0;
 
@@ -1558,8 +1557,8 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向きを挿入
-	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&aSendData[byte], &rot.y, sizeof(float));
+	byte += sizeof(float);
 
 	// 送信
 	m_pClient->SetData(&aSendData[0], byte);

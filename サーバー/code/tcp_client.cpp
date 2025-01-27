@@ -92,15 +92,6 @@ void CClient::SetData(char *pChar, int nByte)
 			m_nSendByte += nByte;
 		}
 	}
-	else
-	{
-		if (m_nTempSendByte + nByte < NetWork::MAX_COMMAND_DATA)
-		{
-			// ‰¼‚É“ü‚ê‚Ä‚¨‚­
-			memcpy(&m_aTempSendData[m_nTempSendByte], pChar, nByte);
-			m_nTempSendByte += nByte;
-		}
-	}
 }
 
 //==========================================================
