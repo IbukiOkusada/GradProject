@@ -54,6 +54,7 @@ CObject2D::CObject2D(const D3DXVECTOR3 pos) : CObject(3)
 	m_bLighting = true;
 	m_bAlphatest = true;
 	m_bZtest = true;
+	m_Anchor = D3DXVECTOR2(0.5f, 0.5f);
 }
 
 //===============================================
@@ -74,6 +75,7 @@ CObject2D::CObject2D(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nPr
 	m_bLighting = true;
 	m_bAlphatest = true;
 	m_bZtest = true;
+	m_Anchor = D3DXVECTOR2(0.5f, 0.5f);
 }
 
 //===============================================
@@ -325,17 +327,17 @@ void CObject2D::SetVtx(void)
 	);
 
 	//頂点座標の設定
-	pVtx[0].pos.x = m_pos.x + sinf(m_rot.z + (-D3DX_PI + m_fAngle)) * m_fLength;
-	pVtx[0].pos.y = m_pos.y + cosf(m_rot.z + (-D3DX_PI + m_fAngle)) * m_fLength;
+	pVtx[0].pos.x = m_pos.x + sinf(m_rot.z + (-D3DX_PI + m_fAngle)) * m_fLength * ((m_Anchor.x) * 2.0f);
+	pVtx[0].pos.y = m_pos.y + cosf(m_rot.z + (-D3DX_PI + m_fAngle)) * m_fLength * ((1.0f - m_Anchor.y) * 2.0f);
 	pVtx[0].pos.z = 0.0f;
-	pVtx[1].pos.x = m_pos.x + sinf(m_rot.z + (D3DX_PI - m_fAngle)) * m_fLength;
-	pVtx[1].pos.y = m_pos.y + cosf(m_rot.z + (D3DX_PI - m_fAngle)) * m_fLength;
+	pVtx[1].pos.x = m_pos.x + sinf(m_rot.z + (D3DX_PI - m_fAngle)) * m_fLength * ((1.0f - m_Anchor.x) * 2.0f);
+	pVtx[1].pos.y = m_pos.y + cosf(m_rot.z + (D3DX_PI - m_fAngle)) * m_fLength * ((1.0f - m_Anchor.y) * 2.0f);
 	pVtx[1].pos.z = 0.0f;
-	pVtx[2].pos.x = m_pos.x + sinf(m_rot.z + -m_fAngle) * m_fLength;
-	pVtx[2].pos.y = m_pos.y + cosf(m_rot.z + -m_fAngle) * m_fLength;
+	pVtx[2].pos.x = m_pos.x + sinf(m_rot.z + -m_fAngle) * m_fLength * (( m_Anchor.x) * 2.0f);
+	pVtx[2].pos.y = m_pos.y + cosf(m_rot.z + -m_fAngle) * m_fLength * ((m_Anchor.y) * 2.0f);
 	pVtx[2].pos.z = 0.0f;
-	pVtx[3].pos.x = m_pos.x + sinf(m_rot.z + m_fAngle) * m_fLength;
-	pVtx[3].pos.y = m_pos.y + cosf(m_rot.z + m_fAngle) * m_fLength;
+	pVtx[3].pos.x = m_pos.x + sinf(m_rot.z + m_fAngle) * m_fLength * ((1.0f - m_Anchor.x) * 2.0f);
+	pVtx[3].pos.y = m_pos.y + cosf(m_rot.z + m_fAngle) * m_fLength * ((m_Anchor.y) * 2.0f);
 	pVtx[3].pos.z = 0.0f;
 
 	// rhwの設定
@@ -490,13 +492,13 @@ void CObject2D::SetVtxRatio(const float fTexU, const float fTexV, const float fW
 //===============================================
 // 頂点情報設定
 //===============================================
-CObject2D *CObject2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nPriority)
+CObject2D *CObject2D::Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nPriority, D3DXVECTOR2 Anchor)
 {
 	CObject2D *pObject2D = NULL;
 
 	// オブジェクト2Dの生成
 	pObject2D = DEBUG_NEW CObject2D(pos, rot, nPriority);
-
+	pObject2D->m_Anchor = Anchor;
 	if (pObject2D != NULL)
 	{// 生成できた場合
 		// 初期化処理

@@ -80,7 +80,9 @@ HRESULT CMeter::Init(void)
 		m_pMeter[i]->SetVtx();
 	}
 
-
+	m_pNitroGage = CObject2D::Create(m_pos + D3DXVECTOR3(10.0,45.0f,0.0f), VECTOR3_ZERO, 7,D3DXVECTOR2(0.0f,0.5f));
+	m_pNitroGage->SetSize(0.0f, 15.0f);
+	m_pNitroGage->SetVtx();
 	m_pFrame = CObject2D::Create(m_pos, VECTOR3_ZERO,7);
 	m_pFrame->SetSize(0.0f, 0.0f);
 	m_pFrame->BindTexture(pTexture->Regist("data\\TEXTURE\\UI\\frame.png"));
@@ -163,6 +165,7 @@ void CMeter::Update(void)
 		break;
 	case CMeter::STATE_NORMAL:
 		Measure();
+		Gage();
 		break;
 	case CMeter::STATE_MAX:
 		break;
@@ -267,7 +270,27 @@ void CMeter::Measure(void)
 		}
 	}
 }
-
+//==========================================================
+// ÉQÅ[ÉWä«óù
+//==========================================================
+void CMeter::Gage(void)
+{
+	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
+	if (pPlayer->GetLife() >= 80.0f)
+	{
+		m_pNitroGage->SetCol(D3DXCOLOR(0.1f, 0.91f, 0.81f, 1.0f));
+	}
+	else if (pPlayer->GetLife() <= 20.0f)
+	{
+		m_pNitroGage->SetCol(D3DXCOLOR(0.91f, 0.11f, 0.3f, 1.0f));
+	}
+	else
+	{
+		m_pNitroGage->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	}
+	m_pNitroGage->SetSize(m_pNitroGage->GetSize().x +(pPlayer->GetLife() - m_pNitroGage->GetSize().x)*0.1f, 20.0f);
+	m_pNitroGage->SetVtx();
+}
 //==========================================================
 // ê∂ê¨
 //==========================================================

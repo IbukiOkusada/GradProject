@@ -41,6 +41,7 @@ public:	// 誰でもアクセス可能
 	static CMeter* Create(void);
 	void BootAnimation();
 	void Measure();;
+	void Gage();
 	// メンバ関数(取得)
 
 	// メンバ関数(設定)

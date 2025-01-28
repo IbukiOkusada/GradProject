@@ -45,7 +45,7 @@ public:	// 誰でもアクセス可能
 	virtual void Uninit(void);
 	virtual void Update(void);
 	virtual void Draw(void);
-	static CObject2D *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nPriority = 3);
+	static CObject2D *Create(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot, const int nPriority = 3,D3DXVECTOR2 Anchor = D3DXVECTOR2(0.5f, 0.5f));
 	static CObject2D *Create(const int nPriority = 3);
 	void BindTexture(int nIdx);
 
@@ -91,6 +91,7 @@ protected:	// 派生クラスからもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ変数
+	D3DXVECTOR2 m_Anchor;
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;	// 頂点バッファへのポインタ
 	float m_fWidth;		// 幅
 	float m_fHeight;		// 高さ
