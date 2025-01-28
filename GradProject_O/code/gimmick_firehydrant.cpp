@@ -74,6 +74,8 @@ void CGimmickFireHydrant::Uninit(void)
 		m_pObj = nullptr;
 	}
 
+	SAFE_DELETE(m_pEffect);
+
 	CGimmick::Uninit();
 }
 
@@ -185,7 +187,6 @@ void CGimmickFireHydrant::SetEffect()
 	{
 		m_pEffect = CEffekseer::GetInstance()->Create("data\\EFFEKSEER\\splash.efkefc", 
 			GetPos(), VECTOR3_ZERO, VECTOR3_ZERO, 120.0f, true, false);
-
 	}
 }
 

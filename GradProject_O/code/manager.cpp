@@ -36,6 +36,7 @@
 #include "entry.h"
 #include "network.h"
 #include "fxmanager.h"
+#include "pause.h"
 //===============================================
 // 静的メンバ変数
 //===============================================
@@ -387,7 +388,17 @@ void CManager::Update(void)
 
 	if (m_pScene != nullptr)
 	{
-		CEffekseer::GetInstance()->Update();
+		// ポーズ状態ならば更新しない
+		CPause* p = CPause::GetInstance();
+		if (p == nullptr)
+		{
+			CEffekseer::GetInstance()->Update();
+		}
+		else if (p != nullptr && !p->GetPause())
+		{
+			CEffekseer::GetInstance()->Update();
+		}
+
 		m_pScene->Update();
 	}
 

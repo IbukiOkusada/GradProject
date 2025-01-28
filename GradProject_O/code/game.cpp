@@ -649,7 +649,7 @@ void CGame::CreateMultiPlayer(void)
         if (!net->GetConnect(i)) { continue; }
 
         D3DXVECTOR3 pos = SET_PLAYER_POS;
-        pos.z += 200.0f;
+        pos.z += 200.0f * i;
         CPlayer* pPlayer = CPlayer::Create(pos,
             VECTOR3_ZERO, VECTOR3_ZERO, i);
 

@@ -1425,6 +1425,10 @@ void CPlayer::SetStateRecv()
 		if (m_pFont[i] == nullptr) { continue; }
 		SAFE_UNINIT(m_pFont[i]);
 	}
+
+	// À•W‚ÆŒü‚«‚Ì‰Šú’l‚ğ“ü‚ê‚é
+	m_RecvInfo.pos = m_Info.pos;
+	m_RecvInfo.rot = m_Info.rot;
 }
 
 //===============================================

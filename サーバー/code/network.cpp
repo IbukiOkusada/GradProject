@@ -524,7 +524,7 @@ void CNetWork::CommandDelete(const int nId, const char* pRecvData, CClient* pCli
 void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用まとめデータ
 	int byte = 0;
 
 	nProt = NetWork::COMMAND_PL_POS;
@@ -542,10 +542,10 @@ void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClie
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
 
-	// 座標挿入
-	memcpy(&aSendData[byte], &pRecvData[sizeof(D3DXVECTOR3)], sizeof(D3DXVECTOR3));
-	*pNowByte += sizeof(D3DXVECTOR3);
-	byte += sizeof(D3DXVECTOR3);
+	// 向き挿入
+	memcpy(&aSendData[byte], &pRecvData[sizeof(D3DXVECTOR3)], sizeof(float));
+	*pNowByte += sizeof(float);
+	byte += sizeof(float);
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);
@@ -922,7 +922,7 @@ void CNetWork::CommandEndInspection(const int nId, const char* pRecvData, CClien
 void CNetWork::CommandCarPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用まとめデータ
 	int byte = 0;
 	int recvbyte = 0;
 
@@ -949,10 +949,10 @@ void CNetWork::CommandCarPos(const int nId, const char* pRecvData, CClient* pCli
 	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 向き挿入
-	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
-	*pNowByte += sizeof(D3DXVECTOR3);
-	byte += sizeof(D3DXVECTOR3);
-	recvbyte += sizeof(D3DXVECTOR3);
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(float));
+	*pNowByte += sizeof(float);
+	byte += sizeof(float);
+	recvbyte += sizeof(float);
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);
@@ -964,7 +964,7 @@ void CNetWork::CommandCarPos(const int nId, const char* pRecvData, CClient* pCli
 void CNetWork::CommandPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用まとめデータ
 	int byte = 0;
 	int recvbyte = 0;
 
@@ -991,10 +991,10 @@ void CNetWork::CommandPdPos(const int nId, const char* pRecvData, CClient* pClie
 	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 向き挿入
-	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
-	*pNowByte += sizeof(D3DXVECTOR3);
-	byte += sizeof(D3DXVECTOR3);
-	recvbyte += sizeof(D3DXVECTOR3);
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(float));
+	*pNowByte += sizeof(float);
+	byte += sizeof(float);
+	recvbyte += sizeof(float);
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);
@@ -1006,7 +1006,7 @@ void CNetWork::CommandPdPos(const int nId, const char* pRecvData, CClient* pClie
 void CNetWork::CommandAddPdPos(const int nId, const char* pRecvData, CClient* pClient, int* pNowByte)
 {
 	int nProt = -1;	// プロトコル番号
-	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用まとめデータ
+	char aSendData[sizeof(int) * 2 + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用まとめデータ
 	int byte = 0;
 	int recvbyte = 0;
 
@@ -1033,10 +1033,10 @@ void CNetWork::CommandAddPdPos(const int nId, const char* pRecvData, CClient* pC
 	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 向き挿入
-	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(D3DXVECTOR3));
-	*pNowByte += sizeof(D3DXVECTOR3);
-	byte += sizeof(D3DXVECTOR3);
-	recvbyte += sizeof(D3DXVECTOR3);
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(float));
+	*pNowByte += sizeof(float);
+	byte += sizeof(float);
+	recvbyte += sizeof(float);
 
 	// 挿入
 	pClient->SetData(&aSendData[0], byte);

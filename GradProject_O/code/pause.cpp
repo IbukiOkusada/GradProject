@@ -39,6 +39,8 @@ namespace
 	};
 }
 
+CPause* CPause::m_pInstance = nullptr;
+
 //==========================================================
 // コンストラクタ
 //==========================================================
@@ -49,6 +51,11 @@ CPause::CPause()
 	m_bPause = false;
 	m_Offset = VECTOR3_ZERO;
 	m_pSE = nullptr;
+
+	for (int i = 0; i < CPause::TYPE_MAX; i++)
+	{
+		m_pPauseButton[i] = nullptr;
+	}
 }
 
 //==========================================================
@@ -80,6 +87,19 @@ HRESULT CPause::Init(void)
 		m_pPauseButton[i]->SetVtx();
 	}
 
+#if 1
+
+	m_pPauseFrame->SetDraw(false);
+
+	for (int i = 0; i < CPause::TYPE_MAX; i++)
+	{
+		m_pPauseButton[i]->SetDraw(false);
+	}
+
+#endif
+
+	m_pInstance = this;
+
 	return S_OK;
 }
 
@@ -88,6 +108,7 @@ HRESULT CPause::Init(void)
 //==========================================================
 void CPause::Uninit(void)
 {
+	m_pInstance = nullptr;
 	SAFE_UNINIT_DELETE(m_pSE);
 	Release();
 }
