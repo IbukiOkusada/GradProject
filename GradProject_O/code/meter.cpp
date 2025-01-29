@@ -92,6 +92,11 @@ HRESULT CMeter::Init(void)
 	m_pInnerCircle = CObject2D::Create(m_pos, VECTOR3_ZERO, 7);
 	m_pInnerCircle->SetLength(500.0f);
 	m_pInnerCircle->BindTexture(pTexture->Regist("data\\TEXTURE\\UI\\inner_circle.png"));
+
+	m_pSound = CMasterSound::CObjectSound::Create("data\\SE\\cursor5.wav", -1);
+	m_pSound->Stop();
+	m_pSound->SetVolume(0.5f);
+
 	return S_OK;
 }
 
@@ -135,7 +140,7 @@ void CMeter::Uninit(void)
 	{
 		SAFE_UNINIT(m_pNitroGage);
 	}
-	
+	SAFE_UNINIT_DELETE(m_pSound);
 	Release();
 }
 
@@ -278,14 +283,17 @@ void CMeter::Gage(void)
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer();
 	if (pPlayer->GetLife() >= 80.0f)
 	{
+		m_pSound->Stop();
 		m_pNitroGage->SetCol(D3DXCOLOR(0.1f, 0.91f, 0.81f, 1.0f));
 	}
 	else if (pPlayer->GetLife() <= 20.0f)
 	{
+		m_pSound->Start();	
 		m_pNitroGage->SetCol(D3DXCOLOR(0.91f, 0.11f, 0.3f, 1.0f));
 	}
 	else
 	{
+		m_pSound->Stop();
 		m_pNitroGage->SetCol(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 	m_pNitroGage->SetSize(m_pNitroGage->GetSize().x +(pPlayer->GetLife() - m_pNitroGage->GetSize().x)*0.1f, 20.0f);
