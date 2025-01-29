@@ -28,8 +28,11 @@ public:	// 誰でもアクセス可能
 	enum STATE
 	{
 		STATE_NONE = 0, // 何もない
-		STATE_WALK, 	// 歩き状態
-		STATE_AVOID,	// 回避状態
+		STATE_NIGHTOFFIRE, 	// 歩き状態
+		STATE_ENOCH,	// 回避状態
+		STATE_DROPS_FIRST,	// 回避状態
+		STATE_DROPS_SECOND,	// 回避状態
+		STATE_DROPS_POSE,	// 回避状態
 		STATE_MAX
 	};
 
@@ -41,6 +44,7 @@ public:	// 誰でもアクセス可能
 		D3DXVECTOR3 move;		// 移動量
 		STATE state;			// 状態
 		int nId;
+		int nCntLoop;			// ループ回数
 
 		// コンストラクタ
 		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO),
@@ -57,7 +61,16 @@ public:	// 誰でもアクセス可能
 	enum MOTION
 	{
 		MOTION_NIGHTOFFIRE = 0,	// night of fireモーション
-		MOTION_ENOCH,	// enochモーション
+		MOTION_ENOCH,			// enochモーション
+		MOTION_DROPS_FIRST,		// 相性×優勝ドロップス前半モーション
+		MOTION_DROPS_SECOND,	// 相性×優勝ドロップス後半モーション
+		MOTION_DROPS_POSE1,		// 相性×優勝ドロップスポーズモーション
+		MOTION_DROPS_POSE2,		// 相性×優勝ドロップスポーズモーション
+		MOTION_DROPS_POSE3,		// 相性×優勝ドロップスポーズモーション
+		MOTION_DROPS_POSE4,		// 相性×優勝ドロップスポーズモーション
+		MOTION_DROPS_POSE5,		// 相性×優勝ドロップスポーズモーション
+		MOTION_DROPS_POSE6,		// 相性×優勝ドロップスポーズモーション
+		MOTION_DROPS_POSE7,		// 相性×優勝ドロップスポーズモーション
 		MOTION_MAX
 	};
 
@@ -69,7 +82,7 @@ public:	// 誰でもアクセス可能
 	HRESULT Init(const D3DXVECTOR3& rot);
 	void Uninit(void);
 	void Update(void);
-	static CDoll* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	static CDoll* Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nID);
 
 	// メンバ関数(取得)
 	D3DXVECTOR3 GetPosition(void) { return m_Info.pos; }
@@ -81,6 +94,7 @@ public:	// 誰でもアクセス可能
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetRotation(const D3DXVECTOR3& rot);
 	void SetState(STATE state) { m_Info.state = state; }
+	void SetID(int nID) { m_Info.nId = nID; }
 
 protected:	// 派生クラスからもアクセス可能
 
@@ -93,6 +107,7 @@ protected:	// 派生クラスからもアクセス可能
 private:	// 自分だけがアクセス可能
 
 	// メンバ関数
+	void Dance(void);
 
 	// メンバ変数
 	SInfo m_Info;				// 自分自身の情報
