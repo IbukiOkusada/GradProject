@@ -11,6 +11,7 @@
 #include "number.h"
 #include "object2D.h"
 #include "player.h"
+#include "objectsound.h"
 
 namespace
 {
@@ -66,6 +67,7 @@ private:	// 自分だけがアクセス可能
 	CObject2D* m_pNitroGage;
 	CObject2D* m_pCircle;
 	CObject2D* m_pInnerCircle;
+	CMasterSound::CObjectSound * m_pSound;
 	STATE m_state;
 	int m_nStateCount;
 };
