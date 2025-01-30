@@ -254,7 +254,6 @@ HRESULT CGame::Init(void)
     }
 
     CCameraManager::GetInstance()->GetTop()->Init();
-    CCameraManager::GetInstance()->GetTop()->SetRotation(D3DXVECTOR3(0.0f, -D3DX_PI * 0.5f, 0.0f));
 
     if (m_pDeliveryStatus == nullptr)
     {
