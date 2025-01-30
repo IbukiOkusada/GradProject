@@ -62,10 +62,10 @@ HRESULT CDoll::Init(const D3DXVECTOR3& rot)
 {
 	m_pCharacter = CCharacter::Create(MODEL_PATH);
 	m_pCharacter->SetParent(NULL);
-	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_NIGHTOFFIRE);
+	m_pCharacter->GetMotion()->InitSet(MOTION::MOTION_DROPS_FIRST);
 	m_pCharacter->SetScale(D3DXVECTOR3(7.0f, 7.0f, 7.0f));
 
-	m_Info.state = STATE_WALK;
+	m_Info.state = STATE_DROPS_FIRST;
 
 	return S_OK;
 }
@@ -90,6 +90,8 @@ void CDoll::Update(void)
 	if (m_pCharacter != nullptr)
 	{
 		m_pCharacter->Update();
+
+		Dance();
 	}
 
 	CDebugProc::GetInstance()->Print(" ‚¢‚é‚æ[%f %f %f]\n", GetPosition().x, GetPosition().y, GetPosition().z);
@@ -98,7 +100,7 @@ void CDoll::Update(void)
 //==========================================================
 // ¶¬
 //==========================================================
-CDoll* CDoll::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+CDoll* CDoll::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nID)
 {
 	CDoll* pRobot = nullptr;
 
@@ -114,6 +116,9 @@ CDoll* CDoll::Create(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 
 		// Œü‚«Ý’è
 		pRobot->SetRotation(rot);
+
+		// Œü‚«Ý’è
+		pRobot->SetID(nID);
 	}
 
 	return pRobot;
@@ -155,5 +160,34 @@ void CDoll::Set()
 	{
 		m_pCharacter->SetPosition(m_Info.pos);
 		m_pCharacter->SetRotation(m_Info.rot);
+	}
+}
+
+//==========================================================
+// —x‚èÝ’è
+//==========================================================
+void CDoll::Dance(void)
+{
+	if (!m_pCharacter->GetMotion()->GetEnd()) { return; }
+
+	if (m_Info.state == STATE_DROPS_FIRST)
+	{
+		m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_DROPS_POSE1 + m_Info.nId);
+		m_Info.state = STATE_DROPS_POSE;
+		return;
+	}
+
+	if (m_Info.state == STATE_DROPS_POSE)
+	{
+		m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_DROPS_SECOND);
+		m_Info.state = STATE_DROPS_SECOND;
+		return;
+	}
+
+	if (m_Info.state == STATE_DROPS_SECOND)
+	{
+		m_pCharacter->GetMotion()->BlendSet(MOTION::MOTION_DROPS_FIRST);
+		m_Info.state = STATE_DROPS_FIRST;
+		return;
 	}
 }
