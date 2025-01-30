@@ -341,7 +341,7 @@ void CNetWork::Online(void)
 			break;
 		}
 
-		char* pData = DEBUG_NEW char[NetWork::MAX_SEND_DATA * 2];	// 受信用
+		char* pData = DEBUG_NEW char[NetWork::MAX_SEND_DATA];	// 受信用
 
 		// 受信
 		int* pRecvByte = DEBUG_NEW int;
@@ -1228,11 +1228,11 @@ void CNetWork::SendDelete()
 //===================================================
 // プレイヤーの座標送信
 //===================================================
-void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const float& rot)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3)] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_PL_POS;
 	int byte = 0;
 
@@ -1245,7 +1245,7 @@ void CNetWork::SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向きを挿入
-	memcpy(&aSendData[byte], &rot.y, sizeof(float));
+	memcpy(&aSendData[byte], &rot, sizeof(float));
 	byte += sizeof(float);
 
 	// 送信
@@ -1412,11 +1412,11 @@ void CNetWork::SendTutorialNo()
 //===================================================
 // 検問設置を送信
 //===================================================
-void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx, int nStartPdId)
+void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const float& rot, int nIdx, int nStartPdId)
 {
 	if (!GetActive()) { return; }
 
-	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(D3DXVECTOR3) + sizeof(int) + sizeof(int)] = {};	// 送信用
+	char aSendData[sizeof(int) + sizeof(int) + sizeof(D3DXVECTOR3) + sizeof(float) + sizeof(int) + sizeof(int)] = {};	// 送信用
 	int nProt = NetWork::COMMAND_SET_INSP;
 	int byte = 0;
 
@@ -1433,8 +1433,8 @@ void CNetWork::SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向き
-	memcpy(&aSendData[byte], &rot, sizeof(D3DXVECTOR3));
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&aSendData[byte], &rot, sizeof(float));
+	byte += sizeof(float);
 
 	// 道のID
 	memcpy(&aSendData[byte], &nIdx, sizeof(int));
@@ -1474,7 +1474,7 @@ void CNetWork::SendEndInspection(int nId)
 //===================================================
 // 車の座標を送信
 //===================================================
-void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos, const float& rot)
 {
 	if (!GetActive()) { return; }
 
@@ -1495,7 +1495,7 @@ void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& ro
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向きを挿入
-	memcpy(&aSendData[byte], &rot.y, sizeof(float));
+	memcpy(&aSendData[byte], &rot, sizeof(float));
 	byte += sizeof(float);
 
 	// 送信
@@ -1505,7 +1505,7 @@ void CNetWork::SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& ro
 //===================================================
 // 警察の座標を送信
 //===================================================
-void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos, const float& rot)
 {
 	if (!GetActive()) { return; }
 
@@ -1526,7 +1526,7 @@ void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向きを挿入
-	memcpy(&aSendData[byte], &rot.y, sizeof(float));
+	memcpy(&aSendData[byte], &rot, sizeof(float));
 	byte += sizeof(float);
 
 	// 送信
@@ -1536,7 +1536,7 @@ void CNetWork::SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot
 //===================================================
 // 追加警察の座標を送信
 //===================================================
-void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot)
+void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const float& rot)
 {
 	if (!GetActive()) { return; }
 
@@ -1557,7 +1557,7 @@ void CNetWork::SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& 
 	byte += sizeof(D3DXVECTOR3);
 
 	// 向きを挿入
-	memcpy(&aSendData[byte], &rot.y, sizeof(float));
+	memcpy(&aSendData[byte], &rot, sizeof(float));
 	byte += sizeof(float);
 
 	// 送信

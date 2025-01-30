@@ -46,6 +46,14 @@ CEdit_Effect::~CEdit_Effect()
 //==========================================================
 HRESULT CEdit_Effect::Init(void)
 {
+	Clist<CEffectEffekseer*>* pList = CEffectEffekseer::GetList();
+
+	for (int i = 0; i < pList->GetNum(); i++)
+	{
+		CEffectEffekseer* pGimmick = pList->Get(i);
+		pGimmick->Update();
+	}
+
 	return S_OK;
 }
 

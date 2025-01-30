@@ -286,11 +286,16 @@ void CMeter::Gage(void)
 		m_pSound->Stop();
 		m_pNitroGage->SetCol(D3DXCOLOR(0.1f, 0.91f, 0.81f, 1.0f));
 	}
+	else if (pPlayer->GetLife() <= 0.0f)
+	{
+		m_pSound->Stop();
+	}
 	else if (pPlayer->GetLife() <= 20.0f)
 	{
 		m_pSound->Start();	
 		m_pNitroGage->SetCol(D3DXCOLOR(0.91f, 0.11f, 0.3f, 1.0f));
 	}
+
 	else
 	{
 		m_pSound->Stop();

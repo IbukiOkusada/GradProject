@@ -95,6 +95,12 @@ HRESULT CCamera::Init(void)
 	m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_GoalPos = D3DXVECTOR3(-660.0f, 100.0f, 1300.0f);
 
+	if (m_pAction != nullptr)
+	{
+		m_pAction->Uninit();
+		m_pAction = nullptr;
+	}
+
 	if (m_pAction == nullptr)
 	{
 		m_pAction = DEBUG_NEW CCameraAction;
@@ -102,6 +108,7 @@ HRESULT CCamera::Init(void)
 
 	//éãì_ê›íË
 	SetV();
+	SetR();
 
 	return S_OK;
 }

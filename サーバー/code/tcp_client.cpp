@@ -84,9 +84,10 @@ void CClient::SetIP(char *pIp)
 //==========================================================
 void CClient::SetData(char *pChar, int nByte)
 {
+	// ƒf[ƒ^‚ğ‚¢‚¶‚ê‚é‚Æ‚«‚Ì‚İ
 	if (!m_bSend)
 	{
-		if (m_nSendByte + nByte < NetWork::MAX_COMMAND_DATA)
+		if (m_nSendByte + nByte < NetWork::MAX_SEND_DATA)
 		{
 			memcpy(&m_aSendData[m_nSendByte], pChar, nByte);
 			m_nSendByte += nByte;
@@ -107,8 +108,8 @@ void CClient::ResetData(void)
 		// ‰¼‚É“ü‚ê‚Ä‚¨‚­
 		memcpy(&m_aSendData[0], &m_aTempSendData[0], m_nTempSendByte);
 		m_nSendByte += m_nTempSendByte;
-	}
 
-	std::fill(std::begin(m_aTempSendData), std::end(m_aTempSendData), '\0');
-	m_nTempSendByte = 0;
+		std::fill(std::begin(m_aTempSendData), std::end(m_aTempSendData), '\0');
+		m_nTempSendByte = 0;
+	}
 }

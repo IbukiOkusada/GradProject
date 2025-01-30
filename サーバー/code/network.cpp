@@ -222,17 +222,29 @@ void CNetWork::Accept(CServer* pServer)
 			pClient->SetCliePort(pServer->GetPort());
 			pClient->SetIP(pServer->GetIP());
 
+			int id = i;	// 接続先id
+
+			// 先頭から詰める
+			for (int j = 0; j < NetWork::MAX_CONNECT; j++)
+			{
+				if (m_apClient[j] != nullptr) { continue; }
+
+				id = j;
+			}
+
 			// ID設定
-			pClient->SetId(i);
+			pClient->SetId(id);
 
 			// マルチスレッド
 			std::thread th(&CNetWork::Access, this, pClient);
 			th.detach();
 
 			// フラグ初期化
-			m_aFlag[i] = SFlagInfo();
+			m_aFlag[id] = SFlagInfo();
 
-			m_apClient[i] = pClient;
+			// 自身を覚える
+			m_apClient[id] = pClient;
+
 			m_nConnectCnt++;
 		}
 	}
@@ -263,30 +275,37 @@ void CNetWork::Send(CServer** ppServer)
 
 			for(int i = 0; i < NetWork::MAX_CONNECT; i++)
 			{// 使用されていない状態まで
-				// データの合成
-				CClient* pClient = m_apClient[i];	// 先頭を取得
 
+				CClient* pClient = m_apClient[i];	// 先頭を取得
 				if (pClient == nullptr) { continue; }
 
+				// 全員分のデータを一括にする
 				pClient->SetSend(true);	// 書き換え不可能な状態にする
+				
+				int sendbyte = pClient->GetSendByte();
 
-				if (m_nSendByte + pClient->GetSendByte() < NetWork::MAX_COMMAND_DATA)
+				// 容量の範囲内
+				if (m_nSendByte + sendbyte < NetWork::MAX_SEND_DATA)
 				{
 					memcpy(&m_aSendData[m_nSendByte], pClient->GetSendData(), pClient->GetSendByte());
 					m_nSendByte += pClient->GetSendByte();
 				}
 				else
 				{
+					// 無い場合仮の方に入れる
 					pClient->SetData(pClient->GetSendData(), pClient->GetSendByte());
 				}
 
+				// 切断されているか確認
 				if (pClient->GetDeath() == false)
 				{
+					// されていない
 					pClient->ResetData();		// データのリセット
 					pClient->SetSend(false);	// 書き換え可能な状態にする
 				}
 				else
 				{
+					// されている
 					if (pClient != nullptr)
 					{
 						pClient->ResetData();		// データのリセット
@@ -301,34 +320,14 @@ void CNetWork::Send(CServer** ppServer)
 				}
 			}
 
-
+			// 送信されている
 			if (m_nSendByte > 0)
 			{
-				for (int i = 0; i < NetWork::MAX_CONNECT; i++)
-				{// 使用されていない状態まで
-					// データの合成
-					CClient* pClient = m_apClient[i];	// 先頭を取得
-
-					if (pClient == nullptr) { continue; }
-
-					// 送信
-					if (pClient->Send(&m_aSendData[0], m_nSendByte) <= 0)
-					{
-						m_nConnectCnt--;
-						pClient->Uninit();
-						delete pClient;
-						pClient = nullptr;
-						m_apClient[i] = nullptr;
-						printf("クライアント切断\n");
-						printf("送信できずに消えたよ\n");
-					}
-				}
-
 				printf("%d バイト送ったよ\n", m_nSendByte);
 			}
 
 			// 送信データをクリア
-			memset(&m_aSendData[0], '\0', sizeof(m_aSendData));
+			std::fill(std::begin(m_aSendData), std::end(m_aSendData), '\0');
 			m_nSendByte = 0;
 
 			// フラグをリセット
@@ -353,11 +352,11 @@ void CNetWork::Access(CClient* pClient)
 
 	while (1)
 	{
-		char recvdata[NetWork::MAX_COMMAND_DATA] = {};	// 受信用
+		char recvdata[NetWork::MAX_SEND_DATA] = {};	// 受信用
 		int command = NetWork::COMMAND_NONE;
 
 		// 受信
-		int recvbyte = pClient->Recv(&recvdata[0], NetWork::MAX_COMMAND_DATA);
+		int recvbyte = pClient->Recv(&recvdata[0], NetWork::MAX_SEND_DATA);
 		nowbyte = 0;
 
 		if (recvbyte <= 0)

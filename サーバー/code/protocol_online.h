@@ -12,10 +12,9 @@
 //**********************************************************
 namespace NetWork
 {
-	const int MAX_CONNECT = 4;	// 最大接続数
-	const int MAX_COMMAND_DATA = ((sizeof(int) + sizeof(int) + 1000));	// データのマックスサイズ
-	const int MAX_SEND_DATA = ((sizeof(int) + sizeof(int) + 1000));	// 最大データ量
-	const double SEND_MS = 50.0f;	// 常に送るデータの送信フレーム
+	const int MAX_CONNECT = 4;				// 最大接続数
+	const int MAX_SEND_DATA = (1024);		// 最大データ量
+	const double SEND_MS = 75.0f;			// 常に送るデータの送信フレーム
 
 	// コマンド列挙
 	enum COMMAND
@@ -32,7 +31,7 @@ namespace NetWork
 		COMMAND_GAMESTART_OK,	// ゲーム準備完了
 		COMMAND_GAMESTART,		// ゲーム開始
 		COMMAND_TUTORIAL_OK,	// チュートリアル準備完了
-		COMMAND_TUTORIAL_NO,
+		COMMAND_TUTORIAL_NO,	// チュートリアル準備完了取り消し
 		COMMAND_TUTORIAL_END,	// エントリー終了
 		COMMAND_SET_INSP,		// 検問設置
 		COMMAND_END_INSP,		// 検問廃棄

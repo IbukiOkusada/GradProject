@@ -87,7 +87,7 @@ HRESULT CPause::Init(void)
 		m_pPauseButton[i]->SetVtx();
 	}
 
-#if 1
+#if 0
 
 	m_pPauseFrame->SetDraw(false);
 

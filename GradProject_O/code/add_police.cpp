@@ -225,7 +225,7 @@ void CAddPolice::SendPosition()
 	if (GetState() == STATE_FADEOUT) { return; }
 	CNetWork* pNet = CNetWork::GetInstance();
 
-	pNet->SendAddPdPos(GetId(), GetPosition(), GetRotation());
+	pNet->SendAddPdPos(GetId(), GetPosition(), GetRotation().y);
 }
 
 //===============================================
