@@ -814,5 +814,5 @@ void CCar::SendPosition()
 {
 	CNetWork* pNet = CNetWork::GetInstance();
 
-	pNet->SendCarPos(GetId(), GetPosition(), GetRotation());
+	pNet->SendCarPos(GetId(), GetPosition(), GetRotation().y);
 }

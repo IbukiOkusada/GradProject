@@ -340,7 +340,10 @@ void CGame::Update(void)
 {
 	CInputKeyboard *pInputKey = CInputKeyboard::GetInstance();
 
-    m_pPause->ChangePause();
+    if (CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_SINGLE)
+    {
+        m_pPause->ChangePause();
+    }
 
     if (m_pPause->GetPause()) 
     { 

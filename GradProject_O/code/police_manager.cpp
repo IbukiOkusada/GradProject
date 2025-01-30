@@ -363,5 +363,5 @@ void CPoliceManager::SetInspection()
 
 	// ŒŸ–â‘—M
 	auto net = CNetWork::GetInstance();
-	net->SendSetInspection(CInspectionManager::GetInstance()->GetCreateCnt(), pos, rot, pRoad->GetIdx(), startid);
+	net->SendSetInspection(CInspectionManager::GetInstance()->GetCreateCnt(), pos, rot.y, pRoad->GetIdx(), startid);
 }

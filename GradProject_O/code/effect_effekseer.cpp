@@ -10,6 +10,7 @@
 #include "renderer.h"
 #include "game.h"
 #include "camera.h"
+#include "edit_manager.h"
 
 Clist<CEffectEffekseer*> CEffectEffekseer::m_List = {};
 
@@ -139,7 +140,6 @@ CEffectEffekseer *CEffectEffekseer::Create(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3D
 //==========================================================
 void CEffectEffekseer::SetEffect()
 {
-
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();
 	CCamera* pCamera = CManager::GetInstance()->GetCamera();
 	D3DXMATRIX mtxProjection, mtxView, mtxWorld;
@@ -147,6 +147,17 @@ void CEffectEffekseer::SetEffect()
 	D3DXVECTOR3 pos = VECTOR3_ZERO;
 	D3DXVECTOR3 mypos = m_Info.pos;
 	float maxlen = Game::DOME_LENGTH;
+
+	if (CEditManager::GetInstance() != nullptr)
+	{
+		if (m_pEffekseer == nullptr)
+		{
+			m_pEffekseer = CEffekseer::GetInstance()->Create(EFFECTNAMEPATH[m_Info.Type],
+				m_Info.pos, m_Info.rot, m_Info.move, m_Info.fScale, false, false);
+		}
+
+		return;
+	}
 
 	// ‹——£‚ðŽæ‚é
 	{

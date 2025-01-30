@@ -51,7 +51,7 @@ public:
 	void SendJoin();
 	void SendGetId();
 	void SendDelete();
-	void SendPlPos(const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	void SendPlPos(const D3DXVECTOR3& pos, const float& rot);
 	void SendPlDamage(const float nowlife);
 	void SendPlGoal(int nId);
 	void SendGmHit(const int nId, const D3DXVECTOR3& HitPos, const float fSpeed);
@@ -59,11 +59,11 @@ public:
 	void SendGameStartOk();
 	void SendTutorialOk();
 	void SendTutorialNo();
-	void SendSetInspection(const int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot, int nIdx, int nStartPdId);
+	void SendSetInspection(const int nId, const D3DXVECTOR3& pos, const float& rot, int nIdx, int nStartPdId);
 	void SendEndInspection(int nId);
-	void SendCarPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
-	void SendPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
-	void SendAddPdPos(int nId, const D3DXVECTOR3& pos, const D3DXVECTOR3& rot);
+	void SendCarPos(int nId, const D3DXVECTOR3& pos, const float& rot);
+	void SendPdPos(int nId, const D3DXVECTOR3& pos, const float& rot);
+	void SendAddPdPos(int nId, const D3DXVECTOR3& pos, const float& rot);
 	void SendPdChase(int nId, int plyid);
 	void SendAddPdChase(int nId, int plyid);
 	void SendPdChaseEnd(int nId);
