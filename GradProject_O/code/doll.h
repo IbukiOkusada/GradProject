@@ -18,7 +18,7 @@
 class CCharacter;
 
 //==========================================================
-// ロボットのクラス定義
+// 人形のクラス定義
 //==========================================================
 class CDoll : public CTask
 {
@@ -29,7 +29,7 @@ public:	// 誰でもアクセス可能
 	{
 		STATE_NONE = 0, // 何もない
 		STATE_NIGHTOFFIRE, 	// 歩き状態
-		STATE_ENOCH,	// 回避状態
+		STATE_ENOCH,		// 回避状態
 		STATE_DROPS_FIRST,	// 回避状態
 		STATE_DROPS_SECOND,	// 回避状態
 		STATE_DROPS_POSE,	// 回避状態
@@ -42,13 +42,14 @@ public:	// 誰でもアクセス可能
 		D3DXVECTOR3 pos;		// 位置
 		D3DXVECTOR3 rot;		// 向き
 		D3DXVECTOR3 move;		// 移動量
-		STATE state;			// 状態
+		STATE state;
 		int nId;
 		int nCntLoop;			// ループ回数
+		int nTimer;
 
 		// コンストラクタ
 		SInfo() : pos(VECTOR3_ZERO), rot(VECTOR3_ZERO),
-			move(VECTOR3_ZERO), nId(-1) {}
+			move(VECTOR3_ZERO), nId(-1), nTimer(0) {}
 	};
 
 private:
@@ -71,6 +72,7 @@ public:	// 誰でもアクセス可能
 		MOTION_DROPS_POSE5,		// 相性×優勝ドロップスポーズモーション
 		MOTION_DROPS_POSE6,		// 相性×優勝ドロップスポーズモーション
 		MOTION_DROPS_POSE7,		// 相性×優勝ドロップスポーズモーション
+		MOTION_WAIT,			// 待機モーション
 		MOTION_MAX
 	};
 
@@ -93,8 +95,8 @@ public:	// 誰でもアクセス可能
 	void SetMove(const D3DXVECTOR3& move) { m_Info.move = move; }
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetRotation(const D3DXVECTOR3& rot);
-	void SetState(STATE state) { m_Info.state = state; }
 	void SetID(int nID) { m_Info.nId = nID; }
+	void SetState(STATE state) { m_Info.state = state; }
 
 protected:	// 派生クラスからもアクセス可能
 
@@ -111,6 +113,7 @@ private:	// 自分だけがアクセス可能
 
 	// メンバ変数
 	SInfo m_Info;				// 自分自身の情報
+	static int m_nNumDance;
 };
 
 #endif

@@ -713,13 +713,13 @@ int CGame::GetRestDeliveryStatus()
 void CGame::CreateCharacter()
 {
     // êlå`ÇÃê∂ê¨
-    m_pDoll[0] = CDoll::Create(D3DXVECTOR3(31900.0f, 0.0f, -2200.0f), VECTOR3_ZERO,0);
-    m_pDoll[1] = CDoll::Create(D3DXVECTOR3(32100.0f, 0.0f, -2200.0f), VECTOR3_ZERO,1);
-    m_pDoll[2] = CDoll::Create(D3DXVECTOR3(32300.0f, 0.0f, -2200.0f), VECTOR3_ZERO,2);
-    m_pDoll[3] = CDoll::Create(D3DXVECTOR3(32400.0f, 0.0f, -2500.0f), VECTOR3_ZERO,3);
-    m_pDoll[4] = CDoll::Create(D3DXVECTOR3(32200.0f, 0.0f, -2500.0f), VECTOR3_ZERO,4);
-    m_pDoll[5] = CDoll::Create(D3DXVECTOR3(32000.0f, 0.0f, -2500.0f), VECTOR3_ZERO,5);
-    m_pDoll[6] = CDoll::Create(D3DXVECTOR3(31800.0f, 0.0f, -2500.0f), VECTOR3_ZERO,6);
+    m_pDoll[0] = CDoll::Create(D3DXVECTOR3(31900.0f, 0.0f, -2200.0f), VECTOR3_ZERO, 0);
+    m_pDoll[1] = CDoll::Create(D3DXVECTOR3(32100.0f, 0.0f, -2200.0f), VECTOR3_ZERO, 1);
+    m_pDoll[2] = CDoll::Create(D3DXVECTOR3(32300.0f, 0.0f, -2200.0f), VECTOR3_ZERO, 2);
+    m_pDoll[3] = CDoll::Create(D3DXVECTOR3(32400.0f, 0.0f, -2500.0f), VECTOR3_ZERO, 3);
+    m_pDoll[4] = CDoll::Create(D3DXVECTOR3(32200.0f, 0.0f, -2500.0f), VECTOR3_ZERO, 4);
+    m_pDoll[5] = CDoll::Create(D3DXVECTOR3(32000.0f, 0.0f, -2500.0f), VECTOR3_ZERO, 5);
+    m_pDoll[6] = CDoll::Create(D3DXVECTOR3(31800.0f, 0.0f, -2500.0f), VECTOR3_ZERO, 6);
 
     // ãõê∂ê¨
     CMapCharacter::Create(D3DXVECTOR3(13250.0f, -600.0f, 3000.0f), VECTOR3_ZERO, VECTOR3_ONE, "data\\TXT\\character\\fish\\motion_fish.txt", 0);
