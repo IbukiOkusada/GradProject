@@ -170,6 +170,7 @@ void CGimmickPoliceStation::Update(void)
 			// プレイヤーを確認
 			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(i);
 			if (pPlayer == nullptr) { return; }
+			if (pPlayer->GetNumDeliverStatus() <= 0) { return; }	// セーフ
 			if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// セーフ
 
 			// 距離判定
@@ -194,24 +195,26 @@ void CGimmickPoliceStation::Update(void)
 			if (i == CNetWork::GetInstance()->GetIdx())
 			{
 
-				//CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
+				CAddPolice* pP = CAddPolice::Create(GetPos(), GetRot(), VECTOR3_ZERO, CCarManager::GetInstance()->GetMapList()->GetInCnt());
 
-				//if (pP != nullptr)
-				//{
-				//	// 応援の警察のタイプを設定
-				//	pP->SetTypeAI(CPoliceAI::TYPE_NONE);
-				//	pP->SetType(CCar::TYPE::TYPE_ACTIVE);
+				if (pP != nullptr)
+				{
+					// 応援の警察のタイプを設定
+					pP->SetTypeAI(CPoliceAI::TYPE_NONE);
+					pP->SetType(CCar::TYPE::TYPE_ACTIVE);
 
-				//	// 目的地設定
-				//	pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(GetPos()));
+					// 目的地設定
+					pP->SetRoadTarget(CRoadManager::GetInstance()->GetNearRoad(GetPos()));
 
-				//	// 追跡状態に変更
-				//	pP->SetChase(true);
-				//	pP->GetAi()->BeginChase(pPlayer);
+					// 追跡状態に変更
+					pP->SetChase(true);
+					pP->GetAi()->BeginChase(pPlayer);
 
-				//	// 応援の警察は応援を呼ばないようにする
-				//	pP->GetAi()->SetCall(true);
-				//}
+					// 応援の警察は応援を呼ばないようにする
+					pP->GetAi()->SetCall(true);
+
+					CPoliceAIManager::GetInstance()->SetCall(true);
+				}
 			}
 		}
 	}
