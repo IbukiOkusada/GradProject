@@ -278,6 +278,9 @@ HRESULT CResult::Init(void)
 void CResult::Uninit(void)
 {
 	CManager::GetInstance()->GetSound()->Stop();
+	CManager::GetInstance()->SetDeliveryStatus(0);
+	CManager::GetInstance()->SetLife(0.0f);
+	CTimer::SetTime(0.0f);
 
 	// 失敗or成功のオブジェクト
 	if (m_pObj != NULL)
