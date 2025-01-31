@@ -194,7 +194,7 @@ void CGoal::Update(void)
 		//else
 		{
 			// 本人確認
-			if (CheckRange(net->GetIdx()) && CheckSpeed(net->GetIdx()))
+			if (CheckRange(net->GetIdx())/* && CheckSpeed(net->GetIdx())*/)
 			{
 				nId = net->GetIdx();
 			}

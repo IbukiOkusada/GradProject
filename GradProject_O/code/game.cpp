@@ -238,7 +238,7 @@ HRESULT CGame::Init(void)
         CreateCar();
 
         // 警察の生成
-        CreatePolice();
+        //CreatePolice();
     }
 
     // キャラクターの生成
