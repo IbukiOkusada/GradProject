@@ -1579,6 +1579,11 @@ void CPlayer::SetStateTutorialActive()
 			m_pCollSound = CMasterSound::CObjectSound::Create("data\\SE\\collision.wav", 0);
 			m_pCollSound->Stop();
 		}
+
+		if (m_pShaderLight == nullptr)
+		{
+			m_pShaderLight = CShaderLight::Create(GetPosition(), D3DXVECTOR3(0.8f, 0.9f, 1.0f), 2.0f, 5000.0f, D3DXVECTOR3(0.0f, -0.25f, 1.0f), D3DXToRadian(35));
+		}
 	}
 
 	m_type = TYPE::TYPE_TUTOLERIAL_ACTIVE;
@@ -1649,7 +1654,15 @@ void CPlayer::SendData()
 void CPlayer::Respawn()
 {
 	m_Info.rot = VECTOR3_ZERO;
-	m_Info.pos = VECTOR3_ZERO;
+
+	if (CManager::GetInstance()->GetMode() == CScene::MODE::MODE_GAME)
+	{
+		m_Info.pos = VECTOR3_ZERO;
+	}
+	else
+	{
+		m_Info.pos = D3DXVECTOR3(4415.0f, 0.0f, 1915.0f);
+	}
 	m_Info.posOld = VECTOR3_ZERO;
 	m_Info.move = VECTOR3_ZERO;
 	m_fBrake = 0.0f;

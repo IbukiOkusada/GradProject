@@ -9,6 +9,8 @@
 
 #include "main.h"
 #include "fxmanager.h"
+#include "objectsound.h"
+
 // 前方宣言
 class CRenderer;
 class CInput;
@@ -104,6 +106,8 @@ public:	// 誰でもアクセス可能
 	CFade *GetFade(void);
 	CFont *GetFont(void);
 	CDeltaTime *GetDeltaTime(void);
+	CMasterSound::CObjectSound* GetScrTxt2DSe() { return m_pScrTxt2DSe; }
+	CMasterSound::CObjectSound* GetScrStr2DSe() { return m_pScrStr2DSe; }
 	
 	void SetMode(CScene::MODE mode);
 	CScene::MODE GetMode(void) { return m_pScene->GetMode(); }
@@ -138,6 +142,8 @@ private:	// 自分だけがアクセス可能
 	CDeltaTime* m_pDeltaTime;  // タイマーのポインタ
 	CFont* m_pFont;
 	CNetWork* m_pNetWork;
+	CMasterSound::CObjectSound* m_pScrTxt2DSe;
+	CMasterSound::CObjectSound* m_pScrStr2DSe;
 
 	static CManager *m_pManager;	// マネージャーのポインタ
 

@@ -224,13 +224,15 @@ void CNetWork::Accept(CServer* pServer)
 
 			int id = i;	// 接続先id
 
-			// 先頭から詰める
-			for (int j = 0; j < NetWork::MAX_CONNECT; j++)
-			{
-				if (m_apClient[j] != nullptr) { continue; }
+			//// 先頭から詰める
+			//for (int j = 0; j < NetWork::MAX_CONNECT; j++)
+			//{
+			//	if (m_apClient[j] != nullptr) { continue; }
 
-				id = j;
-			}
+			//	id = j;
+
+			//	break;
+			//}
 
 			// ID設定
 			pClient->SetId(id);
@@ -320,9 +322,31 @@ void CNetWork::Send(CServer** ppServer)
 				}
 			}
 
-			// 送信されている
+			// 送信するデータがある
 			if (m_nSendByte > 0)
 			{
+				for (int i = 0; i < NetWork::MAX_CONNECT; i++)
+				{// 使用されていない状態まで
+					// データの合成
+					CClient* pClient = m_apClient[i];	// 先頭を取得
+
+					if (pClient == nullptr) { continue; }
+
+					// 送信
+					if (pClient->Send(&m_aSendData[0], m_nSendByte) <= 0)
+					{
+						// 失敗した場合
+						pClient->Uninit();
+						delete pClient;
+						pClient = nullptr;
+						m_apClient[i] = nullptr;
+
+						m_nConnectCnt--;
+						printf("クライアント切断\n");
+						printf("送信できずに消えたよ\n");
+					}
+				}
+
 				printf("%d バイト送ったよ\n", m_nSendByte);
 			}
 
@@ -346,6 +370,8 @@ void CNetWork::Access(CClient* pClient)
 
 	char aSendData[sizeof(int) * 2] = {};	// 送信用
 	int nowbyte = 0;
+
+	printf("ID %d \n", pClient->GetId());
 
 	// 設定
 	CommandJoin(pClient->GetId(), nullptr, pClient, &nowbyte);
@@ -525,6 +551,7 @@ void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClie
 	int nProt = -1;	// プロトコル番号
 	char aSendData[sizeof(int) * 2 + sizeof(D3DXVECTOR3) + sizeof(float)] = {};	// 送信用まとめデータ
 	int byte = 0;
+	int recvbyte = 0;
 
 	nProt = NetWork::COMMAND_PL_POS;
 
@@ -540,9 +567,10 @@ void CNetWork::CommandPlPos(const int nId, const char* pRecvData, CClient* pClie
 	memcpy(&aSendData[byte], pRecvData, sizeof(D3DXVECTOR3));
 	*pNowByte += sizeof(D3DXVECTOR3);
 	byte += sizeof(D3DXVECTOR3);
+	recvbyte += sizeof(D3DXVECTOR3);
 
 	// 向き挿入
-	memcpy(&aSendData[byte], &pRecvData[sizeof(D3DXVECTOR3)], sizeof(float));
+	memcpy(&aSendData[byte], &pRecvData[recvbyte], sizeof(float));
 	*pNowByte += sizeof(float);
 	byte += sizeof(float);
 

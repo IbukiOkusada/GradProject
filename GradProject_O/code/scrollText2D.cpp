@@ -13,6 +13,9 @@
 #include "char2D.h"
 #include "deltatime.h"
 #include "convenience.h"
+#include "manager.h"
+#include "objectsound.h"
+
 //************************************************************
 //	子クラス [CScrollText2D] のメンバ関数
 //************************************************************
@@ -20,7 +23,6 @@
 //	コンストラクタ
 //============================================================
 CScrollText2D::CScrollText2D() :
-	m_labelSE	(nullptr),	// 文字送り再生SEラベル
 	m_nNextIdx	(0),	// 次表示する文字インデックス
 	m_fNextTime	(0.0f),	// 次表示するまでの時間
 	m_fCurTime	(0.0f),	// 現在の待機時間
@@ -44,9 +46,6 @@ CScrollText2D::~CScrollText2D()
 HRESULT CScrollText2D::Init()
 {
 	// メンバ変数を初期化
-	m_labelSE	= CMasterSound::CObjectSound::Create("data\\SE\\c3.wav", 0);	// 文字送り再生SEラベル
-	m_labelSE->Stop();
-	m_labelSE->SetVolume(0.25f);
 	m_nNextIdx	= 0;		// 次表示する文字インデックス
 	m_fNextTime	= 0.0f;		// 次表示するまでの時間
 	m_fCurTime	= 0.0f;		// 現在の待機時間
@@ -73,7 +72,6 @@ void CScrollText2D::Uninit()
 {
 	// 全文字情報配列をクリア
 	m_vecChar.clear();
-	SAFE_UNINIT_DELETE(m_labelSE)
 	// テキスト2Dの終了
 	CText2D::Uninit();
 }
@@ -371,6 +369,5 @@ void CScrollText2D::PlayScrollSE(CChar2D* pChar2D)
 {
 	// テクスチャが透明な場合抜ける
 	if (pChar2D->IsTexEmpty()) { return; }
-	if (m_labelSE == nullptr) { return;	}
-	m_labelSE->Play();
+	CManager::GetInstance()->GetScrTxt2DSe()->Play();
 }

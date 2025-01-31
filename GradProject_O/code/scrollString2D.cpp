@@ -20,7 +20,6 @@
 //	コンストラクタ
 //============================================================
 CScrollString2D::CScrollString2D() :
-	m_labelSE	(nullptr),	// 文字送り再生SEラベル
 	m_nNextIdx	(0),	// 次表示する文字インデックス
 	m_fNextTime	(0.0f),	// 次表示するまでの時間
 	m_fCurTime	(0.0f),	// 現在の待機時間
@@ -43,8 +42,6 @@ CScrollString2D::~CScrollString2D()
 HRESULT CScrollString2D::Init()
 {
 	// メンバ変数を初期化
-	m_labelSE	= CMasterSound::CObjectSound::Create("data\\SE\\pi.wav",0);	// 文字送り再生SEラベル
-	m_labelSE->Stop();
 	m_nNextIdx	= 0;		// 次表示する文字インデックス
 	m_fNextTime	= 0.0f;		// 次表示するまでの時間
 	m_fCurTime	= 0.0f;		// 現在の待機時間
@@ -334,12 +331,10 @@ void CScrollString2D::UpdateScroll(const float fDeltaTime)
 //============================================================
 void CScrollString2D::PlayScrollSE(CChar2D* pChar2D)
 {
-	// ラベルが指定なしの場合抜ける
-	if (m_labelSE == nullptr) { return; }
 
 	// テクスチャが透明な場合抜ける
 	if (pChar2D->IsTexEmpty()) { return; }
 
 	// 指定ラベルのSEを再生
-	m_labelSE->Play();
+	CManager::GetInstance()->GetScrStr2DSe()->Play();
 }

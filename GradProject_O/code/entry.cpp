@@ -24,6 +24,7 @@
 #include "edit_manager.h"
 #include "scrollText2D.h"
 #include "sound.h"
+#include "meter.h"
 
 //===============================================
 // ’è”’è‹`
@@ -156,6 +157,7 @@ HRESULT CEntry::Init(void)
         m_pGoalManager = CGoalManager::Create();
         if (m_pGoalManager->GetCreateIdx() <= 0)
         {
+            m_pGoalManager->SetOldId(0);
             m_pGoalManager->Init();
         }
     }
@@ -163,6 +165,8 @@ HRESULT CEntry::Init(void)
     CObject2D *pObj = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.85f, SCREEN_HEIGHT * 0.2f, 0.0f), VECTOR3_ZERO, 7);
     pObj->SetSize(100.0f, 40.0f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\controlUI\\00_controlUI_Header.png"));
+
+    CMeter::Create();
 
     // ‘€ì•û–@UI‚Ì¶¬
     for (int i = 0; i < NUM_CONTROL_UI; i++)

@@ -61,6 +61,8 @@ CManager::CManager()
 	m_pDeltaTime = nullptr;     // タイマーへのポインタ
 	m_pFont = nullptr;
 	m_pNetWork = nullptr;
+	m_pScrStr2DSe = nullptr;
+	m_pScrTxt2DSe = nullptr;
 
 	m_nDeliveryStatus = 0;
 	m_fLife = 0.0f;
@@ -197,6 +199,14 @@ HRESULT CManager::Init(HINSTANCE hInstance, HWND hWnd, BOOL bWindow)
 		m_pNetWork = CNetWork::Create();
 	}
 
+	// サウンドの生成
+	m_pScrTxt2DSe = CMasterSound::CObjectSound::Create("data\\SE\\c3.wav", 0);	// 文字送り再生SEラベル
+	m_pScrTxt2DSe->Stop();
+	//m_pScrTxt2DSe->SetVolume(0.25f);
+
+	m_pScrStr2DSe = CMasterSound::CObjectSound::Create("data\\SE\\pi.wav", 0);	// 文字送り再生SEラベル
+	m_pScrStr2DSe->Stop();
+
 	// エフェクシア初期化
 	CEffekseer::GetInstance()->Init();
 	
@@ -213,6 +223,9 @@ void CManager::Uninit(void)
 {
 	// サウンドの停止
 	m_pSound->Stop();
+
+	SAFE_DELETE(m_pScrTxt2DSe)
+	SAFE_DELETE(m_pScrStr2DSe)
 
 	if (m_pFade != nullptr)
 	{

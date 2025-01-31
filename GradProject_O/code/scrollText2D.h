@@ -15,7 +15,7 @@
 //************************************************************
 #include "text2D.h"
 #include "sound.h"
-#include "objectsound.h"
+
 //************************************************************
 //	クラス定義
 //************************************************************
@@ -62,8 +62,6 @@ public:
 	inline float GetNextTime() const						{ return m_fNextTime; }				// 文字表示の待機時間取得
 	inline void SetEnableScroll(const bool bScroll)			{ m_bScroll = bScroll; }			// 文字送り状況設定
 	inline bool IsScroll() const							{ return m_bScroll; }				// 文字送り状況取得
-	inline void SetScrollSE(CMasterSound::CObjectSound *  labelSE)	{ m_labelSE = labelSE; }			// 文字送り時の効果音設定
-	inline	CMasterSound::CObjectSound *  GetScrollSE() const				{ return m_labelSE; }				// 文字送り時の効果音取得
 	inline int GetNextCharIdx()								{ return m_nNextIdx; }				// 次の表示文字インデックス取得
 	inline bool GetEnd() { return m_bEnd; }				// 次の表示文字インデックス取得
 	inline CChar2D* GetNextChar2D()							{ return m_vecChar[m_nNextIdx]; }	// 次の表示文字取得
@@ -75,7 +73,6 @@ private:
 
 	// メンバ変数
 	std::vector<CChar2D*> m_vecChar;	// 全文字情報
-	CMasterSound::CObjectSound * m_labelSE;			// 文字送り再生SE
 	int m_nNextIdx;		// 次表示する文字インデックス
 	float m_fNextTime;	// 次表示までの待機時間
 	float m_fCurTime;	// 現在の待機時間

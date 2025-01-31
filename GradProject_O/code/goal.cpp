@@ -335,6 +335,7 @@ void CGoal::SetEnd(int nId)
 
 	// カメラアクション入れる
 	CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(nId);
+	if (pPlayer == nullptr) { return; }
 	m_bEnd = true;
 	m_pBaggage = pPlayer->ThrowBaggage(m_People.pChara->GetParts(8)->GetMtxPos());
 	pPlayer->AddDeliveryCount();

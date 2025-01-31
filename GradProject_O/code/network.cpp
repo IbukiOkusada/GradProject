@@ -372,7 +372,7 @@ void CNetWork::Online(void)
 //===================================================
 void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 {
-	m_mutex.lock();
+	//m_mutex.lock();
 	m_nSledCnt++;
 	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	D3DXCOLOR col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
@@ -428,7 +428,7 @@ void CNetWork::ByteCheck(char* pRecvData, int* pRecvByte)
 	DeleteData(pRecvData, pRecvByte);
 
 	m_nSledCnt--;
-	m_mutex.unlock();
+	//m_mutex.unlock();
 }
 
 //===================================================
@@ -555,7 +555,7 @@ void CNetWork::RecvPlPos(int* pByte, const int nId, const char* pRecvData)
 	// 確認バイト数を加算
 	*pByte += sizeof(D3DXVECTOR3);
 
-	// 座標に変換
+	// 向きに変換
 	D3DXVECTOR3 rot = VECTOR3_ZERO;
 	memcpy(&rot.y, &pRecvData[sizeof(D3DXVECTOR3)], sizeof(float));
 
@@ -779,9 +779,9 @@ void CNetWork::RecvSetInspection(int* pByte, const int nId, const char* pRecvDat
 
 	// 向きを取得
 	D3DXVECTOR3 rot = VECTOR3_ZERO;
-	memcpy(&rot, &pRecvData[byte], sizeof(D3DXVECTOR3));
-	*pByte += sizeof(D3DXVECTOR3);
-	byte += sizeof(D3DXVECTOR3);
+	memcpy(&rot.y, &pRecvData[byte], sizeof(float));
+	*pByte += sizeof(float);
+	byte += sizeof(float);
 
 	// 隣接する道のID取得
 	int roadid = -1;

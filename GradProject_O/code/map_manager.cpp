@@ -66,7 +66,7 @@ namespace
 
 	const std::string EFFECTNAMEFILE[CScene::MODE_MAX] = {	// モデル名ファイル
 		"data\\FILE\\map\\effect.bin",
-		"data\\FILE\\map\\effect.bin",
+		"data\\FILE\\map\\tutorial_effect.bin",
 		"data\\FILE\\map\\effect.bin",
 		"data\\FILE\\map\\effect.bin",
 		"data\\FILE\\map\\effect.bin",
