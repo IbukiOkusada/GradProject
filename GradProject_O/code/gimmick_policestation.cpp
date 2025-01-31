@@ -170,6 +170,7 @@ void CGimmickPoliceStation::Update(void)
 			// プレイヤーを確認
 			CPlayer* pPlayer = CPlayerManager::GetInstance()->GetPlayer(i);
 			if (pPlayer == nullptr) { return; }
+			if (pPlayer->GetNumDeliverStatus() <= 0) { return; }	// セーフ
 			if (pPlayer->GetEngine() <= OUT_ENGINE) { return; }	// セーフ
 
 			// 距離判定
@@ -211,6 +212,8 @@ void CGimmickPoliceStation::Update(void)
 
 				//	// 応援の警察は応援を呼ばないようにする
 				//	pP->GetAi()->SetCall(true);
+
+				//	CPoliceAIManager::GetInstance()->SetCall(true);
 				//}
 			}
 		}
