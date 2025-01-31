@@ -18,6 +18,7 @@
 #include "debugproc.h"
 #include "road_manager.h"
 #include "car_manager.h"
+#include "police_AI_manager.h"
 
 // 定数定義
 namespace
@@ -109,6 +110,9 @@ void CGimmickPoliceStation::Update(void)
 		return;
 	}
 
+	// 応援要請をしているなら抜ける
+	if (CPoliceAIManager::GetInstance()->GetCall()) { return; }
+
 	if (CNetWork::GetInstance()->GetState() == CNetWork::STATE::STATE_SINGLE)
 	{
 		// プレイヤーを確認
@@ -152,6 +156,8 @@ void CGimmickPoliceStation::Update(void)
 
 			// 応援の警察は応援を呼ばないようにする
 			pP->GetAi()->SetCall(true);
+
+			CPoliceAIManager::GetInstance()->SetCall(true);
 		}
 	}
 	else

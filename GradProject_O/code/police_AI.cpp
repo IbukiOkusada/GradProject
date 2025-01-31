@@ -42,13 +42,13 @@ namespace
 	const float	LEVEL_DAMAGE = (0.3f);				// 傷状態時の警戒度増加量
 	const float	LEVEL_SMOKE = (0.5f);				// 煙状態時の警戒度増加量
 
-	const int CHASE_TIME = (300);					// 追跡時間
-	const int NUM_BACKUP = (2);						// 増援の数
+	const int CHASE_TIME = (60);					// 追跡時間
+	const int NUM_BACKUP = (1);						// 増援の数
 
 	const float CHASE_SPEED[CPoliceAI::TYPE_MAX] =
 	{
-		(26.0f),		// デフォルトの追跡時の加速
-		(26.0f),		// 通常タイプの追跡時の加速
+		(24.0f),		// デフォルトの追跡時の加速
+		(24.0f),		// 通常タイプの追跡時の加速
 		(25.0f),		// 回り込みタイプの追跡時の加速
 		(22.0f),		// 緩やかタイプの追跡時の加速
 	};
@@ -71,10 +71,10 @@ namespace
 
 	const int CALL_TIME[CPoliceAI::TYPE_MAX] =
 	{
-		(450),		// デフォルトの応援呼び出し時間
-		(450),		// 通常タイプの応援呼び出し時間
-		(420),		// 回り込みタイプの応援呼び出し時間
-		(480),		// 緩やかタイプの応援呼び出し時間
+		(90),		// デフォルトの応援呼び出し時間
+		(90),		// 通常タイプの応援呼び出し時間
+		(90),		// 回り込みタイプの応援呼び出し時間
+		(90),		// 緩やかタイプの応援呼び出し時間
 	};
 }
 
