@@ -42,7 +42,7 @@ namespace
 	const float	LEVEL_DAMAGE = (0.3f);				// ó‘Ô‚ÌŒx‰ú“x‘‰Á—Ê
 	const float	LEVEL_SMOKE = (0.5f);				// ‰Œó‘Ô‚ÌŒx‰ú“x‘‰Á—Ê
 
-	const int CHASE_TIME = (60);					// ’ÇÕŠÔ
+	const int CHASE_TIME = (120);					// ’ÇÕŠÔ
 	const int NUM_BACKUP = (1);						// ‘‰‡‚Ì”
 
 	const float CHASE_SPEED[CPoliceAI::TYPE_MAX] =
