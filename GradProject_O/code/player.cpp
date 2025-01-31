@@ -883,14 +883,14 @@ bool CPlayer::CollisionEnemy(void)
 		D3DXVECTOR3 vecHit = posObjectX - posPlayer;
 		float rotVec = atan2f(vecHit.z, vecHit.x);								// äpìxåvéZ
 
-		m_Info.move.x += sinf(rotVec) * 20.0f;
+		m_Info.move.x += sinf(rotVec) * 30.0f;
 		m_Info.move.y += 0.0f;
-		m_Info.move.z += cosf(rotVec) * 20.0f;
+		m_Info.move.z += cosf(rotVec) * 30.0f;
 
 		m_Info.bHitInterval = 20;
 		m_Info.bHit = true;
 
-		Damage(2.0f);
+		Damage(5.0f);
 
 		return true;
 	}
