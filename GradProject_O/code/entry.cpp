@@ -166,7 +166,7 @@ HRESULT CEntry::Init(void)
     pObj->SetSize(100.0f, 40.0f);
     pObj->BindTexture(CManager::GetInstance()->GetTexture()->Regist("data\\TEXTURE\\controlUI\\00_controlUI_Header.png"));
 
-    CMeter::Create();
+    //CMeter::Create();
 
     // ‘€ì•û–@UI‚Ì¶¬
     for (int i = 0; i < NUM_CONTROL_UI; i++)
