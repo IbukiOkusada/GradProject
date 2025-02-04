@@ -32,6 +32,7 @@ public:	// 誰でもアクセス可能
 	static CTimer* Create();
 
 	static float GetTime() { return m_LimitTime; }
+	static void SetTime(float Time) { m_LimitTime = Time; }
 
 private:	// 自分だけがアクセス可能な定義
 
