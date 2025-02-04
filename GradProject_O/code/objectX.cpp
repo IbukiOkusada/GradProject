@@ -136,8 +136,8 @@ void CObjectX::DrawOnShader(void)
 	// •`‰æ
 	if (CEditManager::GetInstance() == nullptr)
 	{
-		//DrawOnry();
-		DrawOnryShader();
+		DrawOnry();
+		//DrawOnryShader();
 	}
 	else
 	{
