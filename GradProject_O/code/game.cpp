@@ -210,7 +210,7 @@ HRESULT CGame::Init(void)
     CMeshWall::Create(D3DXVECTOR3(14250.0f, -600.0f, 3000.0f), D3DXVECTOR3(0.0f, D3DX_PI * 0.5f, 0.0f), 1000.0f, 300.0f, "data\\TEXTURE\\field001.jpg", 16, 1);
 
     // ãÛê∂ê¨
-    m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
+    //m_pMeshDome = CMeshDome::Create(VECTOR3_ZERO, VECTOR3_ZERO, Game::DOME_LENGTH, 2000.0f, 3, 20, 20);
 
     auto net = CNetWork::GetInstance();
 

@@ -49,6 +49,7 @@ public:	// 誰でもアクセス可能
 	void Setting(const D3DXVECTOR3 pos, const D3DXVECTOR3 rot);
 	void SetRot(const D3DXVECTOR3 rot);
 	void SetMode(MODE mode) { m_mode = mode; }
+	MODE GetMode() { return m_mode; }
 	void SetDrawState(DRAWSTATE state) { m_DrawState = state; }
 	void SetOldRot(D3DXVECTOR3 rot) { m_SlowOldRot = rot; }
 	void MoveV(void);
@@ -85,7 +86,6 @@ public:	// 誰でもアクセス可能
 	void SetLength(float fLength) { m_fLength = fLength; }
 	CCamera *GetNext(void) { return m_pNext; }
 	CCamera *GetPrev(void) { return m_pPrev; }
-	MODE GetMode(void) { return m_mode; }
 	DRAWSTATE GetDrawState(void) { return m_DrawState; }
 	bool IsDebug() { return m_bDebug; }
 	bool GetDraw(void) const { return m_bDraw; }

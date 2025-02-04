@@ -705,7 +705,7 @@ void CObjectX::DrawCheck()
 		size *= 30.0f;
 	}
 
-	if (CEditManager::GetInstance() != nullptr)
+	if (CEditManager::GetInstance() != nullptr || CCameraManager::GetInstance()->GetTop()->GetMode() == CCamera::MODE::MODE_FREE)
 	{
 		SetColMulti(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		SetDraw();
