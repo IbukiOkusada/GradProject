@@ -10,6 +10,8 @@
 #include "Postprocess.h"
 #include "manager.h"
 #include "renderer.h"
+#include "edit.h"
+#include "edit_manager.h"
 //============================================================
 //	定数宣言
 //============================================================
@@ -31,7 +33,7 @@ CPostprocess* CPostprocess::m_pShader = nullptr;	// シェーダー情報
 //============================================================
 CPostprocess::CPostprocess()
 {
-
+	time = 0;
 }
 
 //============================================================
@@ -166,16 +168,19 @@ void CPostprocess::Uninit(void)
 //============================================================
 void CPostprocess::Draw(void)
 {
+	if (CEditManager::GetInstance() != nullptr)
+		return;
 	// ポインタを宣言
 	LPDIRECT3DDEVICE9 pDevice = CManager::GetInstance()->GetRenderer()->GetDevice();	// デバイス情報
 	//バックバッファの既定値を記録
 	LPDIRECT3DSURFACE9 pBackBuffer;
 	pDevice->GetBackBuffer(0, 0, D3DBACKBUFFER_TYPE_MONO, &pBackBuffer);
 	//特定輝度の抜きだし
-
+	time += 1.0f / 60.0f;
 	m_pAberration->Begin(NULL, 0);
 	m_pAberration->BeginPass(0);
 	m_pAberration->SetTechnique("ChromaticAberration");
+	m_pAberration->SetFloat("time", time);
 	Rendering(CManager::GetInstance()->GetRenderer()->GetTextureMT(0), 0xffffffff);
 	m_pAberration->EndPass();
 	m_pAberration->End();

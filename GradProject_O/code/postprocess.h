@@ -54,7 +54,7 @@ private:
 	LPDIRECT3DTEXTURE9 m_pGaussTex;
 	LPDIRECT3DSURFACE9 m_pGaussSurface;
 	ID3DXSprite* m_pSprite;
-
+	float time;
 	LPDIRECT3DVERTEXBUFFER9 pVtxBuff;	// 頂点バッファ
 };
 
